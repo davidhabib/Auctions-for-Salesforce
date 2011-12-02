@@ -1,5 +1,5 @@
 <!-- 
-// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// Written by David Habib, copyright (c) 2009, 2010, 2011 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
  
@@ -36,8 +36,8 @@ David is a volunteer who came to Groundwire through
 
 <h1>Support</h1>
 <p>Support is generally not available for this app. If you would like to suggest an improvement or 
-report a bug please create a new issue on Google Code.<br/>
-<a href="http://code.google.com/p/groundwire-auctions-for-salesforce/issues/list" target="_new">http://code.google.com/p/groundwire-auctions-for-salesforce/issues/list</a></p>
+report a bug please create a new issue on GitHub.<br/>
+<a href="http://github.com/Groundwire/Auctions/issues" target="_new">http://github.com/Groundwire/Auctions/issues</a></p>
 <p>For all other inquiries, please contact us at <a href="mailto:labs@groundwire.org">labs@groundwire.org</a>.</p>
 
 
