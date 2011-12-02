@@ -1,0 +1,100 @@
+<apex:component controller="AUC_CTRL_SoqlListView" allowDml="true" >
+
+    <style>
+        .PagerUI { font-size: 8pt; }
+        .SelectedAlphaFilter { background-color:lightblue; }
+        .AlphaFilter { text-decoration:none;  }
+    </style>
+
+	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
+		description="the controller of the page" />
+
+	<apex:outputText value="Select the Auction:  " />
+   	<apex:selectList value="{!auctionId}" size="1" >
+   		<apex:actionSupport event="onchange" rerender="panelData" status="retrieveStatus" action="{!ChangeAuction}" />
+   		<apex:selectOptions value="{!listSOAuctions}" />
+   	</apex:selectList>
+	<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" /><br/><br/>
+
+	<apex:outputPanel id="panelData" >
+		<apex:pageBlock >		
+			<div class="PagerUI">
+				<table width="100%" >
+					<tr>
+						<td style="vertical-align:middle;">
+							<apex:panelGrid columns="10" > 
+								<apex:outputText value="" />
+								<apex:commandLink action="{!setCon.first}">First</apex:commandlink>
+								<apex:outputText value=" | " />
+								<apex:commandLink action="{!setCon.previous}" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
+								<apex:outputText rendered="{!setCon.HasPrevious}" value=" | " />
+								<apex:commandLink action="{!setCon.next}" rendered="{!setCon.HasNext}">Next</apex:commandlink>
+								<apex:outputText rendered="{!setCon.HasNext}" value=" | " />
+								<apex:commandLink action="{!setCon.last}">Last</apex:commandlink>
+								<apex:outputText value="" />
+								<apex:outputText value="&nbsp;&nbsp;&nbsp;Page {0} of {1} &nbsp;&nbsp;({2} records)" escape="false" >
+									<apex:param value="{!setCon.PageNumber}" />
+									<apex:param value="{!NumberOfPages}" />
+									<apex:param value="{!NumberOfItems}" />
+								</apex:outputText> 
+							</apex:panelGrid>  
+						</td>
+						<td style="vertical-align:middle;">
+							<apex:commandButton action="{!pageController.NewItem}" value="New" immediate="true" />						
+						</td>
+						<td style="vertical-align:middle; text-align:right;" >
+							<apex:repeat value="{!listAlphaFilters}" var="a" > 
+							    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter=a,'SelectedAlphaFilter','')}" value=" {!a} " >
+							    	<apex:param assignTo="{!strAlphaFilter}" name="strAlphaFilter" value="{!a}" /> 
+							    </apex:commandLink>|
+				  			</apex:repeat>         
+						    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter='%','SelectedAlphaFilter','')}" value=" All " >
+						    	<apex:param assignTo="{!strAlphaFilter}" value="%" /> 
+						    </apex:commandLink>&nbsp;
+						</td>
+					</tr>
+				</table>			
+			</div> 
+
+	        <apex:pageBlockTable value="{!listPagedItem}" var="item" rows="25" >  
+
+	            <apex:column headerValue="Action" >
+	                <apex:commandLink action="{!EditItem}" value="Edit">
+				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
+	                </apex:commandLink>&nbsp;|&nbsp;
+	                <apex:commandLink action="{!DeleteItem}" value="Del" onclick="if (confirm('Are you sure?')==false) { return false;}" >
+				    	<apex:param assignTo="{!idDeleteItem}" name="idDeleteItem" value="{!item.id}" /> 
+	                </apex:commandLink>
+	            </apex:column>          
+
+	            <apex:column headerValue="Name" >
+	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink> 
+	            </apex:column>          
+
+				<apex:repeat value="{!pageController.strFields}" var="f" > 
+					<apex:column value="{!item[f]}" /> 
+	  			</apex:repeat>         
+	            	            
+	        </apex:pageBlockTable> 
+			<br/>
+			<div class="PagerUI">
+				<apex:panelGrid columns="10" > 
+					<apex:outputText value="" />
+					<apex:commandLink action="{!setCon.first}">First</apex:commandlink>
+					<apex:outputText value=" | " />
+					<apex:commandLink action="{!setCon.previous}" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
+					<apex:outputText rendered="{!setCon.HasPrevious}" value=" | " />
+					<apex:commandLink action="{!setCon.next}" rendered="{!setCon.HasNext}">Next</apex:commandlink>
+					<apex:outputText rendered="{!setCon.HasNext}" value=" | " />
+					<apex:commandLink action="{!setCon.last}">Last</apex:commandlink>
+					<apex:outputText value="" />
+					<apex:outputText value="&nbsp;&nbsp;&nbsp;Page {0} of {1} &nbsp;&nbsp;({2} records)" escape="false" >
+						<apex:param value="{!setCon.PageNumber}" />
+						<apex:param value="{!NumberOfPages}" />
+						<apex:param value="{!NumberOfItems}" />
+					</apex:outputText> 
+				</apex:panelGrid>    	
+			</div>		
+	    </apex:pageBlock>       	       	
+	</apex:outputPanel>
+</apex:component>

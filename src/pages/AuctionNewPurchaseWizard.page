@@ -1,0 +1,273 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionNewPurchaseWizard" title="Auction Purchases" tabStyle="Auction_Purchases__tab">
+
+	<script>
+		////////////////////////// BidNumberPicker /////////////////////////////////////////////////////
+		// the following functions and variables are used to implement the BidNumberPicker listbox.
+		// the code has assumptions about the location of HTML elements on the page.
+		// specifically, it expects these elements in the following order:
+		//	<input type="hidden"> to hold the contactId.
+		//  <input type="text"> to enter a bidNumber, and to display bidNumber: ContactName
+		//	<input type="button"> to hide/show the BidNumberPicker listbox
+		//	<div> to insert/remove the BidNumberPicker listbox into when hiding/showing it
+		//		
+
+		// global variables of the BidNumber textbox to fill and the ContactId hidden field to fill
+		var ctrlTxtBidderNumber = null;
+		var ctrlHiddenContactId = null;
+		
+		// function to invoke the BidNumberPicker and remember the fields it should update
+		function OnClickBtnBidNumberPicker(btn) {
+			ctrlTxtBidderNumber = GetNodePreviousSiblingTagName(btn, 'input');
+			ctrlHiddenContactId = GetNodePreviousSiblingTagName(ctrlTxtBidderNumber, 'input');
+			var lbx = GetElementByPartialId(btn.form, 'lbxLookupBidNumber');
+			
+			// if already shown, then hide the BidNumberPicker
+			if (IsElementVisible(lbx)) {
+				HideElement(lbx);
+				ctrlTxtBidderNumber.focus();
+			} else {				
+				var div = GetNodeNextSiblingTagName(btn, 'div');
+				div.appendChild(lbx);
+				ShowElement(lbx);
+				lbx.focus();
+			}
+		}
+
+		// OnClick handler for the LookupBidderNumber select list
+		function OnClickLbxLookupBidNumber(lbx) {
+			// store the chosen info from the listbox, hide the listbox, put focus back on txtBidderNumber.
+			if (ctrlTxtBidderNumber != null) ctrlTxtBidderNumber.value = lbx.options[lbx.selectedIndex].text;
+			if (ctrlHiddenContactId != null) ctrlHiddenContactId.value = lbx.options[lbx.selectedIndex].value;
+			HideElement(lbx);
+			ctrlTxtBidderNumber.focus();
+		}
+		
+		// OnKeypress handler for the LookupBidderNumber select list
+		function OnKeyPressLbxLookupBidNumber(event, lbx) {
+			if (event.keyCode == 13) {
+				OnClickLbxLookupBidNumber(lbx);
+				event.keyCode = null; // to prevent the page from saving
+			}
+		}
+
+		// OnChange handler for when the user has manually entered a bidNumber in the BidderNumber textbox
+		function OnChangeTxtBidderNumber(txt) {
+			var lbx = GetElementByPartialId(txt.form, 'lbxLookupBidNumber');
+			var i = IndexOfLbxPrefixText(lbx, txt.value);
+			if (i == -1) {
+				txt.value = txt.value + ':  invalid bid number';
+			} else {				
+				txt.value = lbx.options[i].text;
+				ctrlHiddenContactId = GetNodePreviousSiblingTagName(txt, 'input');
+				ctrlHiddenContactId.value = lbx.options[i].value;
+			}
+		}
+		
+		////////////////////////// AuctionItemPicker /////////////////////////////////////////////////////
+		// the following functions and variables are used to implement the AuctionItemPicker listbox.
+		// the code has assumptions about the location of HTML elements on the page.
+		// specifically, it expects these elements in the following order:
+		//	<input type="hidden"> to hold the AuctionItemId.
+		//  <input type="text"> to enter an AuctionItemID, and to display AuctionItemID: AuctionItemName
+		//	<input type="button"> to hide/show the AuctionItemPicker listbox
+		//	<div> to insert/remove the AuctionItemPicker listbox into when hiding/showing it
+		//		
+
+		// global variables of the BidNumber textbox to fill and the ContactId hidden field to fill
+		var ctrlTxtAuctionItem = null;
+		var ctrlHiddenAuctionItemId = null;
+		
+		// function to invoke the BidNumberPicker and remember the fields it should update
+		function OnClickBtnAuctionItemPicker(btn) {
+			ctrlTxtAuctionItem = GetNodePreviousSiblingTagName(btn, 'input');
+			ctrlHiddenAuctionItemId = GetNodePreviousSiblingTagName(ctrlTxtAuctionItem, 'input');
+			var lbx = GetElementByPartialId(btn.form, 'lbxLookupAuctionItem');
+			
+			// if already shown, then hide the AuctionItemPicker
+			if (IsElementVisible(lbx)) {
+				HideElement(lbx);
+				ctrlTxtAuctionItem.focus();
+			} else {				
+				var div = GetNodeNextSiblingTagName(btn, 'div');
+				div.appendChild(lbx);
+				ShowElement(lbx);
+				lbx.focus();
+			}
+		}
+
+		// OnClick handler for the LookupAuctionItem select list
+		function OnClickLbxLookupAuctionItem(lbx) {
+			// store the chosen info from the listbox, hide the listbox, put focus back on txtAuctionItem.
+			if (ctrlTxtAuctionItem != null) ctrlTxtAuctionItem.value = lbx.options[lbx.selectedIndex].text;
+			if (ctrlHiddenAuctionItemId != null) ctrlHiddenAuctionItemId.value = lbx.options[lbx.selectedIndex].value;
+			HideElement(lbx);
+			ctrlTxtAuctionItem.focus();
+		}
+		
+		// OnKeypress handler for the LookupAuctionItem select list
+		function OnKeyPressLbxLookupAuctionItem(event, lbx) {
+			if (event.keyCode == 13) {
+				OnClickLbxLookupAuctionItem(lbx);
+				event.keyCode = null; // to prevent the page from saving
+			}
+		}
+		
+		// OnChange handler for when the user has manually entered an AuctionItemID in the AuctionItem textbox
+		function OnChangeTxtAuctionItem(txt) {
+			var lbx = GetElementByPartialId(txt.form, 'lbxLookupAuctionItem');
+			var i = IndexOfLbxPrefixText(lbx, txt.value);
+			if (i == -1) {
+				txt.value = txt.value + ':  invalid Auction Item ID';
+			} else {				
+				txt.value = lbx.options[i].text;
+				ctrlHiddenAuctionItemId = GetNodePreviousSiblingTagName(txt, 'input');
+				ctrlHiddenAuctionItemId.value = lbx.options[i].value;
+			}
+		}
+
+		/////////////////////////////////////// Helper Functions ///////////////////////////////////////////////
+		
+		// helper function to find the first item in the listbox that is displaying the supplied prefix string
+		function IndexOfLbxPrefixText(lbx, prefix) {
+			if (prefix == null || prefix == '') return -1;
+			var i = 0; 
+			for (i = 0; i < lbx.options.length; i++) { 
+				if (lbx.options[i].text.indexOf(prefix + ':') == 0) {
+					return i; 
+				} 
+			}
+			return -1; // not found.
+		}		
+
+		// helper function to find the first item in the listbox with the specified value (not display text).
+		function TextOfLbxValue(lbx, value) {
+			var i = 0; 
+			for (i = 0; i < lbx.options.length; i++) { 
+				if (lbx.options[i].value == value) {
+					return lbx.options[i].text; 
+				} 
+			}
+			return null; 
+		}		
+		
+		// helper function to get the previous sibling node that is an element node of the given tagName
+		function GetNodePreviousSiblingTagName(n, tagName) {
+			x = n.previousSibling;
+			while (x != null && x.nodeType != 1 && x.tagName != tagName) { // 1 == element
+				x = x.previousSibling;
+			}
+			return x;
+		}
+
+		// helper function to get the next sibling node that is an element node of the given tagName
+		function GetNodeNextSiblingTagName(n, tagName) {
+			x = n.nextSibling;
+			while (x!= null && x.nodeType != 1 && x.tagName != tagName) { // 1 == element
+				x = x.nextSibling;
+			}
+			return x;
+		}
+		
+		// helper function to check whether an element is visible and displayed
+		function IsElementVisible(element) {
+			return element.style.visibility == 'visible' && element.style.display != 'none';
+		}
+		
+		// helper function to show an element
+		function ShowElement(element){
+		    element.style.visibility = 'visible';
+		    element.style.display = 'inline';
+		}
+		
+		// helper function to hide an element
+		function HideElement(element){
+		    element.style.visibility = 'hidden';
+		    element.style.display = 'none';
+		}
+
+		// helper function to find a control whose id contains the subid
+		function GetElementByPartialId(form, subid) {
+			var i;
+			for (i = 0; i < form.elements.length; i++) {
+				if (form.elements[i].id.indexOf(subid) > -1) {
+					return form.elements[i];
+				}
+			}
+		}
+		
+ 
+	</script>
+
+   	<apex:sectionHeader title="Auction Purchases" />      
+    <apex:form >
+
+		<apex:outputPanel id="panelDebugging" rendered="false">
+	    	<apex:outputText value="{!campaignIdAuctionAttendees}" id="txtAuctionAttendeeCampaignID" Style="color:red;" /><br/>
+    		<apex:outputText value="{!auctionId}" id="txtAuctionID" Style="color:red;" /><br/>
+		</apex:outputPanel>
+    	    	 
+		<apex:outputPanel id="panelPurchases"  >
+            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!auctionId==null}" />  
+	        <apex:pageBlock title="Auction Purchases to be Created" rendered="{!auctionId!=null}"  mode="edit">
+		        <apex:pageBlockButtons >
+			       	<apex:commandButton action="{!createAuctionPurchases}" value="Save" reRender="panelPurchases" status="retrieveCreateStatus" id="btnCreate" immediate="false" />
+                	<apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strSaveResults), 'Cancel', 'Close')}"  immediate="true"/>
+		        </apex:pageBlockButtons>        								
+		    	<apex:outputText value="There are no attendees for this auction." rendered="{!auctionId!=null && campaignIdAuctionAttendees==null}" Style="color:red;" />
+				<apex:actionStatus layout="block" startText="Saving...." stopText="" id="retrieveCreateStatus" startStyle="color:green; font-style:italic" stopStyle="color:black;"/>
+	            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
+	            <apex:pageMessages showDetail="true" />
+	            <br/> 
+	            <apex:outputText value="Enter the Bid Number(s) and Auction Item ID(s) directly, or click on the dropdown button to choose them." style="font-style:italic" /><br/>             
+				<br/>
+		
+		    	<!-- the hidden listbox of attendees and their bid numbers -->
+		    	<apex:selectList id="lbxLookupBidNumber" size="8" onclick="OnClickLbxLookupBidNumber(this);" onkeypress="OnKeyPressLbxLookupBidNumber(event, this);" style="visibility:hidden;display:none" required="false" >
+		    		<apex:selectOptions value="{!listSOLookupBidNumbers}" />
+		    		<apex:selectOptions value="{!listSOLookupBidNumbers2}" />
+		    	</apex:selectList>
+    					
+		    	<!-- the hidden listbox of auction items -->
+		    	<apex:selectList id="lbxLookupAuctionItem" size="8" onclick="OnClickLbxLookupAuctionItem(this);" onkeypress="OnKeyPressLbxLookupAuctionItem(event, this);" style="visibility:hidden;display:none" required="false" >
+		    		<apex:selectOptions value="{!listSOLookupAuctionItems}" />
+		    		<apex:selectOptions value="{!listSOLookupAuctionItems2}" />
+		    	</apex:selectList>
+
+				<apex:dataTable value="{!AuctionPurchasedItems}" var="apo" rules="rows"  cellpadding="3">					
+					<apex:column >
+						<apex:facet name="header">Bid Number</apex:facet>
+						<apex:inputHidden value="{!apo.contactId}" id="txtHiddenContactId" required="false" />
+						<apex:inputText value="{!apo.strBidderNumberAndName}" required="false" id="txtBidderNumber" onchange="OnChangeTxtBidderNumber(this);" />
+						<input type="button" value="˅" onclick="OnClickBtnBidNumberPicker(this);" style="height:20px;width:20px;padding-left:0;padding-right:0;" />
+						<div id="divBidNumberPicker" style="display:inline" ><br/></div>
+					</apex:column> 
+					<apex:column >
+						<apex:facet name="header">Auction Item ID</apex:facet>
+						<apex:inputHidden value="{!apo.opp.Auction_Item_Purchased__c}" id="txtHiddenAuctionItemId" required="false" />
+						<apex:inputText value="{!apo.strAuctionItemIDAndName}" required="false" id="txtAuctionItem" onchange="OnChangeTxtAuctionItem(this);" />											
+						<input type="button" value="˅" onclick="OnClickBtnAuctionItemPicker(this);" style="height:20px;width:20px;padding-left:0;padding-right:0;" />
+						<div id="divAuctionItemPicker" style="display:inline" ><br/></div>						
+					</apex:column>					
+					<apex:column >					
+						<apex:facet name="header">Amount</apex:facet>
+						<apex:inputText value="{!apo.opp.Amount}" required="false"/>
+					</apex:column>
+					<apex:column >
+						<apex:facet name="header">Paid</apex:facet>
+						<apex:inputCheckbox value="{!apo.IsPaid}" required="false" />
+					</apex:column>
+					<apex:column >					
+						<apex:facet name="header">Date</apex:facet>
+						<apex:inputField value="{!apo.opp.CloseDate}" required="false"/>
+					</apex:column>
+				</apex:dataTable>	
+	    	</apex:pageBlock>
+		</apex:outputPanel>		 
+	</apex:form>    	
+
+</apex:page>

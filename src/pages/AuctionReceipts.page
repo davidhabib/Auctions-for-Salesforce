@@ -1,0 +1,221 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionReceipts" title="Auction Receipts"  tabStyle="Auction_Receipts__tab" renderAs="{!RenderFormat}" showHeader="true">
+	
+	<script>
+	
+		// function to hide/show the Open PDF button.
+		function DisplayOpenPDF(fShow) {
+			var btn = GetElementsByPartialId('btnOpenPDF')[0];
+			// if already shown, then hide the BidNumberPicker
+			if (fShow) {
+				ShowElement(btn);
+			} else {				
+				HideElement(btn);
+			}
+		}
+				 
+		// helper function to show an element
+		function ShowElement(element){
+		    element.style.visibility = 'visible';
+		    element.style.display = 'inline';
+		}
+		
+		// helper function to hide an element
+		function HideElement(element){
+		    element.style.visibility = 'hidden';
+		    element.style.display = 'none';
+		}
+ 
+ 		// helper function to find all controls whose id contains the subid
+		function GetElementsByPartialId(subid) {
+			var form;
+			var i, j;
+			var elems=new Array();
+			for (i = 0; i < document.forms.length; i++) {
+				form = document.forms[i];
+				for (j = 0; j < form.elements.length; j++) {
+					if (form.elements[j].id.indexOf(subid) > -1) {
+						elems.push(form.elements[j]);
+					}
+				}				
+			}
+			return elems;
+		}
+		
+	</script>	
+	
+	<style type="text/css">
+		.cssLabel {
+			font-weight:bold;
+			text-align: right;
+		}
+		
+		a.cssHideLink:link, a.cssHideLink:visited, a.cssHideLink:hover, a.cssHideLink:active {
+			text-decoration: none;
+		}						
+	</style>
+	
+	<apex:outputPanel id="panelReportParameters" rendered="{!RenderFormat==null}" >
+	   	<apex:sectionHeader title="Auction Receipts" />      
+	    <apex:form > 	    
+	    	<apex:panelGrid columns="2" columnClasses="cssLabel,cssFake" >
+	    		<apex:outputLabel value="Select the Auction  " for="lbxAuctions" />
+	    		<apex:panelGroup >
+			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
+			    		<apex:actionSupport event="onchange" rerender="lbxAttendees" status="retrieveStatus" action="{!ChangeAuction}" />
+			    		<apex:selectOptions value="{!listSOAuctions}" />
+			    	</apex:selectList>	
+					<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" /><br/>
+				</apex:panelGroup>
+				
+				<apex:outputLabel value="Select the Person  " for="lbxAttendees" />
+				<apex:panelGroup >
+			    	<apex:selectList value="{!contactId}" size="1" id="lbxAttendees">
+			    		<apex:actionSupport event="onchange" rerender="" status="retrieveStatus2" action="{!ChangeAttendee}" /> 
+			    		<apex:selectOptions value="{!listSOPurchasers}" />
+			    		<apex:selectOptions value="{!listSOPurchasers2}" />
+			    	</apex:selectList>
+					<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus2" startStyle="color:green; font-style:italic" /><br/>				
+				</apex:panelGroup>					    		
+				
+				<apex:outputLabel value="Include ticket purchases?  " for="cbxIncludeTicketPurchases" />
+				<apex:panelGroup >
+					<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
+					<!-- once we started using actionSupport, we still needed to ensure the user didn't call OpenPDF until the actionSupport had finished. -->
+					<!-- so we use a little javascript to hide the Open PDF button, using actionStatus. -->
+					<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="false" >
+				    		<apex:actionSupport event="onclick" status="cbxStatus" action="{!ChangeIncludeTicketPurchases}" />
+					</apex:inputCheckbox>
+				    <apex:actionStatus id="cbxStatus" onstart="DisplayOpenPDF(false);" onstop="DisplayOpenPDF(true);" />
+				</apex:panelGroup>
+				
+				<apex:outputText value="" />
+				<apex:panelGroup >	
+					<!--  make our link look like a button! -->
+			    	<apex:commandLink action="{!OpenPDF}" target="_blank" styleClass="cssHideLink" immediate="false" >
+						<apex:commandButton id="btnOpenPDF" value="Open PDF" onclick="return false;" immediate="false" />
+						<apex:actionSupport event="onmousedown" status="retrieveStatusPDF" />		    	
+			    	</apex:commandLink>
+				</div>
+				</apex:panelGroup>
+	    	</apex:panelGrid>
+	    	<apex:actionStatus startText="  Loading PDF...  If opening for All Purchasers this can take several minutes." stopText=" " id="retrieveStatusPDF" startStyle="color:green; font-style:italic" />
+		</apex:form>
+			
+	</apex:outputPanel>
+	<apex:outputPanel id="panelReportPDF" rendered="{!RenderFormat!=null}" >  	
+        <apex:pageMessage summary="There are no purchases for the specified people." severity="info" strength="2" rendered="{!NOT(HasReceipts)}" />  
+    	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
+		<div style="page-break-after:{!IF(contactId=='', 'always', 'none')};">
+	    	<apex:outputPanel id="panelReceipt" >		
+		    	<h2><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
+		    	<p><apex:outputText value="{0,date,MMMM d, yyyy}" >
+		    			<apex:param value="{!receipt.dtAuction}" />
+		    		</apex:outputText>
+		    	</p>
+		    	<p>Dear {!receipt.strContactFirstName},<br/><br/>
+		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
+				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
+					<tr><td>
+					<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" style="cellpadding:5;cellspacing:5;" align="left" 
+						captionStyle="text-align:left;font-weight:bold;" 
+						columnsWidth="200px, 150px, 150px">
+						<apex:facet name="caption" >Your Purchases</apex:facet> 
+						<apex:facet name="header"><hr/></apex:facet>
+						<apex:facet name="footer"><hr/></apex:facet>
+						<apex:column >
+					        <apex:facet name="header">Item</apex:facet>
+					        <apex:facet name="footer"><b>Totals</b></apex:facet>
+							<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
+						</apex:column>
+						<apex:column >
+					        <apex:facet name="header">Amount Paid</apex:facet>
+							<apex:outputText value="{0,Number,$#,###.##}" >
+								<apex:param value="{!oppAP.Amount}" />
+							</apex:outputText>
+							<apex:facet name="footer">				
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
+								</apex:outputText>								
+							</apex:facet>
+						</apex:column>
+						<apex:column >
+					        <apex:facet name="header">Deductible Amount</apex:facet>
+							<apex:outputText value="{0,Number,$#,###.##}" >
+								<apex:param value="{!oppAP.Auction_Deductible_Amount__c}"/>
+							</apex:outputText>
+							<apex:facet name="footer">				
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+									<apex:param value="{!receipt.decTotalAmountDeductible}"/> 
+								</apex:outputText>								
+							</apex:facet>
+						</apex:column>	
+					</apex:dataTable>
+					</td></tr>
+					<tr><td><p><apex:outputText value="{!strAuctionReceiptsFooter}" escape="false" /></p></td></tr>
+				</table>									   	
+	    	</apex:outputPanel>
+		</div><!-- this forces the page break in the PDF. -->
+	</apex:repeat>
+	</apex:outputPanel>
+	
+	<apex:outputPanel id="panelReportPDF2" rendered="{!RenderFormat!=null}" >  	
+    	<apex:repeat var="receipt" value="{!listReceipts2}">   	    	
+		<div style="page-break-after:{!IF(contactId=='', 'always', 'none')};">
+	    	<apex:outputPanel id="panelReceipt2" >		
+		    	<h2><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
+		    	<p><apex:outputText value="{0,date,MMMM d, yyyy}" >
+		    			<apex:param value="{!receipt.dtAuction}" />
+		    		</apex:outputText>
+		    	</p>
+		    	<p>Dear {!receipt.strContactFirstName},<br/><br/>
+		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
+				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
+					<tr><td>
+					<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" style="cellpadding:5;cellspacing:5;" align="left" 
+						captionStyle="text-align:left;font-weight:bold;" 
+						columnsWidth="200px, 150px, 150px">
+						<apex:facet name="caption" >Your Purchases</apex:facet> 
+						<apex:facet name="header"><hr/></apex:facet>
+						<apex:facet name="footer"><hr/></apex:facet>
+						<apex:column >
+					        <apex:facet name="header">Item</apex:facet>
+					        <apex:facet name="footer"><b>Totals</b></apex:facet>
+							<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
+						</apex:column>
+						<apex:column >
+					        <apex:facet name="header">Amount Paid</apex:facet>
+							<apex:outputText value="{0,Number,$#,###.##}" >
+								<apex:param value="{!oppAP.Amount}" />
+							</apex:outputText>
+							<apex:facet name="footer">				
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
+								</apex:outputText>								
+							</apex:facet>
+						</apex:column>
+						<apex:column >
+					        <apex:facet name="header">Deductible Amount</apex:facet>
+							<apex:outputText value="{0,Number,$#,###.##}" >
+								<apex:param value="{!oppAP.Auction_Deductible_Amount__c}"/>
+							</apex:outputText>
+							<apex:facet name="footer">				
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+									<apex:param value="{!receipt.decTotalAmountDeductible}"/> 
+								</apex:outputText>								
+							</apex:facet>
+						</apex:column>	
+					</apex:dataTable>
+					</td></tr>
+					<tr><td><p><apex:outputText value="{!strAuctionReceiptsFooter}" escape="false" /></p></td></tr>
+				</table>									   	
+	    	</apex:outputPanel>
+		</div><!-- this forces the page break in the PDF. -->
+	</apex:repeat>
+	</apex:outputPanel>	
+		
+</apex:page>

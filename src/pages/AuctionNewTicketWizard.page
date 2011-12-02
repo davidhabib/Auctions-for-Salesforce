@@ -1,0 +1,104 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionNewTicketWizard"  title="New Auction Ticket Wizard" tabStyle="Auction_Tickets__tab" >
+ 
+ 	<script>
+ 	
+		// function to populate Table Name/Number fields when the first one is filled in.
+		function OnChangeTxtTableNameNumber(txt) {
+			var rg = document.getElementsByTagName('input');
+			var i = 0; 
+			for (i = 0; i < rg.length; i++) {
+				if (rg[i].id.indexOf('txtTableNameNumber') > -1) {
+					if (rg[i].value == '') {
+						rg[i].value = txt.value;
+					}
+				}
+			}
+ 		}
+ 	</script>
+ 	
+    <style>
+	    .Error { color: red; font-weight: strong;}
+    </style>
+ 
+   	<apex:sectionHeader title="Auction Tickets" />      
+    <apex:form > 
+   
+    	<apex:outputPanel id="panelDebugging" rendered="false">
+    		<hr/> 
+    		<apex:outputText value="{!'AuctionId: ' + auctionId }" Style="color:red;" /><br/>
+    		<apex:outputText value="{!'CampaignId: ' + opp.CampaignId }" Style="color:red;" /><br/>    		
+    		<hr/>
+		</apex:outputPanel>
+		    
+        <apex:pageBlock title="New Auction Ticket" mode="edit" id="pbMain" >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!Save}" value="Save"/>
+                <apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strSaveResults), 'Cancel', 'Close')}" immediate="true"/>
+            </apex:pageBlockButtons>      
+            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
+            <apex:messages styleClass="Error" />              
+            <apex:pageBlockSection title="Ticketing Information" columns="1">
+                <apex:inputField value="{!contactRole.ContactId}" required="true" />                	       			
+                <apex:inputField value="{!opp.AccountId}" id="txtAccountId" />
+                <apex:inputField value="{!opp.CampaignId}" required="true" />
+                <apex:inputField value="{!opp.CloseDate}" required="true" />
+                <apex:inputField value="{!opp.Amount}" required="false" />
+                <apex:inputField value="{!opp.Number_of_Tickets__c}" required="true" >
+    	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
+    	        		rerender="pbsAttendees, pbMain, panelDebugging" focus="txtDescription" status="statusLoading" />
+        			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
+                </apex:inputField>
+                <apex:inputField value="{!opp.Description}" id="txtDescription" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
+            	<br/>
+            	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
+            	<br/>
+        
+				<apex:dataTable value="{!listCmpMbrAttendees}" var="cmpmbr" rules="rows"  cellpadding="2">					
+					<apex:column >
+						<apex:facet name="header">Contact</apex:facet>
+						<apex:inputField value="{!cmpmbr.ContactId}" required="false" />											
+					</apex:column>					
+					<apex:column >
+						<apex:facet name="header">Status</apex:facet>
+						<apex:inputField value="{!cmpmbr.Status}" required="false" />											
+					</apex:column>					
+					<apex:column >
+						<apex:facet name="header">Bid Number</apex:facet>
+						<apex:inputField value="{!cmpmbr.Bid_Number__c}" required="false" />
+					</apex:column> 
+					<apex:column >					
+						<apex:facet name="header">Meal Preference</apex:facet>
+						<apex:inputField value="{!cmpmbr.Meal_Preference__c}" required="false"/>
+					</apex:column>
+					<apex:column >
+						<apex:facet name="header">Paid</apex:facet>
+						<apex:inputCheckbox value="{!cmpmbr.Paid__c}" required="false" />
+					</apex:column>
+					<apex:column >
+						<apex:facet name="header">Is Table Captain</apex:facet>
+						<apex:inputCheckbox value="{!cmpmbr.Is_Table_Captain__c}" required="false" />
+					</apex:column>
+					<apex:column >					
+						<apex:facet name="header">Table Captain</apex:facet>
+						<apex:inputField value="{!cmpmbr.Table_Captain__c}" required="false"/>
+					</apex:column>
+					<apex:column >					
+						<apex:facet name="header">Table Name/Number</apex:facet>
+						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" />
+					</apex:column>
+				</apex:dataTable>	
+        
+            </apex:pageBlockSection>
+        
+        </apex:pageBlock>
+        
+        
+    </apex:form>
+</apex:page>

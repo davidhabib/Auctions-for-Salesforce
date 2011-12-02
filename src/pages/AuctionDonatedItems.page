@@ -1,0 +1,11 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010, 2011 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionDonatedItems" title="Auction Donated Items"  tabStyle="Auction_Donated_Items__tab">
+	<apex:form >
+	   	<apex:sectionHeader title="Auction Donated Items" />      
+		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
+	</apex:form>		
+</apex:page>

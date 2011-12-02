@@ -1,0 +1,118 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionNewDonatedItemWizard"  title="New Auction Donated Item Wizard" tabStyle="Auction_Donated_Items__tab" >
+
+	<script>
+	
+		// function to hide/show the Save button.
+		function DisplaySaveBtn(fShow) {
+			var btns = GetElementsByPartialId('btnSave');
+			var i;
+			for (i = 0; i < btns.length; i++) {
+				if (fShow) {
+					ShowElement(btns[i]);
+				} else {				
+					HideElement(btns[i]);
+				}
+			}
+		}
+				
+		// helper function to show an element
+		function ShowElement(element){
+		    element.style.visibility = 'visible';
+		    element.style.display = 'inline';
+		}
+		
+		// helper function to hide an element
+		function HideElement(element){
+		    element.style.visibility = 'hidden';
+		    element.style.display = 'none';
+		}
+		
+  		// helper function to find all controls whose id contains the subid
+		function GetElementsByPartialId(subid) {
+			var form;
+			var i, j;
+			var elems=new Array();
+			for (i = 0; i < document.forms.length; i++) {
+				form = document.forms[i];
+				for (j = 0; j < form.elements.length; j++) {
+					if (form.elements[j].id.indexOf(subid) > -1) {
+						elems.push(form.elements[j]);
+					}
+				}				
+			}
+			return elems;
+		}
+	</script>
+
+     <style>
+	    .Error { color: red; font-weight: strong;}
+    </style>
+    
+	<apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />    
+    <apex:form >
+    
+    	<apex:outputPanel id="panelDebugging" rendered="false">
+    		<hr/> 
+    		<apex:outputText value="{!'AuctionId: ' + auctionItem.Auction__c}" Style="color:red;" /><br/>
+    		<apex:outputText value="{!'fCreateAuctionItem: ' + StrFCreateAuctionItem }" Style="color:red;" /><br/>
+    		<apex:outputText value="{!'CampaignId: ' + opp.CampaignId }" Style="color:red;" /><br/>
+    		<hr/>
+		</apex:outputPanel>
+		
+        <apex:pageBlock title="Donated Item Edit" mode="edit" id="pbMain" >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!Save}" value="Save" immediate="false" id="btnSave" />
+                <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true" />
+            </apex:pageBlockButtons>   
+            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" >  
+            	<apex:messages styleClass="Error" />                                             
+            </apex:pageMessage>
+            <apex:pageBlockSection title="Donated Item Information" columns="2">
+                <apex:inputField value="{!opp.Auction_Donated_Item_Name__c}" required="true" />
+                <apex:inputField value="{!contactRole.ContactId}" required="true" />
+				<apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Total Value" for="txtAmount" />
+                    <apex:inputField value="{!opp.Amount}" id="txtAmount" required="true" />
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!opp.AccountId}" />
+                <apex:inputField value="{!opp.Number_of_Items__c}" required="true" />
+                <apex:inputField value="{!opp.StageName}" />
+                <apex:inputField value="{!opp.CloseDate}" />
+                <apex:inputField value="{!opp.CampaignId}" required="true" />
+                <apex:inputField value="{!opp.Procurred_By__c}" />
+                <apex:inputField value="{!opp.Delivery_Status__c}" />
+                <apex:inputField value="{!opp.Description}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Create An Auction Item" columns="1">
+            	<br/>
+            	<p style="font-weight:bold">In order for Auction Donated Items to be available for purchase, they must be associated with an Auction Item.&nbsp;&nbsp;
+            	Would you like to create a single Auction Item for this donation right now?</p>
+            	<br/>
+            	<apex:pageBlockSectionItem >
+	            	<apex:outputLabel value="Create Auction Item" for="cbxCreateAuctionItem" />
+    	        	<apex:inputCheckbox value="{!fCreateAuctionItem}" id="cbxCreateAuctionItem" >
+    	        		<apex:actionSupport immediate="false" event="onclick" action="{!ToggleCreateAuctionItem}" rerender="pbsAuctionItem, pbMain, panelDebugging" status="statusLoading" />
+    	        	</apex:inputCheckbox>  
+    	        </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+            <!-- while the AuctionItem form is loading, hide the Save button, so they can't save too soon! -->
+			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" onstart="DisplaySaveBtn(false);" onstop="DisplaySaveBtn(true);" startStyle="color:green; font-style:italic" />    	
+            <apex:pageBlockSection id="pbsAuctionItem">
+            	<apex:inputField value="{!auctionItem.Auction__c}" rendered="{!fCreateAuctionItem}" required="true" />
+            	<apex:inputField value="{!auctionItem.Category__c}" rendered="{!fCreateAuctionItem}"/>
+            	<apex:inputField value="{!auctionItem.Auction_Group__c}" rendered="{!fCreateAuctionItem}"/>
+            	<apex:inputField value="{!auctionItem.Name}" rendered="{!fCreateAuctionItem}" required="true" />
+            	<apex:inputField value="{!auctionItem.Auction_Item_Name__c}" rendered="{!fCreateAuctionItem}" required="true" />
+            	<apex:inputField value="{!auctionItem.Minimum_Bid__c}" rendered="{!fCreateAuctionItem}"/>
+            	<apex:inputField value="{!auctionItem.Restrictions__c}" rendered="{!fCreateAuctionItem}"/>
+            	<apex:inputField value="{!auctionItem.Guaranteed_Bid__c}" rendered="{!fCreateAuctionItem}"/>
+            	<apex:inputField value="{!auctionItem.Description__c}" rendered="{!fCreateAuctionItem}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

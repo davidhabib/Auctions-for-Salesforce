@@ -1,0 +1,30 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionAutoBidNumbers" title="Auction Bid Numbers"  >
+	<style>
+	    .Error { color: red; font-weight: strong;}
+    </style>
+	
+	<apex:sectionHeader title="Auction Bid Numbers" />  
+	<apex:form >
+		<apex:pageBlock title="Auto Assign Auction Bid Numbers" mode="edit" id="pbMain" >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!AutoBidNumbersSet}" value="Assign"/>
+                <apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strAutoBidNumberResult), 'Cancel', 'Close')}" immediate="true"/>
+            </apex:pageBlockButtons>      
+            <apex:pageMessage summary="{!strAutoBidNumberResult}" severity="info" strength="2" rendered="{!strAutoBidNumberResult!=null}" />  
+            <apex:messages styleClass="Error" />
+
+	        <apex:pageBlockTable value="{!listCMBidNumbers}" var="cm" > 
+	            <apex:column headerValue="Attendee" >
+	                <apex:outputLink value="/{!cm.contactId}" >{!cm.contact.LastName+', '+cm.contact.FirstName}</apex:outputLink>
+	            </apex:column>  	               
+	            <apex:column value="{!cm.Bid_Number__c}"/> 
+	        </apex:pageBlockTable> 
+        </apex:pageBlock>              
+	</apex:form>              
+
+</apex:page>

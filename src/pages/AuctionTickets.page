@@ -1,0 +1,12 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010, 2011 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionTickets" title="Auction Tickets"  tabStyle="Auction_Tickets__tab">
+	<apex:form >
+	   	<apex:sectionHeader title="Auction Tickets" />      
+		<div style="text-align:center;"><apex:commandButton action="{!AutoAssignBidNumbers}" value="Auto Assign Bid Numbers" immediate="true" /></div>
+		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
+	</apex:form>		
+</apex:page>
