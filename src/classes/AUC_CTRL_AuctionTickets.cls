@@ -6,7 +6,8 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 	// constructor
 	public AUC_CTRL_AuctionTickets() {
 		strFields = new list<string>{'Amount', 'StageName', 'CloseDate', 'Number_of_Tickets__c' };				        	
-       	strNameField = 'Name'; 				
+       	strNameField = 'Name'; 	
+       	strObjectType = 'Opportunity';			
 	}
 	
 	
@@ -18,7 +19,6 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 		if (ctrlSoqlListView.strAlphaFilter != null) {
 			strSoql += ' and Name like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        		
-       	strSoql += ' order by Name';
        	return strSoql;			
 	}
 

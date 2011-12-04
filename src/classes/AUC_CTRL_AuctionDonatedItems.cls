@@ -6,7 +6,8 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 	// constructor
 	public AUC_CTRL_AuctionDonatedItems() {
 		strFields = new list<string>{'Name', 'Amount', 'StageName', 'CloseDate', 'Number_Available__c'};				        	
-       	strNameField = 'Auction_Donated_Item_Name__c'; 				
+       	strNameField = 'Auction_Donated_Item_Name__c';
+       	strObjectType = 'Opportunity'; 				
 	}
 	
 	
@@ -17,7 +18,6 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 		if (ctrlSoqlListView.strAlphaFilter != null) {
 			strSoql += ' and Auction_Donated_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        		
-       	strSoql += ' order by Auction_Donated_Item_Name__c';
        	return strSoql;			
 	}
 

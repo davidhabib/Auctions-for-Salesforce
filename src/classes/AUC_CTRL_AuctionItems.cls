@@ -7,7 +7,8 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 	public AUC_CTRL_AuctionItems() {
 		strFields = new list<string>{'Name', 'Fair_Market_Value__c', 
 			'Category__c', 'Auction_Group__c' };				        	
-       	strNameField = 'Auction_Item_Name__c'; 				
+       	strNameField = 'Auction_Item_Name__c'; 	
+       	strObjectType = 'Auction_Item__c';			
 	}
 	
 	
@@ -20,7 +21,7 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 			strSoql += ' and Auction_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        		
 				
-		strSoql += ' order by Auction_Item_Name__c';        		
+		//strSoql += ' order by Auction_Item_Name__c';        		
        	return strSoql;			
 	}
 

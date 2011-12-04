@@ -20,6 +20,8 @@ public abstract with sharing class PageControllerBase {
 	
 	public string strNameField { get; set; }
 	
+	public string strObjectType { get; set; }
+
 	abstract public PageReference NewItem();
 	
 	public AUC_CTRL_SoqlListView ctrlSoqlListView {
@@ -34,6 +36,6 @@ public abstract with sharing class PageControllerBase {
 	
 	public virtual PageReference EditItem(ID idItem) {
 		return new PageReference('/' + idItem + '/e?retURL=' + ApexPages.currentPage().getURL());
-	}
+	}	
 
 }

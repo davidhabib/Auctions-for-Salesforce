@@ -20,7 +20,7 @@
    		<apex:selectOptions value="{!listSOAuctions}" />
    	</apex:selectList>
 	<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" /><br/><br/>
-
+	
 	<apex:outputPanel id="panelData" >
 		<apex:pageBlock >		
 			<div class="PagerUI">
@@ -72,12 +72,31 @@
 	                </apex:commandLink>
 	            </apex:column>          
 
-	            <apex:column headerValue="Name" >
-	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink> 
+	            <apex:column >
+	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>
+					<apex:facet name="header"> 
+						<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='Auction_Item__c', 
+							$ObjectType.Auction_Item__c.Fields[pageController.strNameField].Label,
+							$ObjectType.Opportunity.Fields[pageController.strNameField].Label)}" >
+							<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!pageController.strNameField}" />
+							<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol" 
+								value="{!IF(SortItemField=pageController.strNameField, IF(SortItemAsc, ' ↑' , ' ↓'), '')}" escape="false" />
+						</apex:commandLink>
+					</apex:facet>	                 
 	            </apex:column>          
 
 				<apex:repeat value="{!pageController.strFields}" var="f" > 
-					<apex:column value="{!item[f]}" /> 
+					<apex:column value="{!item[f]}" >
+						<apex:facet name="header"> 
+							<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='Auction_Item__c', 
+								$ObjectType.Auction_Item__c.Fields[f].Label,
+								$ObjectType.Opportunity.Fields[f].Label)}" >
+								<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!f}" />
+								<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol" 
+									value="{!IF(SortItemField=f, IF(SortItemAsc, ' ↑' , ' ↓'), '')}" escape="false" />
+							</apex:commandLink>
+						</apex:facet>
+					</apex:column> 
 	  			</apex:repeat>         
 	            	            
 	        </apex:pageBlockTable> 

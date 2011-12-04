@@ -8,6 +8,16 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     	get {
             if(setCon == null) {
             	string strSoql = pageController.getStrSoql();
+            	
+				// start out sorting on the main name field.
+            	if (SortItemField == null) {
+					SortItemField = pageController.strNameField;
+					SortItemAsc = true;            		
+            	}
+
+            	if (SortItemField != null) {
+            		strSoql += ' ORDER BY ' + SortItemField + (SortItemAsc ? ' ASC' : ' DESC');
+            	}
             	// if there is no auction selected, return an empty result set.
             	if (auctionId == null) {
             		strSoql = 'select Id from opportunity where Id=null';
@@ -125,6 +135,20 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		return pageController.EditItem(idEditItem);
 	}
 	
+	// will hold the developer name of the field to be sorted
+	public string SortItemField { get; set; }
+	
+	// whether current sorted ascending or descending.
+	public boolean SortItemAsc { get; set; }
+	
+	// action method to sort a column.
+	public PageReference SortItem() {
+		SortItemAsc = SortItemAsc ? false : true;
+		// force a requery
+		setCon = null;		
+		return null;
+	}
+
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
     	// create needed data
