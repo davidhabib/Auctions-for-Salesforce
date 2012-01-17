@@ -8,7 +8,7 @@
     <style>
         .PagerUI { font-size: 8pt; }
         .SelectedAlphaFilter { background-color:lightblue; }
-        .AlphaFilter { text-decoration:none;  }
+        .AlphaFilter { text-decoration:none; }
     </style>
 
 	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
@@ -73,7 +73,10 @@
 	            </apex:column>          
 
 	            <apex:column >
-	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>
+	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>&nbsp;&nbsp;&nbsp;
+	                <apex:commandLink action="{!EditItem}" value="{!item[pageController.strNameField]}">
+				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
+	                </apex:commandLink>
 					<apex:facet name="header"> 
 						<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='Auction_Item__c', 
 							$ObjectType.Auction_Item__c.Fields[pageController.strNameField].Label,
