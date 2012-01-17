@@ -33,7 +33,7 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 	}
 	
 	public override PageReference EditItem(ID idItem) {
-		return new PageReference('/apex/AuctionNewTicketWizard?oppId=' + idItem + '&retURL=/apex/AuctionTicekts');
+		return new PageReference('/apex/AuctionNewTicketWizard?oppId=' + idItem + '&retURL=/apex/AuctionTickets');
 	}
 	
 	//==================== TEST METHOD(s) ======================================
