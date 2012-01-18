@@ -27,14 +27,16 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
         	auctionId = listAI[0].Auction__c;
         	auctionItemId = aip.Auction_Item__c;
         } 
-        
-        if (aip.Opportunity__c != null) {        	
-        	list<Campaign> listCmp = [select Campaign.Auction__c from Campaign where Id in 
-        		(Select Opportunity.CampaignId from Opportunity where Opportunity.Id=:aip.Opportunity__c) ];
+
+        if (aip.Opportunity__c != null) {
+        	list<Campaign> listCmp = [select Auction__c from Campaign where Id in 
+        		(Select CampaignId from Opportunity where Id = :aip.Opportunity__c) ];
         	auctionId = listCmp[0].Auction__c;
 	        oppDonatedItemId = aip.Opportunity__c;
+	        // NOTE: we correctly set the oppId, but if there are no items left for this donation,
+	        // it won't appear in the picklist of donated items, and thus it will come up empty.
         } 
-			
+        			
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
 	}
