@@ -1,7 +1,8 @@
-<apex:page standardController="Opportunity" extensions="AUC_CTRL_AuctionEditOpportunity" action="{!DoEdit}" >  
+<apex:page standardController="Opportunity" extensions="AUC_CTRL_AuctionEditOpportunity"  action="{!doEdit}">  
 
+<p>
 You should never see this page.  It should have logic to call the AuctionNewTicketWizard page for Auction Tickets, 
 and for all other opps just defer to the standard edit page.
+</p>
 
-<i>{!mytype}</i>
 </apex:page>

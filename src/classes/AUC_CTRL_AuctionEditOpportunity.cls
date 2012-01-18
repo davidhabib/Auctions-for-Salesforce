@@ -1,38 +1,25 @@
 public with sharing class AUC_CTRL_AuctionEditOpportunity { 
 	
 	public Opportunity opp;
-	public string mytype { get; set; }
-	ApexPages.StandardController stdCtrl;
 	
     public AUC_CTRL_AuctionEditOpportunity(ApexPages.StandardController stdController) {
-        opp = (Opportunity)stdController.getRecord();
-        stdCtrl = stdController;
-        
+        opp = (Opportunity)stdController.getRecord();        
         if (opp != null) {
         	opp = [select Id, Name, RecordTypeId from Opportunity where Id = :opp.Id];
-        	if (opp.RecordTypeId == AUC_AuctionMaintenance.recordtypeIdAuctionTicket) {
-        		// use AuctionNewTicketWizard
-        		mytype = 'use AuctionNewTicketWizard';
-        	} else {
-        		// use normal Opp edit page
-        		mytype = 'use normal Opp edit page';
-        	}
-        }
+        }        
     }	
 
-	public PageReference DoEdit() {
+	public PageReference doEdit() {
 		PageReference pr = null;
        	if (opp.RecordTypeId == AUC_AuctionMaintenance.recordtypeIdAuctionTicket) {
        		pr = Page.AuctionNewTicketWizard;
        		pr.getParameters().put('oppId', opp.Id);
-       		pr.getParameters().put('retURL', '/apex/AuctionTickets');
-       		//new PageReference('/apex/AuctionNewTicketWizard?oppId=' + idItem + '&retURL=/apex/AuctionTickets');
        	} else {
-       		//pr = stdCtrl.Edit();
-       		pr = new ApexPages.StandardController(opp).Edit();
-	       	pr.setRedirect(true);
+            pr = new PageReference('/' + opp.id + '/e');
+            pr.getParameters().put('nooverride', '1');	       	
        	}
-       	//pr.getParameters().putAll( ApexPages.currentPage().getParameters() );
-       	return pr;
+       	pr.getParameters().put('id', opp.Id);
+   		pr.getParameters().put('retURL', ApexPages.currentPage().getParameters().get('retURL'));
+       	return pr.setredirect(true);
 	}
 }

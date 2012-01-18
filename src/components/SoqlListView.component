@@ -73,10 +73,7 @@
 	            </apex:column>          
 
 	            <apex:column >
-	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>&nbsp;&nbsp;&nbsp;
-	                <apex:commandLink action="{!EditItem}" value="{!item[pageController.strNameField]}">
-				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
-	                </apex:commandLink>
+	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>
 					<apex:facet name="header"> 
 						<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='Auction_Item__c', 
 							$ObjectType.Auction_Item__c.Fields[pageController.strNameField].Label,
