@@ -29,7 +29,13 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 		// ideally, we'd pass the AuctionId to the new page, but I haven't 
 		// figured out how to do that in a way that works with a managed package.
 		string strPrefix = Schema.getGlobalDescribe().get('Auction_Item__c').getDescribe().getKeyPrefix();
-		PageReference p = new PageReference('/' + strPrefix + '/e?retURL=/apex/AuctionItems');
+		//string strAuctionFldId = 'CF00NA0000001MnD3';  NOTE: couldn't find a way to get this at runtime!
+		//list<Auction__c> listAuc = [select Id, Name from Auction__c where Id = :ctrlSoqlListView.auctionId] ;
+
+		PageReference p = new PageReference('/' + strPrefix + '/e?' + 
+			// strAuctionFldId + '=' + (listAuc.size() > 0 ? listAuc[0].Name : '') + '&' + 
+			// strAuctionFldId + '_lkid=' + ctrlSoqlListView.auctionId + 
+			'&retURL=/apex/AuctionItems');
 		return p;
 	}
 
