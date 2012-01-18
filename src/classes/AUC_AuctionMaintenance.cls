@@ -108,14 +108,14 @@ public with sharing class AUC_AuctionMaintenance {
 	
 	public static Integer YearOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
-		Auction__c auc = [select Auction_Date__c from Auction__c where Id=:auctionId];
-		return auc.Auction_Date__c.year();
+		Auction__c auc = [select Auction_Date__c from Auction__c where Id=:auctionId];		
+		return (auc.Auction_Date__c == null ? system.today().year() : auc.Auction_Date__c.year());
 	}
 	
 	public static Date DateOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
 		Auction__c auc = [select Auction_Date__c from Auction__c where Id=:auctionId];
-		return auc.Auction_Date__c;
+		return (auc.Auction_Date__c == null ? system.today() : auc.Auction_Date__c);
 	}
 		
 	public static String NameOfAuctionId(Id auctionId) {
