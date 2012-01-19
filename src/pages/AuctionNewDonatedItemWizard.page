@@ -81,7 +81,12 @@
                 </apex:pageBlockSectionItem>
                 <apex:inputField value="{!opp.AccountId}" />
                 <apex:inputField value="{!opp.Number_of_Items__c}" required="true" />
-                <apex:inputField value="{!opp.StageName}" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxStage" />
+				   	<apex:selectList value="{!opp.StageName}" size="1" id="lbxStage" required="true"  >
+				   		<apex:selectOptions value="{!listSOStages}" />
+				   	</apex:selectList>
+                </apex:pageBlockSectionItem>
                 <apex:inputField value="{!opp.CloseDate}" />
                 <apex:inputField value="{!opp.CampaignId}" required="true" />
                 <apex:inputField value="{!opp.Procurred_By__c}" />

@@ -113,6 +113,30 @@ public with sharing class AUC_AuctionConstants {
 			}				
 			return 'Please see the Auctions for Salesforce User\'s Guide to see how to set the Footer text for Auction Receipts.';
 	} 
+	
+	// Get the user's list of Auction Donated Item Stages
+	// if the setting exists, allow it to be null (to imply use values from Salesforce)
+	// if the setting doesn't even exist, then return our default values.
+	public static string StrDonatedItemOpportunityStages() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].Donated_Item_Opportunity_Stages__c;
+		} else {
+			return 'Prospecting;Pledged;Closed Won;Closed Lost;Closed Won - Not Thanked';
+		}
+	}
+	
+	// Get the user's list of Auction Attendee CampaignMember Status values
+	// if the setting exists, allow it to be null (to imply use values from Salesforce)
+	// if the setting doesn't even exist, then return our default values.
+	public static string StrAttendeeCampaignMemberStatuses() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].Attendee_CampaignMember_Statuses__c;
+		} else {
+			return 'Invited;RSVP Yes;RSVP No;Donated';
+		}
+	}
 
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
