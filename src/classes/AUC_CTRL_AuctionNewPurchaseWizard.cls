@@ -57,7 +57,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			listSOLookupBidNumbers.add(new SelectOption('', ''));
 			integer cCM = 0;
 			for (list<CampaignMember> listCM : [select Bid_Number__c, Contact.Name, Contact.Id, Id from CampaignMember 
-					where CampaignId=:auctionMaintenance.campaignIdAuctionAttendees and Status<>'RSVP No' order by Contact.LastName, Contact.FirstName]) {
+					where CampaignId=:auctionMaintenance.campaignIdAuctionAttendees and contactId<>null and Status<>'RSVP No' order by Contact.LastName, Contact.FirstName]) {
 				for (CampaignMember cm : listCM) {
 					String strBidNumber = (cm.Bid_Number__c == null ? '' : string.valueOf(integer.valueOf(cm.Bid_Number__c)));
 					cCM++;

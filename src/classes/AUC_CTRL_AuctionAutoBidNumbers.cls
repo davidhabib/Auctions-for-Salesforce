@@ -25,7 +25,8 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 		get {
 			if (listCMBidNumbers == null) {
 				ID campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-				listCMBidNumbers = [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember where campaignId=:campaignId and Status<>'RSVP No' order by contact.LastName, contact.FirstName limit 900];
+				listCMBidNumbers = [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember 
+					where campaignId=:campaignId and contactId<>null and Status<>'RSVP No' order by contact.LastName, contact.FirstName limit 900];
 			}
 			return listCMBidNumbers;
 		}
@@ -38,7 +39,8 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 			if (campaignId != null) {
 				Integer ibid = 100;
 				list<CampaignMember> listCMtoUpdate = new list<CampaignMember>();
-				for (list<CampaignMember> listCM : [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember where campaignId=:campaignId and Status<>'RSVP No' order by contact.LastName, contact.FirstName]) {
+				for (list<CampaignMember> listCM : [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember 
+					where campaignId=:campaignId /* and contactId<>null */ and Status<>'RSVP No' order by contact.LastName, contact.FirstName]) {
 					for (CampaignMember cm : listCM) {
 						if (cm.Bid_Number__c != null) {
 							cm.Bid_Number__c = null;
@@ -49,7 +51,8 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				update listCMtoUpdate;
 				listCMtoUpdate.clear();
 					
-				for (list<CampaignMember> listCM : [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember where campaignId=:campaignId order by contact.LastName, contact.FirstName]) {
+				for (list<CampaignMember> listCM : [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember 
+					where campaignId=:campaignId and contactId<>null order by contact.LastName, contact.FirstName]) {
 					for (CampaignMember cm : listCM) {
 						cm.Bid_Number__c = ibid;
 						ibid++;
