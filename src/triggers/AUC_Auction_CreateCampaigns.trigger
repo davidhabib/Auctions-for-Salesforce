@@ -5,7 +5,11 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
 
     // we are creating a new Auction, so create its three subcampaigns
     
-    list<Campaign> listCmp = new list<Campaign>();
+    list<Campaign> listCmpAttendees = new list<Campaign>();
+    list<Campaign> listCmpTickets = new list<Campaign>();
+    list<Campaign> listCmpSponsors = new list<Campaign>();
+    list<Campaign> listCmpDonors = new list<Campaign>();
+    list<Campaign> listCmpAll = new list<Campaign>();
     
     for (Auction__c auc : trigger.new) {
         Campaign cmp;
@@ -21,7 +25,7 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
 			CampaignMemberRecordTypeId = AUC_AuctionMaintenance.recordtypeIdCampaignMemberAuctionAttendee,
             Auction__c = auc.id
             );  
-        listCmp.add(cmp);
+        listCmpAttendees.add(cmp);
         
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
@@ -32,7 +36,7 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets,
             Auction__c = auc.id
             );  
-        listCmp.add(cmp);
+        listCmpTickets.add(cmp);
 
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
@@ -43,7 +47,7 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionSponsors,
             Auction__c = auc.id
             );  
-        listCmp.add(cmp);
+        listCmpSponsors.add(cmp);
 
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
@@ -54,70 +58,74 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionItemDonors,
             Auction__c = auc.id
             );  
-        listCmp.add(cmp);
+        listCmpDonors.add(cmp);
     }
     
-    // now create them all
-    insert listCmp;
+    // now create all the campaigns
+    listCmpAll.addAll(listCmpAttendees);
+    listCmpAll.addAll(listCmpTickets);
+    listCmpAll.addAll(listCmpSponsors);
+    listCmpAll.addAll(listCmpDonors);
+    insert listCmpAll;
     
-    // create the specific CampaignMemberStatus values for the attendee campaign and delete the original ones.  
-    // Also the item donors campaign and tickets campaign.
-    Id cmpIdAttendees = listCmp[0].Id;  
-    Id cmpIdItemDonors = listCmp[3].Id;
-    Id cmpIdTickets = listCmp[1].Id;
-    
-    list<CampaignMemberStatus> listCMSToDel = [Select Id From CampaignMemberStatus WHERE CampaignId = :cmpIdAttendees]; 
+
+	// now go through each campaign and set up the correct CampaignMember statuses
+	list<CampaignMemberStatus> listCMSToDel = [Select Id From CampaignMemberStatus WHERE CampaignId in :listCmpAttendees]; 
     list<CampaignMemberStatus> listCMS = new list<CampaignMemberStatus>();
+	
+    for (Campaign cmp : listCmpAttendees) {
+ 	    CampaignMemberStatus cms1 = new CampaignMemberStatus(
+	        Label = 'Invited',
+	        CampaignId = cmp.Id,
+	        HasResponded = false,
+	        SortOrder = 100,
+	        IsDefault = true
+	    );
+	    listCMS.add(cms1);
+	    CampaignMemberStatus cms2 = new CampaignMemberStatus(
+	        Label = 'RSVP Yes',
+	        CampaignId = cmp.Id,
+	        HasResponded = true,
+	        SortOrder = 200
+	    );
+	    listCMS.add(cms2);
+	    CampaignMemberStatus cms3 = new CampaignMemberStatus(
+	        Label = 'RSVP No',
+	        CampaignId = cmp.Id,
+	        HasResponded = true,
+	        SortOrder = 300
+	    );
+	    listCMS.add(cms3);
+	    CampaignMemberStatus cms4 = new CampaignMemberStatus(
+	        Label = 'Donated',
+	        CampaignId = cmp.Id,
+	        HasResponded = true,
+	        SortOrder = 400
+	    );
+	    listCMS.add(cms4);   
+    } 
+	
+    for (Campaign cmp : listCmpDonors) {
+	    CampaignMemberStatus cms5 = new CampaignMemberStatus(
+	        Label = 'Donated',
+	        CampaignId = cmp.Id,
+	        HasResponded = true,
+	        SortOrder = 100
+	    );
+	    listCMS.add(cms5);
+    }
     
-    CampaignMemberStatus cms1 = new CampaignMemberStatus(
-        Label = 'Invited',
-        CampaignId = cmpIdAttendees,
-        HasResponded = false,
-        SortOrder = 100,
-        IsDefault = true
-    );
-    listCMS.add(cms1);
-
-    CampaignMemberStatus cms2 = new CampaignMemberStatus(
-        Label = 'RSVP Yes',
-        CampaignId = cmpIdAttendees,
-        HasResponded = true,
-        SortOrder = 200
-    );
-    listCMS.add(cms2);
-
-    CampaignMemberStatus cms3 = new CampaignMemberStatus(
-        Label = 'RSVP No',
-        CampaignId = cmpIdAttendees,
-        HasResponded = true,
-        SortOrder = 300
-    );
-    listCMS.add(cms3);
+    for (Campaign cmp : listCmpTickets) {
+	    CampaignMemberStatus cms6 = new CampaignMemberStatus(
+	        Label = 'Donated',
+	        CampaignId = cmp.Id,
+	        HasResponded = true,
+	        SortOrder = 100
+	    );
+	    listCMS.add(cms6);
+    }
     
-    CampaignMemberStatus cms4 = new CampaignMemberStatus(
-        Label = 'Donated',
-        CampaignId = cmpIdAttendees,
-        HasResponded = true,
-        SortOrder = 400
-    );
-    listCMS.add(cms4);    
-
-    CampaignMemberStatus cms5 = new CampaignMemberStatus(
-        Label = 'Donated',
-        CampaignId = cmpIdItemDonors,
-        HasResponded = true,
-        SortOrder = 100
-    );
-    listCMS.add(cms5);
-
-    CampaignMemberStatus cms6 = new CampaignMemberStatus(
-        Label = 'Donated',
-        CampaignId = cmpIdTickets,
-        HasResponded = true,
-        SortOrder = 100
-    );
-    listCMS.add(cms6);
-
+    // now save the statuses
     insert listCMS;
     delete listCMSToDel;
 
