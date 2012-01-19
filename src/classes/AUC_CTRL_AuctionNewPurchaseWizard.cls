@@ -145,7 +145,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
                 if (apo.contactId != null && apo.contactId != '' && apo.opp.Auction_Item_Purchased__c != null && apo.opp.Amount > 0) {
                 	string strOppTypeName;
                 	apo.opp.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-                	Auction_Item__c item = [select Id, Treat_Purchase_as_Gift__c, Fair_Market_Value__c from Auction_Item__c where Id = :apo.opp.Auction_Item_Purchased__c];
+                	Auction_Item__c item = [select Id, Treat_Purchase_as_Gift__c, Fair_Market_Value__c, Description__c, Restrictions__c from Auction_Item__c where Id = :apo.opp.Auction_Item_Purchased__c];
                 	if (item.Treat_Purchase_as_Gift__c) {
 		                apo.opp.RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionGift;
 		                strOppTypeName = AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionGift;
@@ -167,8 +167,9 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 						apo.opp.AccountId = c.AccountId;
 					}
 				
-	                //apo.opp.Auction_Item_Purchased__c = item.Id;
 	                apo.opp.Auction_Non_Deductible_Amount__c = item.Fair_Market_Value__c;
+	                apo.opp.Description = (item.Description__c != null ? item.Description__c : '') + 
+	                	(item.Restrictions__c != null ? '\nRestrictions: ' + item.Restrictions__c : '');
 	                listOppsToCreate.add(apo.opp);
   
   	                OpportunityContactRole cr = new OpportunityContactRole();
