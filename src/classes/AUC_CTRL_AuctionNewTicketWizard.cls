@@ -128,6 +128,12 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         strSaveResults = 'Starting Save...';
 	        
         try {
+        	// deal with scenario where user clicks directly on save without
+        	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.
+        	if (listCmpMbrAttendees.size() == 0) {
+        		OnChange_NumberOfTickets();
+        	}        	
+        	
         	// create the opp for the ticket purchase        	
 			Contact contact = [select Name, AccountId from Contact where Id=:contactRole.ContactId];	
 			opp.Name = contact.Name + ' ' + string.valueof(opp.CloseDate.year()) + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
