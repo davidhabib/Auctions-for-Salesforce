@@ -182,6 +182,9 @@
 		function ShowElement(element){
 		    element.style.visibility = 'visible';
 		    element.style.display = 'inline';
+		    // these next two lines make the listbox a popup.
+		    element.style.position = 'absolute';
+		    element.style.zIndex = 99; 
 		}
 		
 		// helper function to hide an element
