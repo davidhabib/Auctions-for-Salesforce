@@ -67,7 +67,9 @@
 					</apex:column>					
 					<apex:column >
 						<apex:facet name="header">Status</apex:facet>
-						<apex:inputField value="{!cmpmbr.Status}" required="false" />											
+					   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
+					   		<apex:selectOptions value="{!listSOStatuses}" />
+					   	</apex:selectList>
 					</apex:column>					
 					<apex:column >
 						<apex:facet name="header">Bid Number</apex:facet>

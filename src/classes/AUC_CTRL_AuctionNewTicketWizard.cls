@@ -69,6 +69,26 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	// we instantiate this object to get the Contact lookup field. We also will save it.
 	public OpportunityContactRole contactRole { get; set; }
 	
+	// list for Status picklist, filtered correctly for statuses for Attendees.
+	public list<SelectOption> listSOStatuses {
+		get {
+			if (listSOStatuses == null) {
+				listSOStatuses = new list<SelectOption>();
+				
+				// since we can't seem to get the styling for a required field for Stage,
+				// we won't provide a blank option!
+				//listSOStatuses.add(new SelectOption('', ''));
+
+				for (CampaignMemberStatus status : [select Label from CampaignMemberStatus 
+					where IsDeleted=false and CampaignId=:auctionMaintenance.campaignIdAuctionAttendees order by SortOrder]) {
+					listSOStatuses.add(new SelectOption(status.Label, status.Label));
+				}
+			}
+			return listSOStatuses;
+		}
+		private set;
+	}
+	
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<CampaignMember> listCmpMbrAttendees {
     	set;
