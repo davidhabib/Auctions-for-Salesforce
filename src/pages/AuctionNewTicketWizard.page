@@ -65,35 +65,35 @@
 						<apex:facet name="header">Contact</apex:facet>
 						<apex:inputField value="{!cmpmbr.ContactId}" required="false" />											
 					</apex:column>					
-					<apex:column >
+					<apex:column style="text-align:center;">
 						<apex:facet name="header">Status</apex:facet>
 					   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
 					   		<apex:selectOptions value="{!listSOStatuses}" />
 					   	</apex:selectList>
 					</apex:column>					
-					<apex:column >
+					<apex:column style="text-align:center;">
 						<apex:facet name="header">Bid Number</apex:facet>
-						<apex:inputField value="{!cmpmbr.Bid_Number__c}" required="false" />
+						<apex:inputField value="{!cmpmbr.Bid_Number__c}" required="false" style="width:40px;" />
 					</apex:column> 
-					<apex:column >					
+					<apex:column style="text-align:center;">					
 						<apex:facet name="header">Meal Preference</apex:facet>
 						<apex:inputField value="{!cmpmbr.Meal_Preference__c}" required="false"/>
 					</apex:column>
-					<apex:column >
-						<apex:facet name="header">Paid</apex:facet>
+					<apex:column style="text-align:center;">
+						<apex:facet name="header">&nbsp;&nbsp;Paid&nbsp;&nbsp;</apex:facet>
 						<apex:inputCheckbox value="{!cmpmbr.Paid__c}" required="false" />
 					</apex:column>
-					<apex:column >
-						<apex:facet name="header">Is Table Captain</apex:facet>
+					<apex:column style="text-align:center;" >
+						<apex:facet name="header">&nbsp;&nbsp;Table Captain&nbsp;&nbsp;</apex:facet>
 						<apex:inputCheckbox value="{!cmpmbr.Is_Table_Captain__c}" required="false" />
 					</apex:column>
 					<apex:column >					
 						<apex:facet name="header">Table Captain</apex:facet>
-						<apex:inputField value="{!cmpmbr.Table_Captain__c}" required="false"/>
+						<apex:inputField value="{!cmpmbr.Table_Captain__c}" required="false" />
 					</apex:column>
-					<apex:column >					
+					<apex:column style="text-align:center;">					
 						<apex:facet name="header">Table Name/Number</apex:facet>
-						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" />
+						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" style="width:80px;" />
 					</apex:column>
 				</apex:dataTable>	
         
