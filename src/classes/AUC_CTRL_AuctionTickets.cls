@@ -27,6 +27,11 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 		return p;		
 	}
 	
+	public PageReference AuctionCheckIn() {
+		PageReference p = new PageReference('/apex/AuctionCheckIn?auctionId=' + ctrlSoqlListView.auctionId);
+		return p;
+	}
+	
 	public PageReference AutoAssignBidNumbers() {
 		PageReference p = new PageReference('/apex/AuctionAutoBidNumbers?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;
