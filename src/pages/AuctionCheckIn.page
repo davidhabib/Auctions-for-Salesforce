@@ -1,0 +1,147 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In" tabStyle="Auction_Tickets__tab" >
+ 
+ 	<script>
+ 	
+		// function to populate Table Name/Number fields when the first one is filled in.
+		function OnChangeTxtTableNameNumber(txt) {
+			var rg = document.getElementsByTagName('input');
+			var i = 0; 
+			for (i = 0; i < rg.length; i++) {
+				if (rg[i].id.indexOf('txtTableNameNumber') > -1) {
+					if (rg[i].value == '') {
+						rg[i].value = txt.value;
+					}
+				}
+			}
+ 		}
+ 	</script>
+ 	
+    <style>
+	    .Error { color: red; font-weight: strong;}
+    </style>
+ 
+   	<apex:sectionHeader title="Auction Check In" />      
+    <apex:form > 
+   
+    	<apex:outputPanel id="panelDebugging" rendered="false">
+    		<hr/> 
+    		<apex:outputText value="{!'AuctionId: ' + auctionId }" Style="color:red;" /><br/>
+    		<apex:outputText value="{!'CampaignId: ' + opp.CampaignId }" Style="color:red;" /><br/>    		
+    		<hr/>
+		</apex:outputPanel>
+		    
+        <apex:pageBlock title="" mode="edit" id="pbMain" >
+     
+            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
+            <apex:messages styleClass="Error" />              
+
+            <apex:pageBlockSection title="Contact Information" columns="1">
+            	<apex:pageBlockSectionItem >
+            		<apex:outputLabel value="Contact Search" />
+	                <apex:pageBlockSectionItem >
+	                	<apex:inputText value="{!strContactSearch}" required="true" >
+		    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeContactLookup}" 
+		    	        		rerender="pbsAttendees, pbMain, panelDebugging" status="statusSearch" focus="cmdSearch" />
+		        			<apex:actionStatus startText="Searching..." stopText="" id="statusSearch" startStyle="color:green; font-style:italic" />
+	                	</apex:inputText>
+	                	<apex:commandButton id="cmdSearch" immediate="false" value="Search" action="{!ChangeContactLookup}" status="statusSearch" />
+	                </apex:pageBlockSectionItem>
+                </apex:pageBlockSectionItem>
+            	<apex:pageBlockSectionItem >
+            		<p><i>Select the correct contact, and update their information if needed, or create a new contact.</i></p>
+            	</apex:pageBlockSectionItem>
+					<apex:dataTable value="{!listContacts}" var="con" rules="rows"  cellpadding="2">					
+						<apex:column headerValue=" " >
+							<apex:inputField value="{!con.DoNotCall}" required="false" />											
+						</apex:column>					
+						<apex:column headerValue="First Name" >
+							<apex:inputField value="{!con.FirstName}" required="false" style="width:70px" />											
+						</apex:column>					
+						<apex:column headerValue="Last Name" >
+							<apex:inputField value="{!con.LastName}" required="false" style="width:70px" />											
+						</apex:column>					
+						<apex:column headerValue="Email" >
+							<apex:inputField value="{!con.Email}" required="false" style="width:70px" />											
+						</apex:column>					
+						<apex:column headerValue="Street" >
+							<apex:inputField value="{!con.MailingStreet}" required="false" style="height:16px" />											
+						</apex:column>					
+						<apex:column headerValue="City" >
+							<apex:inputField value="{!con.MailingCity}" required="false" style="width:70px"  />											
+						</apex:column>					
+						<apex:column headerValue="State" >
+							<apex:inputField value="{!con.MailingState}" required="false" style="width:70px"  />											
+						</apex:column>					
+						<apex:column headerValue="Zip" >
+							<apex:inputField value="{!con.MailingPostalCode}" required="false" style="width:70px"  />											
+						</apex:column>					
+						<apex:column headerValue=" " >
+							<apex:commandButton value="{!IF(ISNULL(con.Id), 'New Contact', 'Update')}" style="font-size:.8em;" />											
+						</apex:column>					
+					</apex:dataTable>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Ticket Information" columns="3" id="pbsTickets" rendered="true" >
+                <apex:inputField value="{!opp.Amount}" required="false" />
+                <apex:inputField value="{!opp.Number_of_Tickets__c}" required="false" >
+    	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
+    	        		rerender="pbsAttendees, pbMain, panelDebugging" focus="txtDescription" status="statusLoading" />
+        			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
+                </apex:inputField>
+                <apex:inputField value="{!opp.StageName}" required="false" />
+	        </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Attendee Information" columns="1" id="pbsAttendees" rendered="true" >
+				<apex:dataTable value="{!listCmpMbrAttendees}" var="cmpmbr" rules="rows"  cellpadding="2">					
+					<apex:column >
+						<apex:facet name="header">Contact</apex:facet>
+						<apex:inputField value="{!cmpmbr.ContactId}" required="false" />											
+					</apex:column>					
+					<apex:column style="text-align:center;">
+						<apex:facet name="header">Status</apex:facet>
+					   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
+					   		<apex:selectOptions value="{!listSOStatuses}" />
+					   	</apex:selectList>
+					</apex:column>					
+					<apex:column style="text-align:center;">
+						<apex:facet name="header">Bid Number</apex:facet>
+						<apex:inputField value="{!cmpmbr.Bid_Number__c}" required="false" style="width:40px;" />
+					</apex:column> 
+					<apex:column style="text-align:center;">					
+						<apex:facet name="header">Meal Preference</apex:facet>
+						<apex:inputField value="{!cmpmbr.Meal_Preference__c}" required="false"/>
+					</apex:column>
+					<apex:column style="text-align:center;">
+						<apex:facet name="header">&nbsp;&nbsp;Paid&nbsp;&nbsp;</apex:facet>
+						<apex:inputCheckbox value="{!cmpmbr.Paid__c}" required="false" />
+					</apex:column>
+					<apex:column style="text-align:center;" >
+						<apex:facet name="header">&nbsp;&nbsp;Table Captain&nbsp;&nbsp;</apex:facet>
+						<apex:inputCheckbox value="{!cmpmbr.Is_Table_Captain__c}" required="false" />
+					</apex:column>
+					<apex:column >					
+						<apex:facet name="header">Table Captain</apex:facet>
+						<apex:inputField value="{!cmpmbr.Table_Captain__c}" required="false" />
+					</apex:column>
+					<apex:column style="text-align:center;">					
+						<apex:facet name="header">Table Name/Number</apex:facet>
+						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" style="width:80px;" />
+					</apex:column>
+				</apex:dataTable>	
+				
+				<apex:commandButton value="Save Ticket & Attendee Information" />
+				<apex:commandButton value="Authorize Credit Card" />
+															
+        
+            </apex:pageBlockSection>
+        
+        </apex:pageBlock>
+        
+        
+    </apex:form>
+</apex:page>
