@@ -68,7 +68,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 						listSOLookupBidNumbers2.add(new SelectOption(cm.Contact.Id, strBidNumber + ': ' + cm.Contact.Name));						
 					} else {
 						strSaveResults = 'This page can only display the first 2000 contacts from the Attendees campaign whose status is different than  "RSVP No". ' +
-							' You should change change the status of non-attendees to "RSVP No" in order to have this page list all the contacts who actually attended.';
+							' You should change the status of non-attendees to "RSVP No" in order to have this page list all the contacts who actually attended.';
 						return listSOLookupBidNumbers;					
 					}
 				}

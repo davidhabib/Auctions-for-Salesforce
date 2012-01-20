@@ -258,7 +258,7 @@
 					</apex:column>					
 					<apex:column >					
 						<apex:facet name="header">Amount</apex:facet>
-						<apex:inputText value="{!apo.opp.Amount}" required="false"/>
+						<apex:inputText value="{!apo.opp.Amount}" required="false" style="width:80px" />
 					</apex:column>
 					<apex:column >
 						<apex:facet name="header">Paid</apex:facet>
