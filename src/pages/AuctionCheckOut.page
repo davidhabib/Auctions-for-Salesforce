@@ -1,0 +1,99 @@
+<!-- 
+// Written by David Habib, copyright (c) 2012 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page controller="AUC_CTRL_AuctionCheckOut"  title="Auction Check Out" tabStyle="Auction_Receipts__tab" >
+ 	
+    <style>
+	    .Error { color: red; font-weight: strong;}
+    </style>
+ 
+   	<apex:sectionHeader title="Auction Check Out" />      
+    <apex:form > 
+   		    
+        <apex:pageBlock title="" mode="edit" id="pbMain" >
+     
+            <apex:messages styleClass="Error" />              
+
+            <apex:pageBlockSection columns="1" ShowHeader="false" >
+		    		<apex:pageBlockSectionItem >
+		    			<apex:outputLabel value="Select the Auction  " for="lbxAuctions" />
+				    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
+				    		<apex:actionSupport event="onchange" rerender="lbxAttendees,pbsPurchases" status="retrieveStatus" action="{!ChangeAuction}" />
+				    		<apex:selectOptions value="{!listSOAuctions}" />
+				    	</apex:selectList>	
+					</apex:pageBlockSectionItem>
+				
+		    		<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Select the Person  " for="lbxAttendees" />
+				    	<apex:selectList value="{!contactId}" size="1" id="lbxAttendees">
+				    		<apex:actionSupport event="onchange" rerender="pbsPurchases" status="retrieveStatus" action="{!ChangeAttendee}" /> 
+				    		<apex:selectOptions value="{!listSOPurchasers}" />
+				    		<apex:selectOptions value="{!listSOPurchasers2}" />
+				    	</apex:selectList>
+					</apex:pageBlockSectionItem>
+
+					<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" />
+				
+				<apex:outputPanel id="pbsPurchases" >
+		    	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
+					<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" style="cellpadding:5;cellspacing:5;" align="left" 
+						captionStyle="text-align:left;font-weight:bold;"
+						rules="rows" 
+						columnsWidth="80px, 200px, 150px, 150px">
+
+						<apex:facet name="caption" >Your Purchases</apex:facet> 
+						<apex:facet name="header"><hr/></apex:facet>
+						<apex:facet name="footer"><hr/></apex:facet>
+
+						<apex:column headerValue="Paid Now" >
+							<apex:inputCheckbox value="{!oppAP.IsPaid}" required="false" />											
+						</apex:column>					
+						
+						<apex:column > 
+					        <apex:facet name="header">Item</apex:facet>
+					        <apex:facet name="footer"><b>Totals</b></apex:facet>
+							<apex:outputText value="{!IF(oppAP.opp.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.opp.Auction_Item_Name__c, oppAP.opp.Description))}"/>
+						</apex:column>
+						<apex:column >
+					        <apex:facet name="header">Amount Paid</apex:facet>
+							<apex:outputText value="{0,Number,$#,###.##}" >
+								<apex:param value="{!oppAP.opp.Amount}" />
+							</apex:outputText>
+							<apex:facet name="footer">				
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
+								</apex:outputText>								
+							</apex:facet>
+						</apex:column>
+						<apex:column >
+					        <apex:facet name="header">Deductible Amount</apex:facet>
+							<apex:outputText value="{0,Number,$#,###.##}" >
+								<apex:param value="{!oppAP.opp.Auction_Deductible_Amount__c}"/>
+							</apex:outputText>
+							<apex:facet name="footer">				
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+									<apex:param value="{!receipt.decTotalAmountDeductible}"/> 
+								</apex:outputText>								
+							</apex:facet>
+						</apex:column>	
+					</apex:dataTable>
+				</apex:repeat>
+			</apex:outputPanel>            
+            
+            <apex:pageBlockSectionItem />
+            </apex:pageBlockSection>
+            
+            <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<apex:commandButton value="Charge Credit Card" />&nbsp;&nbsp;&nbsp;&nbsp;
+			<apex:commandButton value="Mark Purchases as Paid" />&nbsp;&nbsp;&nbsp;&nbsp;
+			<apex:commandButton value="Print Receipt" />&nbsp;&nbsp;&nbsp;&nbsp;
+			<apex:commandButton value="Close" />&nbsp;&nbsp;
+			<br/>
+			<br/>
+ 
+        </apex:pageBlock>
+       
+    </apex:form>
+</apex:page>
