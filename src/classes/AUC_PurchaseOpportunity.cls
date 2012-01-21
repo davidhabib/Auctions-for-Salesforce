@@ -9,6 +9,10 @@ public with sharing class AUC_PurchaseOpportunity {
 		opp = new Opportunity();
 	}
     
+	public AUC_PurchaseOpportunity(Opportunity oppExisting) {
+		opp = oppExisting;
+	}
+    
     public Opportunity opp { get; set; }
     public boolean IsPaid { get; set; }
     public string contactId { get; set; } // could not use ID, or page's submit would fail since it would try to set these to ''
