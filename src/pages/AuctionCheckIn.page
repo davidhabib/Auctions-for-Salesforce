@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In" tabStyle="Auction_Tickets__tab" >
+<apex:page controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In" tabStyle="Check_In__tab" >
  
  	<script>
  	
@@ -33,13 +33,20 @@
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
             <apex:messages styleClass="Error" />              
 
-            <apex:pageBlockSection title="Contact Information" columns="1">
+            <apex:pageBlockSection title="Contact Information" columns="1"  ShowHeader="false" >
+	    		<apex:pageBlockSectionItem >
+	    			<apex:outputLabel value="Select the Auction  " for="lbxAuctions" />
+			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
+			    		<apex:actionSupport event="onchange" rerender="pbMain" status="retrieveStatus" action="{!ChangeAuction}" />
+			    		<apex:selectOptions value="{!listSOAuctions}" />
+			    	</apex:selectList>	
+				</apex:pageBlockSectionItem>            
             	<apex:pageBlockSectionItem >
             		<apex:outputLabel value="Contact Search" />
 	                <apex:pageBlockSectionItem >
-	                	<apex:inputText value="{!strContactSearch}" required="true" >
+	                	<apex:inputText value="{!strContactSearch}" required="false" >
 		    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeContactLookup}" 
-		    	        		rerender="pbsAttendees, pbMain, panelDebugging" status="statusSearch" focus="cmdSearch" />
+		    	        		rerender="pbsAttendees, pbMain" status="statusSearch" focus="cmdSearch" />
 		        			<apex:actionStatus startText="Searching..." stopText="" id="statusSearch" startStyle="color:green; font-style:italic" />
 	                	</apex:inputText>
 	                	<apex:commandButton id="cmdSearch" immediate="false" value="Search" action="{!ChangeContactLookup}" status="statusSearch" />
@@ -49,9 +56,11 @@
             		<p><i>Select the correct contact, and update their information if needed, or create a new contact.</i></p>
             	</apex:pageBlockSectionItem>
 					<apex:dataTable value="{!listContacts}" var="con" rules="rows"  cellpadding="2">					
-						<apex:column headerValue=" " >
-							<apex:inputField value="{!con.DoNotCall}" required="false" />											
-						</apex:column>					
+						<apex:column headerValue=" ">
+							<apex:selectRadio value="{!contactId}" >
+								<apex:selectOption itemValue="con.Id" itemLabel=""/>							
+							</apex:selectRadio>
+						</apex:column>				
 						<apex:column headerValue="First Name" >
 							<apex:inputField value="{!con.FirstName}" required="false" style="width:70px" />											
 						</apex:column>					
@@ -79,27 +88,40 @@
 					</apex:dataTable>
             </apex:pageBlockSection>
 
-            <apex:pageBlockSection title="Ticket Information" columns="3" id="pbsTickets" rendered="true" >
-                <apex:inputField value="{!opp.Amount}" required="false" />
-                <apex:inputField value="{!opp.Number_of_Tickets__c}" required="false" >
-    	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
-    	        		rerender="pbsAttendees, pbMain, panelDebugging" focus="txtDescription" status="statusLoading" />
-        			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
-                </apex:inputField>
-                <apex:inputField value="{!opp.StageName}" required="false" />
-	        </apex:pageBlockSection>
-
-            <apex:pageBlockSection title="Attendee Information" columns="1" id="pbsAttendees" rendered="true" >
+            <apex:pageBlockSection title="Ticket Information" columns="1" id="pbsTickets" rendered="true" collapsible="true" >
+            	<apex:pageBlockSectionItem >
+            		<apex:outputLabel value="Who are you a guest of?" />
+            		<apex:inputField value="{!contactRole.contactId}" required="false" >
+	    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeContactLookup}" 
+	    	        		rerender="pbsAttendees" status="statusLoad" focus="txtTicketAmount" />
+		        		<apex:actionStatus startText="Loading..." stopText="" id="statusLoad" startStyle="color:green; font-style:italic" />	    	        		
+	    	        </apex:inputField>
+            	</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem />
+            	
+            	<apex:pageBlockSectionItem >
+            		<apex:outputLabel value="Optional Ticket Payment:"  />
+            		<apex:outputLabel value="" />
+            	</apex:pageBlockSectionItem>
+            	<apex:pageBlockSectionItem >
+            		<apex:outputLabel value="Amount" />
+	                <apex:inputField value="{!opp.Amount}" id="txtTicketAmount" required="false" style="width:80px" />
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+            		<apex:outputLabel value="# of Tickets" />
+	                <apex:inputField value="{!opp.Number_of_Tickets__c}" required="false" style="width:80px" >
+	    	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
+	    	        		rerender="pbsAttendees, pbMain" focus="txtDescription" status="statusLoading" />
+	        			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
+	                </apex:inputField>
+	            </apex:pageBlockSectionItem>
+	        </apex:pageBlockSection> 
+            
+            <apex:pageBlockSection title="Seating Information" columns="1" id="pbsAttendees" rendered="true" collapsible="true" >
 				<apex:dataTable value="{!listCmpMbrAttendees}" var="cmpmbr" rules="rows"  cellpadding="2">					
 					<apex:column >
 						<apex:facet name="header">Contact</apex:facet>
 						<apex:inputField value="{!cmpmbr.ContactId}" required="false" />											
-					</apex:column>					
-					<apex:column style="text-align:center;">
-						<apex:facet name="header">Status</apex:facet>
-					   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
-					   		<apex:selectOptions value="{!listSOStatuses}" />
-					   	</apex:selectList>
 					</apex:column>					
 					<apex:column style="text-align:center;">
 						<apex:facet name="header">Bid Number</apex:facet>
@@ -108,10 +130,6 @@
 					<apex:column style="text-align:center;">					
 						<apex:facet name="header">Meal Preference</apex:facet>
 						<apex:inputField value="{!cmpmbr.Meal_Preference__c}" required="false"/>
-					</apex:column>
-					<apex:column style="text-align:center;">
-						<apex:facet name="header">&nbsp;&nbsp;Paid&nbsp;&nbsp;</apex:facet>
-						<apex:inputCheckbox value="{!cmpmbr.Paid__c}" required="false" />
 					</apex:column>
 					<apex:column style="text-align:center;" >
 						<apex:facet name="header">&nbsp;&nbsp;Table Captain&nbsp;&nbsp;</apex:facet>
@@ -126,15 +144,14 @@
 						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" style="width:80px;" />
 					</apex:column>
 				</apex:dataTable>	
-				
-				<apex:commandButton value="Save Ticket & Attendee Information" />
-				<apex:commandButton value="Authorize Credit Card" />
-															
-        
             </apex:pageBlockSection>
+				<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Save Ticket & Attendee Information" />&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Authorize Credit Card" />&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Close" />	
+				<br/>														       
         
         </apex:pageBlock>
-        
-        
     </apex:form>
 </apex:page>

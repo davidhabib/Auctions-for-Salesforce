@@ -90,6 +90,10 @@ public with sharing class AUC_CTRL_AuctionCheckIn {
 		private set;
 	}
 	
+	// holds the currently selected contact
+	public ID contactId { get; set; }
+	
+	
 	// callback when the user changes the contact lookup.
 	public PageReference ChangeContactLookup() {
 		// clear out all state that is specific to the contact
@@ -129,6 +133,7 @@ public with sharing class AUC_CTRL_AuctionCheckIn {
     	
     	get {
     		double numTickets = opp.Number_Of_Tickets__c;
+    		if (numTickets == null || numTickets == 0) numTickets = 1;
     		if (listCmpMbrAttendees == null) {
     			listCmpMbrAttendees = new list<CampaignMember>(); 			
     			
