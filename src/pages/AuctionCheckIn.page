@@ -4,8 +4,15 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In" tabStyle="Check_In__tab" >
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
  
  	<script>
+ 	    var j$ = jQuery.noConflict();
+ 	
+ 		j$(document).ready(function() {
+ 			SelectContact('{!contactId}', false);
+ 		});
  	
 		// function to populate Table Name/Number fields when the first one is filled in.
 		function OnChangeTxtTableNameNumber(txt) {
@@ -19,6 +26,32 @@
 				}
 			}
  		}
+ 		
+		// helper function to find a control whose id contains the subid
+		function GetElementByPartialId(form, subid) {
+			var i;
+			for (i = 0; i < form.elements.length; i++) {
+				if (form.elements[i].id.indexOf(subid) > -1) {
+					return form.elements[i];
+				}
+			}
+		} 
+		
+		// helper function to select the specified contact 
+		function SelectContact(id, fPost) {
+			var radio = j$('#radio'+id);
+			if (radio != '') {
+				// don't do anything if already checked.
+				if (radio.attr('checked') != null)
+					return;
+				radio.attr('checked', 'checked');
+				j$('input[name$="txtContactId"]').val(id);
+			}
+			if (fPost == true) {
+				PostSelectContact();
+			}
+		}
+				
  	</script>
  	
     <style>
@@ -27,17 +60,20 @@
  
    	<apex:sectionHeader title="Auction Check In" />      
     <apex:form > 
+    
+        <apex:actionFunction action="{!selectContact}" name="PostSelectContact" rerender="pbMain,pbsContact">
+    	</apex:actionFunction>
    		    
         <apex:pageBlock title="" mode="edit" id="pbMain" >
      
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
             <apex:messages styleClass="Error" />              
 
-            <apex:pageBlockSection title="Contact Information" columns="1"  ShowHeader="false" >
+            <apex:pageBlockSection title="Contact Information" columns="1"  ShowHeader="false" id="pbsContact" >
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Select the Auction  " for="lbxAuctions" />
 			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" rerender="pbMain" status="retrieveStatus" action="{!ChangeAuction}" />
+			    		<apex:actionSupport event="onchange" rerender="pbMain, pbsContact" status="retrieveStatus" action="{!ChangeAuction}" />
 			    		<apex:selectOptions value="{!listSOAuctions}" />
 			    	</apex:selectList>	
 				</apex:pageBlockSectionItem>            
@@ -45,24 +81,31 @@
             		<apex:outputLabel value="Contact Search" />
 	                <apex:pageBlockSectionItem >
 	                	<apex:inputText value="{!strContactSearch}" required="false" >
-		    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeContactLookup}" 
-		    	        		rerender="pbsAttendees, pbMain" status="statusSearch" focus="cmdSearch" />
+		    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeContactSearch}" 
+		    	        		rerender="pbsAttendees, pbMain, pbsContact" status="statusSearch" focus="cmdSearch" />
 		        			<apex:actionStatus startText="Searching..." stopText="" id="statusSearch" startStyle="color:green; font-style:italic" />
 	                	</apex:inputText>
-	                	<apex:commandButton id="cmdSearch" immediate="false" value="Search" action="{!ChangeContactLookup}" status="statusSearch" />
+	                	<apex:commandButton id="cmdSearch" immediate="false" value="Search" action="{!ChangeContactSearch}" status="statusSearch" />
 	                </apex:pageBlockSectionItem>
                 </apex:pageBlockSectionItem>
             	<apex:pageBlockSectionItem >
-            		<p><i>Select the correct contact, and update their information if needed, or create a new contact.</i></p>
+            		<apex:outputLabel value="Select the correct contact, and update their information if needed, or create a new contact." 
+            			rendered="{!strContactSearch!=null}" 
+            			style="font-style:italic;" />
             	</apex:pageBlockSectionItem>
-					<apex:dataTable value="{!listContacts}" var="con" rules="rows"  cellpadding="2">					
-						<apex:column headerValue=" ">
-							<apex:selectRadio value="{!contactId}" >
-								<apex:selectOption itemValue="con.Id" itemLabel=""/>							
-							</apex:selectRadio>
+					<apex:inputText value="{!contactId}" id="txtContactId" />
+					<apex:dataTable value="{!listContacts}" var="con" rules="rows"  cellpadding="2" rendered="{!strContactSearch!=null}" >					
+						<apex:column headerValue=" " rendered="{!con.Id==contactId}">	
+							<input type="radio" name="radioGrpContact" id="radio{!con.Id}" value="{!con.Id}" 
+								onclick="SelectContact('{!con.Id}', true)"  checked="checked" />
+						</apex:column>				
+						<apex:column headerValue=" " rendered="{!con.Id!=contactId}">	
+							<input type="radio" name="radioGrpContact" id="radio{!con.Id}" value="{!con.Id}" 
+								onclick="SelectContact('{!con.Id}', true)" />
 						</apex:column>				
 						<apex:column headerValue="First Name" >
-							<apex:inputField value="{!con.FirstName}" required="false" style="width:70px" />											
+							<apex:inputField value="{!con.FirstName}" required="false" style="width:70px" 
+								onclick="SelectContact('{!con.Id}', true);" />											
 						</apex:column>					
 						<apex:column headerValue="Last Name" >
 							<apex:inputField value="{!con.LastName}" required="false" style="width:70px" />											
@@ -83,19 +126,22 @@
 							<apex:inputField value="{!con.MailingPostalCode}" required="false" style="width:70px"  />											
 						</apex:column>					
 						<apex:column headerValue=" " >
-							<apex:commandButton value="{!IF(ISNULL(con.Id), 'New Contact', 'Update')}" style="font-size:.8em;" />											
+							<apex:commandButton action="{!updateContact}" value="{!IF(ISNULL(con.Id), 'New Contact', 'Update')}" style="font-size:.8em;" />											
 						</apex:column>					
 					</apex:dataTable>
             </apex:pageBlockSection>
 
-            <apex:pageBlockSection title="Ticket Information" columns="1" id="pbsTickets" rendered="true" collapsible="true" >
+            <apex:pageBlockSection title="Ticket Information" columns="1" id="pbsTickets" rendered="{!contactId!=null}" collapsible="true" >
             	<apex:pageBlockSectionItem >
-            		<apex:outputLabel value="Who are you a guest of?" />
-            		<apex:inputField value="{!contactRole.contactId}" required="false" >
-	    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeContactLookup}" 
+            		<apex:outputLabel value="Who are you a guest of?" />    	        
+			    	<apex:selectList value="{!contactIdGuestOf}" size="1" >
+			    		<apex:selectOptions value="{!listSOTicketHolders}" />
+			    		<apex:selectOptions value="{!listSOTicketHolders2}" />
+	    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeGuestOfLookup}" 
 	    	        		rerender="pbsAttendees" status="statusLoad" focus="txtTicketAmount" />
 		        		<apex:actionStatus startText="Loading..." stopText="" id="statusLoad" startStyle="color:green; font-style:italic" />	    	        		
-	    	        </apex:inputField>
+			    	</apex:selectList>
+	    	        
             	</apex:pageBlockSectionItem>
 				<apex:pageBlockSectionItem />
             	
@@ -105,19 +151,19 @@
             	</apex:pageBlockSectionItem>
             	<apex:pageBlockSectionItem >
             		<apex:outputLabel value="Amount" />
-	                <apex:inputField value="{!opp.Amount}" id="txtTicketAmount" required="false" style="width:80px" />
-				</apex:pageBlockSectionItem>
+	                <apex:inputField value="{!oppNewTicket.Amount}" id="txtTicketAmount" required="false" style="width:80px" />
+				</apex:pageBlockSectionItem>  
 				<apex:pageBlockSectionItem >
             		<apex:outputLabel value="# of Tickets" />
-	                <apex:inputField value="{!opp.Number_of_Tickets__c}" required="false" style="width:80px" >
+	                <apex:inputField value="{!oppNewTicket.Number_of_Tickets__c}" required="false" style="width:80px" >
 	    	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
-	    	        		rerender="pbsAttendees, pbMain" focus="txtDescription" status="statusLoading" />
+	    	        		rerender="pbsAttendees" focus="txtDescription" status="statusLoading" />
 	        			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
 	                </apex:inputField>
 	            </apex:pageBlockSectionItem>
 	        </apex:pageBlockSection> 
             
-            <apex:pageBlockSection title="Seating Information" columns="1" id="pbsAttendees" rendered="true" collapsible="true" >
+            <apex:pageBlockSection title="Seating Information" columns="1" id="pbsAttendees" rendered="{!contactId!=null}" collapsible="true" >
 				<apex:dataTable value="{!listCmpMbrAttendees}" var="cmpmbr" rules="rows"  cellpadding="2">					
 					<apex:column >
 						<apex:facet name="header">Contact</apex:facet>
@@ -147,8 +193,8 @@
             </apex:pageBlockSection>
 				<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;
-				<apex:commandButton value="Save Ticket & Attendee Information" />&nbsp;&nbsp;&nbsp;&nbsp;
-				<apex:commandButton value="Authorize Credit Card" />&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Save Ticket & Attendee Information" rendered="{!contactId!=null}" />&nbsp;&nbsp;&nbsp;&nbsp;
+				<apex:commandButton value="Authorize Credit Card" rendered="{!contactId!=null}" />&nbsp;&nbsp;&nbsp;&nbsp;
 				<apex:commandButton value="Close" />	
 				<br/>														       
         
