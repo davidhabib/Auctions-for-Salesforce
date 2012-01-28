@@ -96,6 +96,10 @@
 	* this function is called when the page loads
 	********************************************************************************************************/
 	j$(document).ready(function() {
+		myInitializeJQueryUI();
+	});	
+	
+	function myInitializeJQueryUI() {
 	
 		/*******************************************************************************************************
    	 	* setup the autocomplete textboxes
@@ -135,7 +139,7 @@
 					{			
 	       			j$('#txtContacts').addClass('clsWaitRight');	        			
 					var strSearch = request.term.toLowerCase();		
-					GW_Auctions.AUC_CTRL_AuctionCheckIn2.getListContacts(strSearch, function(result, event) {
+					GW_Auctions.AUC_CTRL_AuctionCheckIn3.getListContacts(strSearch, function(result, event) {
 						j$('#txtContacts').removeClass('clsWaitRight');	        								
 		        		if (event.type == 'exception') {
 		        			alert(event.message);
@@ -228,7 +232,7 @@
 
 
 
-	});
+	} // end of myInitializeJQueryUI
 	
 	// utility to deal with strings that might be null.
 	function strNull(str) {
@@ -250,35 +254,41 @@
 
             <apex:pageBlockSection columns="1"  ShowHeader="false" id="pbsContact" >
             	<apex:outputLabel value="Enter the Guest Name or Table Captain Name" style="font-weight:bold;" />
+            	
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" rerender="slTicketHolder, pbsContact, pbsAttendees" status="retrieveStatus" action="{!ChangeAuction}" />
+			    		<apex:actionSupport event="onchange" rerender="slTicketHolder, panelGuests" 
+			    			status="retrieveStatus" action="{!ChangeAuction}" oncomplete="myInitializeJQueryUI();" />			    			
 			    		<apex:selectOptions value="{!listSOAuctions}" />
 			    	</apex:selectList>	
-				</apex:pageBlockSectionItem>            
+				</apex:pageBlockSectionItem>
+				            
             	<apex:pageBlockSectionItem >
             		<apex:outputLabel value="Guest Name" />
             		<apex:inputField value="{!cmGuest.ContactId}" />
                 </apex:pageBlockSectionItem>
+
                 <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
 		       		<apex:outputLabel value="Guest Name" />
 	                <apex:pageBlockSectionItem >
 					   	<input type="text" id="txtContacts" class="clsCombo" /><button id="btnContactsAll" class="clsBtnAll" type="button" >&nbsp;</button>            
 	                </apex:pageBlockSectionItem>
                 </apex:pageBlockSectionItem>
+
             	<apex:pageBlockSectionItem >
             		<apex:outputLabel value="Table Captain" />    	        
 			    	<apex:selectList value="{!contactIdTicketHolder}" size="1" id="slTicketHolder" >
 			    		<apex:selectOptions value="{!listSOTicketHolders}" />
 			    		<apex:selectOptions value="{!listSOTicketHolders2}" />
 	    	        	<apex:actionSupport immediate="false" event="onchange" action="{!ChangeTicketHolderLookup}" 
-	    	        		rerender="pbMain,pbsAttendees" status="statusLoad" />
+	    	        		rerender="panelGuests" status="statusLoad" />
 		        		<apex:actionStatus startText="Loading..." stopText="" id="statusLoad" startStyle="color:green; font-style:italic" />	    	        		
 			    	</apex:selectList>
             	</apex:pageBlockSectionItem>
 			</apex:pageBlockSection>
 			
+			<apex:outputPanel id="panelGuests">
 			<table cellpadding="10">
 				<tr>
 				<td>
@@ -339,7 +349,7 @@
 		        </td>
 				</tr>
 			</table>
-			            
+			</apex:outputPanel>			            
 
 
         </apex:pageBlock>
