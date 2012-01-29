@@ -31,88 +31,70 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	// the list of Auctions to put in the Auction dropdown
 	public list<SelectOption> listSOAuctions { get; set; }
 
-	// the current contact search string	
-	public string strContactSearch { get; set; }
-	
-	// the list of contacts that match the search string		
-	public list<Contact> listContacts {
-		get {
-			if (listContacts == null) {
-				string strSearch = '%' + strContactSearch + '%';
-				listContacts = [select Id, FirstName, LastName, Name, Email, MailingStreet, MailingCity, MailingState, MailingPostalCode, DoNotCall 
-					from Contact 
-					where Name like :strSearch ];
-				// add empty row for new contact
-				listContacts.add(new Contact());
-
-				// whenever we refresh the list, select the first contact
-				contactId = listContacts[0].Id;
-			}
-			return listContacts;
-		}
-		private set;
-	}
-	
-	// holds the currently selected contact from the search list
-	public string contactId { get; set; }	// has to be a string to allow a null Id to get returned from the page.	
-	
-	// holds the currently selected contact from the search list
-	public CampaignMember cmGuest { 
-		get {
-			if (cmGuest == null) {
-				cmGuest = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-			}
-			return cmGuest;
-		}
-		private set;
-	}
-	
-	public PageReference selectContact() {
-		return null;
-	}
-	
-	public PageReference updateContact() {
-		if (contactId == null || contactId == '') {
-			Contact con = listContacts[listContacts.size() - 1];
-			insert con;
-			contactId = con.Id;
-			ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'inserted contact: ' + con.Id));
-		} else if (contactId != null) {
-			Contact con = contactFromId(contactId);
-			if (con != null) {
-				update con;
-				ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'updated contact: ' + con.Id));
-			}
-		} 
-		return null;
-	}
-	
-	// find the contact record for the given Id.
-	private Contact contactFromId(ID cId) {
-		for (Contact c : listContacts) {
-			if (c.Id == cId) {
-				return c;
-			}
-		}
-		return null;
-	}
-	
-	// callback when the user changes the contact search.
-	public PageReference ChangeContactSearch() {
-		// clear out all state that is specific to the contact
-		listContacts = null;
+	// callback when the user changes the current auction in the dropdown.
+	public PageReference ChangeAuction() {
+		// clear out all state that is specific to the auction
+		auctionMaintenance.auctionId = auctionId;
+		strSaveResults = null;
+		contactIdTicketHolder = null;
+		oppTicket = null;
+		listAttendees = null;	
 		return null;
 	}  
+
+	// holds the currently selected Guest contact
+	// has to be a string to allow a null Id to get returned from the page.
+	public string contactIdGuest { 
+		get; 
+		set {
+			contactIdGuest = value;
+			if (contactIdGuest == '') contactIdGuest = null; 
+		}		
+	}
 		
-	// callback when the user changes the Guest Of contact lookup.
+	// callback when the user changes the Guest contact lookup.
+	public PageReference ChangeGuestLookup() {
+		// clear out all state that is specific to the contact
+		attendeeEdit = null;
+
+		ID contactIdTicketHolderCurrent = contactIdTicketHolder;
+		contactIdTicketHolder = contactIdTicketForcontactIdGuest(contactIdGuest);
+		if (contactIdTicketHolderCurrent != contactIdTicketHolder) {
+			oppTicket = null;
+			listAttendees = null;
+		}
+		
+		return null;
+	}  
+	
+	// utility to find the TicketHolder for a Guest
+	private ID contactIdTicketForcontactIdGuest(ID idGuest) {		
+		// look for CM for this guest on the auction's attendee campaign.
+		// then see if it has a Auction_Ticket_OppId__c.
+		// if it does, then look for a contact role for that opp, which is primary, 
+		// to get the ticket holder.		
+		list<OpportunityContactRole> listOCR = 
+			[select contactId from OpportunityContactRole where IsPrimary=true and opportunityId in 
+				(select Auction_Ticket_OppId__c from CampaignMember where contactId = :idGuest 
+					and campaignId = :auctionMaintenance.campaignIdAuctionAttendees) ];
+		if (listOCR.size() > 0)
+			return listOCR[0].contactId;
+		else
+			return null;								
+	}
+	
+	// holds the currently selected TicketHolder (Table Captain)
+	public ID contactIdTicketHolder { get; set; }
+
+	// callback when the user changes the Table Captain contact lookup.
 	public PageReference ChangeTicketHolderLookup() {
 		// clear out all state that is specific to the contact
 		oppTicket = null;
 		listAttendees = null;
 		return null;
 	}  
-
-	// object to hold new ticket opportunity
+	
+	// the ticket opportunity for the currently selected Ticket Holder
 	public Opportunity oppTicket { 
 		get {
 			if (oppTicket == null) {	
@@ -128,6 +110,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 						return oppTicket;
 					}					
 				}
+				// if there is no ticket holder, create a new ticket opp.
 				oppTicket = new Opportunity(
 					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
 					CampaignId = auctionMaintenance.campaignIdAuctionTickets
@@ -138,10 +121,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		private set; 
 	} 
 	
-	// holds the currently selected Guest Of contact Id
-	public ID contactIdTicketHolder { get; set; }
-	
-	// list for Status picklist, filtered correctly for statuses for Attendees.
+	// list for the CampaignMember Status picklist, filtered correctly for statuses for Attendees.
 	public list<SelectOption> listSOStatuses {
 		get {
 			if (listSOStatuses == null) {
@@ -159,63 +139,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 			return listSOStatuses;
 		}
 		private set;
-	}
-	
-	// the list of ticket holders
-	public list<SelectOption> listSOTicketHolders{
-		get {
-			if (listSOTicketHolders != null) return listSOTicketHolders;
-			listSOTicketHolders = new list<SelectOption>();
-			listSOTicketHolders.add(new SelectOption('', '(none)'));
-
-			// use a set to avoid dups
-			set<ID> setContactId = new set<ID>();
-			set<ID> setContactId2 = new set<ID>();
-
-			// in one soql call, get all the appropriate opportunities for auction tickets
-			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name from OpportunityContactRole 
-				where IsPrimary=true and 
-					(opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets) 
-				order by contact.Name]) {
-				
-				for (OpportunityContactRole ocr : listOCR) {
-					if (setContactId.contains(ocr.contactId) || setContactId2.contains(ocr.contactId))
-						continue;
-					if (setContactId.size() < 999 && setContactId.add(ocr.contactId)) {
-						listSOTicketHolders.add(new SelectOption(ocr.contactId, ocr.Contact.Name));
-					} else if (setContactId2.add(ocr.contactId)) {
-						if (listSOTicketHolders2 == null) listSOTicketHolders2 = new list<SelectOption>();
-						listSOTicketHolders2.add(new SelectOption(ocr.contactId, ocr.Contact.Name));						
-					}
-				}
-			}		
-
-			return listSOTicketHolders;
-		}
-		set;
-	}	
-
-	// in order to support lists of TicketHolders > 1000, we need a second list.
-	public list<SelectOption> listSOTicketHolders2 { get; set; }
-	
-	//==================== Attendee Class ======================================
-	// helper class that holds a contact, and their campaign member
-	public class Attendee {
-		
-		// constructor
-		public Attendee() {
-			cm = new CampaignMember();
-			con = new Contact();
-		}
-
-		// constructor
-		public Attendee(CampaignMember cmT, Contact conT) {
-			cm = cmT;
-			con = conT;
-		}
-		
-		public CampaignMember cm { get; set; }
-		public Contact con { get; set; }		
 	}
 		
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
@@ -267,30 +190,66 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
     	private set;    	
     } 	
 
+	// helper routine to return all Contact field names from the Field Set
+	// (which of course we currently can't get in Apex, so get them all!!)
+	private string strContactFields {
+		get {
+			if (strContactFields == null) {
+				
+				// initialize the list of all fields on Contact.
+				// ideally, we'd only include the fields in the Field Set,
+				// but Apex currently has no way to see what those are.
+				// so for now, we just include all fields on Contact.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Contact.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strContactFields = '';
+				for (string str : listStrFields) {
+					strContactFields += str + ',';
+				}  		
+				strContactFields = strContactFields.substring(0, strContactFields.length()-1);
+			}
+			return strContactFields;
+		}
+		set;
+	}
+	
+	// an Attendee object to hold Contact and CampaignMember fields to support the editing pane
 	public Attendee attendeeEdit { 
 		get {
 			if (attendeeEdit == null) {
-				attendeeEdit = new Attendee();
+				// see if we already have their info loaded
+				attendeeEdit = attendeeFromId(contactIdGuest);				
+				// if not loaded (not a current guest), then look it up
+				if (attendeeEdit == null) {					
+					if (contactIdGuest != null) {
+						Contact con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdGuest');
+		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
+	                	cmpmbr.Table_Captain__c = contactIdTicketHolder;
+	                	cmpmbr.contactId = contactIdGuest;
+	                	cmpmbr.Status = 'RSVP Yes';
+	                	attendeeEdit = new Attendee(cmpmbr, con);
+					} else {
+						attendeeedit = new Attendee();
+					}	                
+				}
 			}
 			return attendeeEdit; 
 		}
 		private set;
 	}
-			
-	// callback when the user changes the current auction in the dropdown.
-	public PageReference ChangeAuction() {
-		// clear out all state that is specific to the auction
-		auctionMaintenance.auctionId = auctionId;
-		oppTicket.CampaignId = auctionMaintenance.campaignIdAuctionTickets;
-		strSaveResults = null;
-		contactIdTicketHolder = null;
-		oppTicket = null;
-		listAttendees = null;	
-		listSOTicketHolders = null;
-		listSOTicketHolders2 = null;
-		return null;
-	}  
 
+	// find the Attendee for the given contactId.
+	private Attendee attendeeFromId(ID cId) {
+		if (cId == null) return null;
+		for (Attendee att : listAttendees) {
+			if (att.con.Id == cId) {
+				return att;
+			}
+		}
+		return null;
+	}
+			
 	// status string for reporting the results of saving.
     public String strSaveResults { get; set; }    
 	
@@ -409,6 +368,26 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
         return p;
 	}
 	
+	/*******************************************************************************************************
+	* @description Attendee Class is a helper class that holds a contact and their campaign member.
+	********************************************************************************************************/
+	public class Attendee {
+		
+		// constructor
+		public Attendee() {
+			cm = new CampaignMember();
+			con = new Contact();
+		}
+
+		// constructor
+		public Attendee(CampaignMember cmT, Contact conT) {
+			cm = cmT;
+			con = conT;
+		}
+		
+		public CampaignMember cm { get; set; }
+		public Contact con { get; set; }		
+	}
 	
 
 	/*******************************************************************************************************
@@ -426,7 +405,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		return listContacts;
     } 		
 	
-
 	/*******************************************************************************************************
 	* @description Javascript Remoting method to return a list of Contacts, who are ticket holders on
 	* the specified auction, optionally filtered by strFilter.
@@ -461,88 +439,4 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		return listTicketHolders; 
     } 		
 
-	
-	//==================== TEST METHOD(s) ======================================
-	public static testmethod void CodeCoverageTests() {
-    	// create needed data
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today()
-		);  
-		insert auction; 
-		System.Assert(auction.id != null); 	
-    	
-    	Campaign campaign = [select Id, Auction__c from Campaign where Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets and Auction__c = :auction.id];
-    	System.assertEquals(auction.id, campaign.Auction__c);
-    	
-    	Account acc = new Account(Name='My Test Account');
-    	insert acc;
-    	
-    	Contact contact = new Contact(
-    		Firstname = 'Johnny',
-    		Lastname = 'Test',
-    		AccountId = acc.Id
-    	);
-    	insert contact;    	
-
-		//point to our VF page
-		PageReference p = new PageReference('Page.AuctionCheckIn3');
-		p.getParameters().put('auctionId', auction.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		AUC_CTRL_AuctionCheckIn3 ctrl = new AUC_CTRL_AuctionCheckIn3();
-		ctrl.ChangeAuction();
-		//ctrl.contactRole.ContactId = contact.id;
-		System.AssertEquals(campaign.Id, ctrl.oppTicket.CampaignId);
-		System.AssertEquals(System.Today(), ctrl.oppTicket.CloseDate);
-		ctrl.oppTicket.Amount = 15;
-		ctrl.oppTicket.Number_Of_Tickets__c = 4;
-		ctrl.OnChange_NumberOfTickets();
-		System.AssertEquals(4, ctrl.listAttendees.size());
-		System.AssertEquals(contact.Id, ctrl.listAttendees[0].cm.ContactId);
-		ctrl.Save();
-		System.Assert(ctrl.oppTicket.id != null);
-		System.AssertEquals('The ticket purchase has been saved.  1 contacts have been added to the auction attendee campaign.', ctrl.strSaveResults);
-
-		// now test editing an existing ticket opp
-		//point to our VF page
-		p = new PageReference('Page.AuctionCheckIn3');
-		p.getParameters().put('auctionId', auction.id); 
-		p.getParameters().put('oppId', ctrl.oppTicket.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		ctrl = new AUC_CTRL_AuctionCheckIn3();
-		ctrl.ChangeAuction();
-		//ctrl.contactRole.ContactId = contact.id;
-		//System.AssertEquals(contact.Id, ctrl.contactRole.ContactId);
-		System.AssertEquals(campaign.Id, ctrl.oppTicket.CampaignId);
-		System.AssertEquals(System.Today(), ctrl.oppTicket.CloseDate);
-		ctrl.oppTicket.Amount = 25;
-		ctrl.oppTicket.Number_Of_Tickets__c = 6;
-		ctrl.OnChange_NumberOfTickets();
-		System.AssertEquals(6, ctrl.listAttendees.size());
-		System.AssertEquals(contact.Id, ctrl.listAttendees[0].cm.ContactId);
-		ctrl.Save();
-		System.AssertEquals('The ticket purchase has been saved.  0 contacts have been added to the auction attendee campaign.  1 contacts have been updated in the auction attendee campaign.', ctrl.strSaveResults);
-		ctrl.Cancel();
-	}
-	
-    static testMethod void UnitTestNullAuction() {
-    	// delete all auctions first
-    	delete [select Id from Auction__c];
-    
-    	//point to our VF page
-    	PageReference page = new PageReference('Page.AuctionCheckIn3');
-    	page.getParameters().put('auctionId', 'null');
-		Test.setCurrentPageReference(page);
-		
-		//instantiate the controller for this opp
-		AUC_CTRL_AuctionCheckIn3 ctrl = new AUC_CTRL_AuctionCheckIn3();
-		System.AssertEquals(null, ctrl.auctionId);
-		System.AssertEquals(1, ctrl.listSOAuctions.size());
-		System.AssertEquals(0, ctrl.listAttendees.size());
-		ctrl.Cancel();  
-    }	
 }
