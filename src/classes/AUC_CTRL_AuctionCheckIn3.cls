@@ -37,45 +37,57 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		auctionMaintenance.auctionId = auctionId;
 		strSaveResults = null;
 		contactIdTicketHolder = null;
-		oppTicket = null;
+		strNameTicketHolder = null;
+		oppTicketHolder = null;
 		listAttendees = null;	
 		return null;
 	}  
 
-	// holds the currently selected Guest contact
+	// holds the currently selected Attendee contact
 	// has to be a string to allow a null Id to get returned from the page.
-	public string contactIdGuest { 
+	public string contactIdAttendee { 
 		get; 
 		set {
-			contactIdGuest = value;
-			if (contactIdGuest == '') contactIdGuest = null; 
+			contactIdAttendee = value;
+			if (contactIdAttendee == '') contactIdAttendee = null; 
 		}		
 	}
 		
-	// callback when the user changes the Guest contact lookup.
-	public PageReference ChangeGuestLookup() {
+	// callback when the user changes the Attendee contact lookup.
+	public PageReference ChangeAttendeeLookup() {
 		// clear out all state that is specific to the contact
 		attendeeEdit = null;
 
 		ID contactIdTicketHolderCurrent = contactIdTicketHolder;
-		contactIdTicketHolder = contactIdTicketForcontactIdGuest(contactIdGuest);
+		contactIdTicketHolder = contactIdTicketForcontactIdAttendee(contactIdAttendee);
 		if (contactIdTicketHolderCurrent != contactIdTicketHolder) {
-			oppTicket = null;
+			strNameTicketHolder = null;
+			oppTicketHolder = null;
 			listAttendees = null;
 		}
 		
 		return null;
 	}  
 	
-	// utility to find the TicketHolder for a Guest
-	private ID contactIdTicketForcontactIdGuest(ID idGuest) {		
-		// look for CM for this guest on the auction's attendee campaign.
+	// callback when the user selects a different Attendee from the Attendee list.
+	// in this scenario, we only want to update attendeeEdit, but not change
+	// the ticket holder (which might be different that the table captain.)
+	public PageReference ChangeAttendeeSelected() {
+		// clear out all state that is specific to the contact
+		attendeeEdit = null;
+		return null;
+	}  
+
+
+	// utility to find the TicketHolder for a Attendee
+	private ID contactIdTicketForcontactIdAttendee(ID idAttendee) {		
+		// look for CM for this Attendee on the auction's attendee campaign.
 		// then see if it has a Auction_Ticket_OppId__c.
 		// if it does, then look for a contact role for that opp, which is primary, 
 		// to get the ticket holder.		
 		list<OpportunityContactRole> listOCR = 
 			[select contactId from OpportunityContactRole where IsPrimary=true and opportunityId in 
-				(select Auction_Ticket_OppId__c from CampaignMember where contactId = :idGuest 
+				(select Auction_Ticket_OppId__c from CampaignMember where contactId = :idAttendee 
 					and campaignId = :auctionMaintenance.campaignIdAuctionAttendees) ];
 		if (listOCR.size() > 0)
 			return listOCR[0].contactId;
@@ -85,19 +97,32 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	
 	// holds the currently selected TicketHolder (Table Captain)
 	public ID contactIdTicketHolder { get; set; }
+	
+	// holds the currently selected TicketHolder's name	
+	public string strNameTicketHolder { 
+		get {
+			if (strNameTicketHolder == null && contactIdTicketHolder != null) {
+				Contact con = [select Name from Contact where Id = :contactIdTicketHolder];
+				strNameTicketHolder = con.Name;
+			}
+			return strNameTicketHolder;
+		}
+		private set;
+	}
 
 	// callback when the user changes the Table Captain contact lookup.
 	public PageReference ChangeTicketHolderLookup() {
 		// clear out all state that is specific to the contact
-		oppTicket = null;
+		strNameTicketHolder = null;
+		oppTicketHolder = null;
 		listAttendees = null;
 		return null;
 	}  
 	
 	// the ticket opportunity for the currently selected Ticket Holder
-	public Opportunity oppTicket { 
+	private Opportunity oppTicketHolder { 
 		get {
-			if (oppTicket == null) {	
+			if (oppTicketHolder == null) {	
 				// if we have a table captain, look for their ticket first.
 				if (contactIdTicketHolder != null) {
 					list<Opportunity> listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount 
@@ -106,20 +131,38 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 							and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
 							and Id in (select OpportunityId from OpportunityContactRole where contactId = :contactIdTicketHolder)];
 					if (listOpp.size() > 0) {
-						oppTicket = listOpp[0];
-						return oppTicket;
+						oppTicketHolder = listOpp[0];
+						return oppTicketHolder;
 					}					
 				}
 				// if there is no ticket holder, create a new ticket opp.
-				oppTicket = new Opportunity(
+				oppTicketHolder = new Opportunity(
 					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
 					CampaignId = auctionMaintenance.campaignIdAuctionTickets
 				);
 			} 
-			return oppTicket;
+			return oppTicketHolder;
 		}
 		private set; 
-	} 
+	}  
+	
+	// flag to track whether to add a ticket purchase for the Attendee
+	public boolean fAddTicketPurchase { get; set; }
+	
+	// the optional ticket opportunity for the current Attendee
+	public Opportunity oppTicketAttendee {
+		get {
+			if (oppTicketAttendee == null) {
+				oppTicketAttendee = new Opportunity(
+					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
+					CampaignId = auctionMaintenance.campaignIdAuctionTickets,
+					CloseDate = system.Today()
+				);
+			}
+			return oppTicketAttendee;
+		}
+		private set;
+	}
 	
 	// list for the CampaignMember Status picklist, filtered correctly for statuses for Attendees.
 	public list<SelectOption> listSOStatuses {
@@ -148,13 +191,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
     			listAttendees = new list<Attendee>(); 			
     			
     			// find any existing attendees on this ticket
-    			if (oppTicket.Id != null) {
+    			if (oppTicketHolder.Id != null) {
     				
 	    			// load up their CM info.
     				 list<CampaignMember> listCM = [select contactId, Id, campaignId, Status, Is_Table_Captain__c, Auction_Ticket_OppId__c,
     					Bid_Number__c, Meal_Preference__c, Paid__c, Table_Captain__c, Table_Name_Number__c
     					from CampaignMember 
-    					where Auction_Ticket_OppId__c=:oppTicket.Id];
+    					where campaignId = :auctionMaintenance.campaignIdAuctionAttendees and
+    						(Auction_Ticket_OppId__c = :oppTicketHolder.Id or Table_Captain__c = :contactIdTicketHolder)];
     			
     				// create a map so we can match CM's with Contacts
     				map<ID, CampaignMember> mapContactIdCM = new map<ID, CampaignMember>();
@@ -171,13 +215,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	    			}
 	    			    					
 					// create new CampaignMembers for any additional attendees on this ticket    					
-		    		double numTickets = oppTicket.Number_Of_Tickets__c;
+		    		double numTickets = oppTicketHolder.Number_Of_Tickets__c;
 		    		if (numTickets == null || numTickets == 0) numTickets = 1;
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
 	                	cmpmbr.Table_Captain__c = contactIdTicketHolder;
 	                	cmpmbr.Status = 'RSVP Yes';
-	                	cmpmbr.Paid__c = (oppTicket.amount != null);
+	                	cmpmbr.Paid__c = (oppTicketHolder.amount != null);
 	                	
 	                	Contact con = new Contact();
 	    				listAttendees.add(new Attendee(cmpmbr, con));
@@ -219,14 +263,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		get {
 			if (attendeeEdit == null) {
 				// see if we already have their info loaded
-				attendeeEdit = attendeeFromId(contactIdGuest);				
-				// if not loaded (not a current guest), then look it up
+				attendeeEdit = attendeeFromId(contactIdAttendee);				
+				// if not loaded (not a current Attendee), then look it up
 				if (attendeeEdit == null) {					
-					if (contactIdGuest != null) {
-						Contact con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdGuest');
+					if (contactIdAttendee != null) {
+						Contact con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
 		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
 	                	cmpmbr.Table_Captain__c = contactIdTicketHolder;
-	                	cmpmbr.contactId = contactIdGuest;
+	                	cmpmbr.contactId = contactIdAttendee;
 	                	cmpmbr.Status = 'RSVP Yes';
 	                	attendeeEdit = new Attendee(cmpmbr, con);
 					} else {
@@ -260,104 +304,95 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		return null;
 	}
 	
-	public PageReference Save() {
-		return null;
-/*	         
+	// save all modified data.  a complex process to handle both updates and inserts!
+	public PageReference SaveAttendeeInfo() {
+		         
         strSaveResults = 'Starting Save...';
         try {
-        	// deal with scenario where user clicks directly on save without
-        	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.
-        	if (listAttendees.size() == 0) {
-        		OnChange_NumberOfTickets();
-        	}        	
-        	
-        	// create the opp for the ticket purchase        	
-			Contact contact = [select Name, AccountId from Contact where Id=:contactRole.ContactId];	
-			opp.Name = contact.Name + ' ' + string.valueof(opp.CloseDate.year()) + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
-			opp.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * opp.Number_Of_Tickets__c;      	
-        	if (opp.amount == null) {
-        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
-        	} else {
-        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
-        	}
-        	
-            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
-			// if so, we need to set the Opp's Account to make the rollups work.
-			if (AUC_AuctionConstants.isOneToOne()) {
-				opp.AccountId = contact.AccountId;
+			// bail out if we aren't set up.
+			if (attendeeEdit == null || attendeeEdit.con == null) {
+				strSaveResults = 'There is no guest selected to save.';
+				return null;
 			}
-				        	
-        	if (opp.Id == null) {
-        		insert opp;
-				contactRole.OpportunityId = opp.Id;
-	        	contactRole.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
-				contactRole.IsPrimary = true;
-				
-        	} else {
-        		update opp;
-        	}
-			
-			if (contactRole.Id == null) {
-				if (AUC_AuctionConstants.fCreateOppContactRoles(opp.Id, contactRole.ContactId)) {				
-					insert contactRole;
-				}
+							
+			// Steps:
+			// 	1. create or update Contact
+			// 	2. create optional Ticket Opp
+			// 	3. create or update CampaignMember
+			//	4. cleanup
 
-				// add them to the Tickets campaign.
-				CampaignMember cm = new CampaignMember();
-				cm.CampaignId = opp.CampaignId;
-				cm.ContactId = contactRole.ContactId;
-				cm.Status = 'Donated';
-				insert cm;
-				
+			// 1. Create or Update the Attendee Contact.
+			if (attendeeEdit.con.Id == null) {
+				insert attendeeEdit.con;
 			} else {
-        		update contactRole;
+				update attendeeEdit.con;
 			}
-        		
-        	
-        	strSaveResults = 'The ticket purchase has been saved.';
-        	
-			// now create the Attendee CampaignMembers
-			list<CampaignMember> listCmpMbrCreate = new list<CampaignMember>();
-			list<CampaignMember> listCmpMbrUpdate = new list<CampaignMember>();
-			for (CampaignMember cmpmbr : listAttendees) {
-				if (cmpmbr.Id != null) {
-					listCmpMbrUpdate.add(cmpmbr);					
-				} else if (cmpmbr.ContactId != null) {
-					cmpmbr.CampaignId = auctionMaintenance.campaignIdAuctionAttendees;
-					if (cmpmbr.Bid_Number__c == null) cmpmbr.Bid_Number__c = null;	// force it so updates won't use previous value.
-					cmpmbr.Auction_Ticket_OppId__c = opp.id;
-					listCmpMbrCreate.add(cmpmbr);
+      	
+      		// 2. create optional Ticket
+      		if (fAddTicketPurchase) {        	
+	        	// create the opp for the ticket purchase        	
+				Contact contact = [select Name, AccountId from Contact where Id=:contactIdAttendee];	
+				oppTicketAttendee.Name = contact.Name + ' ' + string.valueof(oppTicketAttendee.CloseDate.year()) + 
+					AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
+				oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * 
+					oppTicketAttendee.Number_Of_Tickets__c;      	
+	        	if (oppTicketAttendee.amount != null) {
+	        		oppTicketAttendee.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
+	        	} else {
+	        		oppTicketAttendee.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
+	        	}
+	        	
+	            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
+				// if so, we need to set the Opp's Account to make the rollups work.
+				if (AUC_AuctionConstants.isOneToOne()) {
+					oppTicketAttendee.AccountId = contact.AccountId;
 				}
+					        	
+	        	if (oppTicketAttendee.Id == null) {
+	        		insert oppTicketAttendee;
+					
+					// only create contact role if client's code didn't do it!
+					if (AUC_AuctionConstants.fCreateOppContactRoles(oppTicketAttendee.Id, contactIdAttendee)) {				
+		        		OpportunityContactRole ocr = new OpportunityContactRole();
+						ocr.OpportunityId = oppTicketAttendee.Id;
+						ocr.contactId = contactIdAttendee;
+			        	ocr.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
+						ocr.IsPrimary = true;
+						insert ocr;
+					}
+	        	}
+      		}
+      		
+			// 3. create or update CampaignMember
+			if (attendeeEdit.cm.Id == null) {
+				attendeeEdit.cm.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
+				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
-			
-			update listCmpMbrUpdate;
-			insert listCmpMbrCreate;
-			strSaveResults += '  ' + String.valueOf(listCmpMbrCreate.size()) + ' contacts have been added to the auction attendee campaign.';
-			if (listCmpMbrUpdate.size() > 0) {
-				strSaveResults += '  ' + String.valueOf(listCmpMbrUpdate.size()) + ' contacts have been updated in the auction attendee campaign.'; 
-			}	
-			
-			/* save done, so clear our complete state
-			listAttendees = null;							 
-			opp = new Opportunity(RecordTypeId=AUC_auctionMaintenance.recordtypeIdAuctionTicket);
-			opp.CloseDate = system.Today();
-			opp.CampaignId = auctionMaintenance.campaignIdAuctionTickets;
-			contactRole = new OpportunityContactRole();
-			DECIDED to leave at current info page. /		
+			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppTicketHolder.Id);
+			if (attendeeEdit.cm.id == null) {
+				insert attendeeEdit.cm;				
+			} else {
+				update attendeeEdit.cm;
+			}      					
+			       	
+        	strSaveResults = 'The Guest information has been saved.';
+        	
+			// 4. save done, so clear our complete state
+			listAttendees = null;	
+			attendeeEdit = null;
+			oppTicketAttendee = null;	
+			fAddTicketPurchase = false;
 			return null;	
 			        
         } catch (Exception e) {
-        	if (opp.Id == null)
-            	strSaveResults = 'Error encountered while trying to save auction ticket purchase and attendees.  ';
-            else
-            	strSaveResults = 'The ticket purchase has been saved, but errors were encountered trying to save the attendees.  ';
-            // strSaveResults += e.getMessage();
+           	strSaveResults = 'Error encountered while trying to save.  ';
             ApexPages.addMessages(e);            
             return null;
-        }
-*/                
+        }               
 	}
 
+	// public method for the Cancel button.  
+	// use retURL if we have it, otherwise go to tickets tab.
 	public PageReference Cancel() {
 		string retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {

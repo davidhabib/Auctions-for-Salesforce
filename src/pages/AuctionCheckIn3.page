@@ -98,7 +98,11 @@
 	
 	.hilite { 
 		background: yellow; 
-	}	
+	}
+	
+	.clsAttendeeLink a {
+		text-decoration: none;
+	}
 				
 </style>
  
@@ -123,7 +127,7 @@
 	
 		
 		/*******************************************************************************************************
-   	 	* setup the Guest Contacts autocomplete textbox
+   	 	* setup the Attendee Contacts autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboContacts").autocomplete({
 			minLength: 3,
@@ -204,15 +208,15 @@
 		}
 
 		/*******************************************************************************************************
-		* specify the select event for Contacts, so it can update the controller to refresh the guest panel. 
+		* specify the select event for Contacts, so it can update the controller to refresh the Attendee panel. 
 		*******************************************************************************************************/
 		j$('#txtContacts').autocomplete("option", "select",
 			function(event, ui) {
 				var prevId = j$(this).data('Id');
 				j$(this).val(ui.item.label).data('Id', ui.item.value);
 		   		if (prevId != ui.item.value) {
-		   			// call the controller to update the guest panel.
-		   			ChangeGuestLookup(ui.item.value);			   		
+		   			// call the controller to update the Attendee panel.
+		   			ChangeAttendeeLookup(ui.item.value);			   		
 			   	}
 		   		return false;		   		 
 		   	}
@@ -290,14 +294,14 @@
 		}
 
 		/*******************************************************************************************************
-		* specify the select event for Ticket Holders, so it can cause the guest panel to refresh.
+		* specify the select event for Ticket Holders, so it can cause the Attendee panel to refresh.
 		*******************************************************************************************************/
 		j$('#txtTicketHolders').autocomplete("option", "select",
 			function(event, ui) {
 				var prevId = j$(this).data('Id');
 				j$(this).val(ui.item.label).data('Id', ui.item.value);
 		   		if (prevId != ui.item.value) {
-		   			// call the controller to update the guest panel.
+		   			// call the controller to update the Attendee panel.
 		   			ChangeTicketHolderLookup(ui.item.value);			   		
 			   	}
 		   		return false;		   		 
@@ -352,12 +356,7 @@
 	    }, function () {
 	    	j$(this).removeClass("hilite");
 	    });		
-	    
-	    // UNDONE: trying to figure out how to display ticket holder if we derive from guest!
-	    if ({!contactIdTicketHolder != null}) {
-	    	j$('.txtTicketHolders').val('{!contactIdTicketHolder}');	    	
-	    }
-	    
+	    	    
 	} // end of myInitializeJQueryUI
 	
 	
@@ -369,27 +368,27 @@
 	}
 
 	/*******************************************************************************************************
-	* helper function to select the specified contact from the Guest table 
+	* helper function to select the specified contact from the Attendee table 
 	*******************************************************************************************************/
-	function selectContactIdGuest(id, fPost) {
+	function selectContactIdAttendee(id, fPost) {
 		var radio = j$('#radio'+id);
 		if (radio != '') {
 			radio.attr('checked', 'checked');
 		}
 		if (fPost == true) {
-   			// call the controller to update the guest panel.
-   			// UNDONE: really just need to update the guest edit panel, not both panels.
-   			ChangeGuestLookup(id);			   		
+   			// call the controller to update the Attendee panel.
+   			ChangeAttendeeSelected(id);			   		
 		}
 	}
 
-	// onClick event handler for the Guests data table row
+	/*******************************************************************************************************
+	* onClick event handler for the Attendees data table row
+	*******************************************************************************************************/
 	function OnDTRowClick(row) {
 		var id = j$(row).find('input').first().val();
-		selectContactIdGuest(id, true);
+		selectContactIdAttendee(id, true);
 	}
-	
- 		
+			
 </script>
  	
     <style>
@@ -409,7 +408,7 @@
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" rerender="panelTicketHolders, panelGuests" 
+			    		<apex:actionSupport event="onchange" rerender="panelTicketHolders, panelAttendees" 
 			    			status="retrieveStatus" action="{!ChangeAuction}" 
 			    			oncomplete="auctionId='{!auctionId}'; listTicketHolders=null; myInitializeJQueryUI();" />			    			
 			    		<apex:selectOptions value="{!listSOAuctions}" />
@@ -417,12 +416,12 @@
 				</apex:pageBlockSectionItem>
 				            
                 <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-		       		<apex:outputLabel value="Guest Name" />
+		       		<apex:outputLabel value="Guest" />
 	                <apex:outputPanel >
 					   	<input type="text" id="txtContacts" class="clsCombo clsComboContacts" /><button id="btnContactsAll" class="clsBtnAll" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeGuestLookup}" name="ChangeGuestLookup" rerender="panelTicketHolders, panelGuests" status="statusLoad" 
-					    	oncomplete="myInitializeJQueryUI();" >
-					        <apex:param name="param1" assignTo="{!contactIdGuest}" value="" />
+					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" rerender="panelTicketHolders, panelAttendees" status="statusLoad" 
+					    	oncomplete="myInitializeJQueryUI(); j$('#txtTicketHolders').val('{!strNameTicketHolder}');" >
+					        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 					    </apex:actionFunction>
 	                </apex:outputPanel>
                 </apex:pageBlockSectionItem>
@@ -431,7 +430,7 @@
 		       		<apex:outputLabel value="Table Captain" />
                 	<apex:outputPanel id="panelTicketHolders" >
 					   	<input type="text" id="txtTicketHolders" class="clsCombo clsComboTicketHolders" /><button id="btnTicketHoldersAll" class="clsBtnAll" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeTicketHolderLookup}" name="ChangeTicketHolderLookup" rerender="panelGuests" status="statusLoad" 
+					    <apex:actionFunction action="{!ChangeTicketHolderLookup}" name="ChangeTicketHolderLookup" rerender="panelAttendees" status="statusLoad" 
 					    	oncomplete="myInitializeJQueryUI();" >
 					        <apex:param name="param1" assignTo="{!contactIdTicketHolder}" value="" />
 					    </apex:actionFunction>
@@ -440,11 +439,11 @@
                 </apex:pageBlockSectionItem>
 			</apex:pageBlockSection>
 			
-			<apex:outputPanel id="panelGuests">
+			<apex:outputPanel id="panelAttendees">
 			<table cellpadding="10">
 				<tr>
 				<td style="vertical-align:top;" >
-	            <apex:pageBlockSection title="Edit Guest Information" columns="1" id="pbsEdit" rendered="{!contactIdTicketHolder!=null}" collapsible="true" >
+	            <apex:pageBlockSection title="Edit Guest Information" columns="1" id="pbsEdit" rendered="{!contactIdAttendee!=null}" collapsible="true" >
 	            	<apex:inputField value="{!attendeeEdit.con.FirstName}" required="false" /> 
 	            	<apex:inputField value="{!attendeeEdit.con.LastName}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.con.Email}" required="false" />
@@ -457,36 +456,50 @@
 	            	<apex:inputField value="{!attendeeEdit.cm.Bid_Number__c}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.cm.Table_Captain__c}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.cm.Table_Name_Number__c}" required="false" />
-	            	<apex:inputField value="{!attendeeEdit.cm.Paid__c}" required="false" /> 
-	           		<apex:inputField value="{!oppTicket.Amount}" required="false" />
-	           		<apex:inputField value="{!oppTicket.Number_of_Tickets__c}" required="false" />
+	            </apex:pageBlockSection>     
+	            <apex:pageBlockSection title="Add Ticket Purchase" columns="1" id="pbsTicket" rendered="{!contactIdAttendee!=null}" collapsible="true" >
+	            	<apex:pageBlockSectionItem >
+	            		<apex:outputLabel value="add ticket purchase" />
+	            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
+	            	</apex:pageBlockSectionItem>
+	           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" />
+	           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" />
 	            </apex:pageBlockSection>     
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<apex:commandButton value="Save Ticket & Attendee Information" rendered="{!contactIdTicketHolder!=null}" />&nbsp;&nbsp;&nbsp;&nbsp;
-					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdTicketHolder!=null}" />&nbsp;&nbsp;&nbsp;&nbsp;
-					<apex:commandButton value="Close" />	
+					<apex:commandButton value="Save Guest" rendered="{!contactIdTicketHolder!=null}" action="{!SaveAttendeeInfo}" />&nbsp;&nbsp;
+					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdTicketHolder!=null}" />&nbsp;&nbsp;
+					<apex:commandButton value="Close" action="{!Cancel}" />	
 					<br/>														       
         				
 				</td>
-				<td style="vertical-align:top;" >				
+				<td style="vertical-align:top;" >
+					<hr/>
+					contactIdAttendee is: {!contactIdAttendee} contactIdTicketHolder is: {!contactIdTicketHolder}, {!strNameTicketHolder}
+					<hr/>	
+				    <apex:actionFunction action="{!ChangeAttendeeSelected}" name="ChangeAttendeeSelected" rerender="panelAttendees" status="statusLoad" 
+				    	oncomplete="myInitializeJQueryUI();" >
+				        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
+				    </apex:actionFunction>					
 		            <apex:pageBlockSection title="Guests" columns="1" id="pbsAttendees" rendered="{!contactIdTicketHolder!=null}" collapsible="true" >
 						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
 							headerClass="clsDTHeader" >	
 							<apex:column headerValue=" " >
-								<apex:outputPanel rendered="{!attendee.cm.contactId!=contactIdGuest}" >	
+								<apex:outputPanel rendered="{!attendee.cm.contactId!=contactIdAttendee}" >	
 									<input type="radio" name="radioGrpContact" id="radio{!attendee.cm.contactId}" value="{!attendee.cm.contactId}" 
-										onclick="selectContactIdGuest('{!attendee.cm.contactId}', true);" />
+										onclick="selectContactIdAttendee('{!attendee.cm.contactId}', true);" />
 								</apex:outputPanel>
-								<apex:outputPanel rendered="{!attendee.cm.contactId==contactIdGuest}" >	
+								<apex:outputPanel rendered="{!attendee.cm.contactId==contactIdAttendee}" >	
 									<input type="radio" name="radioGrpContact" id="radio{!attendee.cm.contactId}" value="{!attendee.cm.contactId}" checked="checked" />
 								</apex:outputPanel>
 							</apex:column>														
 							<apex:column >
 								<apex:facet name="header">Contact<br/>&nbsp;</apex:facet>
-								<apex:outputField value="{!attendee.cm.contactId}" style="font-weight:bold" rendered="{!attendee.con.Id != null}" />
-								<apex:commandLink value="new" rendered="{!attendee.con.Id == null}" />
+								<span class="clsAttendeeLink">
+									<apex:outputField value="{!attendee.cm.contactId}" rendered="{!attendee.con.Id != null}" />
+									<apex:commandLink value="new" rendered="{!attendee.con.Id == null}" />
+								</span>
 							</apex:column>					
 							<apex:column style="text-align:center;">
 								<apex:facet name="header">Bid Number</apex:facet>
