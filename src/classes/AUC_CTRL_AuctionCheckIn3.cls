@@ -81,18 +81,23 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 
 	// utility to find the TicketHolder for a Attendee
 	private ID contactIdTicketForcontactIdAttendee(ID idAttendee) {		
-		// look for CM for this Attendee on the auction's attendee campaign.
-		// then see if it has a Auction_Ticket_OppId__c.
-		// if it does, then look for a contact role for that opp, which is primary, 
-		// to get the ticket holder.		
-		list<OpportunityContactRole> listOCR = 
-			[select contactId from OpportunityContactRole where IsPrimary=true and opportunityId in 
-				(select Auction_Ticket_OppId__c from CampaignMember where contactId = :idAttendee 
-					and campaignId = :auctionMaintenance.campaignIdAuctionAttendees) ];
-		if (listOCR.size() > 0)
-			return listOCR[0].contactId;
-		else
-			return null;								
+
+		// first look for the table captain.
+		list<CampaignMember> listCM = [select contactId, Auction_Ticket_OppId__c, Table_Captain__c from CampaignMember 
+			where contactId = :idAttendee and campaignId = :auctionMaintenance.campaignIdAuctionAttendees ];
+		if (listCM.size() > 0) {
+			if (listCM[0].Table_Captain__c != null) {
+				return listCM[0].Table_Captain__c;
+			} else {
+				list<OpportunityContactRole> listOCR = 
+					[select contactId from OpportunityContactRole 
+						where IsPrimary=true and opportunityId = :listCM[0].Auction_Ticket_OppId__c];
+				if (listOCR.size() > 0) {
+					return listOCR[0].contactId;
+				}
+			}
+		}
+		return null;
 	}
 	
 	// holds the currently selected TicketHolder (Table Captain)
