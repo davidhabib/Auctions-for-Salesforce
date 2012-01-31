@@ -193,11 +193,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
     			if (oppCaptain.Id != null) {
     				
 	    			// load up their CM info.
-    				 list<CampaignMember> listCM = [select contactId, Id, campaignId, Status, Is_Table_Captain__c, Auction_Ticket_OppId__c,
-    					Bid_Number__c, Meal_Preference__c, Paid__c, Table_Captain__c, Table_Name_Number__c
-    					from CampaignMember 
-    					where campaignId = :auctionMaintenance.campaignIdAuctionAttendees and
-    						(Auction_Ticket_OppId__c = :oppCaptain.Id or Table_Captain__c = :contactIdCaptain)];
+    				 list<CampaignMember> listCM = Database.query('select ' + strCMFields +
+    					' from CampaignMember' + 
+    					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
+    						' (Auction_Ticket_OppId__c = \'' + oppCaptain.Id + '\' or Table_Captain__c = \'' + contactIdCaptain+ '\')' );
     			
     				// create a map so we can match CM's with Contacts
     				map<ID, CampaignMember> mapContactIdCM = new map<ID, CampaignMember>();
@@ -258,6 +257,30 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		set;
 	}
 	
+	// helper routine to return all CampaignMember field names from the Field Set
+	// (which of course we currently can't get in Apex, so get them all!!)
+	private string strCMFields {
+		get {
+			if (strCMFields == null) {
+				
+				// initialize the list of all fields on Contact.
+				// ideally, we'd only include the fields in the Field Set,
+				// but Apex currently has no way to see what those are.
+				// so for now, we just include all fields on Contact.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.CampaignMember.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strCMFields = '';
+				for (string str : listStrFields) {
+					strCMFields += str + ',';
+				}  		
+				strCMFields = strCMFields.substring(0, strCMFields.length()-1);
+			}
+			return strCMFields;
+		}
+		set;
+	}
+
 	// an Attendee object to hold Contact and CampaignMember fields to support the editing pane
 	public Attendee attendeeEdit { 
 		get {
@@ -435,7 +458,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	********************************************************************************************************/
     @RemoteAction global static list<Contact> getListContacts(string strFilter) {
     	strFilter = '%' + strFilter + '%';   	
-        list<Contact> listContacts = [select Id, Name, Email, MailingStreet, MailingCity 
+        list<Contact> listContacts = [select Id, Name, MailingStreet, MailingCity 
         		from Contact where 
 				Name like :strFilter 
 				order by Name asc];
