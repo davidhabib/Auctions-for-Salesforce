@@ -109,7 +109,6 @@
 <script type="text/javascript">
     var j$ = jQuery.noConflict();
  	
-    var listAttendees = null; // our cached list of all Attendees.
     var listCaptains = null; // our cached list of Captains for the current Auction.
     var auctionId = "{!auctionId}"; // the current Auction.
  	
@@ -154,29 +153,19 @@
 		*******************************************************************************************************/
 		j$("#txtAttendees").autocomplete("option", "source",
 			function(request, response) {
-			
-				//UNDONE: currently gets all Attendees, and filters in the browser.
-				//consider doing the filtering on the server, and never caching the list.
-			
-				//if (listAttendees != null) {
-				//	fillAndMatchAttendeesCombo(listAttendees, request, response);
-				//} else 
-					{			
-	       			j$('#txtAttendees').addClass('clsWaitRight');	        			
-					var strSearch = request.term.toLowerCase();		
-					GW_Auctions.AUC_CTRL_AuctionCheckIn3.getListContacts(strSearch, function(result, event) {
-						j$('#txtAttendees').removeClass('clsWaitRight');	        								
-		        		if (event.type == 'exception') {
-		        			alert(event.message);
-		        		} else {
-		        			if (result != null) {
-		        				listAttendees = result;
-								fillAndMatchAttendeesCombo(listAttendees, request, response);
-			        		}
+       			j$('#txtAttendees').addClass('clsWaitRight');	        			
+				var strSearch = request.term.toLowerCase();		
+				GW_Auctions.AUC_CTRL_AuctionCheckIn3.getListContacts(strSearch, function(result, event) {
+					j$('#txtAttendees').removeClass('clsWaitRight');	        								
+	        		if (event.type == 'exception') {
+	        			alert(event.message);
+	        		} else {
+	        			if (result != null) {
+							fillAndMatchAttendeesCombo(result, request, response);
 		        		}
-			   		}, {escape:false});		   		
-		   		}
-		   	}
+	        		}
+		   		}, {escape:false});		   		
+	   		}
 		);	
 		
 		/*******************************************************************************************************
@@ -203,8 +192,7 @@
 			if (!isMatch && strSearch != '') {
      			j$("#txtAttendees").data('Id', null);
      			//UNDONE: anything else to do?
-			}	        														   
-   			
+			}	        														      			
 		}
 
 		/*******************************************************************************************************
@@ -285,10 +273,9 @@
    				}
    			}));
    			
-   			// if we don't find a match for a real search, clear all the combos.
-			if (!isMatch && strSearch != '') {
+   			// if we don't find a match for a real search, clear the cached value.
+			if (!isMatch ) {
      			j$("#txtCaptains").data('Id', null);
-     			//UNDONE: anything else to do?
 			}	        														   
    			
 		}
@@ -313,33 +300,33 @@
 		* setup the button for showing all items		
 		*******************************************************************************************************/
 		j$(".clsBtnAll" )
-					.attr( "tabIndex", -1 )
-					.attr( "title", "Show Items" )
-					.button({
-						icons: {
-							primary: "ui-icon-triangle-1-s"
-						},
-						text: false
-					})
-					.removeClass( "ui-corner-all" )
-					.addClass( "ui-corner-right ui-button-icon" )
-					.click(function() {
-						// find our input textbox to our left
-						var input = j$(this).prev('input');
-						if (input.autocomplete( "option", "source" ) == null) return;
-						// close if already visible
-						if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
-							input.autocomplete( "close" );
-							return;
-						}
-
-						// work around a bug (likely same cause as #5265)
-						j$( this ).blur();
-
-						// pass current string as value to search for
-						input.autocomplete( "search", strNull(input.val()) );
-						input.focus();
-					});	
+			.attr( "tabIndex", -1 )
+			.attr( "title", "Show All Items" )
+			.button({
+				icons: {
+					primary: "ui-icon-triangle-1-s"
+				},
+				text: false
+			})
+			.removeClass( "ui-corner-all" )
+			.addClass( "ui-corner-right ui-button-icon" )
+			.click(function() {
+				// find our input textbox to our left
+				var input = j$(this).prev('input');
+				if (input.autocomplete( "option", "source" ) == null) return;
+				// close if already visible
+				if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+					input.autocomplete( "close" );
+					return;
+				}
+	
+				// work around a bug (likely same cause as #5265)
+				j$( this ).blur();
+	
+				// pass empty as value to search for all
+				input.autocomplete( "search", "" );
+				input.focus();
+			});	
 		
 		
 		//UNDONE: how to get dt rows to have same class?
@@ -357,7 +344,7 @@
 	    	j$(this).removeClass("hilite");
 	    });	
 	    
-	    // if we have Attendee & captain names, use them.
+	    // set Attendee & captain names
 	    j$('#txtCaptains').val(strNameCaptain);	
 	    j$('#txtAttendees').val(strNameAttendee);	
 	    	    
@@ -381,7 +368,7 @@
 		}
 		if (fPost == true) {
    			// call the controller to update the Attendee panel.
-   			ChangeAttendeeSelected(id);			   		
+   			ChangeAttendeeLookup(id);			   		
 		}
 	}
 
@@ -398,12 +385,12 @@
     <style>
 	    .Error { color: red; font-weight: strong;}
     </style>
- 
+
    	<apex:sectionHeader title="Auction Check In" />
     <apex:form id="frmAll" >   	
     	<apex:outputPanel id="panelAll">	    
         <apex:pageBlock title="" mode="edit" >
-     
+			<i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}</i>
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
             <apex:messages styleClass="Error" />              
 
@@ -423,7 +410,7 @@
                 <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
 		       		<apex:outputLabel value="Attendee" />
 	                <apex:outputPanel >
-					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees" /><button id="btnAttendeesAll" class="clsBtnAll" type="button" >&nbsp;</button>            
+					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees" />            
 					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
 			    			rerender="panelAll" 
 					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
@@ -450,7 +437,9 @@
 			<table cellpadding="10">
 				<tr>
 				<td style="vertical-align:top;" >
-	            <apex:pageBlockSection title="Edit Attendee Information" columns="1" id="pbsEdit" rendered="{!contactIdAttendee!=null}" collapsible="true" >
+					            
+	            <apex:pageBlockSection title="{!IF(attendeeEdit.con.Id != null, 'Contact Information', 'New Contact')}" 
+	            columns="1" id="pbsEdit" collapsible="true" >
 	            	<apex:inputField value="{!attendeeEdit.con.FirstName}" required="false" /> 
 	            	<apex:inputField value="{!attendeeEdit.con.LastName}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.con.Email}" required="false" />
@@ -466,10 +455,10 @@
 	            		<apex:outputLabel value="Table&nbsp;Name/Number" escape="false" />  <!--  explicitly output label to force wider col width for labels! -->
 		            	<apex:inputField value="{!attendeeEdit.cm.Table_Name_Number__c}" required="false" />
 	            	</apex:pageBlockSectionItem>
-					<apex:inputField value="{!attendeeEdit.cm.Paid__c}" required="false" />
 	            </apex:pageBlockSection>  
 	            
-	            <apex:pageBlockSection title="Tickets" columns="1" id="pbsTicket" rendered="{!contactIdAttendee!=null}" collapsible="false" >
+	            <apex:pageBlockSection title="New Ticket Purchase" columns="1" id="pbsTicket" collapsible="false" >
+					<apex:inputField value="{!attendeeEdit.cm.Paid__c}" required="false" />
 	            	<apex:pageBlockSectionItem >
 	            		<apex:outputLabel value="Add&nbsp;Ticket&nbsp;Purchase" escape="false" />
 	            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
@@ -480,7 +469,7 @@
 	            
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<apex:commandButton value="Save Attendee" rendered="{!contactIdAttendee!=null}" action="{!SaveAttendeeInfo}" 
+					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save Contact', 'Save New Contact')}" action="{!SaveAttendeeInfo}" 
 		    			rerender="panelAll" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />
 					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" />&nbsp;&nbsp;
@@ -489,14 +478,6 @@
         				
 				</td> 
 				<td style="vertical-align:top;" >
-					<hr/>
-					contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}
-					<hr/>	
-				    <apex:actionFunction action="{!ChangeAttendeeSelected}" name="ChangeAttendeeSelected"  status="statusLoad" 
-		    			rerender="panelAll" 						
-				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
-				        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
-				    </apex:actionFunction>					
 		            <apex:pageBlockSection title="Attendees" columns="1" id="pbsAttendees" rendered="{!contactIdCaptain!=null}" collapsible="true" >
 						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
@@ -514,7 +495,7 @@
 								<apex:facet name="header">Contact<br/>&nbsp;</apex:facet>
 								<span class="clsAttendeeLink">
 									<apex:outputField value="{!attendee.cm.contactId}" rendered="{!attendee.con.Id != null}" />
-									<apex:commandLink value="new" rendered="{!attendee.con.Id == null}" />
+									<apex:commandLink value="(available ticket)" rendered="{!attendee.con.Id == null}" />
 								</span>
 							</apex:column>					
 							<apex:column style="text-align:center;">

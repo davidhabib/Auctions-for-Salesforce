@@ -36,13 +36,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		// clear out all state that is specific to the auction
 		auctionMaintenance.auctionId = auctionId;
 		strSaveResults = null;
+
+		// setting contactId's to null will null out their dependencies.
 		contactIdAttendee = null;
 		contactIdCaptain = null;
-		//strNameAttendee = null;
-		//attendeeEdit = null;
-		//strNameCaptain = null;
-		//oppCaptain = null;
-		//listAttendees = null;	
 		return null;
 	}  
 
@@ -73,41 +70,21 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		}
 		private set;
 	}
-	
-		
+			
 	// callback when the user changes the Attendee contact lookup.
 	public PageReference ChangeAttendeeLookup() {
-		// clear out all state that is specific to the contact
-		//strNameAttendee = null;
-		//attendeeEdit = null;
+		// the setter for contactIdAttendee will 
+		// automatically invalidate any dependencies!
 
-		// see if they have a table captain.
-		//ID contactIdCaptainCurrent = contactIdCaptain;
-		contactIdCaptain = contactIdTicketForcontactIdAttendee(contactIdAttendee);
-		/* now handled by setter
-		if (contactIdCaptainCurrent != contactIdCaptain) {
-			strNameCaptain = null;
-			oppCaptain = null;
-			listAttendees = null;
+		// if there is no table captain currently selected, see if they have one.
+		if (contactIdCaptain == null) {
+			contactIdCaptain = contactIdCaptainForcontactIdAttendee(contactIdAttendee);
 		}
-		*/
 		return null;
 	}  
 	
-	// callback when the user selects a different Attendee from the Attendee table.
-	// in this scenario, we only want to update attendeeEdit, but not change
-	// the ticket holder (which might be different than the table captain.)
-	public PageReference ChangeAttendeeSelected() {
-		// clear out all state that is specific to the contact
-		// handled by setter
-		//strNameAttendee = null;
-		//attendeeEdit = null;
-		return null;
-	}  
-
-
 	// utility to find the Captain for a Attendee
-	private ID contactIdTicketForcontactIdAttendee(ID idAttendee) {		
+	private ID contactIdCaptainForcontactIdAttendee(ID idAttendee) {		
 
 		// first look for the table captain.
 		list<CampaignMember> listCM = [select contactId, Auction_Ticket_OppId__c, Table_Captain__c from CampaignMember 
@@ -131,7 +108,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	public ID contactIdCaptain { 
 		get; 
 		set {
-			// first invalidate anything dependent on a change
+			// invalidate anything dependent on a change
 			if (contactIdCaptain != value) {
 				strNameCaptain = null;
 				attendeeEdit = null;
@@ -156,11 +133,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 
 	// callback when the user changes the Table Captain contact lookup.
 	public PageReference ChangeCaptainLookup() {
-		// clear out all state that is specific to the contact
-		// strNameCaptain = null;
-		// oppCaptain = null;
-		// listAttendees = null;
-		// setting these now handled by setter!
+		// the setter for contactIdCaptain will
+		// invalidate anything dependent.
 		return null;
 	}  
 	
@@ -233,7 +207,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 
 	    			// load up their contact info.
 	    			list<Contact> listCon = [select Id, FirstName, LastName, Name, MailingStreet, MailingCity,
-	    				MailingState, MailingPostalCode, Email, Phone from Contact where Id in :mapContactIdCM.keySet() ];    			
+	    				MailingState, MailingPostalCode, Email, Phone from Contact where Id in :mapContactIdCM.keySet()
+	    				order by Name ];    			
     			
 	    			for (Contact con : listCon) {
 	    				listAttendees.add(new Attendee(mapContactIdCM.get(con.Id), con));
@@ -387,6 +362,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
 			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppCaptain.Id);
+			if (fAddTicketPurchase) {
+				attendeeEdit.cm.Paid__c = true;
+			}
 			if (attendeeEdit.cm.id == null) {
 				insert attendeeEdit.cm;				
 			} else {
