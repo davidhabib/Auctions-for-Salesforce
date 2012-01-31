@@ -400,7 +400,8 @@
     </style>
  
    	<apex:sectionHeader title="Auction Check In" />
-    <apex:form id="frmAll" >   		    
+    <apex:form id="frmAll" >   	
+    	<apex:outputPanel id="panelAll">	    
         <apex:pageBlock title="" mode="edit" >
      
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
@@ -412,7 +413,8 @@
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" status="retrieveStatus" action="{!ChangeAuction}" rerender="frmAll" 
+			    		<apex:actionSupport event="onchange" status="retrieveStatus" action="{!ChangeAuction}" 
+			    			rerender="panelAll" 
 			    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />			    			
 			    		<apex:selectOptions value="{!listSOAuctions}" />
 			    	</apex:selectList>	
@@ -422,7 +424,8 @@
 		       		<apex:outputLabel value="Attendee" />
 	                <apex:outputPanel >
 					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees" /><button id="btnAttendeesAll" class="clsBtnAll" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" rerender="frmAll" status="statusLoad" 
+					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
+			    			rerender="panelAll" 
 					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 					        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 					    </apex:actionFunction>
@@ -433,7 +436,8 @@
 		       		<apex:outputLabel value="Table Captain" />
                 	<apex:outputPanel id="panelCaptains" >
 					   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains" /><button id="btnCaptainsAll" class="clsBtnAll" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" rerender="frmAll" status="statusLoad" 
+					    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
+			    			rerender="panelAll" 
 					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 					        <apex:param name="param1" assignTo="{!contactIdCaptain}" value="" />
 					    </apex:actionFunction>
@@ -477,7 +481,7 @@
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<apex:commandButton value="Save Attendee" rendered="{!contactIdAttendee!=null}" action="{!SaveAttendeeInfo}" 
-						rerender="frmAll" 
+		    			rerender="panelAll" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />
 					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" />&nbsp;&nbsp;
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
@@ -488,7 +492,8 @@
 					<hr/>
 					contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}
 					<hr/>	
-				    <apex:actionFunction action="{!ChangeAttendeeSelected}" name="ChangeAttendeeSelected" rerender="frmAll" status="statusLoad" 
+				    <apex:actionFunction action="{!ChangeAttendeeSelected}" name="ChangeAttendeeSelected"  status="statusLoad" 
+		    			rerender="panelAll" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 				        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 				    </apex:actionFunction>					
@@ -537,5 +542,6 @@
 
 
         </apex:pageBlock>
+        </apex:outputPanel>
     </apex:form>
 </apex:page>

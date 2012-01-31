@@ -37,12 +37,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		auctionMaintenance.auctionId = auctionId;
 		strSaveResults = null;
 		contactIdAttendee = null;
-		strNameAttendee = null;
-		attendeeEdit = null;
 		contactIdCaptain = null;
-		strNameCaptain = null;
-		oppCaptain = null;
-		listAttendees = null;	
+		//strNameAttendee = null;
+		//attendeeEdit = null;
+		//strNameCaptain = null;
+		//oppCaptain = null;
+		//listAttendees = null;	
 		return null;
 	}  
 
@@ -51,6 +51,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	public string contactIdAttendee { 
 		get; 
 		set {
+			// first invalidate anything dependent on a change
+			if (contactIdAttendee != value) {
+				strNameAttendee = null;
+				attendeeEdit = null;
+				oppTicketAttendee = null;
+			}
 			contactIdAttendee = value;
 			if (contactIdAttendee == '') contactIdAttendee = null; 
 		}		
@@ -72,18 +78,19 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	// callback when the user changes the Attendee contact lookup.
 	public PageReference ChangeAttendeeLookup() {
 		// clear out all state that is specific to the contact
-		strNameAttendee = null;
-		attendeeEdit = null;
+		//strNameAttendee = null;
+		//attendeeEdit = null;
 
 		// see if they have a table captain.
-		ID contactIdCaptainCurrent = contactIdCaptain;
+		//ID contactIdCaptainCurrent = contactIdCaptain;
 		contactIdCaptain = contactIdTicketForcontactIdAttendee(contactIdAttendee);
+		/* now handled by setter
 		if (contactIdCaptainCurrent != contactIdCaptain) {
 			strNameCaptain = null;
 			oppCaptain = null;
 			listAttendees = null;
 		}
-		
+		*/
 		return null;
 	}  
 	
@@ -92,8 +99,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	// the ticket holder (which might be different than the table captain.)
 	public PageReference ChangeAttendeeSelected() {
 		// clear out all state that is specific to the contact
-		strNameAttendee = null;
-		attendeeEdit = null;
+		// handled by setter
+		//strNameAttendee = null;
+		//attendeeEdit = null;
 		return null;
 	}  
 
@@ -120,7 +128,19 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	}
 	
 	// holds the currently selected Captain (Table Captain)
-	public ID contactIdCaptain { get; set; }
+	public ID contactIdCaptain { 
+		get; 
+		set {
+			// first invalidate anything dependent on a change
+			if (contactIdCaptain != value) {
+				strNameCaptain = null;
+				attendeeEdit = null;
+				listAttendees = null;
+				oppCaptain = null;
+			}
+			contactIdCaptain = value;			
+		}
+	}
 	
 	// holds the currently selected Captain's name	
 	public string strNameCaptain { 
@@ -137,9 +157,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	// callback when the user changes the Table Captain contact lookup.
 	public PageReference ChangeCaptainLookup() {
 		// clear out all state that is specific to the contact
-		strNameCaptain = null;
-		oppCaptain = null;
-		listAttendees = null;
+		// strNameCaptain = null;
+		// oppCaptain = null;
+		// listAttendees = null;
+		// setting these now handled by setter!
 		return null;
 	}  
 	
