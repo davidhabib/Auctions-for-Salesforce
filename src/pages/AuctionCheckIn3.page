@@ -109,27 +109,27 @@
 <script type="text/javascript">
     var j$ = jQuery.noConflict();
  	
-    var listContacts = null; // our cached list of all contacts.
-    var listTicketHolders = null; // our cached list of TicketHolders for the current Auction.
+    var listAttendees = null; // our cached list of all Attendees.
+    var listCaptains = null; // our cached list of Captains for the current Auction.
     var auctionId = "{!auctionId}"; // the current Auction.
  	
 	/*******************************************************************************************************
 	* this function is called when the page loads
 	********************************************************************************************************/
 	j$(document).ready(function() {
-		myInitializeJQueryUI();
+		myInitializeJQueryUI('{!strNameAttendee}', '{!strNameCaptain}');
 	});	
 	
 	/*******************************************************************************************************
 	* the work hours to do all jQueryUI initialization (specifically setting up the autocompletes).
 	********************************************************************************************************/
-	function myInitializeJQueryUI() {
+	function myInitializeJQueryUI(strNameAttendee, strNameCaptain) {
 	
 		
 		/*******************************************************************************************************
-   	 	* setup the Attendee Contacts autocomplete textbox
+   	 	* setup the Attendee autocomplete textbox
 		*******************************************************************************************************/
-		j$(".clsComboContacts").autocomplete({
+		j$(".clsComboAttendees").autocomplete({
 			minLength: 3,
 			delay: 200,
 
@@ -150,28 +150,28 @@
 		};	   	
 
 		/*******************************************************************************************************
-		* specify the specific fill function for Contacts
+		* specify the specific fill function for Attendees
 		*******************************************************************************************************/
-		j$("#txtContacts").autocomplete("option", "source",
+		j$("#txtAttendees").autocomplete("option", "source",
 			function(request, response) {
 			
-				//UNDONE: currently gets all contacts, and filters in the browser.
+				//UNDONE: currently gets all Attendees, and filters in the browser.
 				//consider doing the filtering on the server, and never caching the list.
 			
-				//if (listContacts != null) {
-				//	fillAndMatchContactsCombo(listContacts, request, response);
+				//if (listAttendees != null) {
+				//	fillAndMatchAttendeesCombo(listAttendees, request, response);
 				//} else 
 					{			
-	       			j$('#txtContacts').addClass('clsWaitRight');	        			
+	       			j$('#txtAttendees').addClass('clsWaitRight');	        			
 					var strSearch = request.term.toLowerCase();		
 					GW_Auctions.AUC_CTRL_AuctionCheckIn3.getListContacts(strSearch, function(result, event) {
-						j$('#txtContacts').removeClass('clsWaitRight');	        								
+						j$('#txtAttendees').removeClass('clsWaitRight');	        								
 		        		if (event.type == 'exception') {
 		        			alert(event.message);
 		        		} else {
 		        			if (result != null) {
-		        				listContacts = result;
-								fillAndMatchContactsCombo(listContacts, request, response);
+		        				listAttendees = result;
+								fillAndMatchAttendeesCombo(listAttendees, request, response);
 			        		}
 		        		}
 			   		}, {escape:false});		   		
@@ -180,10 +180,10 @@
 		);	
 		
 		/*******************************************************************************************************
-		* given the list of contact, what is being searched for, and the response object,
+		* given the list of Attendee, what is being searched for, and the response object,
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
-		function fillAndMatchContactsCombo(listCons, request, response) {
+		function fillAndMatchAttendeesCombo(listCons, request, response) {
 			var strSearch = request.term.toLowerCase();		
  			var isMatch = false;
      		response(j$.map(listCons, function(item) {
@@ -192,7 +192,7 @@
 	   				// if we find the exact match, get its formal text and id.
 	   				// ideally, we'd select it, but I couldn't figure out how!
 	   				if (strLower == strSearch) {
-	   					j$("#txtContacts").val(item.Name).data('Id', item.Id);
+	   					j$("#txtAttendees").val(item.Name).data('Id', item.Id);
 	   					isMatch = true;
 	   				}
    					return {label: item.Name, value: item.Id, contact: item};
@@ -201,16 +201,16 @@
    			
    			// if we don't find a match for a real search, clear all the combos.
 			if (!isMatch && strSearch != '') {
-     			j$("#txtContacts").data('Id', null);
+     			j$("#txtAttendees").data('Id', null);
      			//UNDONE: anything else to do?
 			}	        														   
    			
 		}
 
 		/*******************************************************************************************************
-		* specify the select event for Contacts, so it can update the controller to refresh the Attendee panel. 
+		* specify the select event for Attendees, so it can update the controller to refresh the Attendee panel. 
 		*******************************************************************************************************/
-		j$('#txtContacts').autocomplete("option", "select",
+		j$('#txtAttendees').autocomplete("option", "select",
 			function(event, ui) {
 				var prevId = j$(this).data('Id');
 				j$(this).val(ui.item.label).data('Id', ui.item.value);
@@ -225,7 +225,7 @@
 		/*******************************************************************************************************
    	 	* setup the Ticket Holders autocomplete textbox
 		*******************************************************************************************************/
-		j$(".clsComboTicketHolders").autocomplete({
+		j$(".clsComboCaptains").autocomplete({
 			minLength: 0,
 			delay: 200,
 
@@ -238,26 +238,26 @@
 	   	});	   	
 
 		/*******************************************************************************************************
-		* specify the specific fill function for TicketHolders
+		* specify the specific fill function for Captains
 		* gets all ticket holders, and filters in the browser, since the list will be small enough.
 		*******************************************************************************************************/
-		j$("#txtTicketHolders").autocomplete("option", "source",
+		j$("#txtCaptains").autocomplete("option", "source",
 			function(request, response) {		
 				// Gets all ticket holders, and filters in the browser, since the list will be small enough.
-				if (listTicketHolders != null) {
-					fillAndMatchTicketHoldersCombo(listTicketHolders, request, response);
+				if (listCaptains != null) {
+					fillAndMatchCaptainsCombo(listCaptains, request, response);
 				} else 
 					{			
-	       			j$('#txtTicketHolders').addClass('clsWaitRight');	        			
+	       			j$('#txtCaptains').addClass('clsWaitRight');	        			
 					var strSearch = request.term.toLowerCase();		
-					GW_Auctions.AUC_CTRL_AuctionCheckIn3.getListTicketHolders(auctionId, '', function(result, event) {
-						j$('#txtTicketHolders').removeClass('clsWaitRight');	        								
+					GW_Auctions.AUC_CTRL_AuctionCheckIn3.getListCaptains(auctionId, '', function(result, event) {
+						j$('#txtCaptains').removeClass('clsWaitRight');	        								
 		        		if (event.type == 'exception') {
 		        			alert(event.message);
 		        		} else {
 		        			if (result != null) {
-		        				listTicketHolders = result;
-								fillAndMatchTicketHoldersCombo(listTicketHolders, request, response);
+		        				listCaptains = result;
+								fillAndMatchCaptainsCombo(listCaptains, request, response);
 			        		}
 		        		}
 			   		}, {escape:false});		   		
@@ -269,7 +269,7 @@
 		* given the list of contact, what is being searched for, and the response object,
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
-		function fillAndMatchTicketHoldersCombo(listCons, request, response) {
+		function fillAndMatchCaptainsCombo(listCons, request, response) {
 			var strSearch = request.term.toLowerCase();		
  			var isMatch = false;
      		response(j$.map(listCons, function(item) {
@@ -278,7 +278,7 @@
 	   				// if we find the exact match, get its formal text and id.
 	   				// ideally, we'd select it, but I couldn't figure out how!
 	   				if (strLower == strSearch) {
-	   					j$("#txtTicketHolders").val(item.Name).data('Id', item.Id);
+	   					j$("#txtCaptains").val(item.Name).data('Id', item.Id);
 	   					isMatch = true;
 	   				}
    					return {label: item.Name, value: item.Id};
@@ -287,7 +287,7 @@
    			
    			// if we don't find a match for a real search, clear all the combos.
 			if (!isMatch && strSearch != '') {
-     			j$("#txtTicketHolders").data('Id', null);
+     			j$("#txtCaptains").data('Id', null);
      			//UNDONE: anything else to do?
 			}	        														   
    			
@@ -296,13 +296,13 @@
 		/*******************************************************************************************************
 		* specify the select event for Ticket Holders, so it can cause the Attendee panel to refresh.
 		*******************************************************************************************************/
-		j$('#txtTicketHolders').autocomplete("option", "select",
+		j$('#txtCaptains').autocomplete("option", "select",
 			function(event, ui) {
 				var prevId = j$(this).data('Id');
 				j$(this).val(ui.item.label).data('Id', ui.item.value);
 		   		if (prevId != ui.item.value) {
 		   			// call the controller to update the Attendee panel.
-		   			ChangeTicketHolderLookup(ui.item.value);			   		
+		   			ChangeCaptainLookup(ui.item.value);			   		
 			   	}
 		   		return false;		   		 
 		   	}
@@ -355,7 +355,11 @@
 	    	j$(this).addClass("hilite");
 	    }, function () {
 	    	j$(this).removeClass("hilite");
-	    });		
+	    });	
+	    
+	    // if we have Attendee & captain names, use them.
+	    j$('#txtCaptains').val(strNameCaptain);	
+	    j$('#txtAttendees').val(strNameAttendee);	
 	    	    
 	} // end of myInitializeJQueryUI
 	
@@ -396,31 +400,30 @@
     </style>
  
    	<apex:sectionHeader title="Auction Check In" />
-    <apex:form >   		    
+    <apex:form id="frmAll" >   		    
         <apex:pageBlock title="" mode="edit" >
      
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
             <apex:messages styleClass="Error" />              
 
-            <apex:pageBlockSection columns="1"  ShowHeader="false" id="pbsContact" >
-            	<apex:outputLabel value="Enter the Guest Name or Table Captain Name" style="font-weight:bold;" />
+            <apex:pageBlockSection columns="1"  ShowHeader="false" id="pbsSearch" >
+            	<apex:outputLabel value="Enter the Attendee Name or Table Captain Name" style="font-weight:bold;" />
             	
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" rerender="panelTicketHolders, panelAttendees" 
-			    			status="retrieveStatus" action="{!ChangeAuction}" 
-			    			oncomplete="auctionId='{!auctionId}'; listTicketHolders=null; myInitializeJQueryUI();" />			    			
+			    		<apex:actionSupport event="onchange" status="retrieveStatus" action="{!ChangeAuction}" rerender="frmAll" 
+			    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />			    			
 			    		<apex:selectOptions value="{!listSOAuctions}" />
 			    	</apex:selectList>	
 				</apex:pageBlockSectionItem>
 				            
                 <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-		       		<apex:outputLabel value="Guest" />
+		       		<apex:outputLabel value="Attendee" />
 	                <apex:outputPanel >
-					   	<input type="text" id="txtContacts" class="clsCombo clsComboContacts" /><button id="btnContactsAll" class="clsBtnAll" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" rerender="panelTicketHolders, panelAttendees" status="statusLoad" 
-					    	oncomplete="myInitializeJQueryUI(); j$('#txtTicketHolders').val('{!strNameTicketHolder}');" >
+					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees" /><button id="btnAttendeesAll" class="clsBtnAll" type="button" >&nbsp;</button>            
+					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" rerender="frmAll" status="statusLoad" 
+					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 					        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 					    </apex:actionFunction>
 	                </apex:outputPanel>
@@ -428,11 +431,11 @@
 
                 <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
 		       		<apex:outputLabel value="Table Captain" />
-                	<apex:outputPanel id="panelTicketHolders" >
-					   	<input type="text" id="txtTicketHolders" class="clsCombo clsComboTicketHolders" /><button id="btnTicketHoldersAll" class="clsBtnAll" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeTicketHolderLookup}" name="ChangeTicketHolderLookup" rerender="panelAttendees" status="statusLoad" 
-					    	oncomplete="myInitializeJQueryUI();" >
-					        <apex:param name="param1" assignTo="{!contactIdTicketHolder}" value="" />
+                	<apex:outputPanel id="panelCaptains" >
+					   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains" /><button id="btnCaptainsAll" class="clsBtnAll" type="button" >&nbsp;</button>            
+					    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" rerender="frmAll" status="statusLoad" 
+					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+					        <apex:param name="param1" assignTo="{!contactIdCaptain}" value="" />
 					    </apex:actionFunction>
 		        		<apex:actionStatus startText="Loading..." stopText="" id="statusLoad" startStyle="color:green; font-style:italic" />
 	        		</apex:outputPanel>	    	        		
@@ -443,7 +446,7 @@
 			<table cellpadding="10">
 				<tr>
 				<td style="vertical-align:top;" >
-	            <apex:pageBlockSection title="Edit Guest Information" columns="1" id="pbsEdit" rendered="{!contactIdAttendee!=null}" collapsible="true" >
+	            <apex:pageBlockSection title="Edit Attendee Information" columns="1" id="pbsEdit" rendered="{!contactIdAttendee!=null}" collapsible="true" >
 	            	<apex:inputField value="{!attendeeEdit.con.FirstName}" required="false" /> 
 	            	<apex:inputField value="{!attendeeEdit.con.LastName}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.con.Email}" required="false" />
@@ -455,33 +458,41 @@
 	            	<apex:inputField value="{!attendeeEdit.cm.Meal_Preference__c}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.cm.Bid_Number__c}" required="false" />
 	            	<apex:inputField value="{!attendeeEdit.cm.Table_Captain__c}" required="false" />
-	            	<apex:inputField value="{!attendeeEdit.cm.Table_Name_Number__c}" required="false" />
-	            </apex:pageBlockSection>     
-	            <apex:pageBlockSection title="Add Ticket Purchase" columns="1" id="pbsTicket" rendered="{!contactIdAttendee!=null}" collapsible="true" >
 	            	<apex:pageBlockSectionItem >
-	            		<apex:outputLabel value="add ticket purchase" />
+	            		<apex:outputLabel value="Table&nbsp;Name/Number" escape="false" />  <!--  explicitly output label to force wider col width for labels! -->
+		            	<apex:inputField value="{!attendeeEdit.cm.Table_Name_Number__c}" required="false" />
+	            	</apex:pageBlockSectionItem>
+					<apex:inputField value="{!attendeeEdit.cm.Paid__c}" required="false" />
+	            </apex:pageBlockSection>  
+	            
+	            <apex:pageBlockSection title="Tickets" columns="1" id="pbsTicket" rendered="{!contactIdAttendee!=null}" collapsible="false" >
+	            	<apex:pageBlockSectionItem >
+	            		<apex:outputLabel value="Add&nbsp;Ticket&nbsp;Purchase" escape="false" />
 	            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
 	            	</apex:pageBlockSectionItem>
-	           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" />
-	           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" />
-	            </apex:pageBlockSection>     
+	           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
+	           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
+	            </apex:pageBlockSection>     	            
+	            
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<apex:commandButton value="Save Guest" rendered="{!contactIdTicketHolder!=null}" action="{!SaveAttendeeInfo}" />&nbsp;&nbsp;
-					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdTicketHolder!=null}" />&nbsp;&nbsp;
-					<apex:commandButton value="Close" action="{!Cancel}" />	
+					<apex:commandButton value="Save Attendee" rendered="{!contactIdAttendee!=null}" action="{!SaveAttendeeInfo}" 
+						rerender="frmAll" 
+				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />
+					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" />&nbsp;&nbsp;
+					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/>														       
         				
-				</td>
+				</td> 
 				<td style="vertical-align:top;" >
 					<hr/>
-					contactIdAttendee is: {!contactIdAttendee} contactIdTicketHolder is: {!contactIdTicketHolder}, {!strNameTicketHolder}
+					contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}
 					<hr/>	
-				    <apex:actionFunction action="{!ChangeAttendeeSelected}" name="ChangeAttendeeSelected" rerender="panelAttendees" status="statusLoad" 
-				    	oncomplete="myInitializeJQueryUI();" >
+				    <apex:actionFunction action="{!ChangeAttendeeSelected}" name="ChangeAttendeeSelected" rerender="frmAll" status="statusLoad" 
+				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 				        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 				    </apex:actionFunction>					
-		            <apex:pageBlockSection title="Guests" columns="1" id="pbsAttendees" rendered="{!contactIdTicketHolder!=null}" collapsible="true" >
+		            <apex:pageBlockSection title="Attendees" columns="1" id="pbsAttendees" rendered="{!contactIdCaptain!=null}" collapsible="true" >
 						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
 							headerClass="clsDTHeader" >	
@@ -515,7 +526,7 @@
 							</apex:column>
 							<apex:column style="text-align:center;">
 								<apex:facet name="header">&nbsp;&nbsp;Paid&nbsp;&nbsp;</apex:facet>
-								<apex:inputCheckbox value="{!attendee.cm.Paid__c}" required="false" disabled="false" />
+								<apex:inputCheckbox value="{!attendee.cm.Paid__c}" required="false" disabled="true" />
 							</apex:column>
 						</apex:dataTable>	
 		            </apex:pageBlockSection>

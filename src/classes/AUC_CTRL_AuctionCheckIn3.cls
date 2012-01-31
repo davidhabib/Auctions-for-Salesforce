@@ -1,7 +1,7 @@
 // Written by David Habib, copyright (c) 2012 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
-global with sharing class AUC_CTRL_AuctionCheckIn3 {
+global with sharing class AUC_CTRL_AuctionCheckIn3 { 
 
 	// constructor for the class 
 	public AUC_CTRL_AuctionCheckIn3() {
@@ -36,9 +36,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		// clear out all state that is specific to the auction
 		auctionMaintenance.auctionId = auctionId;
 		strSaveResults = null;
-		contactIdTicketHolder = null;
-		strNameTicketHolder = null;
-		oppTicketHolder = null;
+		contactIdAttendee = null;
+		strNameAttendee = null;
+		attendeeEdit = null;
+		contactIdCaptain = null;
+		strNameCaptain = null;
+		oppCaptain = null;
 		listAttendees = null;	
 		return null;
 	}  
@@ -52,34 +55,50 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 			if (contactIdAttendee == '') contactIdAttendee = null; 
 		}		
 	}
+	
+	// holds the currently selected Attendee's name	
+	public string strNameAttendee { 
+		get {
+			if (strNameAttendee == null && contactIdAttendee != null) {
+				Contact con = [select Name from Contact where Id = :contactIdAttendee];
+				strNameAttendee = con.Name;
+			}
+			return strNameAttendee;
+		}
+		private set;
+	}
+	
 		
 	// callback when the user changes the Attendee contact lookup.
 	public PageReference ChangeAttendeeLookup() {
 		// clear out all state that is specific to the contact
+		strNameAttendee = null;
 		attendeeEdit = null;
 
-		ID contactIdTicketHolderCurrent = contactIdTicketHolder;
-		contactIdTicketHolder = contactIdTicketForcontactIdAttendee(contactIdAttendee);
-		if (contactIdTicketHolderCurrent != contactIdTicketHolder) {
-			strNameTicketHolder = null;
-			oppTicketHolder = null;
+		// see if they have a table captain.
+		ID contactIdCaptainCurrent = contactIdCaptain;
+		contactIdCaptain = contactIdTicketForcontactIdAttendee(contactIdAttendee);
+		if (contactIdCaptainCurrent != contactIdCaptain) {
+			strNameCaptain = null;
+			oppCaptain = null;
 			listAttendees = null;
 		}
 		
 		return null;
 	}  
 	
-	// callback when the user selects a different Attendee from the Attendee list.
+	// callback when the user selects a different Attendee from the Attendee table.
 	// in this scenario, we only want to update attendeeEdit, but not change
-	// the ticket holder (which might be different that the table captain.)
+	// the ticket holder (which might be different than the table captain.)
 	public PageReference ChangeAttendeeSelected() {
 		// clear out all state that is specific to the contact
+		strNameAttendee = null;
 		attendeeEdit = null;
 		return null;
 	}  
 
 
-	// utility to find the TicketHolder for a Attendee
+	// utility to find the Captain for a Attendee
 	private ID contactIdTicketForcontactIdAttendee(ID idAttendee) {		
 
 		// first look for the table captain.
@@ -100,53 +119,53 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		return null;
 	}
 	
-	// holds the currently selected TicketHolder (Table Captain)
-	public ID contactIdTicketHolder { get; set; }
+	// holds the currently selected Captain (Table Captain)
+	public ID contactIdCaptain { get; set; }
 	
-	// holds the currently selected TicketHolder's name	
-	public string strNameTicketHolder { 
+	// holds the currently selected Captain's name	
+	public string strNameCaptain { 
 		get {
-			if (strNameTicketHolder == null && contactIdTicketHolder != null) {
-				Contact con = [select Name from Contact where Id = :contactIdTicketHolder];
-				strNameTicketHolder = con.Name;
+			if (strNameCaptain == null && contactIdCaptain != null) {
+				Contact con = [select Name from Contact where Id = :contactIdCaptain];
+				strNameCaptain = con.Name;
 			}
-			return strNameTicketHolder;
+			return strNameCaptain;
 		}
 		private set;
 	}
 
 	// callback when the user changes the Table Captain contact lookup.
-	public PageReference ChangeTicketHolderLookup() {
+	public PageReference ChangeCaptainLookup() {
 		// clear out all state that is specific to the contact
-		strNameTicketHolder = null;
-		oppTicketHolder = null;
+		strNameCaptain = null;
+		oppCaptain = null;
 		listAttendees = null;
 		return null;
 	}  
 	
 	// the ticket opportunity for the currently selected Ticket Holder
-	private Opportunity oppTicketHolder { 
+	private Opportunity oppCaptain { 
 		get {
-			if (oppTicketHolder == null) {	
+			if (oppCaptain == null) {	
 				// if we have a table captain, look for their ticket first.
-				if (contactIdTicketHolder != null) {
+				if (contactIdCaptain != null) {
 					list<Opportunity> listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount 
 						from Opportunity 
 						where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
 							and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
-							and Id in (select OpportunityId from OpportunityContactRole where contactId = :contactIdTicketHolder)];
+							and Id in (select OpportunityId from OpportunityContactRole where contactId = :contactIdCaptain)];
 					if (listOpp.size() > 0) {
-						oppTicketHolder = listOpp[0];
-						return oppTicketHolder;
+						oppCaptain = listOpp[0];
+						return oppCaptain;
 					}					
 				}
 				// if there is no ticket holder, create a new ticket opp.
-				oppTicketHolder = new Opportunity(
+				oppCaptain = new Opportunity(
 					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
 					CampaignId = auctionMaintenance.campaignIdAuctionTickets
 				);
 			} 
-			return oppTicketHolder;
+			return oppCaptain;
 		}
 		private set; 
 	}  
@@ -168,26 +187,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		}
 		private set;
 	}
-	
-	// list for the CampaignMember Status picklist, filtered correctly for statuses for Attendees.
-	public list<SelectOption> listSOStatuses {
-		get {
-			if (listSOStatuses == null) {
-				listSOStatuses = new list<SelectOption>();
-				
-				// since we can't seem to get the styling for a required field for Stage,
-				// we won't provide a blank option!
-				//listSOStatuses.add(new SelectOption('', ''));
-
-				for (CampaignMemberStatus status : [select Label from CampaignMemberStatus 
-					where IsDeleted=false and CampaignId=:auctionMaintenance.campaignIdAuctionAttendees order by SortOrder]) {
-					listSOStatuses.add(new SelectOption(status.Label, status.Label));
-				}
-			}
-			return listSOStatuses;
-		}
-		private set;
-	}
 		
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<Attendee> listAttendees {
@@ -196,14 +195,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
     			listAttendees = new list<Attendee>(); 			
     			
     			// find any existing attendees on this ticket
-    			if (oppTicketHolder.Id != null) {
+    			if (oppCaptain.Id != null) {
     				
 	    			// load up their CM info.
     				 list<CampaignMember> listCM = [select contactId, Id, campaignId, Status, Is_Table_Captain__c, Auction_Ticket_OppId__c,
     					Bid_Number__c, Meal_Preference__c, Paid__c, Table_Captain__c, Table_Name_Number__c
     					from CampaignMember 
     					where campaignId = :auctionMaintenance.campaignIdAuctionAttendees and
-    						(Auction_Ticket_OppId__c = :oppTicketHolder.Id or Table_Captain__c = :contactIdTicketHolder)];
+    						(Auction_Ticket_OppId__c = :oppCaptain.Id or Table_Captain__c = :contactIdCaptain)];
     			
     				// create a map so we can match CM's with Contacts
     				map<ID, CampaignMember> mapContactIdCM = new map<ID, CampaignMember>();
@@ -220,13 +219,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	    			}
 	    			    					
 					// create new CampaignMembers for any additional attendees on this ticket    					
-		    		double numTickets = oppTicketHolder.Number_Of_Tickets__c;
+		    		double numTickets = oppCaptain.Number_Of_Tickets__c;
 		    		if (numTickets == null || numTickets == 0) numTickets = 1;
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-	                	cmpmbr.Table_Captain__c = contactIdTicketHolder;
+	                	cmpmbr.Table_Captain__c = contactIdCaptain;
 	                	cmpmbr.Status = 'RSVP Yes';
-	                	cmpmbr.Paid__c = (oppTicketHolder.amount != null);
+	                	cmpmbr.Paid__c = (oppCaptain.amount != null);
 	                	
 	                	Contact con = new Contact();
 	    				listAttendees.add(new Attendee(cmpmbr, con));
@@ -274,7 +273,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 					if (contactIdAttendee != null) {
 						Contact con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
 		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-	                	cmpmbr.Table_Captain__c = contactIdTicketHolder;
+	                	cmpmbr.Table_Captain__c = contactIdCaptain;
 	                	cmpmbr.contactId = contactIdAttendee;
 	                	cmpmbr.Status = 'RSVP Yes';
 	                	attendeeEdit = new Attendee(cmpmbr, con);
@@ -301,13 +300,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 			
 	// status string for reporting the results of saving.
     public String strSaveResults { get; set; }    
-	
-	// event handler for NumberOfTickets field being changed.
-	// show the appropriate list of attendees by clearing out current state.
-	public PageReference OnChange_NumberOfTickets() {
-		listAttendees = null;	
-		return null;
-	}
 	
 	// save all modified data.  a complex process to handle both updates and inserts!
 	public PageReference SaveAttendeeInfo() {
@@ -373,7 +365,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 				attendeeEdit.cm.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
-			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppTicketHolder.Id);
+			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppCaptain.Id);
 			if (attendeeEdit.cm.id == null) {
 				insert attendeeEdit.cm;				
 			} else {
@@ -385,8 +377,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 			// 4. save done, so clear our complete state
 			listAttendees = null;	
 			attendeeEdit = null;
-			oppTicketAttendee = null;	
+			oppTicketAttendee = null;
+			oppCaptain = null;	
 			fAddTicketPurchase = false;
+			strNameAttendee = null;
+			strNameCaptain = null;
+			
+			// when the page reloads, let's make sure we show the current attendee and (possibly new) captain.
+			contactIdAttendee = attendeeEdit.con.Id;
+			contactIdCaptain = attendeeEdit.cm.Table_Captain__c;
 			return null;	
 			        
         } catch (Exception e) {
@@ -396,9 +395,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
         }               
 	}
 
-	// public method for the Cancel button.  
+	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.
-	public PageReference Cancel() {
+	public PageReference Close() {
 		string retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
 			retURL = '/apex/GW_Auctions__AuctionTickets';
@@ -452,7 +451,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 	* @param strFilter the substring to filter by 
 	* @return list<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
-    @RemoteAction global static list<Contact> getListTicketHolders(string auctionId, string strFilter) {
+    @RemoteAction global static list<Contact> getListCaptains(string auctionId, string strFilter) {
     	strFilter = '%' + strFilter + '%';   	
 
 		if (auctionId == null || auctionId == '') return null;
@@ -460,7 +459,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 		auctionMaintenance.auctionId = auctionId;
 		
 		set<ID> setContactId = new set<ID>();
-		list<Contact> listTicketHolders = new list<Contact>();
+		list<Contact> listCaptains = new list<Contact>();
 
 		// in one soql call, get all the appropriate opportunities for auction tickets
 		for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name from OpportunityContactRole 
@@ -475,8 +474,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 			}
 		}
 		
-		listTicketHolders = [select Id, Name from Contact where Id in :setContactId	order by Name];		
-		return listTicketHolders; 
+		listCaptains = [select Id, Name from Contact where Id in :setContactId	order by Name];		
+		return listCaptains; 
     } 		
 
 }
