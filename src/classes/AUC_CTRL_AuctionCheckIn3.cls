@@ -205,9 +205,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
     				}    			
 
 	    			// load up their contact info.
-	    			list<Contact> listCon = [select Id, FirstName, LastName, Name, MailingStreet, MailingCity,
-	    				MailingState, MailingPostalCode, Email, Phone from Contact where Id in :mapContactIdCM.keySet()
-	    				order by Name ];    			
+	    			set<ID> setKeys = mapContactIdCM.keySet();
+	    			list<Contact> listCon = Database.query('select ' + strContactFields + 
+	    				' from Contact where Id in :setKeys' + 
+	    				' order by Name');    			
     			
 	    			for (Contact con : listCon) {
 	    				listAttendees.add(new Attendee(mapContactIdCM.get(con.Id), con));
@@ -288,17 +289,16 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 				// see if we already have their info loaded
 				attendeeEdit = attendeeFromId(contactIdAttendee);				
 				// if not loaded (not a current Attendee), then look it up
-				if (attendeeEdit == null) {					
+				if (attendeeEdit == null) {	
+					Contact con = new Contact();				
 					if (contactIdAttendee != null) {
-						Contact con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
-		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-	                	cmpmbr.Table_Captain__c = contactIdCaptain;
-	                	cmpmbr.contactId = contactIdAttendee;
-	                	cmpmbr.Status = 'RSVP Yes';
-	                	attendeeEdit = new Attendee(cmpmbr, con);
-					} else {
-						attendeeedit = new Attendee();
-					}	                
+						con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
+					}
+	                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
+                	cmpmbr.Table_Captain__c = contactIdCaptain;
+                	cmpmbr.contactId = contactIdAttendee;
+                	cmpmbr.Status = 'RSVP Yes';
+                	attendeeEdit = new Attendee(cmpmbr, con);
 				}
 			}
 			return attendeeEdit; 

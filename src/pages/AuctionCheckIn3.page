@@ -387,16 +387,13 @@
     </style>
 
    	<apex:sectionHeader title="Auction Check In" />
-    <apex:form id="frmAll" >   	
+    <apex:form >   	
     	<apex:outputPanel id="panelAll">	    
-        <apex:pageBlock title="" mode="edit" >
-			<i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}</i>
-            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
-            <apex:messages styleClass="Error" />              
-
-            <apex:pageBlockSection columns="1"  ShowHeader="false" id="pbsSearch" >
-            	<apex:outputLabel value="Enter the Attendee Name or Table Captain Name" style="font-weight:bold;" />
-            	
+        <apex:pageBlock mode="edit" >
+			<table cellpadding="10">
+			<tr>
+			<td style="vertical-align:top;">
+            <apex:pageBlockSection title="Search by Guest or Captain" columns="1" id="pbsSearch" >
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
@@ -432,9 +429,13 @@
 	        		</apex:outputPanel>	    	        		
                 </apex:pageBlockSectionItem>
 			</apex:pageBlockSection>
-			
-			<apex:outputPanel id="panelAttendees">
-			<table cellpadding="10">
+			</td>
+			<td style="vertical-align:top;">
+				<hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}</i><hr/>
+	            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
+	            <apex:messages styleClass="Error" />
+	        </td>              
+			</tr>			
 				<tr>
 				<td style="vertical-align:top;" >
 					            
@@ -445,22 +446,13 @@
 					<apex:repeat value="{!$ObjectType.Contact.FieldSets.AuctionsCheckInFS}" var="f" >
 	   					<apex:inputField value="{!attendeeEdit.con[f]}" required="false" />
 		  			</apex:repeat>        
-
+					<hr/>
 	            	<!-- CM fields use a fieldset -->
 					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionsCheckInCMFS}" var="f" >
 	   					<apex:inputField value="{!attendeeEdit.cm[f]}" required="false" />
-		  			</apex:repeat>        
-	            	
- 					<!--  explicitly output label to force wider col width for labels! -->
- 	            	<apex:pageBlockSectionItem labelStyle="width:500px">
-	            		<apex:outputLabel value="&nbsp;" escape="false"  /> 
-	            		<apex:outputLabel value="&nbsp" escape="false" /> 
-	            	</apex:pageBlockSectionItem>
-
-	            </apex:pageBlockSection>  
-	            
-	            <apex:pageBlockSection title="New Ticket Purchase" columns="1" id="pbsTicket" collapsible="false" >
-					<apex:inputField value="{!attendeeEdit.cm.Paid__c}" required="false" />
+		  			</apex:repeat>        	            	 
+	            	<hr/>
+	            	<!-- hardcoded fields to add new ticket purchase -->
 	            	<apex:pageBlockSectionItem >
 	            		<apex:outputLabel value="Add&nbsp;Ticket&nbsp;Purchase" escape="false" />
 	            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
@@ -521,9 +513,6 @@
 		        </td>
 				</tr>
 			</table>
-			</apex:outputPanel>			            
-
-
         </apex:pageBlock>
         </apex:outputPanel>
     </apex:form>
