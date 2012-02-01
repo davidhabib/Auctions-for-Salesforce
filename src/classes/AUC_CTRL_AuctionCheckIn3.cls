@@ -33,9 +33,11 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 
 	// callback when the user changes the current auction in the dropdown.
 	public PageReference ChangeAuction() {
+		// clear any previous save message
+		strSaveResults = null;
+		
 		// clear out all state that is specific to the auction
 		auctionMaintenance.auctionId = auctionId;
-		strSaveResults = null;
 
 		// setting contactId's to null will null out their dependencies.
 		contactIdAttendee = null;
@@ -73,6 +75,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 			
 	// callback when the user changes the Attendee contact lookup.
 	public PageReference ChangeAttendeeLookup() {
+		// clear any previous save message
+		strSaveResults = null;
+		
 		// the setter for contactIdAttendee will 
 		// automatically invalidate any dependencies!
 
@@ -133,6 +138,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn3 {
 
 	// callback when the user changes the Table Captain contact lookup.
 	public PageReference ChangeCaptainLookup() {
+		// clear any previous save message
+		strSaveResults = null;
 		// the setter for contactIdCaptain will
 		// invalidate anything dependent.
 		return null;
