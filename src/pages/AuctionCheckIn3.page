@@ -12,6 +12,13 @@
 <style>	
 	
 	/* this styling adds the vertical scrollbar to our autocomplete fields */
+	.ui-autocomplete-input {
+		margin: 2px 0px 0 2px;
+		padding: 1px;
+		
+		display: inline-block;
+		vertical-align: middle !important;
+	}
 	.ui-autocomplete {
 		max-height: 200px;
 		overflow-y: auto;
@@ -20,13 +27,19 @@
 		/* add padding to account for vertical scrollbar */
 		padding-right: 20px;
 		font-size: 12px; 
-		font-family: Arial, Helvetica, sans-serif;;
+		font-family: Arial, Helvetica, sans-serif;
 	}
 	
 	/* these styles are for the combobox dropdown button */
-	.ui-button { margin-left: 0px; height: 1.8em; }
-	.ui-button-icon-only .ui-button-text { padding: 0.35em; } 
-	.ui-autocomplete-input { margin: 0; padding: 0.48em 0 0.47em 0.45em; }	
+	.ui-button {
+		margin-left: 0px;
+		
+		height: 19px;
+	}
+	.ui-icon {
+		height: 1em;
+	}
+	.ui-button-icon-only .ui-button-text { padding: 0; } 
 	
 	.ui-widget-content { 
 		background: white;
@@ -46,10 +59,12 @@
 	}
 	
 	.clsCombo {
-		font-size: 12px;
-		font-family: Arial, Helvetica, sans-serif;;
-		height: .85em;
-		width: 150px;		
+		
+			
+	}
+	.clsBtnAll {
+		top: 4px;
+		position:absolute;
 	}
 	
 	.clsTDEditForm {
@@ -103,8 +118,23 @@
 	.clsAttendeeLink a {
 		text-decoration: none;
 	}
-				
+	
+	.panelSearch {
+	}
+	.panelSearch .detailList .labelCol label {
+		display:block;
+		width: 110px;
+	}
+	
+	td.sideLeft {
+		width: 30%;
+		min-width: 400px;
+	}
+	.panelSearch .detailList .data2Col {
+		position: relative;
+	}
 </style>
+
  
 <script type="text/javascript">
     var j$ = jQuery.noConflict();
@@ -393,8 +423,8 @@
             <apex:pageBlockSection title="Search by Guest or Captain" columns="1"  />
 			<table cellpadding="10">
 			<tr>
-			<td style="vertical-align:top;">
-<apex:outputPanel id="panelSearch" >				            
+			<td class="sideLeft" style="vertical-align:top;">
+<apex:outputPanel id="panelSearch" styleClass="panelSearch" >				            
             <apex:pageBlockSection columns="1"  >
 	    		<apex:pageBlockSectionItem >
 	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
@@ -408,7 +438,7 @@
                 <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
 		       		<apex:outputLabel value="Attendee" />
 	                <apex:outputPanel >
-					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees" />            
+					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees ui-autocomplete-input" />            
 					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
 			    			rerender="panelSearch,panelEdit,panelAttendees" 
 					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
@@ -417,10 +447,10 @@
 	                </apex:outputPanel>
                 </apex:pageBlockSectionItem>
 
-                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle; white-space:nowrap;">
-		       		<apex:outputLabel value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Table&nbsp;Captain" escape="false" />
+                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
+		       		<apex:outputLabel value="Table Captain" escape="false" />
                 	<apex:outputPanel id="panelCaptains" >
-					   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains" /><button id="btnCaptainsAll" class="clsBtnAll" type="button" >&nbsp;</button>            
+					   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
 					    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
 			    			rerender="panelSearch,panelEdit,panelAttendees" 
 					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
@@ -441,7 +471,7 @@
 	        </td>              
 			</tr>			
 				<tr>
-				<td style="vertical-align:top;" >
+				<td class="sideLeft" style="vertical-align:top;" >
 <apex:outputPanel id="panelEdit" >				            					            
 	            <apex:pageBlockSection title="{!IF(attendeeEdit.con.Id != null, 'Contact Information', 'New Contact')}" 
 	            	columns="1" id="pbsEdit" collapsible="false" >
