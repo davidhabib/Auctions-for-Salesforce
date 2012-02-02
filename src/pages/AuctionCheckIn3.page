@@ -44,59 +44,21 @@
 	.ui-widget-content { 
 		background: white;
 	}
-	
-	.clsWaitLeft { 
-		background: url("//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/base/images/ui-anim_basic_16x16.gif") left center no-repeat; 
-	}
 
 	.clsWaitRight { 
 		background: url("//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/base/images/ui-anim_basic_16x16.gif") right center no-repeat; 
 	}
 	
-	.clsEditForm {
-		font-size: 12px; 
-		font-family: Arial, Helvetica, sans-serif;;
-	}
 	
-	.clsCombo {
-		
+	.clsCombo {	
 			
 	}
+	
 	.clsBtnAll {
 		top: 4px;
 		position:absolute;
 	}
 	
-	.clsTDEditForm {
-		vertical-align: top;
-	}
-
-	.clsTDEditFormCombo {
-		vertical-align: top;
-		white-space: nowrap;
-	}
-	
-	.clsTDHeaderEditForm {
-		text-align: center;
-		font-weight: bold;
-	}
-	
-	.clsBtnEdit {
-		font-size: 12px;
-		font-family: Arial, Helvetica, sans-serif;;
-		height: 24px;
-		width: 150px;
-	}
-	
-	.clsTxtEdit {
-		font-family: Arial, Helvetica, sans-serif;;
-		height:21px;
-	}
-	
-	.clsTxtEditNotes {
-		font-size: 12px;
-		font-family: Arial, Helvetica, sans-serif;;
-	}
 	
 	.clsDTEven {
 		background: white;
@@ -133,6 +95,24 @@
 	.panelSearch .detailList .data2Col {
 		position: relative;
 	}
+
+    .Error { 
+    	color: red; 
+    	font-weight: strong;
+    }
+    
+    .clsLoading {
+		display: none;
+		z-index: 99;
+		position: absolute;
+		top: 200px;
+		left: 10%;
+		background: rgba(255,255,255,1.0);
+		width: 50%;
+		height: 40px;
+		
+	}    
+
 </style>
 
  
@@ -154,6 +134,14 @@
 	********************************************************************************************************/
 	function myInitializeJQueryUI(strNameAttendee, strNameCaptain) {
 	
+		// eat the enter button, to prevent it from canceling or submitting the form.
+		j$(document).keydown(function(event) {
+			if (event.which == 13) {
+		    	event.preventDefault();
+		    	event.stopPropagation();
+		    	return false; // does preventDefault and stopPropagation
+		  	}  
+		});
 		
 		/*******************************************************************************************************
    	 	* setup the Attendee autocomplete textbox
@@ -218,10 +206,9 @@
    				}
    			}));
    			
-   			// if we don't find a match for a real search, clear all the combos.
+   			// if we don't find a match for a real search, clear the combo.
 			if (!isMatch && strSearch != '') {
      			j$("#txtAttendees").data('Id', null);
-     			//UNDONE: anything else to do?
 			}	        														      			
 		}
 
@@ -241,7 +228,7 @@
 		);
 		
 		/*******************************************************************************************************
-   	 	* setup the Ticket Holders autocomplete textbox
+   	 	* setup the Table Captains autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboCaptains").autocomplete({
 			minLength: 0,
@@ -358,22 +345,13 @@
 				input.focus();
 			});	
 		
-		
-		//UNDONE: how to get dt rows to have same class?
 		// hiliting the row on hover
-	    j$(".clsDTEven").hover(function() {
+	    j$(".clsDTEven, .clsDTOdd").hover(function() {
 	    	j$(this).addClass("hilite");
 	    }, function () {
 	    	j$(this).removeClass("hilite");
 	    });		
 
-		// hiliting the row on hover
-	    j$(".clsDTOdd").hover(function() {
-	    	j$(this).addClass("hilite");
-	    }, function () {
-	    	j$(this).removeClass("hilite");
-	    });	
-	    
 	    // set Attendee & captain names
 	    j$('#txtCaptains').val(strNameCaptain);	
 	    j$('#txtAttendees').val(strNameAttendee);	
@@ -412,101 +390,100 @@
 			
 </script>
  	
-    <style>
-	    .Error { color: red; font-weight: strong;}
-    </style>
 
    	<apex:sectionHeader title="Auction Check In" />
     <apex:form >   	
-    	<apex:outputPanel id="panelAll">	    
         <apex:pageBlock mode="edit" >
             <apex:pageBlockSection title="Search by Guest or Captain" columns="1"  />
-			<table cellpadding="10">
+	       		<apex:actionStatus id="statusLoad" onstart="j$('.loading').fadeIn();" onstop="j$('.loading').fadeOut();" />
+				<div class="loading clsLoading"  >
+				  <p style="vertical-align: middle;" >
+					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+					<span class="loadingText" style="vertical-align: middle;" >Loading...</span>
+				  </p>
+				</div>        				            					            
+			<table cellpadding="0">
 			<tr>
-			<td class="sideLeft" style="vertical-align:top;">
-<apex:outputPanel id="panelSearch" styleClass="panelSearch" >				            
-            <apex:pageBlockSection columns="1"  >
-	    		<apex:pageBlockSectionItem >
-	    			<apex:outputLabel value="Auction" for="lbxAuctions" />
-			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
-			    			rerender="panelSearch,panelEdit,panelAttendees" 
-			    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />			    			
-			    		<apex:selectOptions value="{!listSOAuctions}" />
-			    	</apex:selectList>	
-				</apex:pageBlockSectionItem>
-                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-		       		<apex:outputLabel value="Attendee" />
-	                <apex:outputPanel >
-					   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees ui-autocomplete-input" />            
-					    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
-			    			rerender="panelSearch,panelEdit,panelAttendees" 
-					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
-					        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
-					    </apex:actionFunction>
-	                </apex:outputPanel>
-                </apex:pageBlockSectionItem>
-
-                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-		       		<apex:outputLabel value="Table Captain" escape="false" />
-                	<apex:outputPanel id="panelCaptains" >
-					   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
-					    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
-			    			rerender="panelSearch,panelEdit,panelAttendees" 
-					    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
-					        <apex:param name="param1" assignTo="{!contactIdCaptain}" value="" />
-					    </apex:actionFunction>
-	        		</apex:outputPanel>	    	        		
-                </apex:pageBlockSectionItem>
-			</apex:pageBlockSection>
-</apex:outputPanel>
+			<td class="sideLeft" style="vertical-align:top;">			
+				<apex:outputPanel id="panelSearch" styleClass="panelSearch" >				            
+		            <apex:pageBlockSection columns="1"  >
+			    		<apex:pageBlockSectionItem >
+			    			<apex:outputLabel value="Auction" for="lbxAuctions" />
+					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
+					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+					    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />			    			
+					    		<apex:selectOptions value="{!listSOAuctions}" />
+					    	</apex:selectList>	
+						</apex:pageBlockSectionItem>
+		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
+				       		<apex:outputLabel value="Attendee" />
+			                <apex:outputPanel >
+							   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees ui-autocomplete-input" />            
+							    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+							        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
+							    </apex:actionFunction>
+			                </apex:outputPanel>
+		                </apex:pageBlockSectionItem>		
+		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
+				       		<apex:outputLabel value="Table Captain" escape="false" />
+		                	<apex:outputPanel id="panelCaptains" >
+							   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
+							    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+							        <apex:param name="param1" assignTo="{!contactIdCaptain}" value="" />
+							    </apex:actionFunction>
+			        		</apex:outputPanel>	    	        		
+		                </apex:pageBlockSectionItem>
+					</apex:pageBlockSection>
+				</apex:outputPanel>
 			</td>
 			<td style="vertical-align:top;">
-<apex:outputPanel id="panelStatus" >				            
-				<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}</i><hr/> -->
-	            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
-	            <apex:messages styleClass="Error" />
-        		<apex:actionStatus startText="Loading..." stopText="" id="statusLoad" startStyle="color:green; font-style:italic; font-size:2em;" />
-</apex:outputPanel>
+				<apex:outputPanel id="panelStatus" >				            
+					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}</i><hr/> -->
+		            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
+		            <apex:messages styleClass="Error" />
+				</apex:outputPanel>
 	        </td>              
 			</tr>			
-				<tr>
-				<td class="sideLeft" style="vertical-align:top;" >
-<apex:outputPanel id="panelEdit" >				            					            
-	            <apex:pageBlockSection title="{!IF(attendeeEdit.con.Id != null, 'Contact Information', 'New Contact')}" 
-	            	columns="1" id="pbsEdit" collapsible="false" >
-	            	
-	            	<!-- contact fields use a fieldset -->
-					<apex:repeat value="{!$ObjectType.Contact.FieldSets.AuctionsCheckInFS}" var="f" >
-	   					<apex:inputField value="{!attendeeEdit.con[f]}" required="false" />
-		  			</apex:repeat>        
-					<hr/>
-	            	<!-- CM fields use a fieldset -->
-					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionsCheckInCMFS}" var="f" >
-	   					<apex:inputField value="{!attendeeEdit.cm[f]}" required="false" />
-		  			</apex:repeat>        	            	 
-	            	<hr/>
-	            	<!-- hardcoded fields to add new ticket purchase -->
-	            	<apex:pageBlockSectionItem >
-	            		<apex:outputLabel value="Add&nbsp;Ticket&nbsp;Purchase" escape="false" />
-	            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
-	            	</apex:pageBlockSectionItem>
-	           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
-	           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
-	            </apex:pageBlockSection>     	            
-	            
+			<tr>
+			<td class="sideLeft" style="vertical-align:top;" >
+				<apex:outputPanel id="panelEdit" >		
+		            <apex:pageBlockSection title="{!IF(attendeeEdit.con.Id != null, attendeeEdit.con.Name, 'New Contact')}" 
+		            	columns="1" id="pbsEdit" collapsible="false" >		            	
+		            	<!-- contact fields use a fieldset -->
+						<apex:repeat value="{!$ObjectType.Contact.FieldSets.AuctionsCheckInFS}" var="f" >
+		   					<apex:inputField value="{!attendeeEdit.con[f]}" required="false" />
+			  			</apex:repeat>        
+						<hr/>
+		            	<!-- CM fields use a fieldset -->
+						<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionsCheckInCMFS}" var="f" >
+		   					<apex:inputField value="{!attendeeEdit.cm[f]}" required="false" />
+			  			</apex:repeat>        	            	 
+		            	<hr/>
+		            	<!-- hardcoded fields to add new ticket purchase -->
+		            	<apex:pageBlockSectionItem >
+		            		<apex:outputLabel value="Add&nbsp;Ticket&nbsp;Purchase" escape="false" />
+		            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
+		            	</apex:pageBlockSectionItem>
+		           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
+		           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
+		            </apex:pageBlockSection>     	            		            
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save Contact', 'Save New Contact')}" action="{!SaveAttendeeInfo}" 
-		    			rerender="panelAll" 						
+		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
 					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" />&nbsp;&nbsp;
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/>														       
-</apex:outputPanel>        				
-				</td> 
-				<td style="vertical-align:top;" >
-<apex:outputPanel id="panelAttendees" >				            					            
+				</apex:outputPanel>        				
+			</td> 
+			<td style="vertical-align:top;" >
+				<apex:outputPanel id="panelAttendees" >				            					            
 		            <apex:pageBlockSection title="Attendees" columns="1" id="pbsAttendees" rendered="{!contactIdCaptain!=null}" collapsible="true" >
 						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
@@ -545,11 +522,10 @@
 							</apex:column>
 						</apex:dataTable>	
 		            </apex:pageBlockSection>
-</apex:outputPanel>        				
-		        </td>
-				</tr>
+				</apex:outputPanel>        				
+		       </td>
+			</tr>
 			</table>
         </apex:pageBlock>
-        </apex:outputPanel>
     </apex:form>
 </apex:page>
