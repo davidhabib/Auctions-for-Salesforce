@@ -34,7 +34,7 @@
 	.ui-button {
 		margin-left: 0px;
 		
-		height: 19px;
+		height: 21px;
 	}
 	.ui-icon {
 		height: 1em;
@@ -55,8 +55,8 @@
 	}
 	
 	.clsBtnAll {
-		top: 4px;
-		position:absolute;
+		top: 2px;
+		position:relative;
 	}
 	
 	
