@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In"  >
+<apex:page controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In"  tabStyle="Check_In__tab" >
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
@@ -104,11 +104,11 @@
     .clsLoading {
 		display: none;
 		z-index: 99;
-		position: absolute;
-		top: 200px;
-		left: 10%;
-		background: rgba(255,255,255,1.0);
-		width: 50%;
+		position: fixed;
+		top: 40%;
+		left: 30%;
+		background: lightyellow;
+		width: 400px;
 		height: 40px;
 		
 	}    
@@ -285,7 +285,7 @@
 	   				if (strLower == strSearch) {
 	   					j$("#txtCaptains").val(item.Name).data('Id', item.Id);
 	   					isMatch = true;
-	   				}
+	   				}	   				
    					return {label: item.Name, value: item.Id};
    				}
    			}));
@@ -475,6 +475,7 @@
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save Contact', 'Save New Contact')}" action="{!SaveAttendeeInfo}" 
+						status="statusLoad"
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
 					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" />&nbsp;&nbsp;

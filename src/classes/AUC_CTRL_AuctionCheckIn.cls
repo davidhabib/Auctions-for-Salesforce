@@ -503,7 +503,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			}
 		}
 		
-		listCaptains = [select Id, Name from Contact where Id in :setContactId	order by Name];		
+		listCaptains = [select Id, FirstName, Name from Contact where Id in :setContactId	order by Name];	
 		return listCaptains; 
     } 		
 
