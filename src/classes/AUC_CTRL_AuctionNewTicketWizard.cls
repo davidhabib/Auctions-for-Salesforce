@@ -89,6 +89,35 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		private set;
 	}
 	
+	// list for Stage picklist, filtered correctly for stages for Auction Donated Item opps.
+	public list<SelectOption> listSOTicketStages {
+		get {
+			if (listSOTicketStages == null) {
+				listSOTicketStages = new list<SelectOption>();
+				
+				// since we can't seem to get the styling for a required field for Stage,
+				// we won't provide a blank option!
+				//listSOTicketStages.add(new SelectOption('', ''));
+				
+				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
+				
+				// if setting returns strings, use them
+				if (strStages != null) {
+					list<string> listStr = strStages.split(';');
+					for (string  str : listStr) {
+						listSOTicketStages.add(new SelectOption(str, str));						
+					}					
+				} else { // otherwise use the current Salesforce Opp Stages			
+					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
+						listSOTicketStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
+					}
+				}
+			}
+			return listSOTicketStages;
+		}
+		private set;
+	}
+		
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<CampaignMember> listCmpMbrAttendees {
     	set;
@@ -144,6 +173,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		return null;
 	}
 	
+	private class MySaveException extends Exception {}
+	
 	public PageReference Save() {
         strSaveResults = 'Starting Save...';
 	        
@@ -154,49 +185,67 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         		OnChange_NumberOfTickets();
         	}        	
         	
-        	// create the opp for the ticket purchase        	
-			Contact contact = [select Name, AccountId from Contact where Id=:contactRole.ContactId];	
-			opp.Name = contact.Name + ' ' + string.valueof(opp.CloseDate.year()) + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
-			opp.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * opp.Number_Of_Tickets__c;      	
-        	if (opp.amount == null) {
-        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
-        	} else {
-        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
+        	// create or update the opp for the ticket purchase
+        	// verify that either contact or account is specified, but don't require both.
+        	if (contactRole.ContactId == null && opp.AccountId == null) {
+        		throw(new MySaveException('Please specify a Contact or an Account.'));
         	}
         	
-            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
-			// if so, we need to set the Opp's Account to make the rollups work.
-			if (AUC_AuctionConstants.isOneToOne()) {
-				opp.AccountId = contact.AccountId;
+        	// name the opp if empty (new scenario)
+        	if (opp.Name == null) {
+        		string strTicketOwner;
+	        	if (opp.AccountId != null) {
+	        		Account acc = [select Id, Name from Account where Id = :opp.AccountId];
+					strTicketOwner = acc.Name; 
+	        	} else if (contactRole.ContactId != null) {
+					Contact contact = [select Name, AccountId from Contact where Id=:contactRole.ContactId];
+					strTicketOwner = contact.Name;
+
+		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
+					// if so, we need to set the Opp's Account to make the rollups work.
+					if (AUC_AuctionConstants.isOneToOne() && opp.AccountId == null) {
+						opp.AccountId = contact.AccountId;
+					}
+	        	}
+	        	opp.Name = strTicketOwner + ' ' + string.valueof(opp.CloseDate.year()) + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;
+        	}        	
+ 
+			opp.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * opp.Number_Of_Tickets__c;     
+			if (opp.StageName == null) { 	
+	        	if (opp.amount == null) {
+	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
+	        	} else {
+	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
+	        	}
 			}
-				        	
+			        	
+			// save the ticket opp			        					        		
         	if (opp.Id == null) {
         		insert opp;
 				contactRole.OpportunityId = opp.Id;
 	        	contactRole.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
-				contactRole.IsPrimary = true;
-				
+				contactRole.IsPrimary = true;				
         	} else {
         		update opp;
         	}
 			
+			// if creating a new contact role, then also put the contact on the Tickets campaign.
 			if (contactRole.Id == null) {
 				if (AUC_AuctionConstants.fCreateOppContactRoles(opp.Id, contactRole.ContactId)) {				
 					insert contactRole;
 				}
-
 				// add them to the Tickets campaign.
-				CampaignMember cm = new CampaignMember();
-				cm.CampaignId = opp.CampaignId;
-				cm.ContactId = contactRole.ContactId;
-				cm.Status = 'Donated';
-				insert cm;
-				
+				if (contactRole.ContactId != null) {
+					CampaignMember cm = new CampaignMember();
+					cm.CampaignId = opp.CampaignId;
+					cm.ContactId = contactRole.ContactId;
+					cm.Status = 'Donated';
+					insert cm;
+				}				
 			} else {
         		update contactRole;
 			}
-        		
-        	
+        		       	
         	strSaveResults = 'The ticket purchase has been saved.';
         	
 			// now create the Attendee CampaignMembers
@@ -237,8 +286,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
             // strSaveResults += e.getMessage();
             ApexPages.addMessages(e);            
             return null;
-        }
-                
+        }              
 	}
 
 	public PageReference Cancel() {

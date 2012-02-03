@@ -119,7 +119,7 @@
 <script type="text/javascript">
     var j$ = jQuery.noConflict();
  	
-    var listCaptains = null; // our cached list of Captains for the current Auction.
+    var listCaptains = null; // our cached list of Captains (contacts and accounts) for the current Auction.
     var auctionId = "{!auctionId}"; // the current Auction.
  	
 	/*******************************************************************************************************
@@ -274,10 +274,10 @@
 		* given the list of contact, what is being searched for, and the response object,
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
-		function fillAndMatchCaptainsCombo(listCons, request, response) {
+		function fillAndMatchCaptainsCombo(listCapts, request, response) {
 			var strSearch = request.term.toLowerCase();		
  			var isMatch = false;
-     		response(j$.map(listCons, function(item) {
+     		response(j$.map(listCapts, function(item) {
      			var strLower = item.Name.toLowerCase();
    				if (strLower.indexOf(strSearch) >= 0) {
 	   				// if we find the exact match, get its formal text and id.
@@ -434,7 +434,7 @@
 							    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
 							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
-							        <apex:param name="param1" assignTo="{!contactIdCaptain}" value="" />
+							        <apex:param name="param1" assignTo="{!idCaptain}" value="" />
 							    </apex:actionFunction>
 			        		</apex:outputPanel>	    	        		
 		                </apex:pageBlockSectionItem>
@@ -443,7 +443,7 @@
 			</td>
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
-					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - contactIdCaptain: {!contactIdCaptain}, {!strNameCaptain}</i><hr/> -->
+					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> -->
 		            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
@@ -480,12 +480,12 @@
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
 					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" />&nbsp;&nbsp;
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
-					<br/>														       
+					<br/><br/>														       
 				</apex:outputPanel>        				
 			</td> 
 			<td style="vertical-align:top;" >
 				<apex:outputPanel id="panelAttendees" >				            					            
-		            <apex:pageBlockSection title="Attendees" columns="1" id="pbsAttendees" rendered="{!contactIdCaptain!=null}" collapsible="true" >
+		            <apex:pageBlockSection title="Attendees" columns="1" id="pbsAttendees" rendered="{!idCaptain!=null}" collapsible="true" >
 						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
 							headerClass="clsDTHeader" >	

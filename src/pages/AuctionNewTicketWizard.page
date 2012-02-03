@@ -43,10 +43,18 @@
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
             <apex:messages styleClass="Error" />              
             <apex:pageBlockSection title="Ticketing Information" columns="1">
-                <apex:inputField value="{!contactRole.ContactId}" required="true" />                	       			
+                <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
+                <apex:inputField value="{!contactRole.ContactId}" required="false" />                	       			
                 <apex:inputField value="{!opp.AccountId}" id="txtAccountId" />
                 <apex:inputField value="{!opp.CampaignId}" required="true" />
                 <apex:inputField value="{!opp.CloseDate}" required="true" />
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
+				   	<apex:selectList value="{!opp.StageName}" size="1" id="lbxTicketStage" required="true"  >
+				   		<apex:selectOptions value="{!listSOTicketStages}" /> 
+				   	</apex:selectList>
+                </apex:pageBlockSectionItem>
+                                
                 <apex:inputField value="{!opp.Amount}" required="false" />
                 <apex:inputField value="{!opp.Number_of_Tickets__c}" required="true" >
     	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 

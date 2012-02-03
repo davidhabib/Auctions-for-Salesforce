@@ -114,7 +114,7 @@ public with sharing class AUC_AuctionConstants {
 			return 'Please see the Auctions for Salesforce User\'s Guide to see how to set the Footer text for Auction Receipts.';
 	} 
 	
-	// Get the user's list of Auction Donated Item Stages
+	// Get the user's list of Auction Donated Item Opportunity Stages
 	// if the setting exists, allow it to be null (to imply use values from Salesforce)
 	// if the setting doesn't even exist, then return our default values.
 	public static string StrDonatedItemOpportunityStages() {
@@ -126,6 +126,18 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 	
+	// Get the user's list of Auction Ticket Opportunity Stages
+	// if the setting exists, allow it to be null (to imply use values from Salesforce)
+	// if the setting doesn't even exist, then return our default values.
+	public static string StrTicketOpportunityStages() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].Ticket_Opportunity_Stages__c;
+		} else {
+			return 'Pledged;Closed Won;Closed Won - Not Thanked';
+		}
+	}
+
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
@@ -174,6 +186,31 @@ public with sharing class AUC_AuctionConstants {
     	OpportunityContactRole[] listOCR = [select Id from OpportunityContactRole where contactId=:contactId and OpportunityId=:oppId and IsPrimary=true]; 
     	return (listOCR.size() == 0);    	
     }
+    
+    
+    // method accepts the ID of any object type and returns the full name, including prefix of the sObject
+	//type to which it belongs.
+    public static Schema.SObjectType getObjectTypeFromId(ID sobjId) {
+        string id = sobjId;
+    	
+    	// optimize hack!
+    	// we know the Salesforce standard prefixes!
+    	if (id.startsWith('003')) return Contact.sObjectType;
+    	if (id.startsWith('001')) return Account.sObjectType;
+    	
+    	// for others, we'll do the work! 
+        Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+        string keyPrefix;
+
+        for (Schema.SObjectType describe : gd.values()) {
+    	    keyPrefix = describe.getDescribe().getKeyPrefix();
+            if (keyPrefix != null && id.startsWith(keyPrefix)) {
+        	    return describe;
+            }
+        }
+        return null;
+    }
+            
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
 		System.Assert(AUC_AuctionConstants.RECORDTYPE_OPP_AuctionGift != null);
