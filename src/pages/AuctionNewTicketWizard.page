@@ -35,14 +35,15 @@
     		<hr/>
 		</apex:outputPanel>
 		    
-        <apex:pageBlock title="New Auction Ticket" mode="edit" id="pbMain" >
+        <apex:pageBlock title="{!IF(opp.Id!=null,'Edit','New') + ' Auction Ticket'}" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>
                 <apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strSaveResults), 'Cancel', 'Close')}" immediate="true"/>
             </apex:pageBlockButtons>      
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
-            <apex:messages styleClass="Error" />              
-            <apex:pageBlockSection title="Ticketing Information" columns="1">
+            <apex:messages styleClass="Error" />  
+            <p><i>&nbsp;&nbsp;For ticket purchases by an individual, fill in the Contact field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the {!$ObjectType.Account.Label} field.</i></p><br/>            
+            <apex:pageBlockSection title="Ticketing Information" columns="2">
                 <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
                 <apex:inputField value="{!contactRole.ContactId}" required="false" />                	       			
                 <apex:inputField value="{!opp.AccountId}" id="txtAccountId" />

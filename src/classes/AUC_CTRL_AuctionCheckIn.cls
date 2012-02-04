@@ -20,7 +20,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
 			auctionId = listSOAuctions[1].getValue();
 		}	
-		auctionMaintenance.auctionId = auctionId;
+		auctionMaintenance.auctionId = auctionId;		
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -46,7 +46,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}  
 
 	// holds the currently selected Attendee contact
-	// has to be a string to allow a null Id to get returned from the page.
+	// has to be a string to allow a null Id ('') to get returned from the page.
 	public string contactIdAttendee { 
 		get; 
 		set {
@@ -81,13 +81,32 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		// the setter for contactIdAttendee will 
 		// automatically invalidate any dependencies!
 
-		// if there is no table captain currently selected, see if they have one.
-		if (idCaptain == null) {
-			idCaptain = idCaptainForcontactIdAttendee(contactIdAttendee);
-		}
+		// see if they already have a captain, and only update the current
+		// captain if we've found a new one.
+		ID id = idCaptainForcontactIdAttendee(contactIdAttendee);
+		if (id != null) idCaptain = id;
 		return null;
 	}  
 	
+	// this parameter is used in scenarios where the page
+	// needs us to search for an attendee before it could wait
+	// for the return from its javascript remoting call to get data
+	public string searchAttendee { get; set; }
+	
+	// callback when the user changes the Attendee contact lookup and submits too quick.
+	public PageReference SearchAttendeeLookup() {
+		if (searchAttendee != null) {
+			list<Contact> listCon = [select Id from Contact where Name = :searchAttendee];
+			if (listCon.size() > 0) {
+				contactIdAttendee = listCon[0].Id;
+			} else {
+				contactIdAttendee = null;
+			}
+		return ChangeAttendeeLookup();
+		}
+		return null;	
+	}
+
 	// utility to find the Captain for an Attendee
 	private ID idCaptainForcontactIdAttendee(ID idAttendee) {		
 
@@ -118,7 +137,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// holds the currently selected Captain.  
 	// Note that this can be either a Contact ID or an Account ID
-	public ID idCaptain { 
+	// has to be a string to allow a null Id ('') to get returned from the page.
+	public string idCaptain { 
 		get; 
 		set {
 			// invalidate anything dependent on a change
@@ -129,6 +149,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				oppCaptain = null;
 			}
 			idCaptain = value;			
+			if (idCaptain == '') idCaptain = null; 
 		}
 	}
 	
@@ -337,13 +358,30 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				// if not loaded (not a current Attendee), then look it up
 				if (attendeeEdit == null) {	
 					Contact con = new Contact();				
-					if (contactIdAttendee != null) {
-						con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
-					}
 	                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
                 	cmpmbr.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
                 	cmpmbr.contactId = contactIdAttendee;
                 	cmpmbr.Status = 'RSVP Yes';
+
+					if (contactIdAttendee != null) {
+						con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
+
+		                // we still need to make sure they don't already have a CM.  only happens in a case where the CM
+		                // is no longer attached to either a Ticket Opp or a Table Captain.
+		    			string strSoql = 'select ' + strCMFields +
+	    					' from CampaignMember' + 
+	    					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
+	    						' contactId = :contactIdAttendee';
+	    				list<CampaignMember> listCM = Database.query(strSoql);
+	    				if (listCM.size() > 0) {
+	    					cmpmbr = listCM[0];
+	    					if (cmpmbr.Table_Captain__c == null) {
+	    						// go ahead and prefill the current table captain.
+			                	cmpmbr.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
+	    					}
+	                	cmpmbr.Status = 'RSVP Yes';
+	    				}
+					}
                 	attendeeEdit = new Attendee(cmpmbr, con);
 				}
 			}
@@ -362,7 +400,36 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		}
 		return null;
 	}
-			
+	
+	// list for Stage picklist, filtered correctly for stages for Auction Ticket opps.
+	public list<SelectOption> listSOTicketStages {
+		get {
+			if (listSOTicketStages == null) {
+				listSOTicketStages = new list<SelectOption>();
+				
+				// since we can't seem to get the styling for a required field for Stage,
+				// we won't provide a blank option!
+				//listSOTicketStages.add(new SelectOption('', ''));
+				
+				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
+				
+				// if setting returns strings, use them
+				if (strStages != null) {
+					list<string> listStr = strStages.split(';');
+					for (string  str : listStr) {
+						listSOTicketStages.add(new SelectOption(str, str));						
+					}					
+				} else { // otherwise use the current Salesforce Opp Stages			
+					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
+						listSOTicketStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
+					}
+				}
+			}
+			return listSOTicketStages;
+		}
+		private set;
+	}
+				
 	// status string for reporting the results of saving.
     public String strSaveResults { get; set; }    
 	
@@ -394,15 +461,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
       		if (fAddTicketPurchase) {        	
 	        	// create the opp for the ticket purchase        	
 				Contact contact = [select Name, AccountId from Contact where Id=:contactIdAttendee];	
-				oppTicketAttendee.Name = contact.Name + ' ' + string.valueof(oppTicketAttendee.CloseDate.year()) + 
-					AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
+				string strAuction = AUC_AuctionMaintenance.NameOfAuctionId(AuctionId);
+				// remove trailing word Auction if it's there, so we don't get "auction" auction ticket.
+				if (strAuction.endsWith(' Auction')) {
+					strAuction = strAuction.substring(0, strAuction.length() - 8);
+				}
+				oppTicketAttendee.Name = contact.Name + ' ' + strAuction + ' ' + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
 				oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * 
 					oppTicketAttendee.Number_Of_Tickets__c;      	
-	        	if (oppTicketAttendee.amount != null) {
-	        		oppTicketAttendee.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
-	        	} else {
-	        		oppTicketAttendee.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
-	        	}
 	        	
 	            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 				// if so, we need to set the Opp's Account to make the rollups work.

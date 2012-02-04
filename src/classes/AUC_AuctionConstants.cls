@@ -122,7 +122,7 @@ public with sharing class AUC_AuctionConstants {
 		if (settings.size() > 0) {
 			return settings[0].Donated_Item_Opportunity_Stages__c;
 		} else {
-			return 'Prospecting;Pledged;Closed Won;Closed Lost;Closed Won - Not Thanked';
+			return 'Prospecting;Pledged;Closed Won;Closed Won - Not Thanked;Closed Lost';
 		}
 	}
 	
@@ -134,7 +134,7 @@ public with sharing class AUC_AuctionConstants {
 		if (settings.size() > 0) {
 			return settings[0].Ticket_Opportunity_Stages__c;
 		} else {
-			return 'Pledged;Closed Won;Closed Won - Not Thanked';
+			return 'Pledged;Closed Won;Closed Won - Not Thanked;Closed Lost';
 		}
 	}
 

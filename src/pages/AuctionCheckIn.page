@@ -109,9 +109,13 @@
 		left: 30%;
 		background: lightyellow;
 		width: 400px;
-		height: 40px;
-		
+		height: 40px;		
 	}    
+	
+	.clsHelpText {
+		font-size: 11px; 
+		font-family: Arial, Helvetica, sans-serif;
+	}		
 
 </style>
 
@@ -156,6 +160,7 @@
 		   		j$(this).val(ui.item.label);
 		   		return false;
 		   	},
+
 	   	})
 		.data("autocomplete")._renderItem = function(ul, item) {
 			return j$( "<li></li>" )
@@ -214,6 +219,8 @@
 
 		/*******************************************************************************************************
 		* specify the select event for Attendees, so it can update the controller to refresh the Attendee panel. 
+		* Triggered when an item is selected from the menu; 
+		* ui.item refers to the selected item. 
 		*******************************************************************************************************/
 		j$('#txtAttendees').autocomplete("option", "select",
 			function(event, ui) {
@@ -228,11 +235,33 @@
 		);
 		
 		/*******************************************************************************************************
+		* specify the Change event for Attendees, so it can update the controller to refresh the Attendee panel. 
+		* Change called when the field is blurred (loses focus), if the value has changed;
+		* ui.item refers to the selected item, if one was selected from the autocomplete menu.
+		*******************************************************************************************************/
+		j$('#txtAttendees').autocomplete("option", "change",
+			function(event, ui) {
+				// if ui.item is provided, we already dealt with it in the select event.
+				if (ui.item != null) return false;	
+							
+				var Id = j$(this).data('Id');
+				if (Id == null && j$(this).val() != null) {
+					// did the user give enough time for the search to run?
+					// better go the search route!
+					SearchAttendeeLookup(j$(this).val());
+					return false;				
+				}
+				ChangeAttendeeLookup(Id);
+				return false;				
+		   	}
+		);
+
+		/*******************************************************************************************************
    	 	* setup the Table Captains autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboCaptains").autocomplete({
 			minLength: 0,
-			delay: 200,
+			delay: 0,
 
 		   	// focus called when the user hilights an item by arrowing or mousing over the list 
 		   	// we needed to override this, otherwise the Id was displayed in the textbox.
@@ -298,7 +327,7 @@
 		}
 
 		/*******************************************************************************************************
-		* specify the select event for Ticket Holders, so it can cause the Attendee panel to refresh.
+		* specify the select event for Captains, so it can cause the Attendee panel to refresh.
 		*******************************************************************************************************/
 		j$('#txtCaptains').autocomplete("option", "select",
 			function(event, ui) {
@@ -312,6 +341,20 @@
 		   	}
 		);
 
+		/*******************************************************************************************************
+		* specify the Change event for Captains, so it can update the controller to refresh the Attendee panel. 
+		* Change called when the field is blurred (loses focus), if the value has changed;
+		* ui.item refers to the selected item, if one was selected from the autocomplete menu.
+		*******************************************************************************************************/
+		j$('#txtCaptains').autocomplete("option", "change",
+			function(event, ui) {
+				// if ui.item is provided, we already dealt with it in the select event.
+				if (ui.item != null) return false;				
+				var Id = j$(this).data('Id');
+				ChangeCaptainLookup(Id);
+				return false;				
+		   	}
+		);
 			
 		/*******************************************************************************************************
 		* setup the button for showing all items		
@@ -417,13 +460,18 @@
 					    	</apex:selectList>	
 						</apex:pageBlockSectionItem>
 		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-				       		<apex:outputLabel value="Attendee" />
+				       		<apex:outputLabel value="Guest" />
 			                <apex:outputPanel >
 							   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees ui-autocomplete-input" />            
 							    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
 							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 							        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
+							    </apex:actionFunction>
+							    <apex:actionFunction action="{!SearchAttendeeLookup}" name="SearchAttendeeLookup" status="statusLoad" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+							        <apex:param name="param1" assignTo="{!searchAttendee}" value="" />
 							    </apex:actionFunction>
 			                </apex:outputPanel>
 		                </apex:pageBlockSectionItem>		
@@ -444,6 +492,14 @@
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
 					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> -->
+					<apex:pageMessage severity="info" strength="1" title="instructions" rendered="{!strSaveResults==null}">
+						<div class="clsHelpText" >
+						Enter the name of a guest, to search for their ticket and table assignment, and display their information.&nbsp;&nbsp;
+						Enter the name of a Table Captain, to see all of their guests.&nbsp;&nbsp;
+						Click on a guest from the Guest List to edit their information.&nbsp;&nbsp;
+						Remember to click Save to save any changes.
+						</div>
+					</apex:pageMessage>				
 		            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
@@ -471,6 +527,12 @@
 		            	</apex:pageBlockSectionItem>
 		           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
 		           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
+		                <apex:pageBlockSectionItem >
+		                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
+						   	<apex:selectList value="{!oppTicketAttendee.StageName}" size="1" id="lbxTicketStage" required="true"  >
+						   		<apex:selectOptions value="{!listSOTicketStages}" /> 
+						   	</apex:selectList>
+		                </apex:pageBlockSectionItem>		           		
 		            </apex:pageBlockSection>     	            		            
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
@@ -485,7 +547,7 @@
 			</td> 
 			<td style="vertical-align:top;" >
 				<apex:outputPanel id="panelAttendees" >				            					            
-		            <apex:pageBlockSection title="Attendees" columns="1" id="pbsAttendees" rendered="{!idCaptain!=null}" collapsible="true" >
+		            <apex:pageBlockSection title="Guests" columns="1" id="pbsAttendees" rendered="{!idCaptain!=null}" collapsible="true" >
 						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
 							headerClass="clsDTHeader" >	

@@ -89,7 +89,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		private set;
 	}
 	
-	// list for Stage picklist, filtered correctly for stages for Auction Donated Item opps.
+	// list for Stage picklist, filtered correctly for stages for Auction Ticket opps.
 	public list<SelectOption> listSOTicketStages {
 		get {
 			if (listSOTicketStages == null) {
@@ -188,7 +188,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	// create or update the opp for the ticket purchase
         	// verify that either contact or account is specified, but don't require both.
         	if (contactRole.ContactId == null && opp.AccountId == null) {
-        		throw(new MySaveException('Please specify a Contact or an Account.'));
+        		throw(new MySaveException('Please specify a Contact or ' + SObjectType.Account.Label));
         	}
         	
         	// name the opp if empty (new scenario)
