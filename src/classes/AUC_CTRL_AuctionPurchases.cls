@@ -5,14 +5,14 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionPurchases() {
-		strFields = new list<string>{'Auction_Item_Name__c', 'Amount', 'StageName', 'CloseDate' };				        	
+		strFields = new list<string>{'GW_Auctions__Auction_Item_Name__c', 'Amount', 'StageName', 'CloseDate' };				        	
        	strNameField = 'Name'; 	
        	strObjectType = 'Opportunity';			
 	}
 	
 	
 	public override string getStrSoql() {	
-		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, Auction_Item_Name__c from opportunity ' +
+		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, GW_Auctions__Auction_Item_Name__c from opportunity ' +
         		'where (RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem  + '\'' + 
         		' or RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionGift  + '\') ' +
         		' and CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionAttendees + '\'';
@@ -24,7 +24,7 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 	}
 
 	public override PageReference NewItem() { 
-		PageReference p = new PageReference('/apex/AuctionNewPurchaseWizard?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionNewPurchaseWizard?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;		
 	}
 
@@ -44,7 +44,7 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
     		Auction_Item_Name__c = 'Test Auction Item',
     		Auction__c = auction.id,
     		FMV_Override__c = 100
-    	);
+    	); 
     	insert ai;
     	    	
 		AUC_AuctionMaintenance am = new AUC_AuctionMaintenance();

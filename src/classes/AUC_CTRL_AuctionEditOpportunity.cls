@@ -22,4 +22,35 @@ public with sharing class AUC_CTRL_AuctionEditOpportunity {
    		pr.getParameters().put('retURL', ApexPages.currentPage().getParameters().get('retURL'));
        	return pr.setredirect(true);
 	}
+	
+	//==================== TEST METHOD(s) ======================================
+	static testmethod void CodeCoverageTests() {
+		Opportunity opp = new Opportunity(RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionTicket);
+		opp.Name = 'my bogus test ticket opportunity';
+		opp.Amount = 100;
+		opp.CloseDate = system.today();
+		opp.StageName = 'Won Closed';
+		insert opp;
+		
+		//pass Opp into the standard controller
+		ApexPages.StandardController sc = new ApexPages.standardController(opp);
+		
+		//pass the controller into the extension
+		AUC_CTRL_AuctionEditOpportunity ext = new AUC_CTRL_AuctionEditOpportunity(sc);		
+		System.assert(ext.doEdit() != null);		
+		
+		opp = new Opportunity(RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem);
+		opp.Name = 'my bogus test donated item opportunity';
+		opp.Amount = 100;
+		opp.CloseDate = system.today();
+		opp.StageName = 'Won Closed';
+		insert opp;
+		
+		//pass Opp into the standard controller
+		sc = new ApexPages.standardController(opp);
+		
+		//pass the controller into the extension
+		ext = new AUC_CTRL_AuctionEditOpportunity(sc);		
+		System.assert(ext.doEdit() != null);				
+	}	
 }

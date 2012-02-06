@@ -191,6 +191,9 @@ public with sharing class AUC_AuctionConstants {
     // method accepts the ID of any object type and returns the full name, including prefix of the sObject
 	//type to which it belongs.
     public static Schema.SObjectType getObjectTypeFromId(ID sobjId) {
+
+    	if (sobjId == null)
+    		return null;
         string id = sobjId;
     	
     	// optimize hack!
@@ -223,6 +226,10 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.isOneToOne() == false || AUC_AuctionConstants.isOneToOne() == true);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsIntro() != null);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsFooter() != null);
+		System.Assert(AUC_AuctionConstants.StrDonatedItemOpportunityStages() != null);
+		System.Assert(AUC_AuctionConstants.StrTicketOpportunityStages() != null);
+		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
+		System.Assert(AUC_AuctionConstants.getObjectTypeFromId(null) == null);
 	}
 	
 	static testmethod void TestNoSettings() {		

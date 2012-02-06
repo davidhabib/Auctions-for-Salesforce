@@ -5,14 +5,14 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionTickets() {
-		strFields = new list<string>{'Amount', 'StageName', 'CloseDate', 'Number_of_Tickets__c' };				        	
+		strFields = new list<string>{'Amount', 'StageName', 'CloseDate', 'GW_Auctions__Number_of_Tickets__c' };				        	
        	strNameField = 'Name'; 	
        	strObjectType = 'Opportunity';			
 	}
 	
 	
 	public override string getStrSoql() {	
-		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, Number_of_Tickets__c from opportunity ' +
+		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, GW_Auctions__Number_of_Tickets__c from opportunity ' +
         		'where RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionTicket  + '\'' + 
         		' and CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionTickets + '\'';
 		
@@ -23,22 +23,22 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 	}
 
 	public override PageReference NewItem() { 
-		PageReference p = new PageReference('/apex/AuctionNewTicketWizard?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionNewTicketWizard?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;		
 	}
 	
 	public PageReference AuctionCheckIn() {
-		PageReference p = new PageReference('/apex/AuctionCheckIn?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionCheckIn?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;
 	}
 	
 	public PageReference AutoAssignBidNumbers() {
-		PageReference p = new PageReference('/apex/AuctionAutoBidNumbers?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionAutoBidNumbers?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;
 	}
 	
 	public override PageReference EditItem(ID idItem) {
-		return new PageReference('/apex/AuctionNewTicketWizard?oppId=' + idItem + '&retURL=/apex/AuctionTickets');
+		return new PageReference('/apex/GW_Auctions__AuctionNewTicketWizard?oppId=' + idItem + '&retURL=/apex/GW_Auctions__AuctionTickets');
 	}
 	
 	//==================== TEST METHOD(s) ======================================

@@ -5,24 +5,24 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 
 	// constructor
 	public AUC_CTRL_AuctionDonatedItems() {
-		strFields = new list<string>{'Name', 'Amount', 'StageName', 'CloseDate', 'Number_Available__c'};				        	
-       	strNameField = 'Auction_Donated_Item_Name__c';
+		strFields = new list<string>{'Name', 'Amount', 'StageName', 'CloseDate', 'GW_Auctions__Number_Available__c'};				        	
+       	strNameField = 'GW_Auctions__Auction_Donated_Item_Name__c';
        	strObjectType = 'Opportunity'; 				
 	}
 	
 	
 	public override string getStrSoql() {		
-		string strSoql = 'select Id, Auction_Donated_Item_Name__c, Name, Amount, CloseDate, StageName, Number_Available__c from opportunity ' + 
+		string strSoql = 'select Id, GW_Auctions__Auction_Donated_Item_Name__c, Name, Amount, CloseDate, StageName, GW_Auctions__Number_Available__c from opportunity ' + 
         		'where RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem  + 
         		'\' and CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionDonors + '\'';
 		if (ctrlSoqlListView.strAlphaFilter != null) {
-			strSoql += ' and Auction_Donated_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
+			strSoql += ' and GW_Auctions__Auction_Donated_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        		
        	return strSoql;			
 	}
 
 	public override PageReference NewItem() { 
-		PageReference p = new PageReference('/apex/AuctionNewDonatedItemWizard?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionNewDonatedItemWizard?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;		
 	}
 	

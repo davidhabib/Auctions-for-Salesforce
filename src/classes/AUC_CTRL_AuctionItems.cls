@@ -5,23 +5,23 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionItems() {
-		strFields = new list<string>{'Name', 'Fair_Market_Value__c', 
-			'Category__c', 'Auction_Group__c' };				        	
-       	strNameField = 'Auction_Item_Name__c'; 	
-       	strObjectType = 'Auction_Item__c';			
+		strFields = new list<string>{'Name', 'GW_Auctions__Fair_Market_Value__c', 
+			'GW_Auctions__Category__c', 'GW_Auctions__Auction_Group__c' };				        	
+       	strNameField = 'GW_Auctions__Auction_Item_Name__c'; 	
+       	strObjectType = 'GW_Auctions__Auction_Item__c';			
 	}
 	
 	
 	public override string getStrSoql() {	
-		string strSoql = 'select Id, Auction_Item_Name__c, Name, Fair_Market_Value__c, Auction_Group__c, ' +
-				'Category__c, Auction__c from Auction_Item__c ' +
-				'where Auction__c=\'' + ctrlSoqlListView.auctionId + '\''; 
+		string strSoql = 'select Id, GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c, GW_Auctions__Auction_Group__c, ' +
+				'Category__c, GW_Auctions__Auction__c from GW_Auctions__Auction_Item__c ' +
+				'where GW_Auctions__Auction__c=\'' + ctrlSoqlListView.auctionId + '\''; 
 
 		if (ctrlSoqlListView.strAlphaFilter != null) {
-			strSoql += ' and Auction_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
+			strSoql += ' and GW_Auctions__Auction_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        		
 				
-		//strSoql += ' order by Auction_Item_Name__c';        		
+		//strSoql += ' order by GW_Auctions__Auction_Item_Name__c';        		
        	return strSoql;			
 	}
 
@@ -35,7 +35,7 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 		PageReference p = new PageReference('/' + strPrefix + '/e?' + 
 			// strAuctionFldId + '=' + (listAuc.size() > 0 ? listAuc[0].Name : '') + '&' + 
 			// strAuctionFldId + '_lkid=' + ctrlSoqlListView.auctionId + 
-			'&retURL=/apex/AuctionItems');
+			'&retURL=/apex/GW_Auctions__AuctionItems');
 		return p;
 	}
 

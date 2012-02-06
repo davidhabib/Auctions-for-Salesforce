@@ -257,9 +257,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    			string strSoql = 'select ' + strCMFields +
     					' from CampaignMember' + 
     					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
-    						' (Auction_Ticket_OppId__c = \'' + oppCaptain.Id + '\'';
+    						' (GW_Auctions__Auction_Ticket_OppId__c = \'' + oppCaptain.Id + '\'';
     				if (IsCaptainContact) {
-    					strSoql += 'or Table_Captain__c = \'' + idCaptain+ '\'';
+    					strSoql += 'or GW_Auctions__Table_Captain__c = \'' + idCaptain+ '\'';
     				}
     				strSoql += ')';
     				
