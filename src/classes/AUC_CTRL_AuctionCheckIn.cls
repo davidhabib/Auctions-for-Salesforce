@@ -548,12 +548,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public class Attendee {
 		
 		// constructor
-		public Attendee() {
-			cm = new CampaignMember();
-			con = new Contact();
-		}
-
-		// constructor
 		public Attendee(CampaignMember cmT, Contact conT) {
 			cm = cmT;
 			con = conT;
@@ -643,6 +637,172 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		listSobj.addAll(listContactCaptains);
 		listSobj.addAll(listAccountCaptains);	
 		return listSobj; 
-    } 		
+    } 	
+    	
+	//==================== TEST METHOD(s) ======================================
+	public static testmethod void CodeCoverageTests() {
+    	
+    	// create needed data
+    	Auction__c auction = new Auction__c (
+			Name = 'Test Auction',
+			Auction_Date__c = System.Today()
+		);  
+		insert auction; 
+		System.Assert(auction.id != null); 	
+    	
+    	Campaign campaign = [select Id, Auction__c from Campaign 
+    		where Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets and Auction__c = :auction.id];
+    	System.assertEquals(auction.id, campaign.Auction__c);
+    	
+    	Account acc = new Account(Name='My Test Account');
+    	insert acc;
+    	
+    	Contact contact = new Contact(
+    		Firstname = 'Johnny',
+    		Lastname = 'Test',
+    		AccountId = acc.Id
+    	);
+    	insert contact;    	
+
+		//instantiate the controller with no page parameters.
+		AUC_CTRL_AuctionCheckIn ctrl = new AUC_CTRL_AuctionCheckIn();
+		system.assert(ctrl != null);
+		ctrl.SaveAttendeeInfo();
+		system.assert(ctrl.strSaveResults != null);
+
+		//point to our VF page
+		PageReference p = new PageReference('Page.AuctionCheckIn');
+		p.getParameters().put('auctionId', auction.id); 
+		Test.setCurrentPageReference(p);
+		
+		//instantiate the controller for this opp
+		ctrl = new AUC_CTRL_AuctionCheckIn();
+		system.assertEquals(auction.Id, ctrl.auctionId);
+		ctrl.ChangeAuction();
+		system.assertEquals(auction.Id, ctrl.auctionId);
+		system.assertEquals(auction.Id, ctrl.auctionMaintenance.auctionId);
+		
+		// test the initial state
+		system.assertEquals(null, ctrl.contactIdAttendee);
+		system.assertEquals(null, ctrl.idCaptain);
+		system.assertEquals(null, ctrl.strNameAttendee);
+		system.assertEquals(null, ctrl.strNameCaptain);
+		system.assertEquals(null, ctrl.searchAttendee);
+		system.assertEquals(null, ctrl.strSaveResults);
+		system.assert(ctrl.attendeeEdit != null);
+		system.assert(ctrl.attendeeEdit.con != null);
+		system.assert(ctrl.attendeeEdit.cm != null);
+		system.assert(ctrl.oppTicketAttendee != null);
+		system.assert(ctrl.listSOAuctions.size() > 0);
+		system.assert(ctrl.listSOTicketStages.size() > 0);
+		system.assert(ctrl.listSOAuctions.size() > 0);
+		system.assert(ctrl.listAttendees.size() == 0);
+		system.assertEquals(null, ctrl.attendeeFromId(null));
+		system.assertEquals(null, ctrl.idCaptainForcontactIdAttendee(null));
+		system.assertEquals(null, ctrl.fAddTicketPurchase);
+		system.assertEquals(true, ctrl.IsCaptainContact);
+		ctrl.ChangeAttendeeLookup(); 
+		ctrl.ChangeCaptainLookup();
+		ctrl.Close();
+		ctrl.SaveAttendeeInfo();
+		ctrl.SearchAttendeeLookup();
+		
+		// set a contact
+		ctrl.contactIdAttendee = contact.Id;
+		ctrl.ChangeAttendeeLookup();
+		system.assertEquals('Johnny Test', ctrl.strNameAttendee);
+		system.assert(ctrl.attendeeEdit != null);
+		system.assert(ctrl.attendeeEdit.con.Id == contact.Id);
+		system.assert(ctrl.attendeeEdit.cm != null);
+		
+		// save a Contact's ticket purchase
+		ctrl.fAddTicketPurchase = true;
+		ctrl.oppTicketAttendee.amount = 100;
+		ctrl.oppTicketAttendee.number_of_Tickets__c = 4;
+		ctrl.oppTicketAttendee.StageName = 'Won Closed';
+		ctrl.SaveAttendeeInfo();
+		system.assert(ctrl.strSaveResults != null);
+		list<CampaignMember> listCM = [select contactId, campaignId, Auction_Ticket_OppId__c, Table_Captain__c from CampaignMember 
+			where contactId = :contact.Id and campaignId = :ctrl.auctionMaintenance.campaignIdAuctionAttendees];
+		system.assertEquals(1, listCM.size());	
+		system.assertEquals(null, ctrl.idCaptain);
+		ctrl.contactIdAttendee = contact.Id;
+		ctrl.ChangeAttendeeLookup();
+		system.assertEquals(contact.Id, ctrl.idCaptainForcontactIdAttendee(contact.Id));
+		system.assertEquals(contact.Id, ctrl.idCaptain);
+		system.assertEquals('Johnny Test', ctrl.strNameCaptain);
+		system.assertEquals(4, ctrl.listAttendees.size());
+		ctrl.contactIdAttendee = null;
+		ctrl.ChangeAttendeeLookup();
+		ctrl.idCaptain = null;
+		ctrl.ChangeCaptainLookup();
+		system.assertEquals(0, ctrl.listAttendees.size());
+		
+		// test search functionality
+		ctrl.searchAttendee = 'A bogus name you will not find!';
+		ctrl.SearchAttendeeLookup();
+		system.assertEquals(null, ctrl.contactIdAttendee);
+		ctrl.searchAttendee = 'Johnny Test';
+		ctrl.SearchAttendeeLookup();
+		system.assertEquals(contact.Id, ctrl.contactIdAttendee);
+		system.assertEquals(contact.Id, ctrl.idCaptain);
+		system.assertEquals(4, ctrl.listAttendees.size());
+		
+		// save a new contact as an attendee
+		ctrl.contactIdAttendee = null;
+		ctrl.ChangeAttendeeLookup();
+		ctrl.attendeeEdit.con.FirstName = 'Janey';
+		ctrl.attendeeEdit.con.LastName = 'Test';
+		system.assertEquals(contact.Id, ctrl.attendeeEdit.cm.Table_Captain__c);
+		system.assertEquals(null, ctrl.strSaveResults);
+		ctrl.SaveAttendeeInfo();
+		system.assert(ctrl.strSaveResults != null);
+		system.assert(ctrl.contactIdAttendee != null);
+		system.assert(ctrl.contactIdAttendee != contact.Id);
+		system.assertEquals(true, ctrl.IsCaptainContact);
+		system.assertEquals(contact.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
+				
+		// test out an account table captain
+		Opportunity opp = new Opportunity(				
+			RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
+			CampaignId = ctrl.auctionMaintenance.campaignIdAuctionTickets
+		);				
+		opp.AccountId = acc.Id;
+		opp.Amount = 1000;
+		opp.StageName = 'Won Closed';
+		opp.Number_Of_Tickets__c = 10;
+		opp.Name = 'my test account ticket purchase';
+		opp.CloseDate = system.today();
+		insert opp;
+		ctrl.idCaptain = acc.Id;
+		ctrl.ChangeCaptainLookup();
+		system.assertEquals('My Test Account', ctrl.strNameCaptain);
+		system.assertEquals(false, ctrl.IsCaptainContact);
+		system.assertEquals(acc.Id, ctrl.idCaptain);
+		system.assert(ctrl.oppCaptain != null);
+		system.debug(ctrl.listAttendees);
+		system.assertEquals(10, ctrl.listAttendees.size());
+		
+		// save another contact to the account table
+		ctrl.contactIdAttendee = null;
+		ctrl.ChangeAttendeeLookup();
+		ctrl.idCaptain = acc.Id;
+		ctrl.ChangeCaptainLookup();
+		ctrl.attendeeEdit.con.FirstName = 'Joey';
+		ctrl.attendeeEdit.con.LastName = 'Test';
+		system.assertEquals(null, ctrl.strSaveResults);
+		ctrl.SaveAttendeeInfo();
+		system.assert(ctrl.strSaveResults != null);
+		system.assertEquals(opp.Id, ctrl.attendeeEdit.cm.Auction_Ticket_OppId__c);
+		system.assert(ctrl.contactIdAttendee != null);	
+		system.assertEquals(acc.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
+
+		// test remoting functions
+		system.assert(AUC_CTRL_AuctionCheckIn.getListContacts('Test').size() >= 3);		
+		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'Johnny Test').size() >= 1);
+		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'My Test Account').size() >= 1);
+					
+				
+	}		
 
 }
