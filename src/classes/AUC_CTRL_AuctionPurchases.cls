@@ -44,7 +44,7 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
     		Auction_Item_Name__c = 'Test Auction Item',
     		Auction__c = auction.id,
     		FMV_Override__c = 100
-    	); 
+    	);
     	insert ai;
     	    	
 		AUC_AuctionMaintenance am = new AUC_AuctionMaintenance();
