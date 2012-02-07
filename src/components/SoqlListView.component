@@ -8,7 +8,10 @@
     <style>
         .PagerUI { font-size: 8pt; }
         .SelectedAlphaFilter { background-color:lightblue; }
-        .AlphaFilter { text-decoration:none; }
+        .AlphaFilter { 
+        	text-decoration:none;
+        	padding: 0 5px; 
+        }
     </style>
 
 	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
@@ -49,11 +52,11 @@
 						</td>
 						<td style="vertical-align:middle; text-align:right;" >
 							<apex:repeat value="{!listAlphaFilters}" var="a" > 
-							    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter=a,'SelectedAlphaFilter','')}" value=" {!a} " >
+							    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter=a,'SelectedAlphaFilter','')}" value="{!a}" >
 							    	<apex:param assignTo="{!strAlphaFilter}" name="strAlphaFilter" value="{!a}" /> 
 							    </apex:commandLink>|
 				  			</apex:repeat>         
-						    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter='%','SelectedAlphaFilter','')}" value=" All " >
+						    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter='%','SelectedAlphaFilter','')}" value="All" >
 						    	<apex:param assignTo="{!strAlphaFilter}" value="%" /> 
 						    </apex:commandLink>&nbsp;
 						</td>
@@ -75,8 +78,8 @@
 	            <apex:column >
 	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>
 					<apex:facet name="header"> 
-						<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='Auction_Item__c', 
-							$ObjectType.Auction_Item__c.Fields[pageController.strNameField].Label,
+						<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
+							$ObjectType.GW_Auctions__Auction_Item__c.Fields[pageController.strNameField].Label,
 							$ObjectType.Opportunity.Fields[pageController.strNameField].Label)}" >
 							<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!pageController.strNameField}" />
 							<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol" 
@@ -88,8 +91,8 @@
 				<apex:repeat value="{!pageController.strFields}" var="f" > 
 					<apex:column value="{!item[f]}" >
 						<apex:facet name="header"> 
-							<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='Auction_Item__c', 
-								$ObjectType.Auction_Item__c.Fields[f].Label,
+							<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
+								$ObjectType.GW_Auctions__Auction_Item__c.Fields[f].Label,
 								$ObjectType.Opportunity.Fields[f].Label)}" >
 								<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!f}" />
 								<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol" 
