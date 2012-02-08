@@ -137,6 +137,16 @@ public with sharing class AUC_AuctionConstants {
 			return 'Pledged;Closed Won;Closed Won - Not Thanked;Closed Lost';
 		}
 	}
+	
+	// read the custom setting and return the string for the Credit Card Validate URL formula for the CheckIn page.
+	public static string StrCreditCardValidateURLFormula() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].CreditCardValidateURLFormula__c;
+		} else {
+			return null;
+		}
+	}
 
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	

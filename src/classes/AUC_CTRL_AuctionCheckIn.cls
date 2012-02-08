@@ -85,6 +85,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				strNameAttendee = null;
 				attendeeEdit = null;
 				oppTicketAttendee = null;
+				strCreditCardValidateURL = null;
 			}
 			contactIdAttendee = value;
 			if (contactIdAttendee == '') contactIdAttendee = null; 
@@ -573,7 +574,24 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
         p.setRedirect(true);
         return p;
 	}
+
+	// public property to get the commandButton URL
+	// for the Authorize Credit Card button.	
+	public string strCreditCardValidateURL {
+		get {
+			if (strCreditCardValidateURL == null) {
+				string str = AUC_AuctionConstants.StrCreditCardValidateURLFormula();
+				if (str != null) {
+					str = string.format(str, new list<string> { contactIdAttendee });
+				}
+				strCreditCardValidateURL = str;
+			}
+			return strCreditCardValidateURL;
+		}
+		private set;
+	}
 	
+
 	/*******************************************************************************************************
 	* @description Attendee Class is a helper class that holds a contact and their campaign member.
 	********************************************************************************************************/
