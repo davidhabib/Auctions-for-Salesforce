@@ -236,12 +236,9 @@
 		*******************************************************************************************************/
 		j$('#txtAttendees').autocomplete("option", "select",
 			function(event, ui) {
-				var prevId = j$(this).data('Id');
 				j$(this).val(ui.item.label).data('Id', ui.item.value);
-		   		if (prevId != ui.item.value) {
-		   			// call the controller to update the Attendee panel.
-		   			ChangeAttendeeLookup(ui.item.value);			   		
-			   	}
+	   			// call the controller to update the Attendee panel.
+	   			ChangeAttendeeLookup(ui.item.value);			   		
 		   		return false;		   		 
 		   	}
 		);
@@ -503,17 +500,8 @@
 			</td>
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
-					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> 
-					<apex:pageMessage severity="info" strength="1" title="instructions" rendered="{!strSaveResults==null}">
-						<div class="clsHelpText" >
-						Enter the name of a guest, to search for their ticket and table assignment, and display their information.&nbsp;&nbsp;
-						Enter the name of a Table Captain, to see all of their guests.&nbsp;&nbsp;
-						Click on a guest from the Guest List to edit their information.&nbsp;&nbsp;
-						Remember to click Save to save any changes.
-						</div>
-					</apex:pageMessage>				
-					-->						
-		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" />  
+					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> -->											
+		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
 	        </td>              

@@ -41,12 +41,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			} else if (!fAttendee && fSearchAttendee) {
 				strStatus = 'There is no contact in the database with that name.  You can enter a new contact in the New Contact section.';
 			} else if (fAttendee && !fCaptain) {
-				strStatus = 'Please enter a captain.';
+				strStatus = 'Please enter a table captain.';
 			} else if (!fAttendee && fCaptain) {
 				strStatus = 'You can select one of the guests from the Guest List, search for a new guest, or enter a new guest.';
 			} else if (fAttendee && fCaptain) {
-				strStatus = 'You can update the guest\'s information and click "Save Contact".  You can also save their credit card by clicking "Authorize Credit Card".' + 
-					'  If the guest needs to buy tickets, click on the "Add Ticket Purchase" checkbox.';
+				strStatus = 'You can update the guest\'s information and click <b>Save Contact</b>.  You can also save their credit card by clicking <b>Authorize Credit Card</b>.' + 
+					'  If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
 			}
 			return strStatus;
 		}
