@@ -95,16 +95,21 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// callback when the user changes the Attendee contact lookup and submits too quick.
 	public PageReference SearchAttendeeLookup() {
-		if (searchAttendee != null) {
+		if (searchAttendee != null && searchAttendee != '') {
 			list<Contact> listCon = [select Id from Contact where Name = :searchAttendee];
 			if (listCon.size() > 0) {
 				contactIdAttendee = listCon[0].Id;
 			} else {
 				contactIdAttendee = null;
+				strSaveResults = 'There is no contact in the database with that name.  You can enter a new contact in the New Contact section.';
+				strNameAttendee = searchAttendee; // to keep displaying the text.
+				return null;
 			}
-		return ChangeAttendeeLookup();
+		} else {
+			contactIdAttendee = null;	
+			strNameAttendee = null;		
 		}
-		return null;	
+		return ChangeAttendeeLookup();
 	}
 
 	// utility to find the Captain for an Attendee

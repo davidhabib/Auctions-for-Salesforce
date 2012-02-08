@@ -85,16 +85,28 @@
 	}
 	.panelSearch .detailList .labelCol label {
 		display:block;
-		width: 110px;
+		width: 150px;
 	}
-	
+
+	.panelEdit {
+	}
+	.panelEdit .detailList .labelCol label {
+		display:inline-block;
+		width: 150px;
+	}
+
 	td.sideLeft {
 		width: 30%;
 		min-width: 400px;
 	}
+
 	.panelSearch .detailList .data2Col {
 		position: relative;
 	}
+
+	.panelEdit .detailList .data2Col {
+		position: relative;
+	}	
 
     .Error { 
     	color: red; 
@@ -507,7 +519,7 @@
 			</tr>			
 			<tr>
 			<td class="sideLeft" style="vertical-align:top;" >
-				<apex:outputPanel id="panelEdit" >		
+				<apex:outputPanel id="panelEdit" styleClass="panelEdit">		
 		            <apex:pageBlockSection title="{!IF(attendeeEdit.con.Id != null, attendeeEdit.con.Name, 'New Contact')}" 
 		            	columns="1" id="pbsEdit" collapsible="false" >		            	
 		            	<!-- contact fields use a fieldset -->
@@ -519,21 +531,28 @@
 						<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionsCheckInCMFS}" var="f" >
 		   					<apex:inputField value="{!attendeeEdit.cm[f]}" required="false" />
 			  			</apex:repeat>        	            	 
-		            	<hr/>
 		            	<!-- hardcoded fields to add new ticket purchase -->
 		            	<apex:pageBlockSectionItem >
-		            		<apex:outputLabel value="Add&nbsp;Ticket&nbsp;Purchase" escape="false" />
-		            		<apex:inputCheckbox value="{!fAddTicketPurchase}" /> 
+		            		<apex:outputLabel value="Add Ticket Purchase" escape="false" />
+		            		<apex:inputCheckbox value="{!fAddTicketPurchase}" > 
+					    		<apex:actionSupport event="onchange" status="statusLoad"  
+					    			rerender="panelTicketPurchase,panelEdit" 
+					    			oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />
+					    	</apex:inputCheckbox>			    			
 		            	</apex:pageBlockSectionItem>
-		           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
-		           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
-		                <apex:pageBlockSectionItem >
-		                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
-						   	<apex:selectList value="{!oppTicketAttendee.StageName}" size="1" id="lbxTicketStage" required="true"  >
-						   		<apex:selectOptions value="{!listSOTicketStages}" /> 
-						   	</apex:selectList>
-		                </apex:pageBlockSectionItem>		           		
 		            </apex:pageBlockSection>     	            		            
+	            	<apex:outputPanel id="panelTicketPurchase" rendered="{!fAddTicketPurchase}" styleClass="panelEdit" >
+			            <apex:pageBlockSection title="New Ticket Purchase" columns="1" collapsible="false" > 
+			           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
+			           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
+			                <apex:pageBlockSectionItem >
+			                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
+							   	<apex:selectList value="{!oppTicketAttendee.StageName}" size="1" id="lbxTicketStage" required="true"  >
+							   		<apex:selectOptions value="{!listSOTicketStages}" /> 
+							   	</apex:selectList>
+			                </apex:pageBlockSectionItem>		       
+			            </apex:pageBlockSection>     	            		            
+	                </apex:outputPanel>    		
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save Contact', 'Save New Contact')}" action="{!SaveAttendeeInfo}" 
