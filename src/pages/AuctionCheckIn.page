@@ -14,8 +14,7 @@
 	/* this styling adds the vertical scrollbar to our autocomplete fields */
 	.ui-autocomplete-input {
 		margin: 2px 0px 0 2px;
-		padding: 1px;
-		
+		padding: 1px;		
 		display: inline-block;
 		vertical-align: middle !important;
 	}
@@ -124,11 +123,6 @@
 		height: 40px;		
 	}    
 	
-	.clsHelpText {
-		font-size: 11px; 
-		font-family: Arial, Helvetica, sans-serif;
-	}		
-
 </style>
 
  

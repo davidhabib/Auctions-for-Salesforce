@@ -73,8 +73,8 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 			// we are not looking at fIncludeTicketPurchases on purpose; we still want those folks in the list.
 			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name from OpportunityContactRole 
 				where IsPrimary=true and 
-					(opportunity.campaignId=:auctionMaintenance.campaignIdAuctionAttendees
-						or opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets) 
+					(opportunity.campaignId = :auctionMaintenance.campaignIdAuctionAttendees
+						or opportunity.campaignId = :auctionMaintenance.campaignIdAuctionTickets) 
 				order by contact.Name]) {
 				
 				for (OpportunityContactRole ocr : listOCR) {
