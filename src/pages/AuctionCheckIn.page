@@ -503,7 +503,7 @@
 			</td>
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
-					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> -->
+					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> 
 					<apex:pageMessage severity="info" strength="1" title="instructions" rendered="{!strSaveResults==null}">
 						<div class="clsHelpText" >
 						Enter the name of a guest, to search for their ticket and table assignment, and display their information.&nbsp;&nbsp;
@@ -512,7 +512,8 @@
 						Remember to click Save to save any changes.
 						</div>
 					</apex:pageMessage>				
-		            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
+					-->						
+		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
 	        </td>              

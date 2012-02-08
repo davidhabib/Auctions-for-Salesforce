@@ -23,6 +23,36 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		auctionMaintenance.auctionId = auctionId;		
 	}
 
+	// private status string for reporting the results of saving.
+    private String strSaveResults { get; set; } 
+
+	// status string for reporting helpful instructions and the results of saving.
+	public string strStatus {
+		
+		get {
+			boolean fAttendee = contactIdAttendee != null && contactIdAttendee != '';
+			boolean fCaptain = idCaptain != null && idCaptain != '';
+			boolean fSearchAttendee = searchAttendee != null && searchAttendee != '';
+			
+			if (strSaveResults != null) {
+				strStatus = strSaveResults;
+			} else if (!fAttendee && !fCaptain && !fSearchAttendee) {
+				strStatus = 'Enter the name of a guest, to search for their ticket and table assignment, and display their information.'; 
+			} else if (!fAttendee && fSearchAttendee) {
+				strStatus = 'There is no contact in the database with that name.  You can enter a new contact in the New Contact section.';
+			} else if (fAttendee && !fCaptain) {
+				strStatus = 'Please enter a captain.';
+			} else if (!fAttendee && fCaptain) {
+				strStatus = 'You can select one of the guests from the Guest List, search for a new guest, or enter a new guest.';
+			} else if (fAttendee && fCaptain) {
+				strStatus = 'You can update the guest\'s information and click "Save Contact".  You can also save their credit card by clicking "Authorize Credit Card".' + 
+					'  If the guest needs to buy tickets, click on the "Add Ticket Purchase" checkbox.';
+			}
+			return strStatus;
+		}
+		private set;
+	}
+	
 	private AUC_AuctionMaintenance auctionMaintenance;
 		
 	// the currently selected Auction
@@ -101,7 +131,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				contactIdAttendee = listCon[0].Id;
 			} else {
 				contactIdAttendee = null;
-				strSaveResults = 'There is no contact in the database with that name.  You can enter a new contact in the New Contact section.';
+				strSaveResults = null;
 				strNameAttendee = searchAttendee; // to keep displaying the text.
 				return null;
 			}
@@ -434,10 +464,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		}
 		private set;
 	}
-				
-	// status string for reporting the results of saving.
-    public String strSaveResults { get; set; }    
-	
+					
 	// save all modified data.  a complex process to handle both updates and inserts!
 	public PageReference SaveAttendeeInfo() {
 		         
