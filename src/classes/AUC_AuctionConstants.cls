@@ -148,6 +148,16 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 
+	// read the custom setting and return the string for the Credit Card Charge URL formula for the CheckOut page.
+	public static string StrCreditCardChargeURLFormula() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].CreditCardChargeURLFormula__c;
+		} else {
+			return null;
+		}
+	}
+
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
