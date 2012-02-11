@@ -45,6 +45,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			if (contactIdPurchaser != value) {
 				strNamePurchaser = null;
 				listReceipts = null;
+				strCreditCardChargeURL = null;
 			}
 			contactIdPurchaser = value;
 			if (contactIdPurchaser == '') contactIdPurchaser = null; 
@@ -97,7 +98,34 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		return ChangePurchaserLookup();
 	}
 
-
+	// status string for reporting helpful instructions and the results of saving.
+	public string strStatus {
+		
+		get {
+			boolean fPurchaser = contactIdPurchaser != null && contactIdPurchaser != '';
+			boolean fSearchPurchaser = searchPurchaser != null && searchPurchaser != '';
+			boolean fPurchases = listReceipts.size() > 0 && 
+				listReceipts[0].listOppAuctionPurchases.size() > 0;
+			
+			if (strSaveResults != null) {
+				strStatus = strSaveResults;
+			} else if (!fPurchaser && !fSearchPurchaser) {
+				strStatus = 'Enter the name or bid number of a guest, to search for their purchases.'; 
+			} else if (!fPurchaser && fSearchPurchaser) {
+				strStatus = 'There is no contact who attended the auction with that name.';
+			} else if (fPurchaser && !fPurchases) {
+				strStatus = 'This guest has no purchases from the auction.';
+			} else if (fPurchaser && fPurchases) {
+				strStatus = 'Check the purchases that you want to process now.';  
+				if (strCreditCardChargeURL != null) {
+					strStatus += ' Click <b>Charge Credit Card</b> to open a new window to pay the processor.';
+				}
+				strStatus += ' Click <b>Update Stages</b> to update the stage of all checked opportunities.';
+			}
+			return strStatus;
+		}
+		private set;
+	}
 
 	//==================== Purchaser Class ======================================
 	// helper class that holds a contact, and their bid number
@@ -159,7 +187,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		return listPurchaser; 
     } 	
 
-	public Boolean HasReceipts {
+	public Boolean fHasReceipts {
 		get {
 			if (listReceipts == null) return False;
 			if (listReceipts.size() == 0) return False;
@@ -170,7 +198,10 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// list of Receipt objects to display
 	public list<Receipt> listReceipts {
 		get {
-			if (listReceipts != null) return listReceipts;
+			if (listReceipts != null) {
+				RecalcTotalAmountToPay(listReceipts);
+				return listReceipts;
+			}
 			
 			// create the list of which contacts to include
 			list<ID> listContactId = new list<ID>();
@@ -200,7 +231,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
 			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name, contact.FirstName, opportunityId, opportunity.Id, 
 				opportunity.name, opportunity.Amount, opportunity.Auction_Item_Name__c, opportunity.Auction_Deductible_Amount__c, 				
-				opportunity.IsWon, opportunity.RecordTypeId, opportunity.RecordType.Name, opportunity.Description from OpportunityContactRole 
+				opportunity.IsWon, opportunity.RecordTypeId, opportunity.StageName, opportunity.IsClosed,
+				opportunity.RecordType.Name, opportunity.Description from OpportunityContactRole 
 				where IsPrimary=true and contactId in :listContactId and
 					(((opportunity.RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem or opportunity.RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionGift) 
 						and opportunity.campaignId=:auctionMaintenance.campaignIdAuctionAttendees)
@@ -234,15 +266,37 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		        		mapContactIdReceipt.put(r.contactId, r);
 		        		listReceiptsT.add(r);
 		        	}
-	        		r.listOppAuctionPurchases.add(new AUC_PurchaseOpportunity(ocr.opportunity));
-	        		if (opp.Amount <> null) r.decTotalAmountPaid += opp.Amount;
-					r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
+		        	AUC_PurchaseOpportunity po = new AUC_PurchaseOpportunity(ocr.opportunity);
+	        		r.listOppAuctionPurchases.add(po);
+	        		if (opp.Amount <> null) {
+	        			r.decTotalAmountPaid += opp.Amount;
+	        			if (po.IsPayNow) {
+	        				r.decTotalAmountToPay += opp.Amount;
+	        			}
+	        		}
+					//r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
 					//if (opp.IsWon) r.decTotalAmountReceived += opp.Amount;
 		        }
 	        }
 	        
 	        //system.debug('**** Leaving listReceipts');
 	        return listReceiptsT;
+	}
+	
+	// utility to go through all receipts, and retotal how much they plan to pay.
+	private void RecalcTotalAmountToPay(list<Receipt> listR) {
+		if (listR == null) return;
+		
+		for (Receipt r : listR) {
+			r.decTotalAmountToPay = 0;
+			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
+				if (po.IsPayNow) {
+					r.decTotalAmountToPay += po.opp.Amount;
+				}
+			}
+		}
+		// force this url to get refreshed with the new amount.
+		strCreditCardChargeURL = null;
 	}
 			
 	//==================== Receipt Class ======================================
@@ -254,8 +308,9 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		public Receipt() {
 			//system.debug('**** Creating Receipt');
 			decTotalAmountPaid = 0;
-			decTotalAmountDeductible = 0;	
+			//decTotalAmountDeductible = 0;	
 			//decTotalAmountReceived = 0;
+			decTotalAmountToPay = 0;
 		}
 		
 		public ID contactId { get; set; }
@@ -264,7 +319,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		public ID auctionId { get; set; }
 		public Date dtAuction { get; set; }
 		public Decimal decTotalAmountPaid { get; set; }
-		public Decimal decTotalAmountDeductible { get; set; }
+		public Decimal decTotalAmountToPay { get; set; }
+		//public Decimal decTotalAmountDeductible { get; set; }
 		//public Decimal decTotalAmountReceived { get; set; }
 		public list<AUC_PurchaseOpportunity> listOppAuctionPurchases { get; set; }
 		
@@ -273,6 +329,72 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				return UserInfo.getOrganizationName() + ' Auction receipt for ' + strContactName;
 			}
 		}			
+	}
+
+	// list for Stage picklist, filtered correctly for stages for Auction opps.
+	public list<SelectOption> listSOStages {
+		get {
+			if (listSOStages == null) {
+				listSOStages = new list<SelectOption>();
+				
+				// since we can't seem to get the styling for a required field for Stage,
+				// we won't provide a blank option!
+				//listSOTicketStages.add(new SelectOption('', ''));
+				
+				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
+				
+				// if setting returns strings, use them
+				if (strStages != null) {
+					list<string> listStr = strStages.split(';');
+					for (string  str : listStr) {
+						listSOStages.add(new SelectOption(str, str));						
+					}					
+				} else { // otherwise use the current Salesforce Opp Stages			
+					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
+						listSOStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
+					}
+				}
+			}
+			return listSOStages;
+		}
+		private set;
+	}
+
+	public string StageName { get; set; }
+	
+	// public method for the Close button.  
+	// use retURL if we have it, otherwise go to tickets tab.
+	public PageReference Close() {
+		string retURL = ApexPages.currentPage().getParameters().get('retURL');
+		if (retURL == null || retURL == '') {
+			retURL = '/apex/GW_Auctions__AuctionPurchases';
+		}
+		PageReference p = new PageReference(retURL);
+        p.setRedirect(true);
+        return p;
+	}
+	
+	// public property to get the commandButton URL
+	// for the Charge Credit Card button.	
+	public string strCreditCardChargeURL {
+		get {
+			if (strCreditCardChargeURL == null && contactIdPurchaser != null) {
+				string str = AUC_AuctionConstants.StrCreditCardChargeURLFormula();
+				if (str != null) {
+					list<string> listFormat = new list<string>();
+					listFormat.add(contactIdPurchaser);
+					if (listReceipts.size() > 0) {
+						listFormat.add(string.valueOf(listReceipts[0].decTotalAmountToPay));
+					} else {
+						listFormat.add('0');
+					}
+					str = string.format(str, listFormat);
+				}
+				strCreditCardChargeURL = str;
+			}
+			return strCreditCardChargeURL;
+		}
+		private set;
 	}
 
 
