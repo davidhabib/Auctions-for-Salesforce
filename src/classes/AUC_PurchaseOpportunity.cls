@@ -11,10 +11,14 @@ public with sharing class AUC_PurchaseOpportunity {
     
 	public AUC_PurchaseOpportunity(Opportunity oppExisting) {
 		opp = oppExisting;
+		// set initial state for IsPayNow
+		if (opp != null) {
+			IsPayNow = !opp.IsClosed;
+		}
 	}
     
     public Opportunity opp { get; set; }
-    public boolean IsPaid { get; set; }
+    public boolean IsPayNow { get; set; }
     public string contactId { get; set; } // could not use ID, or page's submit would fail since it would try to set these to ''
     public string strBidderNumberAndName { get; set; }
     public string strAuctionItemIDAndName { get; set; }
@@ -31,7 +35,7 @@ public with sharing class AUC_PurchaseOpportunity {
     
     public string strBidderName {
     	get {
-    		// return the contact anme we extract from "bid number: contact name" formatted string
+    		// return the contact name we extract from "bid number: contact name" formatted string
     		if (strBidderNumberAndName == null) return null;
     		integer i = strBidderNumberAndName.indexOf(': ');
     		if (i == -1) return strBidderNumberAndName;
@@ -73,7 +77,7 @@ public with sharing class AUC_PurchaseOpportunity {
     	apo.strAuctionItemIDAndName = '999: the auction item';
     	System.AssertEquals('999', apo.strAuctionItemID);
     	System.AssertEquals('the auction item', apo.strAuctionItemName);
-    	apo.IsPaid = false;
+    	apo.IsPayNow = false;
     	apo.contactId = null;
     }
     	
