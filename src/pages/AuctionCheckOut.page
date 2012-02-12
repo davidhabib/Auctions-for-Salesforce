@@ -164,7 +164,7 @@
 
 		   	// focus called when the user hilights an item by arrowing or mousing over the list 
 		   	// we needed to override this, otherwise the Id was displayed in the textbox.
-		   	focus: function(event, ui) {
+		   	focus: function(event, ui) { 
 		   		j$(this).val(ui.item.label);
 		   		return false;
 		   	},
