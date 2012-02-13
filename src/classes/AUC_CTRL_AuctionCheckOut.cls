@@ -360,7 +360,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		private set;
 	}
 
+	
 	public string StageName { get; set; }
+	
+	public PageReference UpdateOppStages() {
+		return null;
+	}
+	
 	
 	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.

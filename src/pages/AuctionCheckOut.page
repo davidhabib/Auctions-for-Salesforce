@@ -435,7 +435,8 @@
 		            <apex:pageBlockSection columns="1"  >
 		                <apex:pageBlockSectionItem >
 		                	<apex:outputPanel rendered="{!fHasReceipts}"> 
-			                    <apex:commandButton value="Update checked opportunity {!$ObjectType.Opportunity.Fields.StageName.Label} to:" />
+			                    <apex:commandButton value="Update Checked {!$ObjectType.Opportunity.Fields.StageName.Label}s to" 
+			                    	action="{!UpdateOppStages}" />
 							   	<apex:selectList value="{!StageName}" size="1" id="lbxStage" required="false"  >
 							   		<apex:selectOptions value="{!listSOStages}" /> 
 							   	</apex:selectList>
