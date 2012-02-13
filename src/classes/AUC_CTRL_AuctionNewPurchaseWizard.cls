@@ -121,7 +121,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
             for (integer i = 0; i < AUC_AuctionConstants.CROWS_PURCHASE_GRID; i++) { 
                 AUC_PurchaseOpportunity apo = new AUC_PurchaseOpportunity();
                 apo.opp.CloseDate = system.today();
-                apo.IsPaid = true; // Paid checkbox default to true.
+                apo.IsPayNow = true; // Paid checkbox default to true.
                 listAuctionPurchasedItems.add(apo);
             } 
         }
@@ -154,7 +154,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		                strOppTypeName = AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionPurchasedItem;
                 	} 
 	                apo.opp.Name = apo.strBidderName + ' ' + string.valueof(AUC_AuctionMaintenance.YearOfAuctionId(auctionMaintenance.auctionId)) + ' ' + strOppTypeName;
-	                if (apo.IsPaid) { 
+	                if (apo.IsPayNow) { 
 	                	apo.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
 	                } else {
 	                	apo.opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
@@ -358,7 +358,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		listAPO[0].strAuctionItemIDAndName = strAIName + ': ' + auctionitem.Auction_Item_Name__c;
 		listAPO[0].opp.Auction_Item_Purchased__c = auctionitem.Id;
 		listAPO[0].opp.Amount = 99;
-		listAPO[0].IsPaid = false;
+		listAPO[0].IsPayNow = false;
 		listAPO[0].opp.CloseDate = date.valueof('2049-12-31');
 		listAPO[1].strBidderNumberAndName = '456: invalid number';
 		listAPO[1].strAuctionItemIDAndName = 'not there';
