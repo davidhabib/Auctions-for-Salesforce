@@ -15,6 +15,13 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 			auctionId = listSOAuctions[1].getValue();
 		}
 		auctionMaintenance.auctionId = auctionId;	
+
+		// also support a specific contact (to allow page to be invoked on a specific receipt)
+		String strcontactId = ApexPages.currentPage().getParameters().get('contactId');
+		if (strcontactId != null && strcontactId != '') {
+			contactId = strcontactId;
+			fIncludeTicketPurchases = true;
+		}
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;

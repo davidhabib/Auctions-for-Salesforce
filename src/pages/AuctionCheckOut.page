@@ -110,7 +110,6 @@
 	
 	.clsDTHeader  {
 		background: #C0D0E5;
-		height: 2em;
 	}
 	
 	.bPageBlock .detailList th {
@@ -123,7 +122,6 @@
 
 	.clsDTFooter  {
 		background: #C0D0E5;
-		height: 2em;
 	}
 	
 </style>
@@ -415,8 +413,8 @@
 								<apex:column >
 									<apex:facet name="header" >Pay Now</apex:facet>
 									<apex:inputCheckbox value="{!oppAP.IsPayNow}" required="false" immediate="false" >
-							    		<apex:actionSupport event="onchange" status="statusLoad"  
-							    			rerender="panelPurchases,panelButtons" 
+							    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangePayNow}"
+							    			rerender="panelPurchases,panelButtons,panelStatus" 
 							    			oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
 							    	</apex:inputCheckbox>
 									<Apex:facet name="footer">				
@@ -450,7 +448,8 @@
 			            	<apex:outputPanel >
 								<apex:commandButton value="Charge Credit Card" rendered="{!strCreditCardChargeURL != null}" 
 									onclick="window.open('{!strCreditCardChargeURL}','','menubar=0,status=0,toolbar=0'); return false;" />&nbsp;&nbsp;							
-								<apex:commandButton value="Print Receipt" rendered="{!fHasReceipts}" />&nbsp;&nbsp;
+								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
+									onclick="window.open('{!strOpenReceiptURL}','','menubar=0,status=0,toolbar=0'); return false;" />&nbsp;&nbsp;															
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />						
 							</apex:outputPanel>
 						</apex:pageBlockSectionItem>

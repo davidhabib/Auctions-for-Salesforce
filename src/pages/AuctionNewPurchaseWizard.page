@@ -262,7 +262,7 @@
 					</apex:column>
 					<apex:column >
 						<apex:facet name="header">Paid</apex:facet>
-						<apex:inputCheckbox value="{!apo.IsPaid}" required="false" />
+						<apex:inputCheckbox value="{!apo.IsPayNow}" required="false" />
 					</apex:column>
 					<apex:column >					
 						<apex:facet name="header">Date</apex:facet>

@@ -33,6 +33,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		auctionMaintenance.auctionId = auctionId;
 		listReceipts = null;
 		contactIdPurchaser = null;
+		strSaveResults = null;
 		return null;
 	}
 
@@ -46,6 +47,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				strNamePurchaser = null;
 				listReceipts = null;
 				strCreditCardChargeURL = null;
+				strOpenReceiptURL = null;
 			}
 			contactIdPurchaser = value;
 			if (contactIdPurchaser == '') contactIdPurchaser = null; 
@@ -139,8 +141,6 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		
 	}
 
-
-
 	/*******************************************************************************************************
 	* @description Javascript Remoting method to return a list of Contacts who purchased Auction Items
 	* or Auction Tickets on the specified auction, optionally filtered by strFilter.
@@ -199,7 +199,6 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	public list<Receipt> listReceipts {
 		get {
 			if (listReceipts != null) {
-				RecalcTotalAmountToPay(listReceipts);
 				return listReceipts;
 			}
 			
@@ -210,6 +209,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			}
 			// call the real worker.
 			listReceipts = listReceiptsForlistContactId(listContactId);
+			// force the totals to recalc
+			RecalcTotalAmountToPay(listReceipts);					
 			return listReceipts;
 		}	
 	
@@ -324,11 +325,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		//public Decimal decTotalAmountReceived { get; set; }
 		public list<AUC_PurchaseOpportunity> listOppAuctionPurchases { get; set; }
 		
-		public String strPageTitle {
-			get { 
-				return UserInfo.getOrganizationName() + ' Auction receipt for ' + strContactName;
-			}
-		}			
+	}
+
+	// action method called by page whenever a paynow checkbox is changed.
+	public PageReference ChangePayNow() {
+		strSaveResults = null;
+		RecalcTotalAmountToPay(listReceipts);	
+		return null;				
 	}
 
 	// list for Stage picklist, filtered correctly for stages for Auction opps.
@@ -337,9 +340,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			if (listSOStages == null) {
 				listSOStages = new list<SelectOption>();
 				
-				// since we can't seem to get the styling for a required field for Stage,
-				// we won't provide a blank option!
-				//listSOTicketStages.add(new SelectOption('', ''));
+				// provide a blank option, so they have to choose.
+				listSOStages.add(new SelectOption('', ''));
 				
 				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
 				
@@ -361,13 +363,40 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	}
 
 	
+	// used to specify the new stage for the UpdateOppStages() action method.
 	public string StageName { get; set; }
 	
+	// public method to update all checked opportunities to 
+	// the new stage specified in StageName.
 	public PageReference UpdateOppStages() {
+		strSaveResults = null;
+		if (listReceipts == null || StageName == '' || StageName == null) {
+			strSaveResults = 'Please specify a new stage name to use.';
+			return null;
+		}
+				
+		list<Opportunity> listOppToUpdate = new list<Opportunity>();
+
+		for (Receipt r : listReceipts) {
+			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
+				if (po.IsPayNow) {
+					po.opp.StageName = StageName;
+					listOppToUpdate.add(po.opp);
+					// turn off PayNow
+					po.IsPayNow = false;
+				}
+			}
+		}
+		
+		// save the new stages
+		update listOppToUpdate;
+		
+		// force the totals to recalc
+		RecalcTotalAmountToPay(listReceipts);
+		
 		return null;
 	}
-	
-	
+		
 	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.
 	public PageReference Close() {
@@ -403,11 +432,139 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		private set;
 	}
 
+	// public property to get the commandButton URL
+	// for the View button, to invoke the receipts page  
+	public string strOpenReceiptURL {
+		get {
+			return '/apex/GW_Auctions__AuctionReceipts' +
+	        	'?RenderFormat=pdf' +
+	        	'&auctionId=' + auctionId +
+	        	'&contactId=' + contactIdPurchaser;
+		}
+		private set;
+	}
 
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
+    	// create needed data
+    	Account acc = new Account(Name='My Test Account');
+    	insert acc;    	
+    	Contact contact1 = new Contact(Firstname='David', Lastname='Test', AccountId=acc.Id);
+    	insert contact1;
+    	Contact contact2 = new Contact(Firstname='John', Lastname='Test', AccountId=acc.Id);
+    	insert contact2;
+    	
+    	Auction__c auction = new Auction__c (
+			Name = 'Test Auction',
+			Auction_Date__c = System.Today()
+		);  
+		insert auction;  	
+    	
+    	Campaign campaign = [select Id, Auction__c from Campaign where Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionAttendees and Auction__c = :auction.id];
+    	System.assertEquals(auction.id, campaign.Auction__c);
+    	
+    	CampaignMember cm1 = new CampaignMember();
+    	cm1.CampaignId = campaign.id;
+    	cm1.ContactId = contact1.id;
+    	insert cm1;
+    	
+    	CampaignMember cm2 = new CampaignMember();
+    	cm2.CampaignId = campaign.id;
+    	cm2.ContactId = contact2.id;
+    	insert cm2;
+    	
+    	Auction_Item__c ai = new Auction_Item__c (
+    		Auction_Item_Name__c = 'Test Auction Item',
+    		Auction__c = auction.id,
+    		FMV_Override__c = 100
+    	);
+    	insert ai;
+    	    	
+		AUC_AuctionMaintenance am = new AUC_AuctionMaintenance();
+		am.auctionId = auction.Id;
+		System.assertEquals(campaign.Id, am.campaignIdAuctionAttendees);
+
+    	Opportunity oppPurchase= new Opportunity (
+    		Name = 'My Auction Item Purchase',
+    		CampaignId = campaign.id,
+    		RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem,
+    		StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED,
+    		CloseDate = System.Today(),
+    		Amount = 150,
+    		Auction_Item_Purchased__c = ai.Id,
+    		Auction_Non_Deductible_Amount__c = 100
+    	);
+    	insert oppPurchase;
+    	system.AssertEquals(150, oppPurchase.Amount);
+    	system.AssertEquals(100, oppPurchase.Auction_Non_Deductible_Amount__c);
+    	
+		Opportunity opp = [select Id, Name, Auction_Deductible_Amount__c from Opportunity where Id=:oppPurchase.id];
+    	system.AssertEquals(50, opp.Auction_Deductible_Amount__c);
+    	
+    	OpportunityContactRole oppcr = new OpportunityContactRole();
+    	oppcr.ContactId = contact1.id;
+    	oppcr.OpportunityId = oppPurchase.id;
+    	oppcr.IsPrimary = true;
+    	insert oppcr;
 		
-		//UNDONE: these tests haven't been updated for this page.
-		return;
-	}
+		//point to our VF page
+		PageReference p = new PageReference('Page.AuctionCheckOut');
+		p.getParameters().put('auctionId', auction.id); 
+		Test.setCurrentPageReference(p);
+		
+		//instantiate the controller for this opp
+		AUC_CTRL_AuctionCheckOut ctrl = new AUC_CTRL_AuctionCheckOut();
+		
+		System.AssertEquals(auction.id, ctrl.auctionId);
+		ctrl.ChangeAuction();
+		System.AssertEquals(auction.id, ctrl.auctionId);
+		
+		ctrl.searchPurchaser = '';
+		ctrl.SearchPurchaserLookup();
+		system.assertEquals(null, ctrl.contactIdPurchaser);
+		system.assert(ctrl.strStatus.startsWith('Enter the name'));
+
+		ctrl.searchPurchaser = 'This guy does not exist';
+		ctrl.SearchPurchaserLookup();
+		system.assertEquals(null, ctrl.contactIdPurchaser);
+		system.assert(ctrl.strStatus.startsWith('There is no'));
+
+		ctrl.searchPurchaser = 'David Test';
+		ctrl.SearchPurchaserLookup();
+		system.assertEquals(contact1.id, ctrl.contactIdPurchaser);
+		system.assertEquals('David Test', ctrl.strNamePurchaser);
+		system.assert(ctrl.strStatus.startsWith('Check the purchases'));
+		system.assert(ctrl.listReceipts != null);
+		system.assertEquals(1, ctrl.listReceipts.size());
+		system.assert(ctrl.listReceipts[0].listOppAuctionPurchases != null);
+		system.assertEquals(1, ctrl.listReceipts[0].listOppAuctionPurchases.size());
+		system.assertEquals(150, ctrl.listReceipts[0].decTotalAmountToPay);
+		system.assert(ctrl.strOpenReceiptURL != null);
+		system.assert(ctrl.strCreditCardChargeURL == null || ctrl.strCreditCardChargeURL != null);
+		system.Assert(ctrl.fHasReceipts);
+		system.assertEquals(null, ctrl.ChangePayNow()); 
+		system.assert(ctrl.listSOStages != null);
+
+		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
+    	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_PLEDGED, opp.StageName);
+		system.assert(ctrl.UpdateOppStages() == null);
+		ctrl.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+		system.assert(ctrl.UpdateOppStages() == null);
+		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
+    	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, opp.StageName);
+		
+		list<Purchaser> listP = getListPurchasers(auction.Id, 'Test');
+		system.assert(listP != null);
+		system.assertEquals(2, listP.size());
+		
+		ctrl.contactIdPurchaser = contact2.id;
+		ctrl.ChangePurchaserLookup();
+		system.assert(ctrl.strStatus.contains('no purchases'));
+		system.Assert(ctrl.listReceipts != null);
+		system.Assert(ctrl.listReceipts.size() == 0); // since contact2 has no purchases.
+		system.Assert(ctrl.fHasReceipts == false);
+		system.assert(ctrl.close() != null);
+		
+	}	
+
 }
