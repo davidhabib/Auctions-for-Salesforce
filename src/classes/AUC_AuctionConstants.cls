@@ -90,6 +90,26 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 
+	// how many records to show per page on Auction Tabs
+	public static integer cRecordsPerPage {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() == 0) return 25;
+			double db = settings[0].Number_of_Records_Per_Page__c;
+			if (db == 0 || db == null) return 25;
+			return db.intValue();
+		}
+	}
+
+	// whether to allow duplicate Bid Numbers per Auction, or not.
+	public static boolean fAllowDuplicateBidNumbers {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() == 0) return false;
+			return settings[0].Allow_Duplicate_Bid_Numbers__c;
+		}
+	}
+
 	// Get the user's Auction Receipts Intro text.
 	public static string StrAuctionReceiptsIntro() {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
@@ -157,7 +177,7 @@ public with sharing class AUC_AuctionConstants {
 			return null;
 		}
 	}
-
+	
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 

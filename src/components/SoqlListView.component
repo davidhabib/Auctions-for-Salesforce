@@ -64,7 +64,7 @@
 				</table>			
 			</div> 
 
-	        <apex:pageBlockTable value="{!listPagedItem}" var="item" rows="25" >  
+	        <apex:pageBlockTable value="{!listPagedItem}" var="item" rows="{!cRecordsPerPage}" >  
 
 	            <apex:column headerValue="Action" >
 	                <apex:commandLink action="{!EditItem}" value="Edit">

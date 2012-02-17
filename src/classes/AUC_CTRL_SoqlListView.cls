@@ -24,12 +24,20 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
             	}
             	setCon = new ApexPages.StandardSetController(
             		Database.getQueryLocator(strSoql));
+            	setCon.setPageSize(cRecordsPerPage);
             }
             return setCon;
         } 
         set;
     }
-          
+        
+	// how many records per page to display
+	public integer cRecordsPerPage {
+		get {
+			return AUC_AuctionConstants.cRecordsPerPage;
+		}
+	}
+	
     // how many pages in our current result set
     public integer NumberOfPages {
     	get {
