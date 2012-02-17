@@ -543,7 +543,7 @@
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
 					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null && strCreditCardValidateURL!=null}" 
-						onclick="window.open('{!strCreditCardValidateURL}','','menubar=0,status=0,toolbar=0'); return false;" />&nbsp;&nbsp;
+						onclick="window.open('{!strCreditCardValidateURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       
 				</apex:outputPanel>        				

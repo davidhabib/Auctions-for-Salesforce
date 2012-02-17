@@ -436,6 +436,14 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 		private set;
 	}
+	
+	// public property for the Window.Open() parameters
+	// for the virtual terminal window.
+	public string strPaymentProcessorWindowParameters {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
+		}
+	}
 
 	// public property to get the commandButton URL
 	// for the View button, to invoke the receipts page  

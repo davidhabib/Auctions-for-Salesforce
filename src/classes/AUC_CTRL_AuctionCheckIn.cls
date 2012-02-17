@@ -596,6 +596,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		private set;
 	}
 	
+	// public property for the Window.Open() parameters
+	// for the virtual terminal window.
+	public string strPaymentProcessorWindowParameters {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
+		}
+	}
 
 	/*******************************************************************************************************
 	* @description Attendee Class is a helper class that holds a contact and their campaign member.

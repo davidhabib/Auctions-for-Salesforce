@@ -109,7 +109,7 @@ public with sharing class AUC_AuctionConstants {
 			return settings[0].Allow_Duplicate_Bid_Numbers__c;
 		}
 	}
-
+	
 	// Get the user's Auction Receipts Intro text.
 	public static string StrAuctionReceiptsIntro() {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
@@ -177,7 +177,18 @@ public with sharing class AUC_AuctionConstants {
 			return null;
 		}
 	}
-	
+		
+	// read the custom setting and return the string for the window.open() parameters
+	// when opening the Payment Processor Virtual Terminal.
+	public static string StrPaymentProcessorWindowParameters() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].Payment_Processor_Window_Parameters__c;
+		} else {
+			return 'menubar=0,status=0,toolbar=0,width=700,height=700';
+		}
+	}
+
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 

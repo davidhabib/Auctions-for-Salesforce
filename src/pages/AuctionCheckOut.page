@@ -447,9 +447,9 @@
 			            <apex:pageBlockSectionItem >
 			            	<apex:outputPanel >
 								<apex:commandButton value="Charge Credit Card" rendered="{!strCreditCardChargeURL != null}" 
-									onclick="window.open('{!strCreditCardChargeURL}','','menubar=0,status=0,toolbar=0'); return false;" />&nbsp;&nbsp;							
+									onclick="window.open('{!strCreditCardChargeURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;							
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
-									onclick="window.open('{!strOpenReceiptURL}','','menubar=0,status=0,toolbar=0'); return false;" />&nbsp;&nbsp;															
+									onclick="window.open('{!strOpenReceiptURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;															
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />						
 							</apex:outputPanel>
 						</apex:pageBlockSectionItem>
