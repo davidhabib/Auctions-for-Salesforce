@@ -117,17 +117,17 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			if (strSaveResults != null) {
 				strStatus = strSaveResults;
 			} else if (!fPurchaser && !fSearchPurchaser) {
-				strStatus = 'Enter the name or bid number of a guest, to search for their purchases.'; 
+				strStatus = 'Enter the name or bid number of a guest to display purchases.'; 
 			} else if (!fPurchaser && fSearchPurchaser) {
-				strStatus = 'There is no contact who attended the auction with that name.';
+				strStatus = 'No attendee found by that name for the selected auction.';
 			} else if (fPurchaser && !fPurchases) {
-				strStatus = 'This guest has no purchases from the auction.';
+				strStatus = 'Guest has no purchases entered for the selected auction.';
 			} else if (fPurchaser && fPurchases) {
-				strStatus = 'Check the purchases that you want to process now.';  
+				strStatus = 'Check <b>Pay Now</b> for the purchases you wish to process.';  
 				if (strCreditCardChargeURL != null) {
-					strStatus += ' Click <b>Charge Credit Card</b> to open a new window to pay the processor.';
+					strStatus += ' Click <b>Charge Credit Card</b> to open a new window to process payment.';
 				}
-				strStatus += ' Click <b>Update Stages</b> to update the stage of all checked opportunities.';
+				strStatus += ' Select the appropriate stage and update purchases to complete processing.';
 			}
 			return strStatus;
 		}

@@ -42,16 +42,18 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			if (strSaveResults != null) {
 				strStatus = strSaveResults;
 			} else if (!fAttendee && !fCaptain && !fSearchAttendee) {
-				strStatus = 'Enter the name of a guest, to search for their ticket and table assignment, and display their information.'; 
+				strStatus = 'Enter the name of a guest to display their information.'; 
 			} else if (!fAttendee && fSearchAttendee) {
-				strStatus = 'There is no contact in the database with that name.  You can enter a new contact in the New Contact section.';
+				strStatus = 'There is no contact in the database with that name.  Enter a new contact in the New Contact section.';
 			} else if (fAttendee && !fCaptain) {
-				strStatus = 'Please enter a table captain.';
+				strStatus = null;
+				//strStatus = 'Please enter a table captain.';
 			} else if (!fAttendee && fCaptain) {
-				strStatus = 'You can select one of the guests from the Guest List, search for a new guest, or enter a new guest.';
+				strStatus = 'Select one of the guests from the Guest list below or enter a new contact to add to this Table Captain.';
 			} else if (fAttendee && fCaptain) {
-				strStatus = 'You can update the guest\'s information and click <b>Save Contact</b>.  You can also save their credit card by clicking <b>Authorize Credit Card</b>.' + 
-					'  If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
+				strStatus = null;
+				//strStatus = 'You can update the guest\'s information and click <b>Save Contact</b>.  You can also save their credit card by clicking <b>Authorize Credit Card</b>.' + 
+				//	'  If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
 			}
 			return strStatus;
 		}

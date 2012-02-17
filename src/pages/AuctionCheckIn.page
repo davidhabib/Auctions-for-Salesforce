@@ -495,7 +495,7 @@
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
 					<!-- <hr/><i>contactIdAttendee: {!contactIdAttendee}, {!strNameAttendee} - idCaptain: {!idCaptain}, {!strNameCaptain}</i><hr/> -->											
-		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" />  
+		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" rendered="{!strStatus != null}" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
 	        </td>              
