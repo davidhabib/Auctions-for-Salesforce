@@ -14,7 +14,12 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
 			auctionId = listSOAuctions[1].getValue();
 		}
-		auctionMaintenance.auctionId = auctionId;			
+		auctionMaintenance.auctionId = auctionId;	
+
+		// handle the no auction case
+		if (auctionId == null) {
+			strSaveResults = 'You must first create an Auction before using this page.';
+		}				
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;

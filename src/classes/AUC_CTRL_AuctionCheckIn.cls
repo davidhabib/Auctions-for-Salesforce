@@ -21,6 +21,11 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			auctionId = listSOAuctions[1].getValue();
 		}	
 		auctionMaintenance.auctionId = auctionId;		
+		
+		// handle the no auction case
+		if (auctionId == null) {
+			strSaveResults = 'You must first create an Auction before using this page.';
+		}
 	}
 
 	// private status string for reporting the results of saving.
@@ -496,7 +501,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				Contact contact = [select Name, AccountId from Contact where Id=:contactIdAttendee];	
 				string strAuction = AUC_AuctionMaintenance.NameOfAuctionId(AuctionId);
 				// remove trailing word Auction if it's there, so we don't get "auction" auction ticket.
-				if (strAuction.endsWith(' Auction')) {
+				if (strAuction != null && strAuction.endsWith(' Auction')) {
 					strAuction = strAuction.substring(0, strAuction.length() - 8);
 				}
 				oppTicketAttendee.Name = contact.Name + ' ' + strAuction + ' ' + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   

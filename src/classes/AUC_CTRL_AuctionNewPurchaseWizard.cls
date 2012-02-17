@@ -22,6 +22,11 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		}
 		auctionMaintenance.auctionId = auctionId;
 		
+		// handle the no auction case
+		if (auctionId == null) {
+			strSaveResults = 'You must first create an Auction before using this page.';
+		}
+		
 		// force lists to get loaded to display any errors up front.
 		list<SelectOption> lso = listSOLookupBidNumbers;
 		lso = listSOLookupAuctionItems;
