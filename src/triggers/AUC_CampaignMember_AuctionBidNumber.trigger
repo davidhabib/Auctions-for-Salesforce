@@ -2,6 +2,10 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
 trigger AUC_CampaignMember_AuctionBidNumber on CampaignMember (before insert, before update) {
+	
+	// allow user to disable this trigger
+	if (AUC_AuctionConstants.fAllowDuplicateBidNumbers) 
+		return;
 
 	// While this version was efficient in using only 1 soql, it could run into 
 	// governor limits if the total number of Bid Numbers in the database was over 1000.
