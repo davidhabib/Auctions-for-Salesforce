@@ -22,73 +22,21 @@
  	</script>
  	
 <style>
-
-	.clsDTEven {
-		background: white;
-	}
-	
-	.clsDTOdd {
-		background: AliceBlue;
-	}
-	
-	.bPageBlock .detailList th {
-		vertical-align: middle;
-	}
-
-	.bPageBlock .detailList td {
-		vertical-align: middle;
-	}
-
-	.clsDTFooter  {
-		background: #C0D0E5;
-	}
-  
-  	.clsDTHeader  {
-		height: 2em;
-	}
-	
-	th.clsDTHeader	{	
-		border-color: #D4DADC;			
-	}
-	  
-	body .editPage .bPageBlock .detailList tr .clsDTHeader th {
-		background: white url('/img/alohaSkin/grid_headerbg.gif') 0 bottom repeat-x;
-		border-width: 0 0 1px 1px;
-		font-size: .9em;
-		font-weight: bold;
-		padding: 5px 5px 4px 5px;   		
-		border: 1px solid #D4DADC;  
-    }
-
-	body .editPage .bPageBlock .detailList tr .clsDTEven td, 
-	body .editPage .bPageBlock .detailList tr .clsDTOdd td {
-		border-style: solid;
-		border-width: 0 0 1px 0;	
-		border-color: #D4DADC;
-		padding: 0px 5px 0px 5px;   
-	}
-	
-	.clsDT {
-		border-color: #D4DADC;
-	}	
       
     .Error { 
     	color: red; 
     	font-weight: strong;
     }
-    
+
+	.apexp .editPage .bPageBlock .detailList .list tr td {
+		padding: 1px 5px 1px 5px; 
+		border-bottom: 1px solid #D4DADC;
+	}
+	
 </style>
  
    	<apex:sectionHeader title="Auction Tickets" />      
-    <apex:form > 
-   
-    	<apex:outputPanel id="panelDebugging" rendered="false">
-    		<hr/> 
-    		<apex:outputText value="{!'AuctionId: ' + auctionId }" Style="color:red;" /><br/>
-    		<apex:outputText value="{!'CampaignId: ' + opp.CampaignId }" Style="color:red;" /><br/>    		
-    		<hr/>
-		</apex:outputPanel>
-		    
+    <apex:form > 	    
         <apex:pageBlock title="{!IF(opp.Id!=null,'Edit','New') + ' Auction Ticket'}" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>
@@ -119,22 +67,12 @@
                 <apex:inputField value="{!opp.Description}" id="txtDescription" />
             </apex:pageBlockSection>
             <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
-            	<br/>
             	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
             	<br/>
         
-				<apex:dataTable value="{!listCmpMbrAttendees}" var="cmpmbr" 
-					captionStyle="text-align:left;font-weight:bold;"					
-					rowClasses="clsDTEven, clsDTOdd" 
-					headerClass="clsDTHeader" 	
-					footerClass="clsDTFooter"
-					styleClass="clsDT"	
-					border="1"
-					cellspacing="0"
-					cellpadding="0" 
-					rules="none" >
+				<apex:pageBlockTable value="{!listCmpMbrAttendees}" var="cmpmbr" >
 					<apex:column style="text-align:center;">						
-						<apex:facet name="header">&nbsp;&nbsp;Action&nbsp;&nbsp;</apex:facet>
+						<apex:facet name="header">Action</apex:facet>
 		                <apex:commandLink action="{!DeleteCM}" value="Del" onclick="if (confirm('Are you sure?')==false) { return false;}" rendered="{!cmpmbr.id != null}" >
 					    	<apex:param assignTo="{!idDeleteCM}" name="idDeleteCM" value="{!cmpmbr.id}" /> 
 		                </apex:commandLink>
@@ -158,11 +96,11 @@
 						<apex:inputField value="{!cmpmbr.Meal_Preference__c}" required="false"/>
 					</apex:column>
 					<apex:column style="text-align:center;">
-						<apex:facet name="header">&nbsp;&nbsp;Paid&nbsp;&nbsp;</apex:facet>
+						<apex:facet name="header">Paid</apex:facet>
 						<apex:inputCheckbox value="{!cmpmbr.Paid__c}" required="false" />
 					</apex:column>
 					<apex:column style="text-align:center;" >
-						<apex:facet name="header">&nbsp;&nbsp;Table Captain&nbsp;&nbsp;</apex:facet>
+						<apex:facet name="header">Table Captain</apex:facet>
 						<apex:inputCheckbox value="{!cmpmbr.Is_Table_Captain__c}" required="false" />
 					</apex:column>
 					<apex:column >					
@@ -173,7 +111,7 @@
 						<apex:facet name="header">Table Name/Number</apex:facet>
 						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" style="width:80px;" />
 					</apex:column>
-				</apex:dataTable>	
+				</apex:pageBlockTable>	
         
             </apex:pageBlockSection>
         
