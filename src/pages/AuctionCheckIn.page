@@ -58,7 +58,6 @@
 		position:relative;
 	}
 	
-	
 	.clsDTEven {
 		background: white;
 	}
@@ -67,11 +66,22 @@
 		background: AliceBlue;
 	}
 	
-	.clsDTHeader {
-		background: LightSteelBlue;
-		vertical-align: middle;
+	.clsDTHeader  {
+		background: #C0D0E5;
 	}
 	
+	.bPageBlock .detailList th {
+		vertical-align: middle;
+	}
+
+	.bPageBlock .detailList td {
+		vertical-align: middle;
+	}
+
+	.clsDTFooter  {
+		background: #C0D0E5;
+	}
+		
 	.hilite { 
 		background: yellow; 
 	}
@@ -551,7 +561,7 @@
 			<td style="vertical-align:top;" >
 				<apex:outputPanel id="panelAttendees" >				            					            
 		            <apex:pageBlockSection title="Guests" columns="1" id="pbsAttendees" rendered="{!idCaptain!=null}" collapsible="true" >
-						<apex:dataTable value="{!listAttendees}" var="attendee" rules="all"  cellpadding="2" 
+						<apex:dataTable value="{!listAttendees}" var="attendee" rules="rows"  cellpadding="1px" 
 							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
 							headerClass="clsDTHeader" >	
 							<apex:column headerValue=" " >
@@ -564,7 +574,7 @@
 								</apex:outputPanel>
 							</apex:column>														
 							<apex:column >
-								<apex:facet name="header">Contact<br/>&nbsp;</apex:facet>
+								<apex:facet name="header">Contact</apex:facet>
 								<span class="clsAttendeeLink">
 									<apex:outputField value="{!attendee.cm.contactId}" rendered="{!attendee.con.Id != null}" />
 									<apex:commandLink value="(available ticket)" rendered="{!attendee.con.Id == null}" />
@@ -575,7 +585,7 @@
 								<apex:outputField value="{!attendee.cm.Bid_Number__c}"  style="width:50px"  />
 							</apex:column> 
 							<apex:column style="text-align:center;">					
-								<apex:facet name="header">Table Name/Number</apex:facet>
+								<apex:facet name="header">&nbsp;&nbsp;Table Name/Number&nbsp;&nbsp;</apex:facet>
 								<apex:outputField id="txtTableNameNumber" value="{!attendee.cm.Table_Name_Number__c}" />
 							</apex:column>
 							<apex:column style="text-align:center;">					
