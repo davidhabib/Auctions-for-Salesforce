@@ -449,8 +449,7 @@
 
    	<apex:sectionHeader title="Auction Check In" />
     <apex:form >   	
-        <apex:pageBlock mode="edit" >
-            <apex:pageBlockSection title="Search by Guest or Captain" columns="1"  />
+        <apex:pageBlock mode="edit" title="Search by Guest or Captain" >
 	       		<apex:actionStatus id="statusLoad" onstart="j$('.loading').fadeIn();" onstop="j$('.loading').fadeOut();" />
 				<div class="loading clsLoading"  >
 				  <p style="vertical-align: middle;" >
@@ -561,9 +560,8 @@
 			<td style="vertical-align:top;" >
 				<apex:outputPanel id="panelAttendees" >				            					            
 		            <apex:pageBlockSection title="Guests" columns="1" id="pbsAttendees" rendered="{!idCaptain!=null}" collapsible="true" >
-						<apex:dataTable value="{!listAttendees}" var="attendee" rules="rows"  cellpadding="1px" 
-							rowClasses="clsDTEven,clsDTOdd" onRowClick="OnDTRowClick(this); return false;"
-							headerClass="clsDTHeader" >	
+						<apex:pageBlockTable value="{!listAttendees}" var="attendee"  
+							 onRowClick="OnDTRowClick(this); return false;"	 >	
 							<apex:column headerValue=" " >
 								<apex:outputPanel rendered="{!attendee.cm.contactId!=contactIdAttendee}" >	
 									<input type="radio" name="radioGrpContact" id="radio{!attendee.cm.contactId}" value="{!attendee.cm.contactId}" 
@@ -585,7 +583,7 @@
 								<apex:outputField value="{!attendee.cm.Bid_Number__c}"  style="width:50px"  />
 							</apex:column> 
 							<apex:column style="text-align:center;">					
-								<apex:facet name="header">&nbsp;&nbsp;Table Name/Number&nbsp;&nbsp;</apex:facet>
+								<apex:facet name="header">Table Name/Number</apex:facet>
 								<apex:outputField id="txtTableNameNumber" value="{!attendee.cm.Table_Name_Number__c}" />
 							</apex:column>
 							<apex:column style="text-align:center;">					
@@ -593,10 +591,10 @@
 								<apex:outputField value="{!attendee.cm.Meal_Preference__c}" />
 							</apex:column>
 							<apex:column style="text-align:center;">
-								<apex:facet name="header">&nbsp;&nbsp;Paid&nbsp;&nbsp;</apex:facet>
+								<apex:facet name="header">Paid</apex:facet>
 								<apex:inputCheckbox value="{!attendee.cm.Paid__c}" required="false" disabled="true" />
 							</apex:column>
-						</apex:dataTable>	
+						</apex:pageBlockTable>	
 		            </apex:pageBlockSection>
 				</apex:outputPanel>        				
 		       </td>
