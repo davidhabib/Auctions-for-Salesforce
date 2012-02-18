@@ -120,8 +120,8 @@
 		vertical-align: middle;
 	}
 
-	.clsDTFooter  {
-		background: #C0D0E5;
+	.bPageBlock .list .clsDTFooter  {
+		background: WhiteSmoke;
 	}
 	
 </style>
@@ -316,8 +316,7 @@
  	
    	<apex:sectionHeader title="Auction Check Out" />      
     <apex:form >   		    
-        <apex:pageBlock mode="edit" >
-            <apex:pageBlockSection title="Search by Name or Bidder Number" columns="1"  />
+        <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
 	       		<apex:actionStatus id="statusLoad" onstart="j$('.loading').fadeIn();" onstop="j$('.loading').fadeOut();" />
 				<div class="loading clsLoading"  >
 				  <p style="vertical-align: middle;" >
@@ -371,11 +370,8 @@
 				<apex:outputPanel id="panelPurchases" >
 		            <apex:pageBlockSection columns="1"  >
 				    	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
-							<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" 
-								cellpadding="1px"
-								captionStyle="text-align:left;font-weight:bold;"
-								rowClasses="clsDTEven,clsDTOdd" 
-								headerClass="clsDTHeader" 	
+							<apex:pageBlockTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" 
+
 								footerClass="clsDTFooter"	
 								rules="rows" 
 								columnsWidth="20px, 260px, 220px, 200px, 80px, 70px" >
@@ -424,7 +420,7 @@
 									</apex:facet>
 								</apex:column>	
 								 
-							</apex:dataTable>
+							</apex:pageBlockTable>
 						</apex:repeat>
 					</apex:pageBlockSection>
 				</apex:outputPanel> 
