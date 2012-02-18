@@ -173,6 +173,20 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		return null;
 	}
 	
+	// will hold the ID of the CM to be deleted
+	public ID idDeleteCM { get; set; }
+	
+	// action method to delete a CM from the database.
+	public PageReference DeleteCM() {
+		if (idDeleteCM != null) {
+			database.delete(idDeleteCM);
+			idDeleteCM = null;
+			listCmpMbrAttendees = null;
+		}
+		return null;	
+	}
+	
+	
 	private class MySaveException extends Exception {}
 	
 	public PageReference Save() {
