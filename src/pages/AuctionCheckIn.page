@@ -296,7 +296,6 @@
 				} else 
 					{			
 	       			j$('#txtCaptains').addClass('clsWaitRight');	        			
-					var strSearch = request.term.toLowerCase();		
 					GW_Auctions.AUC_CTRL_AuctionCheckIn.getListCaptains(auctionId, '', function(result, event) {
 						j$('#txtCaptains').removeClass('clsWaitRight');	        								
 		        		if (event.type == 'exception') {
@@ -551,8 +550,14 @@
 						status="statusLoad"
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
-					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null && strCreditCardValidateURL!=null}" 
-						onclick="window.open('{!strCreditCardValidateURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;
+					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" 
+						onclick="if ('{!strCreditCardValidateURL}' == '') {
+											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
+										} else { 
+											window.open('{!strCreditCardValidateURL}','','{!strPaymentProcessorWindowParameters}');
+										} 
+										return false;"
+					/>&nbsp;&nbsp;
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       
 				</apex:outputPanel>        				

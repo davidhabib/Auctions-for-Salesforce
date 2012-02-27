@@ -127,7 +127,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				if (strCreditCardChargeURL != null) {
 					strStatus += ' Click <b>Charge Credit Card</b> to open a new window to process payment.';
 				}
-				strStatus += ' Select the appropriate stage and update purchases to complete processing.';
+				strStatus += ' Select the appropriate stage and click <b>Update Checked Stages</b> to complete processing.';
 			}
 			return strStatus;
 		}
@@ -186,7 +186,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			Purchaser p = new Purchaser();
 			p.contactId = cm.contactId;
 			p.strName = cm.contact.Name;
-			p.strBidderNumber = (cm.Bid_Number__c == null ? null : string.valueOf(integer.valueOf(cm.Bid_Number__c)));
+			p.strBidderNumber = (cm.Bid_Number__c == null ? '' : string.valueOf(integer.valueOf(cm.Bid_Number__c)));
 			listPurchaser.add(p);
 		}
 		return listPurchaser; 

@@ -207,12 +207,13 @@
 		* given the list of Purchasers, what is being searched for, and the response object,
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
-		function fillAndMatchPurchasersCombo(listPurchasers, request, response) {
+		function fillAndMatchPurchasersCombo(listP, request, response) {
 			var strSearch = request.term.toLowerCase();		
  			var isMatch = false;
-     		response(j$.map(listPurchasers, function(item) {
+     		response(j$.map(listP, function(item) {
      			var strLower = item.strName.toLowerCase(); 
-     			var strBN = item.strBidderNumber;    			
+     			var strBN = item.strBidderNumber;  
+     			if (strBN == null || strBN == '') strBN = 'no bid number';		
    				if (strLower.indexOf(strSearch) >= 0 || strBN.indexOf(strSearch) >= 0) {
 	   				// if we find the exact match, get its formal text and id.
 	   				// ideally, we'd select it, but I couldn't figure out how!
@@ -426,29 +427,37 @@
 				</apex:outputPanel> 
 			      
 			    <apex:outputPanel id="panelButtons">     
-		            <apex:pageBlockSection columns="1"  >
-		                <apex:pageBlockSectionItem >
+		            <apex:pageBlockSection columns="2"  >
+		                		       
+			            <apex:pageBlockSectionItem >
+			            	<apex:outputPanel >
+								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts}" 
+									onclick="if ('{!strCreditCardChargeURL}' == '') {
+											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
+										} else { 
+											window.open('{!strCreditCardChargeURL}','','{!strPaymentProcessorWindowParameters}');
+										} 
+										return false;" 
+								/>&nbsp;&nbsp;							
+								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
+									onclick="window.open('{!strOpenReceiptURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;															
+								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
+							</apex:outputPanel>
+						</apex:pageBlockSectionItem>
+
+			            <apex:pageBlockSectionItem >
 		                	<apex:outputPanel rendered="{!fHasReceipts}"> 
-			                    <apex:commandButton value="Update Checked {!$ObjectType.Opportunity.Fields.StageName.Label}s to" 
+			                    <apex:commandButton value="Update Checked {!$ObjectType.Opportunity.Fields.StageName.Label}s" 
 			                    	action="{!UpdateOppStages}" />
 							   	<apex:selectList value="{!StageName}" size="1" id="lbxStage" required="false"  >
 							   		<apex:selectOptions value="{!listSOStages}" /> 
 							   	</apex:selectList>
 						   	</apex:outputPanel>
-		                </apex:pageBlockSectionItem>
-		                		       
-			            <apex:pageBlockSectionItem >
-			            </apex:pageBlockSectionItem>
-		            
-			            <apex:pageBlockSectionItem >
-			            	<apex:outputPanel >
-								<apex:commandButton value="Charge Credit Card" rendered="{!strCreditCardChargeURL != null}" 
-									onclick="window.open('{!strCreditCardChargeURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;							
-								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
-									onclick="window.open('{!strOpenReceiptURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;															
-								<apex:commandButton value="Close" action="{!Close}" immediate="true" />						
-							</apex:outputPanel>
 						</apex:pageBlockSectionItem>
+		            
+		                <apex:pageBlockSectionItem >
+		                </apex:pageBlockSectionItem>
+
 					</apex:pageBlockSection>
 				</apex:outputPanel>
 				<p/>
