@@ -444,14 +444,16 @@
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
 							</apex:outputPanel>
 						</apex:pageBlockSectionItem>
-
+						
 			            <apex:pageBlockSectionItem >
+		                	<apex:outputPanel rendered="{!fHasReceipts}">
+				    			<apex:outputLabel value="Change checked item {!$ObjectType.Opportunity.Fields.StageName.Label}s to" />
+							</apex:outputPanel>			            	
 		                	<apex:outputPanel rendered="{!fHasReceipts}"> 
-			                    <apex:commandButton value="Update Checked {!$ObjectType.Opportunity.Fields.StageName.Label}s" 
-			                    	action="{!UpdateOppStages}" />
 							   	<apex:selectList value="{!StageName}" size="1" id="lbxStage" required="false"  >
 							   		<apex:selectOptions value="{!listSOStages}" /> 
 							   	</apex:selectList>
+			                    <apex:commandButton value="Update" action="{!UpdateOppStages}" />
 						   	</apex:outputPanel>
 						</apex:pageBlockSectionItem>
 		            

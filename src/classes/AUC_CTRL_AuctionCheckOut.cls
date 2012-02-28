@@ -124,10 +124,10 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				strStatus = 'Guest has no purchases entered for the selected auction.';
 			} else if (fPurchaser && fPurchases) {
 				strStatus = 'Check <b>Pay Now</b> for the purchases you wish to process.';  
-				if (strCreditCardChargeURL != null) {
+				//if (strCreditCardChargeURL != null) {
 					strStatus += ' Click <b>Charge Credit Card</b> to open a new window to process payment.';
-				}
-				strStatus += ' Select the appropriate stage and click <b>Update Checked Stages</b> to complete processing.';
+				//}
+				strStatus += ' Select the appropriate stage value and click <b>Update</b> to complete processing.';
 			}
 			return strStatus;
 		}
@@ -540,13 +540,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		ctrl.searchPurchaser = 'This guy does not exist';
 		ctrl.SearchPurchaserLookup();
 		system.assertEquals(null, ctrl.contactIdPurchaser);
-		system.assert(ctrl.strStatus.startsWith('There is no'));
+		system.assert(ctrl.strStatus.startsWith('No attendee'));
 
 		ctrl.searchPurchaser = 'David Test';
 		ctrl.SearchPurchaserLookup();
 		system.assertEquals(contact1.id, ctrl.contactIdPurchaser);
 		system.assertEquals('David Test', ctrl.strNamePurchaser);
-		system.assert(ctrl.strStatus.startsWith('Check the purchases'));
+		system.assert(ctrl.strStatus.startsWith('Check <b>Pay Now</b>'));
 		system.assert(ctrl.listReceipts != null);
 		system.assertEquals(1, ctrl.listReceipts.size());
 		system.assert(ctrl.listReceipts[0].listOppAuctionPurchases != null);
