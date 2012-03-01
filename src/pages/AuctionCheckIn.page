@@ -542,8 +542,8 @@
 		            	<apex:pageBlockSectionItem >
 		            		<apex:outputLabel value="Add Ticket Purchase" escape="false" />
 		            		<apex:inputCheckbox value="{!fAddTicketPurchase}" > 
-					    		<apex:actionSupport event="onchange" status="statusLoad"  
-					    			rerender="panelTicketPurchase,panelEdit" 
+					    		<apex:actionSupport event="onchange" status="statusLoad" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelTicketPurchase,panelStatus,panelCreditCard" 
 					    			oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />
 					    	</apex:inputCheckbox>			    			
 		            	</apex:pageBlockSectionItem>
@@ -554,7 +554,7 @@
 			           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
 			                <apex:pageBlockSectionItem >
 			                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
-							   	<apex:selectList value="{!oppTicketAttendee.StageName}" size="1" id="lbxTicketStage" required="true"  >
+							   	<apex:selectList value="{!oppTicketAttendee.StageName}" size="1" id="lbxTicketStage" required="false"  >
 							   		<apex:selectOptions value="{!listSOTicketStages}" /> 
 							   	</apex:selectList>
 			                </apex:pageBlockSectionItem>		       
