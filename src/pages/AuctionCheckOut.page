@@ -449,18 +449,24 @@
 			            	<apex:outputPanel >
 								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage==false}" 
 									onclick="if ('{!strCreditCardChargeURL}' == '') {
-											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
-										} else { 
-											window.open('{!strCreditCardChargeURL}','','{!strPaymentProcessorWindowParameters}');
-										} 
-										return false;" 
+												alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
+											} else if ({!decTotalAmountToPay} == 0) {
+												alert('Please check which items you want to pay for, before opening the payment processor.');
+											} else { 
+												window.open('{!strCreditCardChargeURL}','','{!strPaymentProcessorWindowParameters}');
+											} 
+											return false;" 
 								/>&nbsp;&nbsp;							
 
 								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage}" 
 									action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
 									onclick="if ('{!strCreditCardChargeURL}' == '') {
-											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
-											return false;}"
+												alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
+												return false;
+											} else if ({!decTotalAmountToPay} == 0) {
+												alert('Please check which items you want to pay for, before opening the payment processor.');
+												return false;
+											}"
 									oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />&nbsp;&nbsp;	
 								
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"

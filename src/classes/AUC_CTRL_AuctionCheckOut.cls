@@ -416,6 +416,18 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
         return p;
 	}
 	
+	// public property of the total amount checked off to pay.
+	public decimal decTotalAmountToPay {
+		get {
+			if (listReceipts != null && listReceipts.size() > 0) {
+				return listReceipts[0].decTotalAmountToPay;
+			} else {
+				return 0;
+			}			
+		}
+		private set;
+	}
+	
 	// public property to get the commandButton URL
 	// for the Charge Credit Card button.	
 	public string strCreditCardChargeURL {
