@@ -457,7 +457,11 @@
 								/>&nbsp;&nbsp;							
 
 								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage}" 
-									action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" />&nbsp;&nbsp;	
+									action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
+									onclick="if ('{!strCreditCardChargeURL}' == '') {
+											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
+											return false;}"
+									oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />&nbsp;&nbsp;	
 								
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
 									onclick="window.open('{!strOpenReceiptURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;															
@@ -500,7 +504,6 @@
 	       				</script>
 					</apex:outputPanel>
 				</apex:outputPanel>						
-
 				<p/>
 			</td>
 			</tr>

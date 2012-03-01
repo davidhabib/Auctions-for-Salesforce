@@ -376,6 +376,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// the new stage specified in StageName.
 	public PageReference UpdateOppStages() {
 		strSaveResults = null;
+		fShowPanelCreditCard = false;
 		if (listReceipts == null || StageName == '' || StageName == null) {
 			strSaveResults = 'Please specify a new stage name to use.';
 			return null;
@@ -446,14 +447,6 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 	}
 	
-	// public property for the Window.Open() parameters
-	// for the virtual terminal window.
-	public string strPaymentProcessorPanelHeight {
-		get {
-			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
-		}
-	}
-	
 	// public property for whether to display the payment
 	// processor's virtual terminal on our page, or in a new browser window.
 	public boolean fShowPaymentProcessorOnPage {
@@ -481,9 +474,11 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 		private set;
 	}
-
+	
+	// public property on whether to display the credit card panel
 	public boolean fShowPanelCreditCard { get; set; }
 	
+	// public method to show the credit card panel
 	public PageReference ShowPanelCreditCard() {
 		fShowPanelCreditCard = true;
 		return null;

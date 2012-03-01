@@ -131,7 +131,23 @@
 		background: lightyellow;
 		width: 400px;
 		height: 40px;		
-	}    
+	}   
+	
+	.clsLoadingPP {
+		display: none;
+		z-index: 99;
+		position: fixed;
+		top: 60%;
+		left: 30%;
+		background: lightyellow;
+		width: 400px;
+		height: 40px;			
+		border: 1px solid #CACACA;
+		color: #666;
+		font-size: 95%;
+		padding: 4px;			
+	}   
+	 
 	
 </style>
 
@@ -465,7 +481,7 @@
 			    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
-					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
 					    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />			    			
 					    		<apex:selectOptions value="{!listSOAuctions}" />
 					    	</apex:selectList>	
@@ -475,12 +491,12 @@
 			                <apex:outputPanel >
 							   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees ui-autocomplete-input" />            
 							    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
 							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 							        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 							    </apex:actionFunction>
 							    <apex:actionFunction action="{!SearchAttendeeLookup}" name="SearchAttendeeLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
 							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 							        <apex:param name="param1" assignTo="{!searchAttendee}" value="" />
 							    </apex:actionFunction>
@@ -491,7 +507,7 @@
 		                	<apex:outputPanel id="panelCaptains" >
 							   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
 							    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 
+					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
 							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
 							        <apex:param name="param1" assignTo="{!idCaptain}" value="" />
 							    </apex:actionFunction>
@@ -548,19 +564,25 @@
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save Contact', 'Save New Contact')}" action="{!SaveAttendeeInfo}" 
 						status="statusLoad"
-		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus" 						
+		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
-					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null}" 
+					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage==false}" 
 						onclick="if ('{!strCreditCardValidateURL}' == '') {
 											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 										} else { 
 											window.open('{!strCreditCardValidateURL}','','{!strPaymentProcessorWindowParameters}');
 										} 
 										return false;"
-					/>&nbsp;&nbsp;
+					/>
+					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage}" 
+						action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
+						onclick="if ('{!strCreditCardValidateURL}' == '') {
+								alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
+								return false;}"
+						oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;						
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       
-				</apex:outputPanel>        				
+				</apex:outputPanel>  
 			</td> 
 			<td style="vertical-align:top;" >
 				<apex:outputPanel id="panelAttendees" >				            					            
@@ -603,6 +625,27 @@
 		            </apex:pageBlockSection>
 				</apex:outputPanel>        				
 		       </td>
+			</tr>
+			<tr>
+				<td colspan="2">				
+					<apex:outputPanel id="panelCreditCard" >
+						<apex:outputPanel rendered="{!fShowPanelCreditCard}" >
+							<div class="clsLoadingPP"  >
+							  <p style="vertical-align: middle; text-align:center;" >
+								<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+								<span style="vertical-align: middle;" >Loading Payment Processor...</span>
+							  </p>
+							</div>	       				
+		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!strPaymentProcessorPageHeight}" src="{!strCreditCardValidateURL}" />
+		       				<script>
+		       					j$('.clsLoadingPP').fadeIn();
+		       					j$('#iframePP').load(function(){  
+		       						j$('.clsLoadingPP').fadeOut();
+		       					});
+		       				</script>
+						</apex:outputPanel>
+					</apex:outputPanel>										
+				</td>
 			</tr>
 			</table>
         </apex:pageBlock>

@@ -93,6 +93,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				attendeeEdit = null;
 				oppTicketAttendee = null;
 				strCreditCardValidateURL = null;
+				fShowPanelCreditCard = false;
 			}
 			contactIdAttendee = value;
 			if (contactIdAttendee == '') contactIdAttendee = null; 
@@ -605,6 +606,32 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
 		}
 	}
+	
+	// public property for whether to display the payment
+	// processor's virtual terminal on our page, or in a new browser window.
+	public boolean fShowPaymentProcessorOnPage {
+		get {
+			return AUC_AuctionConstants.fShowPaymentProcessorOnPage;
+		}
+	}	
+
+	// public property for the IFRAME Height parameter
+	// for the virtual terminal window if displaying on our page.
+	public string strPaymentProcessorPageHeight {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorPageHeight();
+		}
+	}
+
+	// public property on whether to display the credit card panel
+	public boolean fShowPanelCreditCard { get; set; }
+	
+	// public method to show the credit card panel
+	public PageReference ShowPanelCreditCard() {
+		fShowPanelCreditCard = true;
+		return null;
+	}
+	
 
 	/*******************************************************************************************************
 	* @description Attendee Class is a helper class that holds a contact and their campaign member.
