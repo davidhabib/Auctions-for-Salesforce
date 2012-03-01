@@ -3,6 +3,7 @@
 
 // a simple class to hold an opportunity, and some temporary variables for
 // each row of the Auction Purchases grid, on the AuctionPurchases page.
+// also used by AuctionCheckOut page.
 public with sharing class AUC_PurchaseOpportunity {
 
 	public AUC_PurchaseOpportunity() {
