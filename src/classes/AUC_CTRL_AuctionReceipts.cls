@@ -27,7 +27,7 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
  	public String getRenderFormat() {
-    	if (ApexPages.currentPage().getParameters().get('RenderFormat') != null)
+    	if (ApexPages.currentPage().getParameters().get('RenderFormat') == 'pdf')
         	return 'pdf';
         else
          	return null;
@@ -134,7 +134,7 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 	}
 
 	public Boolean HasReceipts {
-		get {
+		get { return false;
 			if (listReceipts == null) return False;
 			if (listReceipts.size() == 0) return False;
 			return True;
@@ -143,7 +143,7 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 	
 	// list of Receipt objects to display
 	public list<Receipt> listReceipts {
-		get {
+		get { return null;
 			if (listReceipts != null) return listReceipts;
 			
 			// create the list of which contacts to include
@@ -168,7 +168,7 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 			
 	// to handle large auctions, the second list of Receipt objects to display
 	public list<Receipt> listReceipts2 {
-		get {
+		get { return null;
 			if (listReceipts2 != null) return listReceipts2;
 			
 			if (listSOPurchasers2 == null) return null;

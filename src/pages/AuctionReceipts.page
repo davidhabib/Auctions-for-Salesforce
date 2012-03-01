@@ -87,14 +87,14 @@
 					<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
 					<!-- once we started using actionSupport, we still needed to ensure the user didn't call OpenPDF until the actionSupport had finished. -->
 					<!-- so we use a little javascript to hide the Open PDF button, using actionStatus. -->
-					<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="false" >
-				    		<apex:actionSupport event="onclick" status="cbxStatus" action="{!ChangeIncludeTicketPurchases}" />
+					<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="true" >
+				    		<apex:actionSupport event="onclick" status="cbxStatus" action="{!ChangeIncludeTicketPurchases}" rerender="panelBtn" />
 					</apex:inputCheckbox>
 				    <apex:actionStatus id="cbxStatus" onstart="DisplayOpenPDF(false);" onstop="DisplayOpenPDF(true);" />
 				</apex:panelGroup>
 				
 				<apex:outputText value="" />
-				<apex:panelGroup >	
+				<apex:panelGroup id="panelBtn" >
 					<!--  make our link look like a button! -->
 			    	<apex:commandLink action="{!OpenPDF}" target="_blank" styleClass="cssHideLink" immediate="false" >
 						<apex:commandButton id="btnOpenPDF" value="Open PDF" onclick="return false;" immediate="false" />
@@ -107,7 +107,7 @@
 		</apex:form>
 			
 	</apex:outputPanel>
-	<apex:outputPanel id="panelReportPDF" rendered="{!RenderFormat!=null}" >  	
+	<apex:outputPanel id="panelReportPDF" rendered="{!RenderFormat=='pdf'}" >  	
         <apex:pageMessage summary="There are no purchases for the specified people." severity="info" strength="2" rendered="{!NOT(HasReceipts)}" />  
     	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
 		<div style="page-break-after:{!IF(contactId=='', 'always', 'none')};">
@@ -163,7 +163,7 @@
 	</apex:repeat>
 	</apex:outputPanel>
 	
-	<apex:outputPanel id="panelReportPDF2" rendered="{!RenderFormat!=null}" >  	
+	<apex:outputPanel id="panelReportPDF2" rendered="{!RenderFormat=='pdf'}" >  	
     	<apex:repeat var="receipt" value="{!listReceipts2}">   	    	
 		<div style="page-break-after:{!IF(contactId=='', 'always', 'none')};">
 	    	<apex:outputPanel id="panelReceipt2" >		
