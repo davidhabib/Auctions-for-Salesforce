@@ -223,7 +223,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			return strNameCaptain;
 		}
 		private set;
-	}
+	} 
 
 	// callback when the user changes the Table Captain contact lookup.
 	public PageReference ChangeCaptainLookup() {
@@ -302,8 +302,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     					' from CampaignMember' + 
     					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
     						' (GW_Auctions__Auction_Ticket_OppId__c = \'' + oppCaptain.Id + '\'';
-    				if (IsCaptainContact) {
-    					strSoql += 'or GW_Auctions__Table_Captain__c = \'' + idCaptain+ '\'';
+    				if (IsCaptainContact && idCaptain != null) {
+    					strSoql += 'or GW_Auctions__Table_Captain__c = \'' + idCaptain + '\'';
     				}
     				strSoql += ')';
     				
