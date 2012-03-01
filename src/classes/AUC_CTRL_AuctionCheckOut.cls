@@ -378,7 +378,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		strSaveResults = null;
 		fShowPanelCreditCard = false;
 		if (listReceipts == null || StageName == '' || StageName == null) {
-			strSaveResults = 'Please specify a new stage name to use.';
+			strSaveResults = 'Please specify the new ' + Schema.SObjectType.Opportunity.fields.StageName.label + ' to set.';
 			return null;
 		}
 				
