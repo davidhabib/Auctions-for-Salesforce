@@ -100,6 +100,22 @@
 		height: 40px;		
 	}   
 	 
+    .clsLoadingPP {
+		display: none;
+		z-index: 99;
+		position: fixed;
+		top: 60%;
+		left: 30%;
+		background: lightyellow;
+		width: 400px;
+		height: 40px;	
+		
+		border: 1px solid #CACACA;
+		color: #666;
+		font-size: 95%;
+		padding: 4px;			
+	}   
+
 	.clsDTEven {
 		background: white;
 	}
@@ -322,7 +338,7 @@
 				<div class="loading clsLoading"  >
 				  <p style="vertical-align: middle;" >
 					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-					<span class="loadingText" style="vertical-align: middle;" >Loading...</span>
+					<span style="vertical-align: middle;" >Loading...</span>
 				  </p>
 				</div>  
 			<table cellpadding="0">
@@ -334,7 +350,7 @@
 			    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
+					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
 					    			oncomplete="auctionId='{!auctionId}'; listPurchasers=null; myInitializeJQueryUI('{!strNamePurchaser}');" />			    			
 					    		<apex:selectOptions value="{!listSOAuctions}" />
 					    	</apex:selectList>	
@@ -345,12 +361,12 @@
 							   	<input type="text" id="txtPurchasers" class="clsCombo clsComboPurchasers ui-autocomplete-input" /> 
 							   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
 							    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
+					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
 							    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
 							        <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
 							    </apex:actionFunction>
 							    <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
+					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
 							    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
 							        <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
 							    </apex:actionFunction>
@@ -411,7 +427,7 @@
 									<apex:facet name="header" >Pay Now</apex:facet>
 									<apex:inputCheckbox value="{!oppAP.IsPayNow}" required="false" immediate="false" >
 							    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangePayNow}"
-							    			rerender="panelPurchases,panelButtons,panelStatus" 
+							    			rerender="panelPurchases,panelButtons,panelStatus,panelCreditCard" 
 							    			oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
 							    	</apex:inputCheckbox>
 									<Apex:facet name="footer">				
@@ -431,7 +447,7 @@
 		                		       
 			            <apex:pageBlockSectionItem >
 			            	<apex:outputPanel >
-								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts}" 
+								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage==false}" 
 									onclick="if ('{!strCreditCardChargeURL}' == '') {
 											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 										} else { 
@@ -439,6 +455,10 @@
 										} 
 										return false;" 
 								/>&nbsp;&nbsp;							
+
+								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage}" 
+									action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" />&nbsp;&nbsp;	
+								
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
 									onclick="window.open('{!strOpenReceiptURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;															
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
@@ -462,6 +482,25 @@
 
 					</apex:pageBlockSection>
 				</apex:outputPanel>
+
+				<apex:outputPanel id="panelCreditCard" >
+					<apex:outputPanel rendered="{!fShowPanelCreditCard}" >
+						<div class="clsLoadingPP"  >
+						  <p style="vertical-align: middle; text-align:center;" >
+							<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+							<span style="vertical-align: middle;" >Loading Payment Processor...</span>
+						  </p>
+						</div>	       				
+	       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!strPaymentProcessorPageHeight}" src="{!strCreditCardChargeURL}" />
+	       				<script>
+	       					j$('.clsLoadingPP').fadeIn();
+	       					j$('#iframePP').load(function(){  
+	       						j$('.clsLoadingPP').fadeOut();
+	       					});
+	       				</script>
+					</apex:outputPanel>
+				</apex:outputPanel>						
+
 				<p/>
 			</td>
 			</tr>

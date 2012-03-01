@@ -53,6 +53,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				listReceipts = null;
 				strCreditCardChargeURL = null;
 				strOpenReceiptURL = null;
+				fShowPanelCreditCard = false;
 			}
 			contactIdPurchaser = value;
 			if (contactIdPurchaser == '') contactIdPurchaser = null; 
@@ -444,6 +445,30 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
 		}
 	}
+	
+	// public property for the Window.Open() parameters
+	// for the virtual terminal window.
+	public string strPaymentProcessorPanelHeight {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
+		}
+	}
+	
+	// public property for whether to display the payment
+	// processor's virtual terminal on our page, or in a new browser window.
+	public boolean fShowPaymentProcessorOnPage {
+		get {
+			return AUC_AuctionConstants.fShowPaymentProcessorOnPage;
+		}
+	}	
+
+	// public property for the IFRAME Height parameter
+	// for the virtual terminal window if displaying on our page.
+	public string strPaymentProcessorPageHeight {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorPageHeight();
+		}
+	}
 
 	// public property to get the commandButton URL
 	// for the View button, to invoke the receipts page  
@@ -455,6 +480,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	        	'&contactId=' + contactIdPurchaser;
 		}
 		private set;
+	}
+
+	public boolean fShowPanelCreditCard { get; set; }
+	
+	public PageReference ShowPanelCreditCard() {
+		fShowPanelCreditCard = true;
+		return null;
 	}
 
 	//==================== TEST METHOD(s) ======================================

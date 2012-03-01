@@ -189,6 +189,26 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 
+	// read the custom setting and return the string for the iframe height
+	// when opening the Payment Processor Virtual Terminal on our Auction pages.
+	public static string StrPaymentProcessorPageHeight() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].Payment_Processor_Page_Height__c;
+		} else {
+			return '250px';
+		}
+	}
+
+	// whether to display the payment processor's virtual terminal on our page, or in a new browser window.
+	public static boolean fShowPaymentProcessorOnPage {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() == 0) return false;
+			return settings[0].Show_Payment_Processor_On_Page__c;
+		}
+	}
+	
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
