@@ -160,7 +160,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
 
+		// hold a map from contact ID's to their Campaign Members.
 		map<ID, CampaignMember> mapContactIdCM = new map<ID,CampaignMember>();
+		
+		// this list will hold the same contactID's, but in their sorted order, so we can
+		// return an alphabetized list.
+		list<ID> listContactId = new list<ID>();
+		
     	strFilter = '%' + strFilter + '%';   	
 		
 		// grab all contacts off the Attendees and Tickets campaign
@@ -169,13 +175,14 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 					CampaignId = :auctionMaintenance.campaignIdAuctionTickets) 
 				and contactId <> null
 				and contact.Name like :strFilter
-			order by contact.Name]) {
+			order by contact.LastName, contact.FirstName]) {
 			
 			for (CampaignMember cm : listCM) {				
 				// if the contact isn't already in the map with a bid number, put them in.
 				CampaignMember cmIn = mapContactIdCM.get(cm.contactId);
-				if (cmIn == null || cmIn.Bid_Number__c == null) {
+				if (cmIn == null || (cmIn.Bid_Number__c == null && cm.Bid_Number__c != null)) {
 					mapContactIdCM.put(cm.contactId, cm);
+					listContactId.add(cm.contactId);
 				}
 			}
 		}
@@ -183,7 +190,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				
 		// create our list of purchasers
 		list<Purchaser> listPurchaser = new list<Purchaser>();
-		for (CampaignMember cm : mapContactIdCM.values()) {
+		for (ID conId : listContactId) {
+			CampaignMember cm = mapContactIdCM.get(conId);
 			Purchaser p = new Purchaser();
 			p.contactId = cm.contactId;
 			p.strName = cm.contact.Name;
