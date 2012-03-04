@@ -433,9 +433,9 @@
 							</apex:facet>
 						</apex:column>
 						<apex:column >
-					        <apex:facet name="header">Deductible Amount</apex:facet>
+					        <apex:facet name="header">Fair Market Value</apex:facet>
 							<apex:outputText value="{0,Number,$#,###.##}" >
-								<apex:param value="{!oppAP.Auction_Deductible_Amount__c}"/>
+								<apex:param value="{!oppAP.Auction_Non_Deductible_Amount__c}"/>
 							</apex:outputText>
 							<apex:facet name="footer">				
 								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
