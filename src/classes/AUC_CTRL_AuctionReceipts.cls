@@ -1,7 +1,7 @@
 // Written by David Habib, copyright (c) 2009, 2010 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
-public with sharing class AUC_CTRL_AuctionReceipts {
+global with sharing class AUC_CTRL_AuctionReceipts {
 
 	// constructor
 	public AUC_CTRL_AuctionReceipts() {
@@ -19,9 +19,11 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 		// also support a specific contact (to allow page to be invoked on a specific receipt)
 		String strcontactId = ApexPages.currentPage().getParameters().get('contactId');
 		if (strcontactId != null && strcontactId != '') {
-			contactId = strcontactId;
+			contactIdPurchaser = strcontactId;
 			fIncludeTicketPurchases = true;
 		}
+		
+		fIncludeAllGuests = false;
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -44,97 +46,105 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 	
 	public boolean fIncludeTicketPurchases { get; set; }
 	
+	public boolean fIncludeAllGuests { get; set; }
+	
 	public string strAuctionReceiptsIntro { get {return AUC_AuctionConstants.StrAuctionReceiptsIntro();} }
 	
 	public string strAuctionReceiptsFooter { get {return AUC_AuctionConstants.StrAuctionReceiptsFooter();} }
 	
 	// the list of Auctions to put in the Auction dropdown
 	public list<SelectOption> listSOAuctions { get; set; }
-	 
+
 	public PageReference ChangeAuction() {
 		// clear out all state that is specific to the auction
 		auctionMaintenance.auctionId = auctionId;
-		listSOPurchasers = null;
-		listSOPurchasers2 = null;
 		listReceipts = null;
 		listReceipts2 = null;
-		contactId = null;
+		contactIdPurchaser = null;
+		//strSaveResults = null;
 		return null;
 	}
 
-	// the currently selected Contact
-	public Id contactId { get; set; }
-
-	// the list of contacts with any purchases or tickets
-	public list<SelectOption> listSOPurchasers{
-		get {
-			if (listSOPurchasers != null) return listSOPurchasers;
-			listSOPurchasers = new list<SelectOption>();
-			listSOPurchasers.add(new SelectOption('', '(all people with purchases or tickets)'));
-
-			// use a set to avoid dups
-			set<ID> setContactId = new set<ID>();
-			set<ID> setContactId2 = new set<ID>();
-
-			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
-			// we are not looking at fIncludeTicketPurchases on purpose; we still want those folks in the list.
-			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name from OpportunityContactRole 
-				where IsPrimary=true and 
-					(opportunity.campaignId = :auctionMaintenance.campaignIdAuctionAttendees
-						or opportunity.campaignId = :auctionMaintenance.campaignIdAuctionTickets) 
-				order by contact.Name]) {
-				
-				for (OpportunityContactRole ocr : listOCR) {
-					if (setContactId.contains(ocr.contactId) || setContactId2.contains(ocr.contactId))
-						continue;
-					if (setContactId.size() < 999 && setContactId.add(ocr.contactId)) {
-						listSOPurchasers.add(new SelectOption(ocr.contactId, ocr.Contact.Name));
-					} else if (setContactId2.add(ocr.contactId)) {
-						if (listSOPurchasers2 == null) listSOPurchasers2 = new list<SelectOption>();
-						listSOPurchasers2.add(new SelectOption(ocr.contactId, ocr.Contact.Name));						
-					}
-				}
-			}		
-
-			return listSOPurchasers;
-		}
-		set;
-	}	
-
-	// in order to support lists of attendees and purchasers > 1000, we need a second list.
-	public list<SelectOption> listSOPurchasers2 { get; set; }
-
-	
-/*	
-	// the list of contacts who attended the auction to put in the dropdown
-	public list<SelectOption> listSOAttendees {
-		get {
-			if (listSOAttendees != null) return listSOAttendees;
-			listSOAttendees = new list<SelectOption>();
-			listSOAttendees.add(new SelectOption('', '(all attendees)'));
-			for (CampaignMember cm : [select Contact.Name, Contact.Id from CampaignMember where campaignId = :auctionMaintenance.campaignIdAuctionAttendees order by Contact.Name asc]) {
-				listSOAttendees.add(new SelectOption(cm.Contact.Id, cm.Contact.Name));
-			}		
-			return listSOAttendees;
-		}
-		set;
-	}	
-*/
-	
-	public PageReference ChangeAttendee() {
-		listReceipts = null;
-		listReceipts2 = null;
-		return null;
+	// holds the currently selected Purchaser contact
+	// has to be a string to allow a null Id ('') to get returned from the page.
+	public string contactIdPurchaser { 
+		get; 
+		set {
+			// first invalidate anything dependent on a change
+			if (contactIdPurchaser != value) {
+				strNamePurchaser = null;
+				listReceipts = null;
+				listReceipts2 = null;
+			}
+			contactIdPurchaser = value;
+			if (contactIdPurchaser == '') contactIdPurchaser = null;
+			if (contactIdPurchaser != null)	fIncludeAllGuests = false;
+		}		
 	}
 	
+	// holds the currently selected Purchaser's name	
+	public string strNamePurchaser { 
+		get {
+			if (strNamePurchaser == null && contactIdPurchaser != null) {
+				Contact con = [select Name from Contact where Id = :contactIdPurchaser];
+				strNamePurchaser = con.Name;
+			}
+			return strNamePurchaser;
+		}
+		private set;
+	}
+			
+	// callback when the user changes the Purchaser contact lookup.
+	public PageReference ChangePurchaserLookup() {
+		// clear any previous save message
+		//strSaveResults = null;
+		
+		// the setter for contactIdPurchaser will 
+		// automatically invalidate any dependencies!
+		return null;
+	}  
+	
+	// this parameter is used in scenarios where the page
+	// needs us to search for an Purchaser before it could wait
+	// for the return from its javascript remoting call to get data
+	public string searchPurchaser { get; set; }
+	
+	// callback when the user changes the Attendee contact lookup and submits too quick.
+	public PageReference SearchPurchaserLookup() {
+		if (searchPurchaser != null && searchPurchaser != '') {
+			list<Contact> listCon = [select Id from Contact where Name = :searchPurchaser];
+			if (listCon.size() > 0) {
+				contactIdPurchaser = listCon[0].Id;
+			} else {
+				contactIdPurchaser = null;
+				//strSaveResults = null;
+				strNamePurchaser = searchPurchaser; // to keep displaying the text.
+				return null;
+			}
+		} else {
+			contactIdPurchaser = null;	
+			strNamePurchaser = null;		
+		}
+		return ChangePurchaserLookup();
+	}
+
 	public PageReference ChangeIncludeTicketPurchases() {
 		listReceipts = null;
 		listReceipts2 = null;
 		return null;
 	}
 
+	public PageReference ChangeIncludeAllGuests() {
+		listReceipts = null;
+		listReceipts2 = null;
+		contactIdPurchaser = null;
+		strNamePurchaser = null;
+		searchPurchaser = null;
+		return null;
+	}
+
 	public Boolean HasReceipts {
-		get { return false;
+		get { 
 			if (listReceipts == null) return False;
 			if (listReceipts.size() == 0) return False;
 			return True;
@@ -143,18 +153,17 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 	
 	// list of Receipt objects to display
 	public list<Receipt> listReceipts {
-		get { return null;
+		get { 
 			if (listReceipts != null) return listReceipts;
 			
 			// create the list of which contacts to include
 			list<ID> listContactId = new list<ID>();
-			if (contactId != null) {
-				listContactId.add(contactId);
-			} else {			
-				for (SelectOption so : listSOPurchasers) {
-					if (so.getValue() != '') {
-						listContactId.add(so.getValue());
-					}
+			if (contactIdPurchaser != null) {
+				listContactId.add(contactIdPurchaser);
+			} else if (fIncludeAllGuests) {			
+				list<AUC_CTRL_AuctionCheckOut.Purchaser> listPurchasers = getListPurchasers(auctionId, '');
+				for (AUC_CTRL_AuctionCheckOut.Purchaser p : listPurchasers) {
+					listContactId.add(p.contactId);
 				}
 			}
 			
@@ -171,16 +180,18 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 		get { return null;
 			if (listReceipts2 != null) return listReceipts2;
 			
-			if (listSOPurchasers2 == null) return null;
+			//if (listSOPurchasers2 == null) return null;
 			
 			// create the list of which contacts to include
 			list<ID> listContactId = new list<ID>();
-			if (contactId == null) {
+			if (contactIdPurchaser == null) {
+				/* UNDONE
 				for (SelectOption so : listSOPurchasers2) {
 					if (so.getValue() != '') {
 						listContactId.add(so.getValue());
 					}
 				}
+				*/
 			}
 			
 			// call the real worker.
@@ -281,6 +292,18 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 		}			
 	}
 
+	/*******************************************************************************************************
+	* @description Javascript Remoting method to return a list of Contacts who purchased Auction Items
+	* or Auction Tickets on the specified auction, optionally filtered by strFilter.
+	* @param auctionId the Auction to filter by 
+	* @param strFilter the substring to filter by 
+	* @return list<Purchaser>, which will be turned into a Javascript collection.
+	********************************************************************************************************/
+   @RemoteAction global static list<AUC_CTRL_AuctionCheckOut.Purchaser> getListPurchasers(string auctionId, string strFilter) {
+   		return AUC_CTRL_AuctionCheckOut.getListPurchasers(auctionId, strFilter);
+   }
+
+
 
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
@@ -374,8 +397,8 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 		system.AssertEquals(50, r.decTotalAmountDeductible);
 		system.Assert(ctrl.HasReceipts);
 		
-		ctrl.contactId = contact2.id;
-		ctrl.ChangeAttendee();
+		ctrl.contactIdPurchaser = contact2.id;
+		ctrl.ChangePurchaserLookup();
 		system.Assert(ctrl.listReceipts != null);
 		system.Assert(ctrl.listReceipts.size() == 0); // since contact2 has no purchases.
 		system.Assert(ctrl.HasReceipts == false);
@@ -429,8 +452,8 @@ public with sharing class AUC_CTRL_AuctionReceipts {
 		
 		ctrl.ChangeAuction();
 		System.AssertEquals(auction.id, ctrl.auctionId);
-		ctrl.contactId = null;
-		ctrl.ChangeAttendee();
+		ctrl.contactIdPurchaser = null;
+		ctrl.ChangePurchaserLookup();
 		System.AssertEquals(bigNum+1, ctrl.listReceipts.size());
 		test.stopTest();
 	}	

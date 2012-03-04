@@ -4,113 +4,402 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionReceipts" title="Auction Receipts"  tabStyle="Auction_Receipts__tab" renderAs="{!RenderFormat}" showHeader="true">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css" type="text/css" />
 	
-	<script>
+<style>	
 	
-		// function to hide/show the Open PDF button.
-		function DisplayOpenPDF(fShow) {
-			var btn = GetElementsByPartialId('btnOpenPDF')[0];
-			// if already shown, then hide the BidNumberPicker
-			if (fShow) {
-				ShowElement(btn);
-			} else {				
-				HideElement(btn);
-			}
-		}
-				 
-		// helper function to show an element
-		function ShowElement(element){
-		    element.style.visibility = 'visible';
-		    element.style.display = 'inline';
-		}
+	/* this styling adds the vertical scrollbar to our autocomplete fields */
+	.ui-autocomplete-input {
+		margin: 2px 0px 0 2px;
+		padding: 1px;		
+		display: inline-block;
+		vertical-align: middle !important;
+	}
+	.ui-autocomplete {
+		max-height: 200px;
+		overflow-y: auto;
+		/* prevent horizontal scrollbar */
+		overflow-x: hidden;
+		/* add padding to account for vertical scrollbar */
+		padding-right: 20px;
+		font-size: 12px; 
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	
+	/* these styles are for the combobox dropdown button */
+	.ui-button {
+		margin-left: 0px;
 		
-		// helper function to hide an element
-		function HideElement(element){
-		    element.style.visibility = 'hidden';
-		    element.style.display = 'none';
-		}
- 
- 		// helper function to find all controls whose id contains the subid
-		function GetElementsByPartialId(subid) {
-			var form;
-			var i, j;
-			var elems=new Array();
-			for (i = 0; i < document.forms.length; i++) {
-				form = document.forms[i];
-				for (j = 0; j < form.elements.length; j++) {
-					if (form.elements[j].id.indexOf(subid) > -1) {
-						elems.push(form.elements[j]);
-					}
-				}				
-			}
-			return elems;
-		}
-		
-	</script>	
+		height: 21px;
+	}
+	.ui-icon {
+		height: 1em;
+	}
+	.ui-button-icon-only .ui-button-text { padding: 0; } 
 	
-	<style type="text/css">
-		.cssLabel {
-			font-weight:bold;
-			text-align: right;
-		}
-		
-		a.cssHideLink:link, a.cssHideLink:visited, a.cssHideLink:hover, a.cssHideLink:active {
-			text-decoration: none;
-		}						
-	</style>
+	.ui-widget-content { 
+		background: white;
+	}
+
+	.clsWaitRight { 
+		background: url("//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/base/images/ui-anim_basic_16x16.gif") right center no-repeat; 
+	}
 	
-	<apex:outputPanel id="panelReportParameters" rendered="{!RenderFormat==null}" >
-	   	<apex:sectionHeader title="Auction Receipts" />      
-	    <apex:form > 	    
-	    	<apex:panelGrid columns="2" columnClasses="cssLabel,cssFake" >
-	    		<apex:outputLabel value="Select the Auction  " for="lbxAuctions" />
-	    		<apex:panelGroup >
-			    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-			    		<apex:actionSupport event="onchange" rerender="lbxAttendees" status="retrieveStatus" action="{!ChangeAuction}" />
-			    		<apex:selectOptions value="{!listSOAuctions}" />
-			    	</apex:selectList>	
-					<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" /><br/>
-				</apex:panelGroup>
-				
-				<apex:outputLabel value="Select the Person  " for="lbxAttendees" />
-				<apex:panelGroup >
-			    	<apex:selectList value="{!contactId}" size="1" id="lbxAttendees">
-			    		<apex:actionSupport event="onchange" rerender="" status="retrieveStatus2" action="{!ChangeAttendee}" /> 
-			    		<apex:selectOptions value="{!listSOPurchasers}" />
-			    		<apex:selectOptions value="{!listSOPurchasers2}" />
-			    	</apex:selectList>
-					<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus2" startStyle="color:green; font-style:italic" /><br/>				
-				</apex:panelGroup>					    		
-				
-				<apex:outputLabel value="Include ticket purchases?  " for="cbxIncludeTicketPurchases" />
-				<apex:panelGroup >
-					<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
-					<!-- once we started using actionSupport, we still needed to ensure the user didn't call OpenPDF until the actionSupport had finished. -->
-					<!-- so we use a little javascript to hide the Open PDF button, using actionStatus. -->
-					<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="true" >
-				    		<apex:actionSupport event="onclick" status="cbxStatus" action="{!ChangeIncludeTicketPurchases}" rerender="panelBtn" />
-					</apex:inputCheckbox>
-				    <apex:actionStatus id="cbxStatus" onstart="DisplayOpenPDF(false);" onstop="DisplayOpenPDF(true);" />
-				</apex:panelGroup>
-				
-				<apex:outputText value="" />
-				<apex:panelGroup id="panelBtn" >
-					<!--  make our link look like a button! -->
-			    	<apex:commandLink action="{!OpenPDF}" target="_blank" styleClass="cssHideLink" immediate="false" >
-						<apex:commandButton id="btnOpenPDF" value="Open PDF" onclick="return false;" immediate="false" />
-						<apex:actionSupport event="onmousedown" status="retrieveStatusPDF" />		    	
-			    	</apex:commandLink>
-				</div>
-				</apex:panelGroup>
-	    	</apex:panelGrid>
-	    	<apex:actionStatus startText="  Loading PDF...  If opening for All Purchasers this can take several minutes." stopText=" " id="retrieveStatusPDF" startStyle="color:green; font-style:italic" />
-		</apex:form>
+	.clsCombo {	
 			
+	}
+	
+	.clsBtnAll {
+		top: 2px;
+		position:relative;
+	}
+			
+
+	.panelSearch .detailList .data2Col {
+		position: relative;
+	}
+
+	.panelEdit .detailList .data2Col {
+		position: relative;
+	}	
+
+    .Error { 
+    	color: red; 
+    	font-weight: strong;
+    }
+    
+    .clsLoading {
+		display: none;
+		z-index: 99;
+		position: fixed;
+		top: 40%;
+		left: 30%;
+		background: lightyellow;
+		width: 400px;
+		height: 40px;		
+	}   
+	 
+    .clsLoadingPP {
+		display: none;
+		z-index: 99;
+		position: fixed;
+		top: 60%;
+		left: 30%;
+		background: lightyellow;
+		width: 400px;
+		height: 40px;	
+		
+		border: 1px solid #CACACA;
+		color: #666;
+		font-size: 95%;
+		padding: 4px;			
+	}   
+
+	.clsDTEven {
+		background: white;
+	}
+	
+	.clsDTOdd {
+		background: AliceBlue;
+	}
+	
+	.clsDTHeader  {
+		background: #C0D0E5;
+	}
+	
+	.bPageBlock .detailList th {
+		vertical-align: middle;
+	}
+
+	.bPageBlock .detailList td {
+		vertical-align: middle;
+	}
+
+	.bPageBlock .list .clsDTFooter  {
+		background: WhiteSmoke;
+	}
+	
+	a.cssHideLink:link, a.cssHideLink:visited, a.cssHideLink:hover, a.cssHideLink:active {
+		text-decoration: none;
+	}						
+
+</style>
+
+<script type="text/javascript">
+    var j$ = jQuery.noConflict();
+ 	
+    var listPurchasers = null; // our cached list of purchasers (contactId, name, bidNum) for the current Auction.
+    var auctionId = "{!auctionId}"; // the current Auction.
+ 	
+	/*******************************************************************************************************
+	* this function is called when the page loads
+	********************************************************************************************************/
+	j$(document).ready(function() {
+		myInitializeJQueryUI('{!strNamePurchaser}');
+	});	
+	
+	/*******************************************************************************************************
+	* the work hours to do all jQueryUI initialization (specifically setting up the autocompletes).
+	********************************************************************************************************/
+	function myInitializeJQueryUI(strNamePurchaser) {
+	
+		// eat the enter button, to prevent it from canceling or submitting the form.
+		j$(document).keydown(function(event) {
+			if (event.which == 13) {
+		    	event.preventDefault();
+		    	event.stopPropagation();
+		    	return false; // does preventDefault and stopPropagation
+		  	}  
+		});		
+
+		/*******************************************************************************************************
+   	 	* setup the Purchasers autocomplete textbox
+		*******************************************************************************************************/
+		j$(".clsComboPurchasers").autocomplete({
+			minLength: 0,
+			delay: 0,
+
+		   	// focus called when the user hilights an item by arrowing or mousing over the list 
+		   	// we needed to override this, otherwise the Id was displayed in the textbox.
+		   	focus: function(event, ui) { 
+		   		j$(this).val(ui.item.label);
+		   		return false;
+		   	},
+	   	})
+		.data("autocomplete")._renderItem = function(ul, item) {
+			return j$( "<li></li>" )
+				.data("item.autocomplete", item)
+				.append( '<a><b>' + item.label + '</b>' +
+					'&nbsp;&nbsp;&nbsp;<i>' + strNull(item.bidderNumber) + '</i></a>' )
+				.appendTo( ul );
+		};	   	
+
+		/*******************************************************************************************************
+		* specify the specific fill function for Purchasers
+		* gets all ticket holders and buyers, and filters in the browser, since the list will be small enough.
+		*******************************************************************************************************/
+		j$("#txtPurchasers").autocomplete("option", "source",
+			function(request, response) {		
+				// Gets all ticket holders, and filters in the browser, since the list will be small enough.
+				// this also allows us to search by bid number which we add to the label.
+				if (listPurchasers != null) {
+					fillAndMatchPurchasersCombo(listPurchasers, request, response);
+				} else 
+					{			
+	       			j$('#txtPurchasers').addClass('clsWaitRight');	        			
+					GW_Auctions.AUC_CTRL_AuctionReceipts.getListPurchasers(auctionId, '', function(result, event) {
+						j$('#txtPurchasers').removeClass('clsWaitRight');	        								
+		        		if (event.type == 'exception') {
+		        			alert(event.message);
+		        		} else {
+		        			if (result != null) {
+		        				listPurchasers = result;
+								fillAndMatchPurchasersCombo(listPurchasers, request, response);
+			        		}
+		        		}
+			   		}, {escape:false});		   		
+		   		}
+		   	}
+		);	
+		
+		/*******************************************************************************************************
+		* given the list of Purchasers, what is being searched for, and the response object,
+		* fill in the response with the combo's items that match.
+		*******************************************************************************************************/
+		function fillAndMatchPurchasersCombo(listP, request, response) {
+			var strSearch = request.term.toLowerCase();		
+ 			var isMatch = false;
+     		response(j$.map(listP, function(item) {
+     			var strLower = item.strName.toLowerCase(); 
+     			var strBN = item.strBidderNumber;  
+     			if (strBN == null || strBN == '') strBN = 'no bid number';		
+   				if (strLower.indexOf(strSearch) >= 0 || strBN.indexOf(strSearch) >= 0) {
+	   				// if we find the exact match, get its formal text and id.
+	   				// ideally, we'd select it, but I couldn't figure out how!
+	   				if (strLower == strSearch || strBN == strSearch) {
+	   					j$("#txtPurchasers").val(item.strName).data('Id', item.contactId);
+	   					isMatch = true;
+	   				}	   				
+   					return {label: item.strName, value: item.contactId, bidderNumber: item.strBidderNumber };
+   				}
+   			}));
+   			
+   			// if we don't find a match for a real search, clear the cached value.
+			if (!isMatch ) {
+     			j$("#txtPurchasers").data('Id', null);
+			}	        														   
+   			
+		}
+
+		/*******************************************************************************************************
+		* specify the select event for Purchasers, so it can cause the opportunities panel to refresh.
+		*******************************************************************************************************/
+		j$('#txtPurchasers').autocomplete("option", "select",
+			function(event, ui) {
+				j$(this).val(ui.item.label).data('Id', ui.item.value);
+	   			// call the controller to update the Purchasers panel.
+	   			ChangePurchaserLookup(ui.item.value);			   		
+		   		return false;		   		 
+		   	}
+		);
+
+		/*******************************************************************************************************
+		* specify the Change event for Purchasers, so it can update the controller to refresh the opps panel. 
+		* Change called when the field is blurred (loses focus), if the value has changed;
+		* ui.item refers to the selected item, if one was selected from the autocomplete menu.
+		*******************************************************************************************************/
+		j$('#txtPurchasers').autocomplete("option", "change",
+			function(event, ui) {
+				// if ui.item is provided, we already dealt with it in the select event.
+				if (ui.item != null) return false;	
+				
+				var Id = j$(this).data('Id');
+				if (Id == null && j$(this).val() != null) {
+					// did the user give enough time for the search to run?
+					// better go the search route!
+					SearchPurchaserLookup(j$(this).val());
+					return false;				
+				}
+				ChangePurchaserLookup(Id);
+				return false;				
+		   	}
+		);
+			
+		/*******************************************************************************************************
+		* setup the button for showing all items		
+		*******************************************************************************************************/
+		j$(".clsBtnAll" )
+			.attr( "tabIndex", -1 )
+			.attr( "title", "Show All Items" )
+			.button({
+				icons: {
+					primary: "ui-icon-triangle-1-s"
+				},
+				text: false
+			})
+			.removeClass( "ui-corner-all" )
+			.addClass( "ui-corner-right ui-button-icon" )
+			.click(function() {
+				// find our input textbox to our left
+				var input = j$(this).prev('input');
+				if (input.autocomplete( "option", "source" ) == null) return;
+				// close if already visible
+				if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+					input.autocomplete( "close" );
+					return;
+				}
+	
+				// work around a bug (likely same cause as #5265)
+				j$( this ).blur();
+	
+				// pass empty as value to search for all
+				input.autocomplete( "search", "" );
+				input.focus();
+			});	
+		
+	
+
+	    // set Purchaser name
+	    j$('#txtPurchasers').val(strNamePurchaser);	
+	    	    
+	} // end of myInitializeJQueryUI
+	
+	
+	/*******************************************************************************************************
+	* utility to deal with strings that might be null.
+	*******************************************************************************************************/
+	function strNull(str) {
+		return (str == null ? '' : str);
+	}
+		
+</script>
+ 	
+	<apex:outputPanel id="panelReportParameters" rendered="{!RenderFormat==null}" >
+   	<apex:sectionHeader title="Auction Receipts" />      
+    <apex:form >   		    
+        <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
+       		<apex:actionStatus id="statusLoad" onstart="j$('.loading').fadeIn();" onstop="j$('.loading').fadeOut();" />
+			<div class="loading clsLoading"  >
+			  <p style="vertical-align: middle;" >
+				<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+				<span style="vertical-align: middle;" >Loading...</span>
+			  </p>
+			</div>  
+
+			<apex:outputPanel id="panelSearch" styleClass="panelSearch" >				            
+	            <apex:pageBlockSection columns="1"  >
+	                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
+		    			<apex:outputLabel value="Auction" for="lbxAuctions" />
+				    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
+				    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
+				    			rerender="panelSearch" 
+				    			oncomplete="auctionId='{!auctionId}'; listPurchasers=null; myInitializeJQueryUI('{!strNamePurchaser}');" />			    			
+				    		<apex:selectOptions value="{!listSOAuctions}" />
+				    	</apex:selectList>	
+					</apex:pageBlockSectionItem>
+	                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
+			       		<apex:outputLabel value="Guest" />
+		                <apex:outputPanel >
+						   	<input type="text" id="txtPurchasers" class="clsCombo clsComboPurchasers ui-autocomplete-input" /> 
+						   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
+						    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
+				    			rerender="panelSearch" 
+						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
+						        <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
+						    </apex:actionFunction>
+						    <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
+				    			rerender="panelSearch" 
+						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
+						        <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
+						    </apex:actionFunction>
+		                </apex:outputPanel>
+	                </apex:pageBlockSectionItem>		
+					
+		    		<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Include all Guests?" for="cbxIncludeAllGuests" />
+						<apex:outputPanel >
+							<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
+							<apex:inputCheckbox value="{!fIncludeAllGuests}" id="cbxIncludeAllGuests" immediate="true" >
+						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeAllGuests}" 
+						    	rerender="panelSearch" 
+						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
+							</apex:inputCheckbox>
+						</apex:outputPanel>
+					</apex:pageBlockSectionItem>
+
+		    		<apex:pageBlockSectionItem >
+						<apex:outputLabel value="Include ticket purchases?" for="cbxIncludeTicketPurchases" />
+						<apex:outputPanel >
+							<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
+							<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="true" >
+						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeTicketPurchases}" 
+						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
+							</apex:inputCheckbox>
+						</apex:outputPanel>
+					</apex:pageBlockSectionItem>
+				
+		    		<apex:pageBlockSectionItem >
+						<apex:outputText value="" />
+						<apex:outputPanel id="panelBtn" >
+							<!--  make our link look like a button! -->
+					    	<apex:commandLink action="{!OpenPDF}" target="_blank" styleClass="cssHideLink" immediate="false" >
+								<apex:commandButton id="btnOpenPDF" value="Open PDF" onclick="return false;" immediate="false" />
+								<apex:actionSupport event="onclick" status="statusLoad" />		    	
+					    	</apex:commandLink>
+						</apex:outputPanel>
+					</apex:pageBlockSectionItem>
+				</apex:pageBlockSection>
+			</apex:outputPanel>
+			</apex:pageBlock>
+		</apex:form>			
 	</apex:outputPanel>
+	
 	<apex:outputPanel id="panelReportPDF" rendered="{!RenderFormat=='pdf'}" >  	
         <apex:pageMessage summary="There are no purchases for the specified people." severity="info" strength="2" rendered="{!NOT(HasReceipts)}" />  
     	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
-		<div style="page-break-after:{!IF(contactId=='', 'always', 'none')};">
+		<div style="page-break-after:{!IF(contactIdPurchaser=='', 'always', 'none')};">
 	    	<apex:outputPanel id="panelReceipt" >		
 		    	<h2><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
 		    	<p><apex:outputText value="{0,date,MMMM d, yyyy}" >
@@ -165,7 +454,7 @@
 	
 	<apex:outputPanel id="panelReportPDF2" rendered="{!RenderFormat=='pdf'}" >  	
     	<apex:repeat var="receipt" value="{!listReceipts2}">   	    	
-		<div style="page-break-after:{!IF(contactId=='', 'always', 'none')};">
+		<div style="page-break-after:{!IF(contactIdPurchaser=='', 'always', 'none')};">
 	    	<apex:outputPanel id="panelReceipt2" >		
 		    	<h2><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
 		    	<p><apex:outputText value="{0,date,MMMM d, yyyy}" >

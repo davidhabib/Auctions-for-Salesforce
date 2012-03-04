@@ -137,14 +137,11 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 
 	//==================== Purchaser Class ======================================
 	// helper class that holds a contact, and their bid number
-	global class Purchaser {
-		
-		global Purchaser() {}
-		
+	global class Purchaser {		
+		global Purchaser() {}		
 		global ID contactId { get; set; }
 		global string strBidderNumber { get; set; }
-		global string strName { get; set; }
-		
+		global string strName { get; set; }		
 	}
 
 	/*******************************************************************************************************
@@ -154,8 +151,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	* @param strFilter the substring to filter by 
 	* @return list<Purchaser>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
-    @RemoteAction global static list<Purchaser> getListPurchasers(string auctionId, string strFilter) {
-
+   @RemoteAction global static list<Purchaser> getListPurchasers(string auctionId, string strFilter) {
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
@@ -186,8 +182,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				}
 			}
 		}
-		
-				
+						
 		// create our list of purchasers
 		list<Purchaser> listPurchaser = new list<Purchaser>();
 		for (ID conId : listContactId) {
@@ -200,7 +195,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 		return listPurchaser; 
     } 	
-
+    
 	public Boolean fHasReceipts {
 		get {
 			if (listReceipts == null) return False;
