@@ -156,19 +156,27 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		get { 
 			if (listReceipts != null) return listReceipts;
 			
-			// create the list of which contacts to include
+			// create the lists of which contacts to include
 			list<ID> listContactId = new list<ID>();
+			list<ID> listContactId2 = new list<ID>();
+			
 			if (contactIdPurchaser != null) {
 				listContactId.add(contactIdPurchaser);
 			} else if (fIncludeAllGuests) {			
 				list<AUC_CTRL_AuctionCheckOut.Purchaser> listPurchasers = getListPurchasers(auctionId, '');
+				integer cPurchaser = 0;
 				for (AUC_CTRL_AuctionCheckOut.Purchaser p : listPurchasers) {
-					listContactId.add(p.contactId);
+					cPurchaser++;
+					if (cPurchaser < 1000)
+						listContactId.add(p.contactId);
+					else
+						listContactId2.add(p.contactId);
 				}
 			}
 			
 			// call the real worker.
 			listReceipts = listReceiptsForlistContactId(listContactId);
+			listReceipts2 = listReceiptsForlistContactId(listContactId2);
 			return listReceipts;
 		}	
 	
@@ -177,7 +185,11 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			
 	// to handle large auctions, the second list of Receipt objects to display
 	public list<Receipt> listReceipts2 {
-		get { return null;
+		get {
+			// we fill listReceipts2 at the same time we fill listReceipts1.
+			return listReceipts2;
+			
+			/*
 			if (listReceipts2 != null) return listReceipts2;
 			
 			//if (listSOPurchasers2 == null) return null;
@@ -185,18 +197,17 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			// create the list of which contacts to include
 			list<ID> listContactId = new list<ID>();
 			if (contactIdPurchaser == null) {
-				/* UNDONE
 				for (SelectOption so : listSOPurchasers2) {
 					if (so.getValue() != '') {
 						listContactId.add(so.getValue());
 					}
 				}
-				*/
 			}
 			
 			// call the real worker.
 			listReceipts2 = listReceiptsForlistContactId(listContactId);
 			return listReceipts2;
+			*/
 		}	
 	
 		set;		
