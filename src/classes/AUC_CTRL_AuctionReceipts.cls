@@ -151,6 +151,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 	}
 	
+	public string strErrorMessage { get; set; }
+	
 	// list of Receipt objects to display
 	public list<Receipt> listReceipts {
 		get { 
@@ -159,6 +161,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			// create the lists of which contacts to include
 			list<ID> listContactId = new list<ID>();
 			list<ID> listContactId2 = new list<ID>();
+			integer cOverLimit = 0;
+			strErrorMessage = null;
 			
 			if (contactIdPurchaser != null) {
 				listContactId.add(contactIdPurchaser);
@@ -167,16 +171,24 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				integer cPurchaser = 0;
 				for (AUC_CTRL_AuctionCheckOut.Purchaser p : listPurchasers) {
 					cPurchaser++;
-					if (cPurchaser < 1000)
+					if (cPurchaser <= 1000)
 						listContactId.add(p.contactId);
-					else
+					else if (cPurchaser <= 2000)
 						listContactId2.add(p.contactId);
+					else // after 2000, we ignore them!
+						cOverLimit++;
 				}
 			}
 			
 			// call the real worker.
 			listReceipts = listReceiptsForlistContactId(listContactId);
 			listReceipts2 = listReceiptsForlistContactId(listContactId2);
+			if (cOverLimit > 0) {
+				strErrorMessage = 'Receipts were printed for ' + string.valueOf(listReceipts.size() + listReceipts2.size()) +
+					' guests.  Auction Receipts has hit its limit, and the last potential ' + string.valueOf(cOverLimit) +
+					' receipts were not included.';
+			}
+			
 			return listReceipts;
 		}	
 	
@@ -237,7 +249,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 					(opportunity.RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionTicket
 						and opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets
 						and IsPrimary=:fIncludeTicketPurchases)) 
-				order by contact.Name]) {
+				order by contact.LastName, contact.FirstName]) {
 	       
 				// now go through all the opps, and for each contact create the appropriate Receipt objects and their child opportunities.	       
 		        for (OpportunityContactRole ocr : listOCR){
