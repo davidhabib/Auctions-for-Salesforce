@@ -37,30 +37,34 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 		try {
 			ID campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 			if (campaignId != null) {
-				Integer ibid = 100;
-				list<CampaignMember> listCMtoUpdate = new list<CampaignMember>();
-				for (list<CampaignMember> listCM : [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember 
-					where campaignId=:campaignId /* and contactId<>null */ and Status<>'RSVP No' order by contact.LastName, contact.FirstName]) {
+				
+				// first we have to clear all numbers, so we can safely assign numbers in batches.
+				list<CampaignMember> listCMtoUpdate = new list<CampaignMember>();					
+				for (list<CampaignMember> listCM : [select Id, Bid_Number__c from CampaignMember where campaignId=:campaignId]) {
+						
 					for (CampaignMember cm : listCM) {
 						if (cm.Bid_Number__c != null) {
 							cm.Bid_Number__c = null;
 							listCMtoUpdate.add(cm);
 						}
 					}
+					update listCMtoUpdate;
+					listCMtoUpdate.clear();					
 				}
-				update listCMtoUpdate;
-				listCMtoUpdate.clear();
-					
-				for (list<CampaignMember> listCM : [select Id, Bid_Number__c, contact.LastName, contact.firstname from CampaignMember 
+				
+				// now in batches assign the new numbers.
+				integer iBid = 100;									
+				for (list<CampaignMember> listCM : [select Id, Bid_Number__c from CampaignMember 
 					where campaignId=:campaignId and contactId<>null order by contact.LastName, contact.FirstName]) {
+						
 					for (CampaignMember cm : listCM) {
 						cm.Bid_Number__c = ibid;
 						ibid++;
 						listCMtoUpdate.add(cm);
 					}
+					update listCMtoUpdate;
+					listCMtoUpdate.clear();
 				}					
-				update listCMtoUpdate;
-				listCMtoUpdate.clear();
 
 				strAutoBidNumberResult = 'Successfully set the Bid Number for ' + (ibid-100) + ' auction attendees.';
 			} else {
