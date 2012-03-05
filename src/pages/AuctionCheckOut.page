@@ -470,7 +470,7 @@
 									oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />&nbsp;&nbsp;	
 								
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
-									onclick="window.open('{!strOpenReceiptURL}','','{!strPaymentProcessorWindowParameters}'); return false;" />&nbsp;&nbsp;															
+									onclick="window.open('{!strOpenReceiptURL}'); return false;" />&nbsp;&nbsp;															
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
 							</apex:outputPanel>
 						</apex:pageBlockSectionItem>
