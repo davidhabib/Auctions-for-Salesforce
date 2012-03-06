@@ -24,22 +24,29 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 		
 		fIncludeAllGuests = false;
+		getRenderFormat();
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
  	public String getRenderFormat() {
-    	if (ApexPages.currentPage().getParameters().get('RenderFormat') == 'pdf')
+    	if (ApexPages.currentPage().getParameters().get('RenderFormat') == 'pdf') {
+        	fOpenPDF = true;
         	return 'pdf';
-        else
+    	} else {
+    		fOpenPDF = false;
          	return null;
+    	}
     } 
      
     public PageReference OpenPDF() {
 		PageReference pdf =  ApexPages.currentPage();
         pdf.getParameters().put('RenderFormat','pdf');
+        fOpenPDF = true;
         return pdf;
     }  	
+	
+	private boolean fOpenPDF { get; set; }
 	
  	// the currently selected Auction
 	public Id auctionId { get; set; }
@@ -61,7 +68,6 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		listReceipts = null;
 		listReceipts2 = null;
 		contactIdPurchaser = null;
-		//strSaveResults = null;
 		return null;
 	}
 
@@ -96,9 +102,6 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			
 	// callback when the user changes the Purchaser contact lookup.
 	public PageReference ChangePurchaserLookup() {
-		// clear any previous save message
-		//strSaveResults = null;
-		
 		// the setter for contactIdPurchaser will 
 		// automatically invalidate any dependencies!
 		return null;
@@ -117,7 +120,6 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				contactIdPurchaser = listCon[0].Id;
 			} else {
 				contactIdPurchaser = null;
-				//strSaveResults = null;
 				strNamePurchaser = searchPurchaser; // to keep displaying the text.
 				return null;
 			}
@@ -157,6 +159,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	public list<Receipt> listReceipts {
 		get { 
 			if (listReceipts != null) return listReceipts;
+			
+			// if we aren't opening the pdf, then bail out!
+			if (!fOpenPDF) return null;
 			
 			// create the lists of which contacts to include
 			list<ID> listContactId = new list<ID>();
@@ -229,13 +234,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	// each receipt contains a list of the opportunities for the contact.
 	// this allows us to use two apex:repeat constructs to loop through the contacts, and all of their opps.
 	private list<Receipt> listReceiptsForlistContactId(list<ID> listContactId) {
-			system.debug('DJH: entering listReceiptsForlistContactId');		
 			
 			list<Receipt> listReceiptsT = new list<Receipt>();
-
-			
 			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
-
 	       	map<ID, Receipt> mapContactIdReceipt = new map<ID, Receipt>();
 
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
@@ -255,14 +256,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				// now go through all the opps, and for each contact create the appropriate Receipt objects and their child opportunities.	       
 		        for (OpportunityContactRole ocr : listOCR){
 		        	Opportunity opp = ocr.Opportunity;
-	
-		        	//system.debug('DUMPING OCR Info ------------------------------------------------------');	        	
-		        	//system.debug(ocr.contactId);
-		        	//system.debug(ocr.opportunity.name);
-		        	//system.debug(ocr.opportunity.amount);
-		        	//system.debug(ocr.opportunity.Auction_Item_Name__c);
-		        	//system.debug(opp.name);
-		        	
+			        	
 		        	// this map keeps track of whether we've already created a receipt for this contact or not.
 		        	Receipt r = mapContactIdReceipt.get(ocr.contactId);
 		        	if (r == null) {
@@ -276,9 +270,10 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		        		mapContactIdReceipt.put(r.contactId, r);
 		        		listReceiptsT.add(r);
 		        	}
+		        	if (opp.Amount == null) opp.Amount = 0;
 		        	if (opp.Auction_Non_Deductible_Amount__c == null) opp.Auction_Non_Deductible_Amount__c = 0;
 	        		r.listOppAuctionPurchases.add(ocr.opportunity);
-	        		if (opp.Amount <> null) r.decTotalAmountPaid += opp.Amount;
+	        		r.decTotalAmountPaid += opp.Amount;
 					r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
 					r.decTotalFMV += opp.Auction_Non_Deductible_Amount__c;
 		        }
@@ -309,7 +304,6 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		public Decimal decTotalAmountPaid { get; set; }
 		public Decimal decTotalAmountDeductible { get; set; }
 		public Decimal decTotalFMV { get; set; }
-		//public Decimal decTotalAmountReceived { get; set; }
 		public list<Opportunity> listOppAuctionPurchases { get; set; }
 		
 		public String strPageTitle {
@@ -407,10 +401,11 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		System.AssertEquals(auction.id, ctrl.auctionId);
 		ctrl.ChangeAuction();
 		System.AssertEquals(auction.id, ctrl.auctionId);
-
+		ctrl.fIncludeAllGuests = true;
 		system.AssertEquals(null, ctrl.getRenderFormat());
-		system.Assert(ctrl.OpenPDF() != null);
-		
+		system.Assert(ctrl.listReceipts == null);
+		system.Assert(ctrl.OpenPDF() != null);		
+		system.AssertEquals('pdf', ctrl.getRenderFormat());
 		system.Assert(ctrl.listReceipts != null);
 		Receipt r = ctrl.listReceipts[0];
 		system.Assert(r.contactId == contact1.id);
@@ -481,7 +476,27 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		System.AssertEquals(auction.id, ctrl.auctionId);
 		ctrl.contactIdPurchaser = null;
 		ctrl.ChangePurchaserLookup();
+		ctrl.fIncludeAllGuests = true;
 		System.AssertEquals(bigNum+1, ctrl.listReceipts.size());
+		system.assert(ctrl.listReceipts2 != null);
+		system.assert(ctrl.listReceipts2.size() == 0);
+		
+		system.assertEquals(null, ctrl.strNamePurchaser);
+		system.assertEquals(null, ctrl.searchPurchaser);
+		ctrl.SearchPurchaserLookup();
+		system.assertEquals(null, ctrl.contactIdPurchaser);
+		ctrl.searchPurchaser = 'not to be found!';
+		ctrl.SearchPurchaserLookup();
+		system.assertEquals(null, ctrl.contactIdPurchaser);		
+		ctrl.searchPurchaser = 'David Test';
+		ctrl.SearchPurchaserLookup();
+		system.assertEquals(false, ctrl.fIncludeAllGuests);
+		system.assertEquals(contact1.id, ctrl.contactIdPurchaser);
+		system.assertEquals('David Test', ctrl.strNamePurchaser);
+		ctrl.ChangeIncludeTicketPurchases();
+		ctrl.ChangeIncludeAllGuests();
+		
+		
 		test.stopTest();
 	}	
 }
