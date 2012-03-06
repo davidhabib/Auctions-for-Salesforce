@@ -228,7 +228,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	// this is the core of the work.  Getting a list of Receipts for contacts who made purchases.
 	// each receipt contains a list of the opportunities for the contact.
 	// this allows us to use two apex:repeat constructs to loop through the contacts, and all of their opps.
-	private list<Receipt> listReceiptsForlistContactId(list<ID> listContactId) {			
+	private list<Receipt> listReceiptsForlistContactId(list<ID> listContactId) {
+			system.debug('DJH: entering listReceiptsForlistContactId');		
 			
 			list<Receipt> listReceiptsT = new list<Receipt>();
 
@@ -275,10 +276,11 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		        		mapContactIdReceipt.put(r.contactId, r);
 		        		listReceiptsT.add(r);
 		        	}
+		        	if (opp.Auction_Non_Deductible_Amount__c == null) opp.Auction_Non_Deductible_Amount__c = 0;
 	        		r.listOppAuctionPurchases.add(ocr.opportunity);
 	        		if (opp.Amount <> null) r.decTotalAmountPaid += opp.Amount;
 					r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
-					//if (opp.IsWon) r.decTotalAmountReceived += opp.Amount;
+					r.decTotalFMV += opp.Auction_Non_Deductible_Amount__c;
 		        }
 	        }
 	        
@@ -296,7 +298,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			//system.debug('**** Creating Receipt');
 			decTotalAmountPaid = 0;
 			decTotalAmountDeductible = 0;	
-			//decTotalAmountReceived = 0;
+			decTotalFMV = 0;
 		}
 		
 		public ID contactId { get; set; }
@@ -306,6 +308,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		public Date dtAuction { get; set; }
 		public Decimal decTotalAmountPaid { get; set; }
 		public Decimal decTotalAmountDeductible { get; set; }
+		public Decimal decTotalFMV { get; set; }
 		//public Decimal decTotalAmountReceived { get; set; }
 		public list<Opportunity> listOppAuctionPurchases { get; set; }
 		

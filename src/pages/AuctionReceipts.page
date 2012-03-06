@@ -105,8 +105,18 @@
 		background: AliceBlue;
 	}
 	
+	.clsDTRows {
+		border: 1px solid red;
+		background: yellow;
+	}
+	
 	.clsDTHeader  {
 		background: #C0D0E5;
+		border: 1px solid #CACACA;
+	}
+	
+	.clsDTFooter {
+		background: lightGray;
 	}
 	
 	.bPageBlock .detailList th {
@@ -375,6 +385,7 @@
 							<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
 							<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="true" >
 						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeTicketPurchases}" 
+						    	rerender="panelSearch" 
 						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
 							</apex:inputCheckbox>
 						</apex:outputPanel>
@@ -410,36 +421,34 @@
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
 					<tr><td>
-					<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" style="cellpadding:5;cellspacing:5;" align="left" 
+					<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" style="cellpadding:5;cellspacing:5;"  
 						captionStyle="text-align:left;font-weight:bold;" 
-						columnsWidth="200px, 150px, 150px">
-						<apex:facet name="caption" >Your Purchases</apex:facet> 
-						<apex:facet name="header"><hr/></apex:facet>
-						<apex:facet name="footer"><hr/></apex:facet>
+						columnsWidth="200px, 150px, 150px" >
+						<apex:facet name="caption" >Your Purchases<br/><br/></apex:facet> 
 						<apex:column >
-					        <apex:facet name="header">Item</apex:facet>
-					        <apex:facet name="footer"><b>Totals</b></apex:facet>
+					        <apex:facet name="header">Item<hr/></apex:facet>
+					        <apex:facet name="footer"><hr/><b>Totals</b></apex:facet>
 							<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
 						</apex:column>
 						<apex:column >
-					        <apex:facet name="header">Amount Paid</apex:facet>
+					        <apex:facet name="header">Amount Paid<hr/></apex:facet>
 							<apex:outputText value="{0,Number,$#,###.##}" >
 								<apex:param value="{!oppAP.Amount}" />
 							</apex:outputText>
 							<apex:facet name="footer">				
-								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;"><hr/>
 									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
 								</apex:outputText>								
 							</apex:facet>
 						</apex:column>
 						<apex:column >
-					        <apex:facet name="header">Fair Market Value</apex:facet>
+					        <apex:facet name="header">Fair Market Value<hr/></apex:facet>
 							<apex:outputText value="{0,Number,$#,###.##}" >
 								<apex:param value="{!oppAP.Auction_Non_Deductible_Amount__c}"/>
 							</apex:outputText>
 							<apex:facet name="footer">				
-								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
-									<apex:param value="{!receipt.decTotalAmountDeductible}"/> 
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;"><hr/>
+									<apex:param value="{!receipt.decTotalFMV}"/> 
 								</apex:outputText>								
 							</apex:facet>
 						</apex:column>	
@@ -467,34 +476,32 @@
 					<tr><td>
 					<apex:dataTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" style="cellpadding:5;cellspacing:5;" align="left" 
 						captionStyle="text-align:left;font-weight:bold;" 
-						columnsWidth="200px, 150px, 150px">
+						columnsWidth="200px, 150px, 150px" >
 						<apex:facet name="caption" >Your Purchases</apex:facet> 
-						<apex:facet name="header"><hr/></apex:facet>
-						<apex:facet name="footer"><hr/></apex:facet>
 						<apex:column >
-					        <apex:facet name="header">Item</apex:facet>
-					        <apex:facet name="footer"><b>Totals</b></apex:facet>
+					        <apex:facet name="header">Item<hr/></apex:facet>
+					        <apex:facet name="footer"><hr/><b>Totals</b></apex:facet>
 							<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
 						</apex:column>
 						<apex:column >
-					        <apex:facet name="header">Amount Paid</apex:facet>
+					        <apex:facet name="header">Amount Paid<hr/></apex:facet>
 							<apex:outputText value="{0,Number,$#,###.##}" >
 								<apex:param value="{!oppAP.Amount}" />
 							</apex:outputText>
 							<apex:facet name="footer">				
-								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;"><hr/>
 									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
 								</apex:outputText>								
 							</apex:facet>
 						</apex:column>
 						<apex:column >
-					        <apex:facet name="header">Fair Market Value</apex:facet>
+					        <apex:facet name="header">Fair Market Value<hr/></apex:facet>
 							<apex:outputText value="{0,Number,$#,###.##}" >
 								<apex:param value="{!oppAP.Auction_Non_Deductible_Amount__c}"/>
 							</apex:outputText>
 							<apex:facet name="footer">				
-								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;">
-									<apex:param value="{!receipt.decTotalAmountDeductible}"/> 
+								<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;"><hr/>
+									<apex:param value="{!receipt.decTotalFMV}"/> 
 								</apex:outputText>								
 							</apex:facet>
 						</apex:column>	
