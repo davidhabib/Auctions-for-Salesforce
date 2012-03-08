@@ -566,7 +566,7 @@
 						status="statusLoad"
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
-					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage==false}" 
+					<apex:commandButton value="Save Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage==false}" 
 						onclick="if ('{!strCreditCardValidateURL}' == '') {
 											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 										} else { 
@@ -574,7 +574,7 @@
 										} 
 										return false;"
 					/>
-					<apex:commandButton value="Authorize Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage}" 
+					<apex:commandButton value="Save Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage}" 
 						action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
 						onclick="if ('{!strCreditCardValidateURL}' == '') {
 								alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
