@@ -438,8 +438,12 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			if (strCreditCardChargeURL == null && contactIdPurchaser != null) {
 				string str = AUC_AuctionConstants.StrCreditCardChargeURLFormula();
 				if (str != null) {
+					// {0} = contactId
+					// {1} = auctionId
+					// {2} = amount					
 					list<string> listFormat = new list<string>();
 					listFormat.add(contactIdPurchaser);
+					listFormat.add(auctionId);
 					if (listReceipts.size() > 0) {
 						listFormat.add(string.valueOf(listReceipts[0].decTotalAmountToPay));
 					} else {

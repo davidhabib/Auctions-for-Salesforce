@@ -52,7 +52,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				strStatus = 'Select one of the guests from the Guest list below or enter a new contact to add to this Table Captain.';
 			} else if (fAttendee && fCaptain) {
 				strStatus = null;
-				//strStatus = 'You can update the guest\'s information and click <b>Save Contact</b>.  You can also save their credit card by clicking <b>Authorize Credit Card</b>.' + 
+				//strStatus = 'You can update the guest\'s information and click <b>Save Contact</b>.  You can also save their credit card by clicking <b>Save Credit Card</b>.' + 
 				//	'  If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
 			}
 			return strStatus;
@@ -590,7 +590,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			if (strCreditCardValidateURL == null) {
 				string str = AUC_AuctionConstants.StrCreditCardValidateURLFormula();
 				if (str != null) {
-					str = string.format(str, new list<string> { contactIdAttendee });
+					// {0} = contactId
+					// {1} = auctionId
+					str = string.format(str, new list<string> { contactIdAttendee, auctionId });
 				}
 				strCreditCardValidateURL = str;
 			}
