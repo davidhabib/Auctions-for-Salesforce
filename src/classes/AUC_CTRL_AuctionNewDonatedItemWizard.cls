@@ -90,7 +90,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
         p.setRedirect(true);
         return p;
 	}
-	
+		
 	public PageReference Save() {
 	    strSaveResults = 'Starting Save...';
 		
@@ -135,7 +135,9 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 			
 					
 			if (fCreateAuctionItem) {
-				auctionItem.Donor_Recognition__c = strDonor;
+				if (auctionItem.Donor_Recognition__c == null) {
+					auctionItem.Donor_Recognition__c = strDonor;
+				}
 				insert auctionItem;		
 				Auction_Item_Piece__c piece = new Auction_Item_Piece__c();
 				piece.Auction_Item__c = auctionItem.id;

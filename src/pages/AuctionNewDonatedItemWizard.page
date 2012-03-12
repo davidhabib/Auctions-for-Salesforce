@@ -55,16 +55,7 @@
     
 	<apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />    
     <apex:form >
-    
-    	<apex:outputPanel id="panelDebugging" rendered="false">
-    		<hr/> 
-    		<apex:outputText value="{!'AuctionId: ' + auctionItem.Auction__c}" Style="color:red;" /><br/>
-    		<apex:outputText value="{!'fCreateAuctionItem: ' + StrFCreateAuctionItem }" Style="color:red;" /><br/>
-    		<apex:outputText value="{!'CampaignId: ' + opp.CampaignId }" Style="color:red;" /><br/>
-    		<hr/>
-		</apex:outputPanel>
-		
-        <apex:pageBlock title="Donated Item Edit" mode="edit" id="pbMain" >
+    	<apex:pageBlock title="Donated Item Edit" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save" immediate="false" id="btnSave" />
                 <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true" />
@@ -73,25 +64,18 @@
             	<apex:messages styleClass="Error" />                                             
             </apex:pageMessage>
             <apex:pageBlockSection title="Donated Item Information" columns="2">
-                <apex:inputField value="{!opp.Auction_Donated_Item_Name__c}" required="true" />
                 <apex:inputField value="{!contactRole.ContactId}" required="true" />
-				<apex:pageBlockSectionItem >
-                    <apex:outputLabel value="Total Value" for="txtAmount" />
-                    <apex:inputField value="{!opp.Amount}" id="txtAmount" required="true" />
-                </apex:pageBlockSectionItem>
-                <apex:inputField value="{!opp.AccountId}" />
-                <apex:inputField value="{!opp.Number_of_Items__c}" required="true" />
                 <apex:pageBlockSectionItem >
                     <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxStage" />
 				   	<apex:selectList value="{!opp.StageName}" size="1" id="lbxStage" required="true"  >
 				   		<apex:selectOptions value="{!listSOStages}" />
 				   	</apex:selectList>
                 </apex:pageBlockSectionItem>
-                <apex:inputField value="{!opp.CloseDate}" />
-                <apex:inputField value="{!opp.CampaignId}" required="true" />
-                <apex:inputField value="{!opp.Procurred_By__c}" />
-                <apex:inputField value="{!opp.Delivery_Status__c}" />
-                <apex:inputField value="{!opp.Description}" />
+
+            	<!-- additional Opportunity fields use a fieldset -->
+				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
+   					<apex:inputField value="{!opp[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
+	  			</apex:repeat>                    	
             </apex:pageBlockSection>
             <apex:pageBlockSection title="Create An Auction Item" columns="1">
             	<br/>
@@ -108,15 +92,11 @@
             <!-- while the AuctionItem form is loading, hide the Save button, so they can't save too soon! -->
 			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" onstart="DisplaySaveBtn(false);" onstop="DisplaySaveBtn(true);" startStyle="color:green; font-style:italic" />    	
             <apex:pageBlockSection id="pbsAuctionItem">
-            	<apex:inputField value="{!auctionItem.Auction__c}" rendered="{!fCreateAuctionItem}" required="true" />
-            	<apex:inputField value="{!auctionItem.Category__c}" rendered="{!fCreateAuctionItem}"/>
-            	<apex:inputField value="{!auctionItem.Auction_Group__c}" rendered="{!fCreateAuctionItem}"/>
-            	<apex:inputField value="{!auctionItem.Name}" rendered="{!fCreateAuctionItem}" required="true" />
-            	<apex:inputField value="{!auctionItem.Auction_Item_Name__c}" rendered="{!fCreateAuctionItem}" required="true" />
-            	<apex:inputField value="{!auctionItem.Minimum_Bid__c}" rendered="{!fCreateAuctionItem}"/>
-            	<apex:inputField value="{!auctionItem.Restrictions__c}" rendered="{!fCreateAuctionItem}"/>
-            	<apex:inputField value="{!auctionItem.Guaranteed_Bid__c}" rendered="{!fCreateAuctionItem}"/>
-            	<apex:inputField value="{!auctionItem.Description__c}" rendered="{!fCreateAuctionItem}"/>
+            	<!-- Auction Item fields use a fieldset -->
+				<apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
+   					<apex:inputField value="{!auctionItem[f]}" rendered="{!fCreateAuctionItem}" 
+   						required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
+	  			</apex:repeat>                    	
             </apex:pageBlockSection>
         </apex:pageBlock>
     </apex:form>
