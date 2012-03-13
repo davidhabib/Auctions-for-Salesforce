@@ -17,10 +17,10 @@
 		padding: 1px;		
 		display: inline-block;
 		vertical-align: middle !important;
-	}
+	}     
 	.ui-autocomplete {
 		max-height: 200px;
-		overflow-y: auto;
+		overflow-y: auto; 
 		/* prevent horizontal scrollbar */
 		overflow-x: hidden;
 		/* add padding to account for vertical scrollbar */
@@ -480,16 +480,14 @@
 				    			<apex:outputLabel value="Change checked item {!$ObjectType.Opportunity.Fields.StageName.Label}s to" />
 							</apex:outputPanel>			            	
 		                	<apex:outputPanel rendered="{!fHasReceipts}"> 
-							   	<apex:selectList value="{!StageName}" size="1" id="lbxStage" required="false"  >
-							   		<apex:selectOptions value="{!listSOStages}" /> 
-							   	</apex:selectList>
+		                		<apex:inputField value="{!oppForStage.StageName}" required="false" />
 			                    <apex:commandButton value="Update" action="{!UpdateOppStages}" />
 						   	</apex:outputPanel>
 						</apex:pageBlockSectionItem>
 		            
 		                <apex:pageBlockSectionItem >
 		                </apex:pageBlockSectionItem>
-
+ 
 					</apex:pageBlockSection>
 				</apex:outputPanel>
 
@@ -498,7 +496,7 @@
 						<div class="clsLoadingPP"  >
 						  <p style="vertical-align: middle; text-align:center;" >
 							<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-							<span style="vertical-align: middle;" >Loading Payment Processor...</span>
+							<span style="vertical-align: middle;" >Loading Payment Processor...</span> 
 						  </p>
 						</div>	       				
 	       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!strPaymentProcessorPageHeight}" src="{!strCreditCardChargeURL}" />

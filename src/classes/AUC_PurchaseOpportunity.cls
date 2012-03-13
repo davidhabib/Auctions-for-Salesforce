@@ -7,7 +7,7 @@
 public with sharing class AUC_PurchaseOpportunity {
 
 	public AUC_PurchaseOpportunity() {
-		opp = new Opportunity();
+		opp = new Opportunity(recordtypeId=AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem);
 	}
     
 	public AUC_PurchaseOpportunity(Opportunity oppExisting) {

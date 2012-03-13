@@ -268,6 +268,15 @@
 						<apex:facet name="header">Date</apex:facet>
 						<apex:inputField value="{!apo.opp.CloseDate}" required="false"/>
 					</apex:column>
+					
+	            	<!-- additional Opportunity fields use a fieldset -->
+					<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewPurchaseWizardFS}" var="f" >
+						<apex:column >
+							<apex:facet name="header">{!f.Label}</apex:facet>					
+		   					<apex:inputField value="{!apo.opp[f]}" required="false" />
+		   				</apex:column>
+		  			</apex:repeat>                    	
+					
 				</apex:dataTable>	
 	    	</apex:pageBlock>
 		</apex:outputPanel>		 

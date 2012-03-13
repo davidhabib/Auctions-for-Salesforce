@@ -146,18 +146,6 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 	
-	// Get the user's list of Auction Ticket Opportunity Stages
-	// if the setting exists, allow it to be null (to imply use values from Salesforce)
-	// if the setting doesn't even exist, then return our default values.
-	public static string StrTicketOpportunityStages() {
-		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-		if (settings.size() > 0) {
-			return settings[0].Ticket_Opportunity_Stages__c;
-		} else {
-			return 'Pledged;Closed Won;Closed Won - Not Thanked;Closed Lost';
-		}
-	}
-	
 	// read the custom setting and return the string for the Credit Card Validate URL formula for the CheckIn page.
 	public static string StrCreditCardValidateURLFormula() {
 		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
@@ -298,7 +286,6 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsIntro() != null);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsFooter() != null);
 		System.Assert(AUC_AuctionConstants.StrDonatedItemOpportunityStages() != null);
-		System.Assert(AUC_AuctionConstants.StrTicketOpportunityStages() != null);
 		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
 		System.Assert(AUC_AuctionConstants.getObjectTypeFromId(null) == null);
 		AUC_AuctionConstants.StrCreditCardValidateURLFormula();
@@ -308,9 +295,6 @@ public with sharing class AUC_AuctionConstants {
 		system.assert(AUC_AuctionConstants.fShowPaymentProcessorOnPage == AUC_AuctionConstants.fShowPaymentProcessorOnPage);
 		system.assert(AUC_AuctionConstants.cRecordsPerPage > 0);
 		system.assert(AUC_AuctionConstants.fAllowDuplicateBidNumbers == AUC_AuctionConstants.fAllowDuplicateBidNumbers);
-				
-		
-		
 	}
 	
 	static testmethod void TestNoSettings() {		

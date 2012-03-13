@@ -136,35 +136,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		private set;
 	}
 	
-	// list for Stage picklist, filtered correctly for stages for Auction Ticket opps.
-	public list<SelectOption> listSOTicketStages {
-		get {
-			if (listSOTicketStages == null) {
-				listSOTicketStages = new list<SelectOption>();
-				
-				// since we can't seem to get the styling for a required field for Stage,
-				// we won't provide a blank option!
-				//listSOTicketStages.add(new SelectOption('', ''));
-				
-				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
-				
-				// if setting returns strings, use them
-				if (strStages != null) {
-					list<string> listStr = strStages.split(';');
-					for (string  str : listStr) {
-						listSOTicketStages.add(new SelectOption(str, str));						
-					}					
-				} else { // otherwise use the current Salesforce Opp Stages			
-					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
-						listSOTicketStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
-					}
-				}
-			}
-			return listSOTicketStages;
-		}
-		private set;
-	}
-		
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<CampaignMember> listCmpMbrAttendees {
     	set;

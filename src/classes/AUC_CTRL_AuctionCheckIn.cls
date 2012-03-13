@@ -242,13 +242,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				if (idCaptain != null) {
 					list<Opportunity> listOpp;
 					if (IsCaptainContact) {
-					 	listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount 
+					 	listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName 
 							from Opportunity 
 							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
 								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
 								and Id in (select OpportunityId from OpportunityContactRole where contactId = :idCaptain)];
 					} else {
-						listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount
+						listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName
 							from Opportunity
 							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
 								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
@@ -443,35 +443,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			}
 		}
 		return null;
-	}
-	
-	// list for Stage picklist, filtered correctly for stages for Auction Ticket opps.
-	public list<SelectOption> listSOTicketStages {
-		get {
-			if (listSOTicketStages == null) {
-				listSOTicketStages = new list<SelectOption>();
-				
-				// since we can't seem to get the styling for a required field for Stage,
-				// we won't provide a blank option!
-				//listSOTicketStages.add(new SelectOption('', ''));
-				
-				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
-				
-				// if setting returns strings, use them
-				if (strStages != null) {
-					list<string> listStr = strStages.split(';');
-					for (string  str : listStr) {
-						listSOTicketStages.add(new SelectOption(str, str));						
-					}					
-				} else { // otherwise use the current Salesforce Opp Stages			
-					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
-						listSOTicketStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
-					}
-				}
-			}
-			return listSOTicketStages;
-		}
-		private set;
 	}
 					
 	// save all modified data.  a complex process to handle both updates and inserts!
@@ -787,7 +758,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		system.assert(ctrl.attendeeEdit.cm != null);
 		system.assert(ctrl.oppTicketAttendee != null);
 		system.assert(ctrl.listSOAuctions.size() > 0);
-		system.assert(ctrl.listSOTicketStages.size() > 0);
 		system.assert(ctrl.listSOAuctions.size() > 0);
 		system.assert(ctrl.listAttendees.size() == 0);
 		system.assertEquals(null, ctrl.attendeeFromId(null));

@@ -48,12 +48,6 @@
             <apex:pageBlockSection title="Ticketing Information" columns="2">
                 <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
                 <apex:inputField value="{!contactRole.ContactId}" required="true" />                	       			
-                <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
-				   	<apex:selectList value="{!opp.StageName}" size="1" id="lbxTicketStage" required="true"  >
-				   		<apex:selectOptions value="{!listSOTicketStages}" /> 
-				   	</apex:selectList>
-                </apex:pageBlockSectionItem>
             
             	<!-- additional Opportunity fields use a fieldset -->
 				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewTicketWizardFS}" var="f" >
@@ -81,20 +75,11 @@
 					
 	            	<!-- CM fields use a fieldset -->
 					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionNewTicketWizardFS}" var="f" >
-						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label != f.Label && 
-								$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label != f.Label}"
+						<apex:column rendered="{$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label != f.Label}"
 								width="80px" style="text-align:center;" >
 							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
 	   						<apex:inputField value="{!cmpmbr[f]}" required="false"  style="width:80px" />
 						</apex:column>					
-						<!--  special case Status to use custom setting of values in picklist -->
-						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label == f.Label}" 
-							width="80px" style="text-align:center;" >
-							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
-						   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
-						   		<apex:selectOptions value="{!listSOStatuses}" />
-						   	</apex:selectList>
-						</apex:column>	
 						<!--  special case Table Name/Number to do auto copying of name/number to empty fields -->						
 						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label == f.Label}" 
 							width="80px" style="text-align:center;" >					

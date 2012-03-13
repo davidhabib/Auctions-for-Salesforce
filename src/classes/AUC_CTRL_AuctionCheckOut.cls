@@ -27,7 +27,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// private status string for reporting the results of saving.
     private String strSaveResults { get; set; } 
 	
- 	// the currently selected Auction
+ 	// the currently selected Auction 
 	public Id auctionId { get; set; }
 	
 	// the list of Auctions to put in the Auction dropdown
@@ -234,7 +234,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			list<Receipt> listReceiptsT = new list<Receipt>();
 
 			
-			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
+			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);  
 
 	       	map<ID, Receipt> mapContactIdReceipt = new map<ID, Receipt>();
 
@@ -342,55 +342,34 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		RecalcTotalAmountToPay(listReceipts);	
 		return null;				
 	}
-
-	// list for Stage picklist, filtered correctly for stages for Auction opps.
-	public list<SelectOption> listSOStages {
+	
+	// used to specify the new stage for the UpdateOppStages() action method.
+	public Opportunity oppForStage {
 		get {
-			if (listSOStages == null) {
-				listSOStages = new list<SelectOption>();
-				
-				// provide a blank option, so they have to choose.
-				listSOStages.add(new SelectOption('', ''));
-				
-				string strStages = AUC_AuctionConstants.StrTicketOpportunityStages();
-				
-				// if setting returns strings, use them
-				if (strStages != null) {
-					list<string> listStr = strStages.split(';');
-					for (string  str : listStr) {
-						listSOStages.add(new SelectOption(str, str));						
-					}					
-				} else { // otherwise use the current Salesforce Opp Stages			
-					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
-						listSOStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
-					}
-				}
+			if (oppForStage == null) {
+				oppForStage = new Opportunity(recordtypeId=AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem);
 			}
-			return listSOStages;
+			return oppForStage;
 		}
 		private set;
 	}
-
-	
-	// used to specify the new stage for the UpdateOppStages() action method.
-	public string StageName { get; set; }
 	
 	// public method to update all checked opportunities to 
 	// the new stage specified in StageName.
 	public PageReference UpdateOppStages() {
 		strSaveResults = null;
 		fShowPanelCreditCard = false;
-		if (listReceipts == null || StageName == '' || StageName == null) {
+		if (listReceipts == null || oppForStage.StageName == '' || oppForStage.StageName == null) {
 			strSaveResults = 'Please specify the new ' + Schema.SObjectType.Opportunity.fields.StageName.label + ' to set.';
 			return null;
 		}
-				
+			    	
 		list<Opportunity> listOppToUpdate = new list<Opportunity>();
 
 		for (Receipt r : listReceipts) {
 			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
 				if (po.IsPayNow) {
-					po.opp.StageName = StageName;
+					po.opp.StageName = oppForStage.StageName;
 					listOppToUpdate.add(po.opp);
 					// turn off PayNow
 					po.IsPayNow = false;
@@ -602,12 +581,11 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		system.assert(ctrl.strCreditCardChargeURL == null || ctrl.strCreditCardChargeURL != null);
 		system.Assert(ctrl.fHasReceipts);
 		system.assertEquals(null, ctrl.ChangePayNow()); 
-		system.assert(ctrl.listSOStages != null);
 
 		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
     	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_PLEDGED, opp.StageName);
 		system.assert(ctrl.UpdateOppStages() == null);
-		ctrl.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+		ctrl.oppForStage.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
 		system.assert(ctrl.UpdateOppStages() == null);
 		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
     	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, opp.StageName);
