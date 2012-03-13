@@ -301,6 +301,16 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.StrTicketOpportunityStages() != null);
 		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
 		System.Assert(AUC_AuctionConstants.getObjectTypeFromId(null) == null);
+		AUC_AuctionConstants.StrCreditCardValidateURLFormula();
+		AUC_AuctionConstants.StrCreditCardChargeURLFormula();
+		system.assert(AUC_AuctionConstants.StrPaymentProcessorWindowParameters() != null);
+		system.assert(AUC_AuctionConstants.StrPaymentProcessorPageHeight() != null);
+		system.assert(AUC_AuctionConstants.fShowPaymentProcessorOnPage == AUC_AuctionConstants.fShowPaymentProcessorOnPage);
+		system.assert(AUC_AuctionConstants.cRecordsPerPage > 0);
+		system.assert(AUC_AuctionConstants.fAllowDuplicateBidNumbers == AUC_AuctionConstants.fAllowDuplicateBidNumbers);
+				
+		
+		
 	}
 	
 	static testmethod void TestNoSettings() {		
