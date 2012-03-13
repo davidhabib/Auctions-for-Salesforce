@@ -47,70 +47,63 @@
             <p><i>&nbsp;&nbsp;For ticket purchases by an individual, fill in the Contact field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the {!$ObjectType.Account.Label} field.</i></p><br/>            
             <apex:pageBlockSection title="Ticketing Information" columns="2">
                 <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
-                <apex:inputField value="{!contactRole.ContactId}" required="false" />                	       			
-                <apex:inputField value="{!opp.AccountId}" id="txtAccountId" />
-                <apex:inputField value="{!opp.CampaignId}" required="true" />
-                <apex:inputField value="{!opp.CloseDate}" required="true" />
+                <apex:inputField value="{!contactRole.ContactId}" required="true" />                	       			
                 <apex:pageBlockSectionItem >
                     <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxTicketStage" />
 				   	<apex:selectList value="{!opp.StageName}" size="1" id="lbxTicketStage" required="true"  >
 				   		<apex:selectOptions value="{!listSOTicketStages}" /> 
 				   	</apex:selectList>
                 </apex:pageBlockSectionItem>
-                                
-                <apex:inputField value="{!opp.Amount}" required="false" />
+            
+            	<!-- additional Opportunity fields use a fieldset -->
+				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewTicketWizardFS}" var="f" >
+   					<apex:inputField value="{!opp[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
+	  			</apex:repeat>                    	
+                
                 <apex:inputField value="{!opp.Number_of_Tickets__c}" required="true" >
     	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
     	        		rerender="pbsAttendees, pbMain, panelDebugging" focus="txtDescription" status="statusLoading" />
         			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
                 </apex:inputField>
-                <apex:inputField value="{!opp.Description}" id="txtDescription" />
             </apex:pageBlockSection>
+
             <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
             	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
             	<br/>
         
 				<apex:pageBlockTable value="{!listCmpMbrAttendees}" var="cmpmbr" >
-					<apex:column style="text-align:center;">						
-						<apex:facet name="header">Action</apex:facet>
+					<apex:column style="text-align:center;" width="20px">		 				
+						<apex:facet name="header"><div style="text-align:center;">Action</div></apex:facet>
 		                <apex:commandLink action="{!DeleteCM}" value="Del" onclick="if (confirm('Are you sure?')==false) { return false;}" rendered="{!cmpmbr.id != null}" >
 					    	<apex:param assignTo="{!idDeleteCM}" name="idDeleteCM" value="{!cmpmbr.id}" /> 
 		                </apex:commandLink>
-					</apex:column>				
-					<apex:column >
-						<apex:facet name="header">Contact</apex:facet>
-						<apex:inputField value="{!cmpmbr.ContactId}" required="false" />											
-					</apex:column>					
-					<apex:column style="text-align:center;">
-						<apex:facet name="header">Status</apex:facet>
-					   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
-					   		<apex:selectOptions value="{!listSOStatuses}" />
-					   	</apex:selectList>
-					</apex:column>					
-					<apex:column style="text-align:center;">
-						<apex:facet name="header">Bid Number</apex:facet>
-						<apex:inputField value="{!cmpmbr.Bid_Number__c}" required="false" style="width:40px;" />
-					</apex:column> 
-					<apex:column style="text-align:center;">					
-						<apex:facet name="header">Meal Preference</apex:facet>
-						<apex:inputField value="{!cmpmbr.Meal_Preference__c}" required="false"/>
-					</apex:column>
-					<apex:column style="text-align:center;">
-						<apex:facet name="header">Paid</apex:facet>
-						<apex:inputCheckbox value="{!cmpmbr.Paid__c}" required="false" />
-					</apex:column>
-					<apex:column style="text-align:center;" >
-						<apex:facet name="header">Table Captain</apex:facet>
-						<apex:inputCheckbox value="{!cmpmbr.Is_Table_Captain__c}" required="false" />
-					</apex:column>
-					<apex:column >					
-						<apex:facet name="header">Table Captain</apex:facet>
-						<apex:inputField value="{!cmpmbr.Table_Captain__c}" required="false" />
-					</apex:column>
-					<apex:column style="text-align:center;">					
-						<apex:facet name="header">Table Name/Number</apex:facet>
-						<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" onchange="OnChangeTxtTableNameNumber(this);" style="width:80px;" />
-					</apex:column>
+					</apex:column>	
+					
+	            	<!-- CM fields use a fieldset -->
+					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionNewTicketWizardFS}" var="f" >
+						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label != f.Label && 
+								$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label != f.Label}"
+								width="80px" style="text-align:center;" >
+							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
+	   						<apex:inputField value="{!cmpmbr[f]}" required="false"  style="width:80px" />
+						</apex:column>					
+						<!--  special case Status to use custom setting of values in picklist -->
+						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label == f.Label}" 
+							width="80px" style="text-align:center;" >
+							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
+						   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
+						   		<apex:selectOptions value="{!listSOStatuses}" />
+						   	</apex:selectList>
+						</apex:column>	
+						<!--  special case Table Name/Number to do auto copying of name/number to empty fields -->						
+						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label == f.Label}" 
+							width="80px" style="text-align:center;" >					
+							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
+							<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" 
+								onchange="OnChangeTxtTableNameNumber(this);"  style="width:80px" />
+						</apex:column>
+										
+		  			</apex:repeat>        	            	 
 				</apex:pageBlockTable>	
         
             </apex:pageBlockSection>

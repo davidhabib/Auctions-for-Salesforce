@@ -17,8 +17,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		// create a new opp, or load existing opp if passed in
 		String strOppId = ApexPages.currentPage().getParameters().get('oppId');	
 		if (strOppId != null && strOppId != '') {
-			opp = [select accountId, campaignId, CloseDate, Number_Of_Tickets__c, Description, Name, StageName, Amount 
-					from Opportunity where Id=:strOppId];
+			opp = Database.Query('select ' + strOppFields +	' from Opportunity where Id=\'' + strOppId + '\'');
 					
 			// handle a non-existant contact role.
 			list<OpportunityContactRole> listCR = new list<OpportunityContactRole>();
@@ -69,6 +68,54 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	// we instantiate this object to get the Contact lookup field. We also will save it.
 	public OpportunityContactRole contactRole { get; set; }
 	
+	// helper routine to return all Opportunity field names from the Field Set
+	// (which of course we currently can't get in Apex, so get them all!!)
+	private string strOppFields {
+		get {
+			if (strOppFields == null) {
+				
+				// initialize the list of all fields on Opportunity.
+				// ideally, we'd only include the fields in the Field Set,
+				// but Apex currently has no way to see what those are.
+				// so for now, we just include all fields on Opportunity.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strOppFields = '';
+				for (string str : listStrFields) {
+					strOppFields += str + ',';
+				}  		
+				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
+			}
+			return strOppFields;
+		}
+		set;
+	}
+		
+	// helper routine to return all CampaignMember field names from the Field Set
+	// (which of course we currently can't get in Apex, so get them all!!)
+	private string strCMFields {
+		get {
+			if (strCMFields == null) {
+				
+				// initialize the list of all fields on Contact.
+				// ideally, we'd only include the fields in the Field Set,
+				// but Apex currently has no way to see what those are.
+				// so for now, we just include all fields on Contact.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.CampaignMember.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strCMFields = '';
+				for (string str : listStrFields) {
+					strCMFields += str + ',';
+				}  		
+				strCMFields = strCMFields.substring(0, strCMFields.length()-1);
+			}
+			return strCMFields;
+		}
+		set;
+	}
+		
 	// list for Status picklist, filtered correctly for statuses for Attendees.
 	public list<SelectOption> listSOStatuses {
 		get {
@@ -129,10 +176,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
     			
     			// find any existing attendees on this ticket
     			if (opp.Id != null) {
-    				listCmpMbrAttendees = [select Id, campaignId, contactId, Status, Is_Table_Captain__c, Auction_Ticket_OppId__c,
-    					Bid_Number__c, Meal_Preference__c, Paid__c, Table_Captain__c, Table_Name_Number__c, Note__c 
-    					from CampaignMember 
-    					where Auction_Ticket_OppId__c=:opp.Id];
+    				listCmpMbrAttendees = Database.Query('select ' + strCMFields +	
+    					' from CampaignMember where Auction_Ticket_OppId__c=\'' + opp.Id + '\''); 
     			}
     			    					
 				// create new CampaignMembers for any additional attendees on this ticket    					
@@ -297,7 +342,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
             	strSaveResults = 'Error encountered while trying to save auction ticket purchase and attendees.  ';
             else
             	strSaveResults = 'The ticket purchase has been saved, but errors were encountered trying to save the attendees.  ';
-            // strSaveResults += e.getMessage();
             ApexPages.addMessages(e);            
             return null;
         }              
