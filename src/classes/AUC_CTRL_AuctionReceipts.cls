@@ -153,6 +153,31 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 	}
 	
+	// helper routine to return all Opportunity field names from the Field Set
+	// (which of course we currently can't get in Apex, so get them all!!)
+	private string strOppFields {
+		get {
+			if (strOppFields == null) {
+				
+				// initialize the list of all fields on Opportunity.
+				// ideally, we'd only include the fields in the Field Set,
+				// but Apex currently has no way to see what those are.
+				// so for now, we just include all fields on Opportunity.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strOppFields = '';
+				for (string str : listStrFields) {
+					strOppFields += 'opportunity.' + str + ',';
+				}  		
+				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
+			}
+			return strOppFields;
+		}
+		set;
+	}
+	
+	
 	public string strErrorMessage { get; set; }
 	
 	// list of Receipt objects to display
@@ -161,7 +186,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			if (listReceipts != null) return listReceipts;
 			
 			// if we aren't opening the pdf, then bail out!
-			if (!fOpenPDF) return null;
+			//if (!fOpenPDF) return null;
 			
 			// create the lists of which contacts to include
 			list<ID> listContactId = new list<ID>();
@@ -238,8 +263,25 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			list<Receipt> listReceiptsT = new list<Receipt>();
 			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
 	       	map<ID, Receipt> mapContactIdReceipt = new map<ID, Receipt>();
+	       	string rtPurchase = AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem;
+	       	string rtGift = AUC_AuctionMaintenance.recordtypeIdAuctionGift;
+	       	string rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
+	       	string cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
+	       	string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
+
+			string strSoql = 'select contactId, contact.Name, contact.Firstname, opportunity.RecordType.Name, ' + strOppFields +
+				' from OpportunityContactRole ' +
+				' where IsPrimary=true and contactId in :listContactId and ' +
+					' (((opportunity.RecordTypeId = :rtPurchase or opportunity.RecordTypeId = :rtGift) ' + 
+						' and opportunity.campaignId = :cmpIdAttendees) ' +
+					' or ' +  
+					' (opportunity.RecordTypeId = :rtTicket ' +
+						' and opportunity.campaignId = :cmpIdTickets ' +
+						' and IsPrimary=:fIncludeTicketPurchases)) ' +
+					' order by contact.LastName, contact.FirstName';
 
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
+/*			
 			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name, contact.FirstName, opportunityId, opportunity.Id, 
 				opportunity.name, opportunity.Amount, opportunity.Auction_Item_Name__c, opportunity.Auction_Deductible_Amount__c, 
 				opportunity.Auction_Non_Deductible_Amount__c,			
@@ -252,6 +294,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 						and opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets
 						and IsPrimary=:fIncludeTicketPurchases)) 
 				order by contact.LastName, contact.FirstName]) {
+*/
+			for (list<OpportunityContactRole> listOCR : database.query(strSoql)) {
 	       
 				// now go through all the opps, and for each contact create the appropriate Receipt objects and their child opportunities.	       
 		        for (OpportunityContactRole ocr : listOCR){
