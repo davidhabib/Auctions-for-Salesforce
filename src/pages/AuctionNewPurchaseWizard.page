@@ -129,6 +129,22 @@
 				ctrlHiddenAuctionItemId.value = lbx.options[i].value;
 			}
 		}
+ 	
+
+		// function to check/uncheck paid fields when the first one is filled in.
+		function OnChangeCbxPaid(cbx) {
+			var rg = document.getElementsByTagName('input');
+			var i = 0; 
+			for (i = 0; i < rg.length; i++) {
+				if (rg[i].id.indexOf('cbxPaid') > -1) {
+					// if the amount field is blank, go ahead and update the checkbox.
+					if (rg[i-1].value == '') {
+						rg[i].checked = cbx.checked;
+					}
+				}
+			}
+ 		}
+
 
 		/////////////////////////////////////// Helper Functions ///////////////////////////////////////////////
 		
@@ -262,7 +278,7 @@
 					</apex:column>
 					<apex:column >
 						<apex:facet name="header">Paid</apex:facet>
-						<apex:inputCheckbox value="{!apo.IsPayNow}" required="false" />
+						<apex:inputCheckbox value="{!apo.IsPayNow}" required="false" id="cbxPaid" onchange="OnChangeCbxPaid(this);" />
 					</apex:column>
 					<apex:column >					
 						<apex:facet name="header">Date</apex:facet>
@@ -271,9 +287,9 @@
 					
 	            	<!-- additional Opportunity fields use a fieldset -->
 					<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewPurchaseWizardFS}" var="f" >
-						<apex:column >
+						<apex:column width="80px">
 							<apex:facet name="header">{!f.Label}</apex:facet>					
-		   					<apex:inputField value="{!apo.opp[f]}" required="false" />
+		   					<apex:inputField value="{!apo.opp[f]}" required="false" style="width:80px" />
 		   				</apex:column>
 		  			</apex:repeat>                    	
 					
