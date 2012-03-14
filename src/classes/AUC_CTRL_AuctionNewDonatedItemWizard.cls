@@ -40,35 +40,6 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	// object to hold the auction item
 	public Auction_Item__c auctionItem { get; set; }
 	
-	// list for Stage picklist, filtered correctly for stages for Auction Donated Item opps.
-	public list<SelectOption> listSOStages {
-		get {
-			if (listSOStages == null) {
-				listSOStages = new list<SelectOption>();
-				
-				// since we can't seem to get the styling for a required field for Stage,
-				// we won't provide a blank option!
-				//listSOStages.add(new SelectOption('', ''));
-				
-				string strStages = AUC_AuctionConstants.StrDonatedItemOpportunityStages();
-				
-				// if setting returns strings, use them
-				if (strStages != null) {
-					list<string> listStr = strStages.split(';');
-					for (string  str : listStr) {
-						listSOStages.add(new SelectOption(str, str));						
-					}					
-				} else { // otherwise use the current Salesforce Opp Stages			
-					for (OpportunityStage stg : [select Id, MasterLabel from OpportunityStage where IsActive=true order by SortOrder]) {
-						listSOStages.add(new SelectOption(stg.MasterLabel, stg.MasterLabel));
-					}
-				}
-			}
-			return listSOStages;
-		}
-		private set;
-	}
-
 	public Boolean fCreateAuctionItem { get; set; }
 	public String StrFCreateAuctionItem { get { return String.valueOf(fCreateAuctionItem); }}
 		

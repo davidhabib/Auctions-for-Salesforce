@@ -65,12 +65,6 @@
             </apex:pageMessage>
             <apex:pageBlockSection title="Donated Item Information" columns="2">
                 <apex:inputField value="{!contactRole.ContactId}" required="true" />
-                <apex:pageBlockSectionItem >
-                    <apex:outputLabel value="{!$ObjectType.Opportunity.Fields.StageName.Label}" for="lbxStage" />
-				   	<apex:selectList value="{!opp.StageName}" size="1" id="lbxStage" required="true"  >
-				   		<apex:selectOptions value="{!listSOStages}" />
-				   	</apex:selectList>
-                </apex:pageBlockSectionItem>
 
             	<!-- additional Opportunity fields use a fieldset -->
 				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
