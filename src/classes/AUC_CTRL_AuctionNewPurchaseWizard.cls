@@ -93,7 +93,8 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			listSOLookupAuctionItems = new list<SelectOption>();
 			listSOLookupAuctionItems.add(new SelectOption('', ''));
 			integer cCM = 0;
-			for (list<Auction_Item__c> listAI : [select Id, Name, Auction_Item_Name__c from Auction_Item__c where Auction__c=:auctionId order by Auction_Item_Name__c]) {
+			for (list<Auction_Item__c> listAI : [select Id, Name, Auction_Item_Name__c from Auction_Item__c 
+				where Auction__c=:auctionId order by Name, Auction_Item_Name__c]) {
 				for (Auction_Item__c ai : listAI) {
 					cCM++;
 					if (cCM < 1000) {
