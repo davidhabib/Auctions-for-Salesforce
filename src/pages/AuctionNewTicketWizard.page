@@ -54,9 +54,10 @@
    					<apex:inputField value="{!opp[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
 	  			</apex:repeat>                    	
                 
+                <!-- special case Number of Tickets, so we can update the attendees panel. -->
                 <apex:inputField value="{!opp.Number_of_Tickets__c}" required="true" >
     	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
-    	        		rerender="pbsAttendees, pbMain, panelDebugging" focus="txtDescription" status="statusLoading" />
+    	        		rerender="pbsAttendees, pbMain" focus="txtDescription" status="statusLoading" />
         			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
                 </apex:inputField>
             </apex:pageBlockSection>
@@ -74,27 +75,31 @@
 					</apex:column>	
 					
 	            	<!-- CM fields use a fieldset -->
-					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionNewTicketWizardFS}" var="f" >
-						<apex:column rendered="{$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label != f.Label}"
+					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionNewTicketWizardFS}" var="f" >	
+						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label != f.Label && 
+								$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label != f.Label}"
 								width="80px" style="text-align:center;" >
 							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
 	   						<apex:inputField value="{!cmpmbr[f]}" required="false"  style="width:80px" />
 						</apex:column>					
+						<!--  special case Status to use custom setting of values in picklist -->
+						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label == f.Label}" 
+							width="80px" style="text-align:center;" >
+							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
+						   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
+						   		<apex:selectOptions value="{!listSOStatuses}" />
+						   	</apex:selectList>
+						</apex:column>											
 						<!--  special case Table Name/Number to do auto copying of name/number to empty fields -->						
 						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label == f.Label}" 
 							width="80px" style="text-align:center;" >					
 							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
 							<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" 
 								onchange="OnChangeTxtTableNameNumber(this);"  style="width:80px" />
-						</apex:column>
-										
+						</apex:column>										
 		  			</apex:repeat>        	            	 
-				</apex:pageBlockTable>	
-        
-            </apex:pageBlockSection>
-        
-        </apex:pageBlock>
-        
-        
+				</apex:pageBlockTable>	        
+            </apex:pageBlockSection>        
+        </apex:pageBlock>                
     </apex:form>
 </apex:page>
