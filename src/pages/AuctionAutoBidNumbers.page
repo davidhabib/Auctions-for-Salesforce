@@ -18,12 +18,12 @@
             <apex:pageMessage summary="{!strAutoBidNumberResult}" severity="info" strength="2" rendered="{!strAutoBidNumberResult!=null}" />  
             <apex:messages styleClass="Error" />
 			<apex:pageBlockSection >
-		        <apex:pageBlockTable value="{!listCMBidNumbers}" var="cm" > 
+	        <apex:pageBlockTable value="{!listCMBidNumbers}" var="cm" > 
 		            <apex:column headerValue="Attendee" width="200px" >
 		                <apex:outputLink value="/{!cm.contactId}" >{!cm.contact.LastName + ', ' + cm.contact.FirstName}</apex:outputLink>
-		            </apex:column>  	               
-		            <apex:column value="{!cm.Bid_Number__c}" width="100px" /> 
-		        </apex:pageBlockTable> 
+	            </apex:column>  	               
+	            <apex:column value="{!cm.Bid_Number__c}" width="100px" /> 
+	        </apex:pageBlockTable> 
 	        </apex:pageBlockSection>
         </apex:pageBlock>              
 	</apex:form>              
