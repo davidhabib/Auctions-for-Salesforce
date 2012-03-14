@@ -549,9 +549,10 @@
 		            </apex:pageBlockSection>     	            		            
 	            	<apex:outputPanel id="panelTicketPurchase" rendered="{!fAddTicketPurchase}" styleClass="panelEdit" >
 			            <apex:pageBlockSection title="New Ticket Purchase" columns="1" collapsible="false" > 
-			           		<apex:inputField value="{!oppTicketAttendee.Amount}" required="false" style="width:50px" />
-			           		<apex:inputField value="{!oppTicketAttendee.Number_of_Tickets__c}" required="false" style="width:50px" />
-			           		<apex:inputField value="{!oppTicketAttendee.StageName}" required="false" />
+			            	<!-- Ticket Opportunity fields from a fieldset -->
+							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionCheckInFS}" var="f" >
+			   					<apex:inputField value="{!oppTicketAttendee[f]}" required="false" />
+				  			</apex:repeat>        	            	 
 			            </apex:pageBlockSection>     	            		            
 	                </apex:outputPanel>    		
 	   				<br/>
