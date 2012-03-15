@@ -2,7 +2,7 @@
 // Written by David Habib, copyright (c) 2009, 2010, 2011, 2012 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
- 
+  
 <apex:page >
 <h1>
 <a href="http://groundwire.org/" target="_new">
@@ -35,10 +35,9 @@ David is a volunteer who came to Groundwire through
 <a href="http://groundwire.org/apps/auctions-for-salesforce" target="_new">http://groundwire.org/apps/auctions-for-salesforce</a></p>
 
 <h1>Support</h1>
-<p>Support is generally not available for this app. If you would like to suggest an improvement or 
-report a bug please create a new issue on GitHub.<br/>
-<a href="http://github.com/Groundwire/Auctions-for-Salesforce/issues" target="_new">http://github.com/Groundwire/Auctions-for-Salesforce/issues</a></p>
-<p>For all other inquiries, please contact us at <a href="mailto:labs@groundwire.org">labs@groundwire.org</a>.</p>
+<p>Support from Groundwire is generally not available for this application. We recommend you submit questions to the <a href="http://groups.google.com/group/npsf" target="_new">Nonprofit Salesforce.com Practitioners Google Group</a>. We monitor this group and will attempt to respond. </p>
 
+<p>If you would like to suggest an improvement or report a bug please create a <a href="http://github.com/Groundwire/Auctions-for-Salesforce/issues" target="_new">new issue on GitHub</a>.<br/></p>
 
+<p>For all other inquiries, please email us at <a href="mailto:labs@groundwire.org">labs@groundwire.org</a>.</p>
 </apex:page>
