@@ -191,6 +191,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				attendeeEdit = null;
 				listAttendees = null;
 				oppCaptain = null;
+				cmCaptain = null;
 			}
 			idCaptain = value;			
 			if (idCaptain == '') idCaptain = null; 
@@ -270,6 +271,23 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		private set; 
 	}  
 	
+	// the campaign member for the currently selected Captain
+	private CampaignMember cmCaptain { 
+		get {
+			if (cmCaptain == null && idCaptain != null) {
+				// look for it in the attendees list.
+				for (Attendee att : listAttendees) {
+					if (att.cm != null && att.cm.contactId == idCaptain) {
+						cmCaptain = att.cm;
+						return cmCaptain;
+					}
+				}	
+			}
+			return cmCaptain;
+		}
+		set;
+	}
+	
 	// flag to track whether to add a ticket purchase for the Attendee
 	public boolean fAddTicketPurchase { get; set; }
 	
@@ -348,14 +366,18 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					// create new CampaignMembers for any additional attendees on this ticket    					
 		    		double numTickets = oppCaptain.Number_Of_Tickets__c;
 		    		if (numTickets == null || numTickets == 0) numTickets = 1;
+		    		CampaignMember cmCaptain = mapContactIdCM.get(idCaptain);
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
-		                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
-	                	cmpmbr.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
-	                	cmpmbr.Status = 'RSVP Yes';
-	                	cmpmbr.Paid__c = (oppCaptain.amount != null);
+		                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
+	                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
+	                	cm.Status = 'RSVP Yes';
+	                	cm.Paid__c = (oppCaptain.amount != null);
+	                	if (cmCaptain != null) {
+	                		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
+	                	}
 	                	
 	                	Contact con = new Contact();
-	    				listAttendees.add(new Attendee(cmpmbr, con));
+	    				listAttendees.add(new Attendee(cm, con));
 		            }
 		        }
     		}
@@ -446,11 +468,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				// if not loaded (not a current Attendee), then look it up
 				if (attendeeEdit == null) {	
 					Contact con = new Contact();				
-	                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-                	cmpmbr.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
-                	cmpmbr.contactId = contactIdAttendee;
-                	cmpmbr.Status = 'RSVP Yes';
-                	cmpmbr.Paid__c = (oppCaptain.amount != null);
+	                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
+                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
+                	cm.contactId = contactIdAttendee;
+                	cm.Status = 'RSVP Yes';
+                	cm.Paid__c = (oppCaptain.amount != null);
+                	if (cmCaptain != null) {
+                		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
+                	}
+                	
 
 					if (contactIdAttendee != null) {
 						con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
@@ -463,15 +489,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    						' contactId = :contactIdAttendee';
 	    				list<CampaignMember> listCM = Database.query(strSoql);
 	    				if (listCM.size() > 0) {
-	    					cmpmbr = listCM[0];
-	    					if (cmpmbr.Table_Captain__c == null) {
+	    					cm = listCM[0];
+	    					if (cm.Table_Captain__c == null) {
 	    						// go ahead and prefill the current table captain.
-			                	cmpmbr.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
+			                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
 	    					}
-	                	cmpmbr.Status = 'RSVP Yes';
+	                	cm.Status = 'RSVP Yes';
 	    				}
 					}
-                	attendeeEdit = new Attendee(cmpmbr, con);
+                	attendeeEdit = new Attendee(cm, con);
 				}
 			}
 			return attendeeEdit; 
@@ -584,6 +610,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
             ApexPages.addMessages(e);            
             return null;
         }               
+	}
+
+	// public method for the Next Guest button.  
+	// clear out guest, keep captain, and refresh the page.
+	public PageReference NextGuest() {
+		contactIdAttendee = null;
+		return null;
 	}
 
 	// public method for the Close button.  

@@ -289,8 +289,8 @@
    	 	* setup the Table Captains autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboCaptains").autocomplete({
-			minLength: 0,
-			delay: 0,
+			minLength: 3,
+			delay: 200,
 
 		   	// focus called when the user hilights an item by arrowing or mousing over the list 
 		   	// we needed to override this, otherwise the Id was displayed in the textbox.
@@ -332,7 +332,8 @@
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
 		function fillAndMatchCaptainsCombo(listCapts, request, response) {
-			var strSearch = request.term.toLowerCase();		
+			var strSearch = request.term.toLowerCase();	
+			if (strSearch == '--all--') strSearch = '';					
  			var isMatch = false;
      		response(j$.map(listCapts, function(item) {
      			var strLower = item.Name.toLowerCase();
@@ -412,7 +413,7 @@
 				j$( this ).blur();
 	
 				// pass empty as value to search for all
-				input.autocomplete( "search", "" );
+				input.autocomplete( "search", "--all--" );
 				input.focus();
 			});	
 		
@@ -575,6 +576,7 @@
 								alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 								return false;}"
 						oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;						
+					<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;	
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       
 				</apex:outputPanel>  
