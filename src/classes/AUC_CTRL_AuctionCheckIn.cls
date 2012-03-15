@@ -242,7 +242,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				if (idCaptain != null) {
 					list<Opportunity> listOpp;
 					if (IsCaptainContact) {
-					 	listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName 
+					 	listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName, IsWon 
 							from Opportunity 
 							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
 								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
@@ -277,17 +277,37 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public Opportunity oppTicketAttendee {
 		get {
 			if (oppTicketAttendee == null) {
-				oppTicketAttendee = new Opportunity(
-					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
-					CampaignId = auctionMaintenance.campaignIdAuctionTickets,
-					CloseDate = system.Today()
-				);
+				
+				// see if they already have a ticket opp.
+				if (contactIdAttendee != null) {
+					string rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
+					string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
+					
+					string strSoql = 'select Id, ' + strOppFields +
+					' from OpportunityContactRole ' +
+					' where IsPrimary=true and contactId = :contactIdAttendee and ' +
+						' opportunity.RecordTypeId = :rtTicket and opportunity.campaignId = :cmpIdTickets';			
+				
+					list<OpportunityContactRole> listOCR = database.query(strSoql);
+					if (listOCR.size() > 0) {
+						oppTicketAttendee = listOCR[0].Opportunity;
+					}
+				}
+				
+				// if lookup failed, create a new opp.
+				if (oppTicketAttendee == null) {
+					oppTicketAttendee = new Opportunity(
+						RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
+						CampaignId = auctionMaintenance.campaignIdAuctionTickets,
+						CloseDate = system.Today()
+					);
+				}
 			}
 			return oppTicketAttendee;
 		}
 		private set;
 	}
-		
+
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<Attendee> listAttendees {
     	get {
@@ -393,6 +413,30 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		set;
 	}
 
+	// helper routine to return all Opportunity field names from the Field Set
+	// (which of course we currently can't get in Apex, so get them all!!)
+	private string strOppFields {
+		get {
+			if (strOppFields == null) {
+				
+				// initialize the list of all fields on Opportunity.
+				// ideally, we'd only include the fields in the Field Set,
+				// but Apex currently has no way to see what those are.
+				// so for now, we just include all fields on Opportunity.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strOppFields = '';
+				for (string str : listStrFields) {
+					strOppFields += 'Opportunity.' + str + ',';
+				}  		
+				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
+			}
+			return strOppFields;
+		}
+		set;
+	}
+
 	// an Attendee object to hold Contact and CampaignMember fields to support the editing pane
 	public Attendee attendeeEdit { 
 		get {
@@ -406,6 +450,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
                 	cmpmbr.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
                 	cmpmbr.contactId = contactIdAttendee;
                 	cmpmbr.Status = 'RSVP Yes';
+                	cmpmbr.Paid__c = (oppCaptain.amount != null);
 
 					if (contactIdAttendee != null) {
 						con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
@@ -469,26 +514,23 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				update attendeeEdit.con;
 			}
       	
-      		// 2. create optional Ticket
+      		// 2. create/update optional Ticket
       		if (fAddTicketPurchase) {        	
-	        	// create the opp for the ticket purchase        	
-				Contact contact = [select Name, AccountId from Contact where Id=:contactIdAttendee];	
-				string strAuction = AUC_AuctionMaintenance.NameOfAuctionId(AuctionId);
-				// remove trailing word Auction if it's there, so we don't get "auction" auction ticket.
-				if (strAuction != null && strAuction.endsWith(' Auction')) {
-					strAuction = strAuction.substring(0, strAuction.length() - 8);
-				}
-				oppTicketAttendee.Name = contact.Name + ' ' + strAuction + ' ' + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;   
-				oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * 
-					oppTicketAttendee.Number_Of_Tickets__c;      	
-	        	
-	            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
-				// if so, we need to set the Opp's Account to make the rollups work.
-				if (AUC_AuctionConstants.isOneToOne()) {
-					oppTicketAttendee.AccountId = contact.AccountId;
-				}
-					        	
+
 	        	if (oppTicketAttendee.Id == null) {
+
+		        	// create the opp for the ticket purchase        	
+					Contact contact = [select Name, AccountId from Contact where Id=:contactIdAttendee];	
+					oppTicketAttendee.Name = auctionMaintenance.StrOppTicketName(null, contactIdAttendee);					   
+					oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * 
+						oppTicketAttendee.Number_Of_Tickets__c;      	
+		        	
+		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
+					// if so, we need to set the Opp's Account to make the rollups work.
+					if (AUC_AuctionConstants.isOneToOne()) {
+						oppTicketAttendee.AccountId = contact.AccountId;
+					}
+					        	
 	        		insert oppTicketAttendee;
 					
 					// only create contact role if client's code didn't do it!
@@ -500,6 +542,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 						ocr.IsPrimary = true;
 						insert ocr;
 					}
+	        	} else {
+	        		update oppTicketAttendee;
 	        	}
       		}
       		

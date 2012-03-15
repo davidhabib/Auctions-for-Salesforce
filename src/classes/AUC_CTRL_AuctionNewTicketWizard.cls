@@ -223,21 +223,14 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	
         	// name the opp if empty (new scenario)
         	if (opp.Name == null) {
-        		string strTicketOwner;
-	        	if (opp.AccountId != null) {
-	        		Account acc = [select Id, Name from Account where Id = :opp.AccountId];
-					strTicketOwner = acc.Name; 
-	        	} else if (contactRole.ContactId != null) {
-					Contact contact = [select Name, AccountId from Contact where Id=:contactRole.ContactId];
-					strTicketOwner = contact.Name;
 
 		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 					// if so, we need to set the Opp's Account to make the rollups work.
-					if (AUC_AuctionConstants.isOneToOne() && opp.AccountId == null) {
-						opp.AccountId = contact.AccountId;
-					}
-	        	}
-	        	opp.Name = strTicketOwner + ' ' + string.valueof(opp.CloseDate.year()) + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket;
+	        	if (opp.AccountId == null && contactRole.ContactId != null && AUC_AuctionConstants.isOneToOne()) {
+					Contact contact = [select AccountId from Contact where Id=:contactRole.ContactId];
+					opp.AccountId = contact.AccountId;
+				}
+	        	opp.Name = auctionMaintenance.StrOppTicketName(opp.accountId, contactRole.contactId);
         	}        	
  
 			opp.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * opp.Number_Of_Tickets__c;     

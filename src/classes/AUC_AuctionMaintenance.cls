@@ -106,6 +106,28 @@ public with sharing class AUC_AuctionMaintenance {
 		set;
 	}
 	
+	// helper function to return a name for Ticket opps.
+	// used by both teh NewTicketWizard, and CheckIn.
+	public string StrOppTicketName(Id accountId, Id contactId) {
+		string strTicketOwner;
+	   	if (accountId != null) {
+	        Account acc = [select Id, Name from Account where Id = :accountId];
+			strTicketOwner = acc.Name; 
+	   	} else if (contactId != null) {
+			Contact contact = [select Name, AccountId from Contact where Id=:contactId];
+			strTicketOwner = contact.Name;
+	   	}
+	   	
+		string strAuction = AUC_AuctionMaintenance.NameOfAuctionId(auctionId);
+		// remove trailing word Auction if it's there, so we don't get "auction" auction ticket.
+		if (strAuction != null && strAuction.endsWith(' Auction')) {
+			strAuction = strAuction.substring(0, strAuction.length() - 8);
+		}
+	   	
+	    return (strTicketOwner + ' ' + strAuction + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket);	
+	}
+
+	
 	public static Integer YearOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
 		Auction__c auc = [select Auction_Date__c from Auction__c where Id=:auctionId];		
@@ -129,7 +151,7 @@ public with sharing class AUC_AuctionMaintenance {
 		Auction__c auc = [select Ticket_Non_Deductible_Amount__c from Auction__c where Id=:auctionId];
 		return (auc.Ticket_Non_Deductible_Amount__c == null) ? 0 : 	auc.Ticket_Non_Deductible_Amount__c;	
 	}
-	
+		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
     	// create needed data
