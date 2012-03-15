@@ -186,7 +186,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			if (listReceipts != null) return listReceipts;
 			
 			// if we aren't opening the pdf, then bail out!
-			//if (!fOpenPDF) return null;
+			if (!fOpenPDF) return null;
 			
 			// create the lists of which contacts to include
 			list<ID> listContactId = new list<ID>();
