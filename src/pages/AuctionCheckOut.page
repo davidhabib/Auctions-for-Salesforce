@@ -471,7 +471,8 @@
 									oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />&nbsp;&nbsp;	
 								
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
-									onclick="window.open('{!strOpenReceiptURL}'); return false;" />&nbsp;&nbsp;															
+									onclick="window.open('{!strOpenReceiptURL}'); return false;" />&nbsp;&nbsp;	
+								<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
 							</apex:outputPanel>
 						</apex:pageBlockSectionItem>

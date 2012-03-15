@@ -385,6 +385,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		
 		return null;
 	}
+
+	// public method for the Next Guest button.  
+	// clear out guest, and refresh the page.
+	public PageReference NextGuest() {
+		contactIdPurchaser = null;
+		return null;
+	}
 		
 	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.
