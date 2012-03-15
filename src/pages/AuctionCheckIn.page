@@ -558,7 +558,7 @@
 	                </apex:outputPanel>    		
 	   				<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
-					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save Contact', 'Save New Contact')}" action="{!SaveAttendeeInfo}" 
+					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save & Check In Contact', 'Save & Check In New Contact')}" action="{!SaveAttendeeInfo}" 
 						status="statusLoad"
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 						
 				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
@@ -602,6 +602,10 @@
 									<apex:commandLink value="(available ticket)" rendered="{!attendee.con.Id == null}" />
 								</span>
 							</apex:column>					
+							<apex:column style="text-align:center;">
+								<apex:facet name="header">Checked In</apex:facet>
+								<apex:inputCheckbox value="{!attendee.cm.Checked_In__c}" required="false" disabled="true" />
+							</apex:column>
 							<apex:column style="text-align:center;">
 								<apex:facet name="header">Bid Number</apex:facet>
 								<apex:outputField value="{!attendee.cm.Bid_Number__c}"  style="width:50px"  />

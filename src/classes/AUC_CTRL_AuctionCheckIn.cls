@@ -52,7 +52,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				strStatus = 'Select one of the guests from the Guest list below or enter a new contact to add to this Table Captain.';
 			} else if (fAttendee && fCaptain) {
 				strStatus = null;
-				//strStatus = 'You can update the guest\'s information and click <b>Save Contact</b>.  You can also save their credit card by clicking <b>Save Credit Card</b>.' + 
+				//strStatus = 'You can update the guest\'s information and click <b>Save & Check In Contact</b>.  You can also save their credit card by clicking <b>Save Credit Card</b>.' + 
 				//	'  If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
 			}
 			return strStatus;
@@ -578,6 +578,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				attendeeEdit.cm.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
+			attendeeEdit.cm.Checked_In__c = true;
 			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppCaptain.Id);
 			if (fAddTicketPurchase) {
 				attendeeEdit.cm.Paid__c = true;
@@ -588,7 +589,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				update attendeeEdit.cm;
 			}      					
 			       	
-        	strSaveResults = 'The Guest information has been saved.';
+        	strSaveResults = 'The Guest has been saved and checked in.';
         	
 			// 4. save done, so clear our complete state
 			listAttendees = null;	
