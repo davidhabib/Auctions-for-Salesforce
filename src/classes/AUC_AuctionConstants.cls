@@ -134,18 +134,6 @@ public with sharing class AUC_AuctionConstants {
 			return 'Please see the Auctions for Salesforce User\'s Guide to see how to set the Footer text for Auction Receipts.';
 	} 
 	
-	// Get the user's list of Auction Donated Item Opportunity Stages
-	// if the setting exists, allow it to be null (to imply use values from Salesforce)
-	// if the setting doesn't even exist, then return our default values.
-	public static string StrDonatedItemOpportunityStages() {
-		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-		if (settings.size() > 0) {
-			return settings[0].Donated_Item_Opportunity_Stages__c;
-		} else {
-			return 'Prospecting;Pledged;Closed Won;Closed Won - Not Thanked;Closed Lost';
-		}
-	}
-	
 	// read the custom setting and return the string for the Credit Card Validate URL formula for the CheckIn page.
 	public static string StrCreditCardValidateURLFormula() {
 		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
@@ -285,7 +273,6 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.isOneToOne() == false || AUC_AuctionConstants.isOneToOne() == true);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsIntro() != null);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsFooter() != null);
-		System.Assert(AUC_AuctionConstants.StrDonatedItemOpportunityStages() != null);
 		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
 		System.Assert(AUC_AuctionConstants.getObjectTypeFromId(null) == null);
 		AUC_AuctionConstants.StrCreditCardValidateURLFormula();
