@@ -475,7 +475,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			return '/apex/GW_Auctions__AuctionReceipts' +
 	        	'?RenderFormat=pdf' +
 	        	'&auctionId=' + auctionId +
-	        	'&contactId=' + contactIdPurchaser;
+	        	'&contactId=' + contactIdPurchaser +
+	        	'&IncludeTickets=true';
 		}
 		private set;
 	}

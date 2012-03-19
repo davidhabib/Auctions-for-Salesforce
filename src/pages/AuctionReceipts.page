@@ -353,7 +353,7 @@
 				
 		    		<apex:pageBlockSectionItem >
 						<apex:outputText value="" />
-				    	<apex:commandButton value="Open PDF" action="{!OpenPDF}" immediate="false" />
+				    	<apex:commandButton value="{!strOpenReceiptURL}" onclick="window.open('{!strOpenReceiptURL}'); return false;"  immediate="false" />
 					</apex:pageBlockSectionItem>
 				</apex:pageBlockSection>
 				<p/><p/>

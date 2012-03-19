@@ -16,14 +16,29 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 		auctionMaintenance.auctionId = auctionId;	
 
+		// default state
+		fIncludeTicketPurchases = false;
+		fIncludeAllGuests = false;
+		contactIdPurchaser = null;
+				
 		// also support a specific contact (to allow page to be invoked on a specific receipt)
 		String strcontactId = ApexPages.currentPage().getParameters().get('contactId');
 		if (strcontactId != null && strcontactId != '') {
 			contactIdPurchaser = strcontactId;
+		}
+
+		// IncludeAll parameter 
+		String fAll = ApexPages.currentPage().getParameters().get('IncludeAll');
+		if (fAll != null && fAll == 'true') {
+			fIncludeAllGuests = true;
+		}
+
+		// IncludeTickets parameter 
+		String fTickets = ApexPages.currentPage().getParameters().get('IncludeTickets');
+		if (fTickets != null && fTickets == 'true') {
 			fIncludeTicketPurchases = true;
 		}
 		
-		fIncludeAllGuests = false;
 		getRenderFormat();
 	}
 
@@ -44,8 +59,30 @@ global with sharing class AUC_CTRL_AuctionReceipts {
         pdf.getParameters().put('RenderFormat','pdf');
         fOpenPDF = true;
         return pdf;
-    }  	
-	
+    }  
+    
+	// public property to get the commandButton URL
+	// for the Open button, to open the receipts pdf  
+	public string strOpenReceiptURL {
+		get {
+			string str =  '/apex/GW_Auctions__AuctionReceipts' +
+	        	'?RenderFormat=pdf' +
+	        	'&auctionId=' + auctionId;
+	        	
+			if (contactIdPurchaser != null) {	        	
+	        	str += '&contactId=' + contactIdPurchaser;
+			}
+			if (fIncludeAllGuests == true) {
+				str += '&IncludeAll=true';
+			}
+			if (fIncludeTicketPurchases == true) {
+				str += '&IncludeTickets=true';
+			}
+			return str;			
+		}
+		private set;
+	}
+	    		
 	private boolean fOpenPDF { get; set; }
 	
  	// the currently selected Auction
