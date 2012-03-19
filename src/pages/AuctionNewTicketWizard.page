@@ -47,7 +47,7 @@
             <p><i>&nbsp;&nbsp;For ticket purchases by an individual, fill in the Contact field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the {!$ObjectType.Account.Label} field.</i></p><br/>            
             <apex:pageBlockSection title="Ticketing Information" columns="2">
                 <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
-                <apex:inputField value="{!contactRole.ContactId}" required="true" />                	       			
+                <apex:inputField value="{!contactRole.ContactId}" required="false" />                	       			
             
             	<!-- additional Opportunity fields use a fieldset -->
 				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewTicketWizardFS}" var="f" >
