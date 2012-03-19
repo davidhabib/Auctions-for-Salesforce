@@ -904,30 +904,33 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		system.assertEquals(contact.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
 				
 		// test out an account table captain
+    	Account acc2 = new Account(Name='Another Test Account');
+    	insert acc2;    	
 		Opportunity opp = new Opportunity(				
 			RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
 			CampaignId = ctrl.auctionMaintenance.campaignIdAuctionTickets
 		);				
-		opp.AccountId = acc.Id;
+		opp.AccountId = acc2.Id;
 		opp.Amount = 1000;
 		opp.StageName = 'Won Closed';
 		opp.Number_Of_Tickets__c = 10;
 		opp.Name = 'my test account ticket purchase';
 		opp.CloseDate = system.today();
 		insert opp;
-		ctrl.idCaptain = acc.Id;
+		ctrl.idCaptain = acc2.Id;
 		ctrl.ChangeCaptainLookup();
-		system.assertEquals('My Test Account', ctrl.strNameCaptain);
+		system.assertEquals('Another Test Account', ctrl.strNameCaptain);
 		system.assertEquals(false, ctrl.IsCaptainContact);
-		system.assertEquals(acc.Id, ctrl.idCaptain);
+		system.assertEquals(acc2.Id, ctrl.idCaptain);
 		system.assert(ctrl.oppCaptain != null);
+		system.assertEquals(ctrl.oppCaptain.Id, opp.Id);
 		system.debug(ctrl.listAttendees);
 		system.assertEquals(10, ctrl.listAttendees.size());
 		
 		// save another contact to the account table
 		ctrl.contactIdAttendee = null;
 		ctrl.ChangeAttendeeLookup();
-		ctrl.idCaptain = acc.Id;
+		ctrl.idCaptain = acc2.Id;
 		ctrl.ChangeCaptainLookup();
 		ctrl.attendeeEdit.con.FirstName = 'Joey';
 		ctrl.attendeeEdit.con.LastName = 'Test';
@@ -936,12 +939,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		system.assert(ctrl.strSaveResults != null);
 		system.assertEquals(opp.Id, ctrl.attendeeEdit.cm.Auction_Ticket_OppId__c);
 		system.assert(ctrl.contactIdAttendee != null);	
-		system.assertEquals(acc.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
+		system.assertEquals(acc2.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
 
 		// test remoting functions
 		system.assert(AUC_CTRL_AuctionCheckIn.getListContacts('Test').size() >= 3);		
 		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'Johnny Test').size() >= 1);
-		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'My Test Account').size() >= 1);
+		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'Another Test Account').size() >= 1);
 					
 				
 	}		
