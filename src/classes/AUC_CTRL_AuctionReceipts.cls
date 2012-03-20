@@ -306,7 +306,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	       	string cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
 	       	string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 
-			string strSoql = 'select contactId, contact.Name, contact.Firstname, opportunity.RecordType.Name, ' + strOppFields +
+			string strSoql = 'select contactId, contact.Name, contact.Firstname, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
+				' opportunity.RecordType.Name, ' + strOppFields +
 				' from OpportunityContactRole ' +
 				' where IsPrimary=true and contactId in :listContactId and ' +
 					' (((opportunity.RecordTypeId = :rtPurchase or opportunity.RecordTypeId = :rtGift) ' + 
@@ -346,7 +347,10 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		        		r.auctionId = auctionId;
 		        		r.listOppAuctionPurchases = new list<Opportunity>();
 		        		r.strContactName = ocr.Contact.Name;
-		        		r.strContactFirstName = ocr.Contact.FirstName;
+		        		r.strContactFirstName = NullStr(ocr.Contact.FirstName);
+		        		r.strContactAddrLine1 = NullStr(ocr.Contact.MailingStreet);
+		        		r.strContactAddrLine2 = NullStr(ocr.Contact.MailingCity) + ', ' + 
+		        			NullStr(ocr.Contact.MailingState) + '  ' + NullStr(ocr.Contact.MailingPostalCode);
 		        		r.dtAuction = dtAuction;
 		        		mapContactIdReceipt.put(r.contactId, r);
 		        		listReceiptsT.add(r);
@@ -364,6 +368,12 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	        return listReceiptsT;
 	}
 
+	// helper routine to handle null strings.
+	private string NullStr(string str) {
+		if (str == null) return '';
+		return str;
+	}
+	
 	//==================== Receipt Class ======================================
 	// helper class that holds a contact, and their opportunities
 	// the VF Page will iterate through a list of these that the controller provides.
@@ -380,6 +390,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		public ID contactId { get; set; }
 		public String strContactName { get; set; }
 		public String strContactFirstName { get; set; }		
+		public String strContactAddrLine1 { get; set; }		
+		public String strContactAddrLine2 { get; set; }		
 		public ID auctionId { get; set; }
 		public Date dtAuction { get; set; }
 		public Decimal decTotalAmountPaid { get; set; }

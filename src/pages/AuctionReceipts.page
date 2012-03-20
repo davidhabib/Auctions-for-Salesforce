@@ -353,7 +353,7 @@
 				
 		    		<apex:pageBlockSectionItem >
 						<apex:outputText value="" />
-				    	<apex:commandButton value="{!strOpenReceiptURL}" onclick="window.open('{!strOpenReceiptURL}'); return false;"  immediate="false" />
+				    	<apex:commandButton value="Open PDF" onclick="window.open('{!strOpenReceiptURL}'); return false;"  immediate="false" />
 					</apex:pageBlockSectionItem>
 				</apex:pageBlockSection>
 				<p/><p/>
@@ -369,11 +369,15 @@
     	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
 		<div style="page-break-after:{!IF(contactIdPurchaser=='', 'always', 'none')};">
 	    	<apex:outputPanel id="panelReceipt" >		
-		    	<h2><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
-		    	<p><apex:outputText value="{0,date,MMMM d, yyyy}" >
+		    	<h2 style="text-align:center"><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
+		    	<p style="text-align:center"><apex:outputText value="{0,date,MMMM d, yyyy}" >
 		    			<apex:param value="{!receipt.dtAuction}" />
 		    		</apex:outputText>
 		    	</p>
+		    	<p>{!receipt.strContactName}<br/>
+				{!receipt.strContactAddrLine1}<br/>
+				{!receipt.strContactAddrLine2}</p><p/>
+				
 		    	<p>Dear {!receipt.strContactFirstName},<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
