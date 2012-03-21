@@ -156,13 +156,13 @@
     var j$ = jQuery.noConflict();
  	
     var listCaptains = null; // our cached list of Captains (contacts and accounts) for the current Auction.
-    var auctionId = "{!auctionId}"; // the current Auction.
+    var auctionId = "{!JSENCODE(auctionId)}"; // the current Auction.
  	
 	/*******************************************************************************************************
 	* this function is called when the page loads
 	********************************************************************************************************/
 	j$(document).ready(function() {
-		myInitializeJQueryUI('{!strNameAttendee}', '{!strNameCaptain}');
+		myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}', '{!JSENCODE(strNameCaptain)}');
 	});	
 	
 	/*******************************************************************************************************
@@ -219,7 +219,7 @@
 							fillAndMatchAttendeesCombo(result, request, response);
 		        		}
 	        		}
-		   		}, {escape:false});		   		
+		   		}, {escape:true});		   		
 	   		}
 		);	
 		
@@ -483,7 +483,7 @@
 					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
-					    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />			    			
+					    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />			    			
 					    		<apex:selectOptions value="{!listSOAuctions}" />
 					    	</apex:selectList>	
 						</apex:pageBlockSectionItem>
@@ -493,23 +493,23 @@
 							   	<input type="text" id="txtAttendees" class="clsCombo clsComboAttendees ui-autocomplete-input" />            
 							    <apex:actionFunction action="{!ChangeAttendeeLookup}" name="ChangeAttendeeLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
-							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" >
 							        <apex:param name="param1" assignTo="{!contactIdAttendee}" value="" />
 							    </apex:actionFunction>
 							    <apex:actionFunction action="{!SearchAttendeeLookup}" name="SearchAttendeeLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
-							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" >
 							        <apex:param name="param1" assignTo="{!searchAttendee}" value="" />
 							    </apex:actionFunction>
 			                </apex:outputPanel>
 		                </apex:pageBlockSectionItem>		
 		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-				       		<apex:outputLabel value="Table Captain" escape="false" />
+				       		<apex:outputLabel value="Table Captain" />
 		                	<apex:outputPanel id="panelCaptains" >
 							   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
 							    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
-							    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" >
+							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" >
 							        <apex:param name="param1" assignTo="{!idCaptain}" value="" />
 							    </apex:actionFunction>
 			        		</apex:outputPanel>	    	        		
@@ -519,7 +519,7 @@
 			</td>
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
-		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" rendered="{!strStatus != null}" />  
+		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="true" rendered="{!strStatus != null}" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
 	        </td>              
@@ -540,11 +540,11 @@
 			  			</apex:repeat>        	            	 
 		            	<!-- hardcoded fields to add new ticket purchase -->
 		            	<apex:pageBlockSectionItem >
-		            		<apex:outputLabel value="Add Ticket Purchase" escape="false" />
+		            		<apex:outputLabel value="Add Ticket Purchase" />
 		            		<apex:inputCheckbox value="{!fAddTicketPurchase}" > 
 					    		<apex:actionSupport event="onchange" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelTicketPurchase,panelStatus,panelCreditCard" 
-					    			oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />
+					    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />
 					    	</apex:inputCheckbox>			    			
 		            	</apex:pageBlockSectionItem>
 		            </apex:pageBlockSection>     	            		            
@@ -561,12 +561,12 @@
 					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save & Check In Contact', 'Save & Check In New Contact')}" action="{!SaveAttendeeInfo}" 
 						status="statusLoad"
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 						
-				    	oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;
+				    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />&nbsp;&nbsp;
 					<apex:commandButton value="Save Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage==false}" 
 						onclick="if ('{!strCreditCardValidateURL}' == '') {
 											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 										} else { 
-											window.open('{!strCreditCardValidateURL}','','{!strPaymentProcessorWindowParameters}');
+											window.open('{!JSENCODE(strCreditCardValidateURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
 										} 
 										return false;"
 					/>
@@ -575,7 +575,7 @@
 						onclick="if ('{!strCreditCardValidateURL}' == '') {
 								alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 								return false;}"
-						oncomplete="myInitializeJQueryUI('{!strNameAttendee}','{!strNameCaptain}');" />&nbsp;&nbsp;						
+						oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />&nbsp;&nbsp;						
 					<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;	
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       

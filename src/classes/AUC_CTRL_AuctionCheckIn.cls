@@ -8,7 +8,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
-		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
+		String strAuctionId = StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		
 		// do any initialization which is not dependent on having an auctionId
 		auctionMaintenance = new AUC_AuctionMaintenance();
@@ -131,7 +131,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	// needs us to search for an attendee before it could wait
 	// for the return from its javascript remoting call to get data
 	public string searchAttendee { get; set; }
-	
+
 	// callback when the user changes the Attendee contact lookup and submits too quick.
 	public PageReference SearchAttendeeLookup() {
 		if (searchAttendee != null && searchAttendee != '') {
@@ -682,6 +682,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		fShowPanelCreditCard = true;
 		return null;
 	}
+	
+	// private utility to escape a string.
+	private static string StrEscape(string str) {
+		if (str == null) return null;
+		return string.escapeSingleQuotes(str);
+	}
+	
 	
 
 	/*******************************************************************************************************
