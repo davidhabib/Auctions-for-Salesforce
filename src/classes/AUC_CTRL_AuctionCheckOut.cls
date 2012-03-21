@@ -8,7 +8,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
 		
-		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
+		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
 			auctionId = strAuctionId;	
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {

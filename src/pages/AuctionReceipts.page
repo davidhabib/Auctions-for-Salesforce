@@ -101,13 +101,13 @@
     var j$ = jQuery.noConflict();
  	
     var listPurchasers = null; // our cached list of purchasers (contactId, name, bidNum) for the current Auction.
-    var auctionId = "{!auctionId}"; // the current Auction.
+    var auctionId = "{!JSENCODE(auctionId)}"; // the current Auction.
  	
 	/*******************************************************************************************************
 	* this function is called when the page loads
 	********************************************************************************************************/
 	j$(document).ready(function() {
-		myInitializeJQueryUI('{!strNamePurchaser}');
+		myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');
 	});	
 	
 	/*******************************************************************************************************
@@ -169,7 +169,7 @@
 								fillAndMatchPurchasersCombo(listPurchasers, request, response);
 			        		}
 		        		}
-			   		}, {escape:false});		   		
+			   		}, {escape:true});		   		
 		   		}
 		   	}
 		);	
@@ -305,7 +305,7 @@
 				    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 				    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
 				    			rerender="panelSearch" 
-				    			oncomplete="auctionId='{!auctionId}'; listPurchasers=null; myInitializeJQueryUI('{!strNamePurchaser}');" />			    			
+				    			oncomplete="auctionId='{!JSENCODE(auctionId)}'; listPurchasers=null; myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />			    			
 				    		<apex:selectOptions value="{!listSOAuctions}" />
 				    	</apex:selectList>	
 					</apex:pageBlockSectionItem>
@@ -316,12 +316,12 @@
 						   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
 						    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
 				    			rerender="panelSearch" 
-						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
+						    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
 						        <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
 						    </apex:actionFunction>
 						    <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
 				    			rerender="panelSearch" 
-						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
+						    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
 						        <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
 						    </apex:actionFunction>
 		                </apex:outputPanel>
@@ -334,7 +334,7 @@
 							<apex:inputCheckbox value="{!fIncludeAllGuests}" id="cbxIncludeAllGuests" immediate="true" >
 						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeAllGuests}" 
 						    	rerender="panelSearch" 
-						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
+						    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
 							</apex:inputCheckbox>
 						</apex:outputPanel>
 					</apex:pageBlockSectionItem>
@@ -346,14 +346,14 @@
 							<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="true" >
 						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeTicketPurchases}" 
 						    	rerender="panelSearch" 
-						    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
+						    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
 							</apex:inputCheckbox>
 						</apex:outputPanel>
 					</apex:pageBlockSectionItem>
 				
 		    		<apex:pageBlockSectionItem >
 						<apex:outputText value="" />
-				    	<apex:commandButton value="Open PDF" onclick="window.open('{!strOpenReceiptURL}'); return false;"  immediate="false" />
+				    	<apex:commandButton value="Open PDF" onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;"  immediate="false" />
 					</apex:pageBlockSectionItem>
 				</apex:pageBlockSection>
 				<p/><p/>
@@ -374,11 +374,11 @@
 		    			<apex:param value="{!receipt.dtAuction}" />
 		    		</apex:outputText>
 		    	</p>
-		    	<p>{!receipt.strContactName}<br/>
-				{!receipt.strContactAddrLine1}<br/>
-				{!receipt.strContactAddrLine2}</p><p/>
+		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
+				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
+				<apex:outputText value="{!receipt.strContactAddrLine2}" /></p><p/>
 				
-		    	<p>Dear {!receipt.strContactFirstName},<br/><br/>
+		    	<p>Dear <apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
 					<tr><td>

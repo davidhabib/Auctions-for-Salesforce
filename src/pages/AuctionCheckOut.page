@@ -146,13 +146,13 @@
     var j$ = jQuery.noConflict();
  	
     var listPurchasers = null; // our cached list of purchasers (contactId, name, bidNum) for the current Auction.
-    var auctionId = "{!auctionId}"; // the current Auction.
+    var auctionId = "{!JSENCODE(auctionId)}"; // the current Auction.
  	
 	/*******************************************************************************************************
 	* this function is called when the page loads
 	********************************************************************************************************/
 	j$(document).ready(function() {
-		myInitializeJQueryUI('{!strNamePurchaser}');
+		myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');
 	});	
 	
 	/*******************************************************************************************************
@@ -214,7 +214,7 @@
 								fillAndMatchPurchasersCombo(listPurchasers, request, response);
 			        		}
 		        		}
-			   		}, {escape:false});		   		
+			   		}, {escape:true});		   		
 		   		}
 		   	}
 		);	
@@ -352,7 +352,7 @@
 					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
 					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
-					    			oncomplete="auctionId='{!auctionId}'; listPurchasers=null; myInitializeJQueryUI('{!strNamePurchaser}');" />			    			
+					    			oncomplete="auctionId='{!JSENCODE(auctionId)}'; listPurchasers=null; myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />			    			
 					    		<apex:selectOptions value="{!listSOAuctions}" />
 					    	</apex:selectList>	
 						</apex:pageBlockSectionItem>
@@ -363,12 +363,12 @@
 							   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
 							    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
-							    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
+							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
 							        <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
 							    </apex:actionFunction>
 							    <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
-							    	oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" >
+							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
 							        <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
 							    </apex:actionFunction>
 			                </apex:outputPanel>
@@ -429,7 +429,7 @@
 									<apex:inputCheckbox value="{!oppAP.IsPayNow}" required="false" immediate="false" >
 							    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangePayNow}"
 							    			rerender="panelPurchases,panelButtons,panelStatus,panelCreditCard" 
-							    			oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />
+							    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
 							    	</apex:inputCheckbox>
 									<Apex:facet name="footer">				
 										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="text-align:center; font-weight:bold;">
@@ -449,29 +449,29 @@
 			            <apex:pageBlockSectionItem >
 			            	<apex:outputPanel >
 								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage==false}" 
-									onclick="if ('{!strCreditCardChargeURL}' == '') {
+									onclick="if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
 												alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 											} else if ({!decTotalAmountToPay} == 0) {
 												alert('Please check which items you want to pay for, before opening the payment processor.');
 											} else { 
-												window.open('{!strCreditCardChargeURL}','','{!strPaymentProcessorWindowParameters}');
+												window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
 											} 
 											return false;" 
 								/>&nbsp;&nbsp;							
 
 								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage}" 
 									action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
-									onclick="if ('{!strCreditCardChargeURL}' == '') {
+									onclick="if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
 												alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 												return false;
 											} else if ({!decTotalAmountToPay} == 0) {
 												alert('Please check which items you want to pay for, before opening the payment processor.');
 												return false;
 											}"
-									oncomplete="myInitializeJQueryUI('{!strNamePurchaser}');" />&nbsp;&nbsp;	
+									oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />&nbsp;&nbsp;	
 								
 								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
-									onclick="window.open('{!strOpenReceiptURL}'); return false;" />&nbsp;&nbsp;	
+									onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;" />&nbsp;&nbsp;	
 								<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
 								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
 							</apex:outputPanel>
@@ -501,10 +501,10 @@
 							<span style="vertical-align: middle;" >Loading Payment Processor...</span>
 						  </p>
 						</div>	       				
-	       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!strPaymentProcessorPageHeight}" src="{!strCreditCardChargeURL}" />
+	       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!strCreditCardChargeURL}" />
 	       				<script>
 	       					j$('.clsLoadingPP').fadeIn();
-	       					j$('#iframePP').load(function(){  
+	       					j$('#iframePP').load(function(){   
 	       						j$('.clsLoadingPP').fadeOut();
 	       					});
 	       				</script>

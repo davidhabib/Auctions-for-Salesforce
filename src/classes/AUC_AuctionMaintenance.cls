@@ -152,6 +152,12 @@ public with sharing class AUC_AuctionMaintenance {
 		return (auc.Ticket_Non_Deductible_Amount__c == null) ? 0 : 	auc.Ticket_Non_Deductible_Amount__c;	
 	}
 		
+	// public utility to escape a string.
+	public static string StrEscape(string str) {
+		if (str == null) return null;
+		return string.escapeSingleQuotes(str);
+	}
+		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
     	// create needed data

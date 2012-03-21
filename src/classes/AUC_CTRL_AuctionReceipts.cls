@@ -8,7 +8,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
 		
-		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
+		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
 			auctionId = strAuctionId;	
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
@@ -22,19 +22,19 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		contactIdPurchaser = null;
 				
 		// also support a specific contact (to allow page to be invoked on a specific receipt)
-		String strcontactId = ApexPages.currentPage().getParameters().get('contactId');
+		String strcontactId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('contactId'));
 		if (strcontactId != null && strcontactId != '') {
 			contactIdPurchaser = strcontactId;
 		}
 
 		// IncludeAll parameter 
-		String fAll = ApexPages.currentPage().getParameters().get('IncludeAll');
+		String fAll = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('IncludeAll'));
 		if (fAll != null && fAll == 'true') {
 			fIncludeAllGuests = true;
 		}
 
 		// IncludeTickets parameter 
-		String fTickets = ApexPages.currentPage().getParameters().get('IncludeTickets');
+		String fTickets = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('IncludeTickets'));
 		if (fTickets != null && fTickets == 'true') {
 			fIncludeTicketPurchases = true;
 		}
@@ -307,7 +307,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	       	string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 
 			string strSoql = 'select contactId, contact.Name, contact.Firstname, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
-				' opportunity.RecordType.Name, ' + strOppFields +
+				' opportunity.RecordType.Name, ' + AUC_AuctionMaintenance.StrEscape(strOppFields) +
 				' from OpportunityContactRole ' +
 				' where IsPrimary=true and contactId in :listContactId and ' +
 					' (((opportunity.RecordTypeId = :rtPurchase or opportunity.RecordTypeId = :rtGift) ' + 
