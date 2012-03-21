@@ -603,8 +603,8 @@
 								</span>
 							</apex:column>					
 							<apex:column style="text-align:center;">
-								<apex:facet name="header">Checked In</apex:facet>
-								<apex:inputCheckbox value="{!attendee.cm.Checked_In__c}" required="false" disabled="true" />
+								<apex:facet name="header">Status</apex:facet>
+								<apex:outputField value="{!attendee.cm.Status}" />
 							</apex:column>
 							<apex:column style="text-align:center;">
 								<apex:facet name="header">Bid Number</apex:facet>

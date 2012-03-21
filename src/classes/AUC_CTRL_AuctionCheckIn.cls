@@ -63,7 +63,31 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	private AUC_AuctionMaintenance auctionMaintenance;
 		
 	// the currently selected Auction
-	public Id auctionId { get; set; }
+	public Id auctionId { 
+		get; 
+		set {
+			if (auctionId != value && value != null) {
+				// make sure 'Checked In' status added to attendee campaign.
+				auctionMaintenance.auctionId = value;
+				ID cmpId = auctionMaintenance.campaignIdAuctionAttendees;
+				if (cmpId != null) {
+					list<CampaignMemberStatus> listCMS = [Select Id From CampaignMemberStatus WHERE Label = 'Checked In' and CampaignId = :cmpId];
+					// if not found, let's add it.
+					CampaignMemberStatus cms;
+					if (listCMS.size() == 0) {
+					    cms = new CampaignMemberStatus(
+					        Label = 'Checked In',
+					        CampaignId = cmpId,
+					        HasResponded = true,
+					        SortOrder = 500
+					    );
+					    insert(cms);   						
+					}
+				}
+			}
+			auctionId = value;
+		}
+	}
 		
 	// the list of Auctions to put in the Auction dropdown
 	public list<SelectOption> listSOAuctions { get; set; }
@@ -370,7 +394,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
 	                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
-	                	cm.Status = 'RSVP Yes';
+	                	//cm.Status = 'RSVP Yes';
 	                	cm.Paid__c = (oppCaptain.amount != null);
 	                	if (cmCaptain != null) {
 	                		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
@@ -471,7 +495,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
                 	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
                 	cm.contactId = contactIdAttendee;
-                	cm.Status = 'RSVP Yes';
+                	//cm.Status = 'Checked In';
                 	cm.Paid__c = (oppCaptain.amount != null);
                 	if (cmCaptain != null) {
                 		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
@@ -494,7 +518,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    						// go ahead and prefill the current table captain.
 			                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
 	    					}
-	                	cm.Status = 'RSVP Yes';
+	                		//cm.Status = 'Checked In';
 	    				}
 					}
                 	attendeeEdit = new Attendee(cm, con);
@@ -578,7 +602,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				attendeeEdit.cm.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
-			attendeeEdit.cm.Checked_In__c = true;
+			//attendeeEdit.cm.Checked_In__c = true;
+			attendeeEdit.cm.Status = 'Checked In';
 			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppCaptain.Id);
 			if (fAddTicketPurchase) {
 				attendeeEdit.cm.Paid__c = true;

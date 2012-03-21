@@ -97,7 +97,7 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
 	    );
 	    listCMS.add(cms3);
 	    CampaignMemberStatus cms4 = new CampaignMemberStatus(
-	        Label = 'Donated',
+	        Label = 'Checked In',
 	        CampaignId = cmp.Id,
 	        HasResponded = true,
 	        SortOrder = 400
