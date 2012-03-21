@@ -63,31 +63,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	private AUC_AuctionMaintenance auctionMaintenance;
 		
 	// the currently selected Auction
-	public Id auctionId { 
-		get; 
-		set {
-			if (auctionId != value && value != null) {
-				// make sure 'Checked In' status added to attendee campaign.
-				auctionMaintenance.auctionId = value;
-				ID cmpId = auctionMaintenance.campaignIdAuctionAttendees;
-				if (cmpId != null) {
-					list<CampaignMemberStatus> listCMS = [Select Id From CampaignMemberStatus WHERE Label = 'Checked In' and CampaignId = :cmpId];
-					// if not found, let's add it.
-					CampaignMemberStatus cms;
-					if (listCMS.size() == 0) {
-					    cms = new CampaignMemberStatus(
-					        Label = 'Checked In',
-					        CampaignId = cmpId,
-					        HasResponded = true,
-					        SortOrder = 500
-					    );
-					    insert(cms);   						
-					}
-				}
-			}
-			auctionId = value;
-		}
-	}
+	public Id auctionId { get; set; } 
 		
 	// the list of Auctions to put in the Auction dropdown
 	public list<SelectOption> listSOAuctions { get; set; }
@@ -539,6 +515,27 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		}
 		return null;
 	}
+
+	// utility to ensure the attendee campaign has a status of 'Checked In'
+	// needed to support pre 3.15 Auctions.
+	private	void AllowCheckedInStatus() {
+		ID cmpId = auctionMaintenance.campaignIdAuctionAttendees;
+		if (cmpId != null) {
+			list<CampaignMemberStatus> listCMS = [Select Id From CampaignMemberStatus WHERE Label = 'Checked In' and CampaignId = :cmpId];
+			// if not found, let's add it.
+			CampaignMemberStatus cms;
+			if (listCMS.size() == 0) {
+			    cms = new CampaignMemberStatus(
+			        Label = 'Checked In',
+			        CampaignId = cmpId,
+			        HasResponded = true,
+			        SortOrder = 500
+			    );
+			    insert(cms);   						
+			}
+		}
+	}
+	
 					
 	// save all modified data.  a complex process to handle both updates and inserts!
 	public PageReference SaveAttendeeInfo() {
@@ -603,6 +600,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
 			//attendeeEdit.cm.Checked_In__c = true;
+			AllowCheckedInStatus();
 			attendeeEdit.cm.Status = 'Checked In';
 			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppCaptain.Id);
 			if (fAddTicketPurchase) {
