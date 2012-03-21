@@ -151,9 +151,11 @@
 		// helper function to find the first item in the listbox that is displaying the supplied prefix string
 		function IndexOfLbxPrefixText(lbx, prefix) {
 			if (prefix == null || prefix == '') return -1;
+			prefix = prefix.toLowerCase();
 			var i = 0; 
 			for (i = 0; i < lbx.options.length; i++) { 
-				if (lbx.options[i].text.indexOf(prefix + ':') == 0) {
+				var str = lbx.options[i].text.toLowerCase();
+				if (str.indexOf(prefix + ':') == 0) {
 					return i; 
 				} 
 			}
