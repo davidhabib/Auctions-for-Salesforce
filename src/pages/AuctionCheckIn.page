@@ -557,6 +557,7 @@
 			            </apex:pageBlockSection>     	            		            
 	                </apex:outputPanel>    		
 	   				<br/>
+	   				<div style="white-space:nowrap;" >
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					<apex:commandButton value="{!IF(attendeeEdit.con.Id != null, 'Save & Check In Contact', 'Save & Check In New Contact')}" action="{!SaveAttendeeInfo}" 
 						status="statusLoad"
@@ -579,6 +580,7 @@
 					<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;	
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       
+					</div>
 				</apex:outputPanel>  
 			</td> 
 			<td style="vertical-align:top;" >
