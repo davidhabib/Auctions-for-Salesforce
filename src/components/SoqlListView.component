@@ -32,13 +32,13 @@
 						<td style="vertical-align:middle;">
 							<apex:panelGrid columns="10" > 
 								<apex:outputText value="" />
-								<apex:commandLink action="{!setCon.first}">First</apex:commandlink>
+								<apex:commandLink action="{!setCon.first}" rerender="panelData" >First</apex:commandlink>
 								<apex:outputText value=" | " />
-								<apex:commandLink action="{!setCon.previous}" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
+								<apex:commandLink action="{!setCon.previous}" rerender="panelData" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
 								<apex:outputText rendered="{!setCon.HasPrevious}" value=" | " />
-								<apex:commandLink action="{!setCon.next}" rendered="{!setCon.HasNext}">Next</apex:commandlink>
+								<apex:commandLink action="{!setCon.next}" rerender="panelData" rendered="{!setCon.HasNext}">Next</apex:commandlink>
 								<apex:outputText rendered="{!setCon.HasNext}" value=" | " />
-								<apex:commandLink action="{!setCon.last}">Last</apex:commandlink>
+								<apex:commandLink action="{!setCon.last}" rerender="panelData" >Last</apex:commandlink>
 								<apex:outputText value="" />
 								<apex:outputText value="&nbsp;&nbsp;&nbsp;Page {0} of {1} &nbsp;&nbsp;({2} records)" escape="false" >
 									<apex:param value="{!setCon.PageNumber}" />
@@ -52,11 +52,11 @@
 						</td>
 						<td style="vertical-align:middle; text-align:right;" >
 							<apex:repeat value="{!listAlphaFilters}" var="a" > 
-							    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter=a,'SelectedAlphaFilter','')}" value="{!a}" >
+							    <apex:commandLink action="{!AlphaFilter}" rerender="panelData" styleClass="AlphaFilter {!IF(strAlphaFilter=a,'SelectedAlphaFilter','')}" value="{!a}" >
 							    	<apex:param assignTo="{!strAlphaFilter}" name="strAlphaFilter" value="{!a}" /> 
 							    </apex:commandLink>|
 				  			</apex:repeat>         
-						    <apex:commandLink action="{!AlphaFilter}" styleClass="AlphaFilter {!IF(strAlphaFilter='%','SelectedAlphaFilter','')}" value="All" >
+						    <apex:commandLink action="{!AlphaFilter}" rerender="panelData" styleClass="AlphaFilter {!IF(strAlphaFilter='%','SelectedAlphaFilter','')}" value="All" >
 						    	<apex:param assignTo="{!strAlphaFilter}" value="%" /> 
 						    </apex:commandLink>&nbsp;
 						</td>
@@ -78,7 +78,7 @@
 	            <apex:column >
 	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>
 					<apex:facet name="header"> 
-						<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
+						<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
 							$ObjectType.GW_Auctions__Auction_Item__c.Fields[pageController.strNameField].Label,
 							$ObjectType.Opportunity.Fields[pageController.strNameField].Label)}" >
 							<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!pageController.strNameField}" />
@@ -91,7 +91,7 @@
 				<apex:repeat value="{!pageController.strFields}" var="f" > 
 					<apex:column value="{!item[f]}" >
 						<apex:facet name="header"> 
-							<apex:commandLink action="{!SortItem}" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
+							<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
 								$ObjectType.GW_Auctions__Auction_Item__c.Fields[f].Label,
 								$ObjectType.Opportunity.Fields[f].Label)}" >
 								<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!f}" />
@@ -107,13 +107,13 @@
 			<div class="PagerUI">
 				<apex:panelGrid columns="10" > 
 					<apex:outputText value="" />
-					<apex:commandLink action="{!setCon.first}">First</apex:commandlink>
+					<apex:commandLink action="{!setCon.first}" rerender="panelData" >First</apex:commandlink>
 					<apex:outputText value=" | " />
-					<apex:commandLink action="{!setCon.previous}" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
+					<apex:commandLink action="{!setCon.previous}" rerender="panelData" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
 					<apex:outputText rendered="{!setCon.HasPrevious}" value=" | " />
-					<apex:commandLink action="{!setCon.next}" rendered="{!setCon.HasNext}">Next</apex:commandlink>
+					<apex:commandLink action="{!setCon.next}" rerender="panelData" rendered="{!setCon.HasNext}">Next</apex:commandlink>
 					<apex:outputText rendered="{!setCon.HasNext}" value=" | " />
-					<apex:commandLink action="{!setCon.last}">Last</apex:commandlink>
+					<apex:commandLink action="{!setCon.last}" rerender="panelData" >Last</apex:commandlink>
 					<apex:outputText value="" />
 					<apex:outputText value="&nbsp;&nbsp;&nbsp;Page {0} of {1} &nbsp;&nbsp;({2} records)" escape="false" >
 						<apex:param value="{!setCon.PageNumber}" />
