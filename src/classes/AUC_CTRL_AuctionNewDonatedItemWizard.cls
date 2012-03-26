@@ -8,7 +8,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
-		String auctionId = ApexPages.currentPage().getParameters().get('auctionId');
+		String auctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		
 		// do any initialization which is not dependent on having an auctionId
 		auctionMaintenance = new AUC_AuctionMaintenance();
@@ -49,9 +49,8 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	// called by the page when the user checks/unchecks the Create Auction Item checkbox.		
 	public PageReference ToggleCreateAuctionItem() {		
 		if (fCreateAuctionItem) {
-			// WEC request to not set the item name, so user is forced to enter a more descriptive name.
-			// if (auctionItem.Auction_Item_Name__c == null) auctionItem.Auction_Item_Name__c = opp.Auction_Donated_Item_Name__c;
-			if (auctionItem.Description__c == null) auctionItem.Description__c = opp.Description;
+			if (auctionItem.Auction_Item_Name__c == null) auctionItem.Auction_Item_Name__c = opp.Auction_Donated_Item_Name__c;
+			if (auctionItem.Description__c == null) auctionItem.Description__c = opp.Description; 
 		}
 		return null;
 	}	

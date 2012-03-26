@@ -9,7 +9,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
-		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
+		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 				
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;

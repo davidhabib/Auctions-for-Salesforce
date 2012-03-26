@@ -53,7 +53,7 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 				order by Auction_Donated_Item_Name__c desc]) {
 					if (opp.Number_of_Items__c > 0) {
 						Decimal cost = ((opp.Amount == null) ? 0 : opp.Amount) / opp.Number_of_Items__c;
-						listSO.add(new SelectOption(opp.id, opp.Auction_Donated_Item_Name__c + ' (' + opp.Number_Available__c + ' available at $' + String.valueOf(cost) + ' each)'  ));
+						listSO.add(new SelectOption(opp.id, opp.Auction_Donated_Item_Name__c + ' (' + integer.valueOf(opp.Number_Available__c) + ' available at $' + String.valueOf(cost) + ' each)'  ));
 					}
 			}		
 			return listSO;

@@ -6,7 +6,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	// constructor
 	public AUC_CTRL_AuctionAutoBidNumbers() {
 		auctionMaintenance = new AUC_AuctionMaintenance();
-		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');		
+		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));		
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
 			auctionMaintenance.auctionId = strAuctionId;
 			

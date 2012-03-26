@@ -341,7 +341,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
     						' (GW_Auctions__Auction_Ticket_OppId__c = \'' + oppCaptain.Id + '\'';
     				if (IsCaptainContact && idCaptain != null) {
-    					strSoql += 'or GW_Auctions__Table_Captain__c = \'' + idCaptain + '\'';
+    					strSoql += 'or GW_Auctions__Table_Captain__c = \'' + AUC_AuctionMaintenance.StrEscape(idCaptain) + '\'';
     				}
     				strSoql += ')';
     				

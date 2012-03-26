@@ -8,14 +8,14 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
-		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
+		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		
 		// do any initialization which is not dependent on having an auctionId
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;	
 		
 		// create a new opp, or load existing opp if passed in
-		String strOppId = ApexPages.currentPage().getParameters().get('oppId');	
+		String strOppId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('oppId'));	
 		if (strOppId != null && strOppId != '') {
 			opp = Database.Query('select ' + strOppFields +	' from Opportunity where Id=\'' + strOppId + '\'');
 					
