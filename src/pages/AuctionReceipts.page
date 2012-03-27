@@ -180,6 +180,7 @@
 		*******************************************************************************************************/
 		function fillAndMatchPurchasersCombo(listP, request, response) {
 			var strSearch = request.term.toLowerCase();		
+			if (strSearch == '--all--') strSearch = '';	
  			var isMatch = false;
      		response(j$.map(listP, function(item) {
      			var strLower = item.strName.toLowerCase(); 
@@ -265,7 +266,7 @@
 				j$( this ).blur();
 	
 				// pass empty as value to search for all
-				input.autocomplete( "search", "" );
+				input.autocomplete( "search", "--all--" );
 				input.focus();
 			});	
 		
