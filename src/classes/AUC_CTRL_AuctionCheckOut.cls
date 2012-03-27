@@ -90,9 +90,19 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// callback when the user changes the Attendee contact lookup and submits too quick.
 	public PageReference SearchPurchaserLookup() {
 		if (searchPurchaser != null && searchPurchaser != '') {
-			list<Contact> listCon = [select Id from Contact where Name = :searchPurchaser];
-			if (listCon.size() > 0) {
-				contactIdPurchaser = listCon[0].Id;
+
+			// need to search by both contact name and bid number
+			decimal decBid = -1;
+			try {
+				decBid = decimal.valueOf(searchPurchaser);
+			} catch (Exception ex) {}
+			list<CampaignMember> listCM = [select contactId, contact.Name, Bid_Number__c from CampaignMember 
+				where (CampaignId = :auctionMaintenance.campaignIdAuctionAttendees or
+						CampaignId = :auctionMaintenance.campaignIdAuctionTickets) 
+					and contactId <> null
+					and (contact.Name = :searchPurchaser or Bid_Number__c = :decBid)];
+			if (listCM.size() > 0) {
+				contactIdPurchaser = listCM[0].contactId;
 			} else {
 				contactIdPurchaser = null;
 				strSaveResults = null;
