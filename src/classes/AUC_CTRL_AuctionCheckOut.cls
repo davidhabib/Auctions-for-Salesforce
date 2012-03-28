@@ -311,7 +311,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		for (Receipt r : listR) {
 			r.decTotalAmountToPay = 0;
 			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
-				if (po.IsPayNow) {
+				if (po.IsPayNow && po.opp.Amount != null) {
 					r.decTotalAmountToPay += po.opp.Amount;
 				}
 			}
