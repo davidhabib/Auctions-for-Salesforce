@@ -188,7 +188,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				CampaignMember cmIn = mapContactIdCM.get(cm.contactId);
 				if (cmIn == null || (cmIn.Bid_Number__c == null && cm.Bid_Number__c != null)) {
 					mapContactIdCM.put(cm.contactId, cm);
-					listContactId.add(cm.contactId);
+					// only add them to this list once
+					if (cmIn == null) listContactId.add(cm.contactId);
 				}
 			}
 		}
