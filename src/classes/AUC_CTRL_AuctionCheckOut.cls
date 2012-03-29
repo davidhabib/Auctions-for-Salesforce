@@ -437,7 +437,10 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				if (str != null) {
 					// {0} = contactId
 					// {1} = auctionId
-					// {2} = amount					
+					// {2} = amount		
+					// {3} = sessionId
+					// {4} = partner server url
+					// {5} = organizationId
 					list<string> listFormat = new list<string>();
 					listFormat.add(contactIdPurchaser);
 					listFormat.add(auctionId);
@@ -446,7 +449,11 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 					} else {
 						listFormat.add('0');
 					}
-					str = string.format(str, listFormat);
+					listFormat.add(UserInfo.getSessionId());
+					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+					listFormat.add(strServerURL);					
+					listFormat.add(UserInfo.getOrganizationId());					
+					str = string.format(str, listFormat);			
 				}
 				strCreditCardChargeURL = str;
 			}

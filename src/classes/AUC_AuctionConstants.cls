@@ -161,7 +161,7 @@ public with sharing class AUC_AuctionConstants {
 		if (settings.size() > 0) {
 			return settings[0].Payment_Processor_Window_Parameters__c;
 		} else {
-			return 'menubar=0,status=0,toolbar=0,width=700,height=700';
+			return 'menubar=0,status=0,toolbar=0,width=700,height=600';
 		}
 	}
 
@@ -172,7 +172,7 @@ public with sharing class AUC_AuctionConstants {
 		if (settings.size() > 0) {
 			return settings[0].Payment_Processor_Page_Height__c;
 		} else {
-			return '250px';
+			return '300px';
 		}
 	}
 
