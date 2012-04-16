@@ -55,7 +55,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				// now in batches assign the new numbers.
 				integer iBid = 100;									
 				for (list<CampaignMember> listCM : [select Id, Bid_Number__c from CampaignMember 
-					where campaignId=:campaignId and contactId<>null order by contact.LastName, contact.FirstName]) {
+					where campaignId=:campaignId and contactId<>null and Status<>'RSVP No' order by contact.LastName, contact.FirstName]) {
 						
 					for (CampaignMember cm : listCM) {
 						cm.Bid_Number__c = ibid;
