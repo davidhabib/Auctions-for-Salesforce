@@ -16,6 +16,7 @@ public with sharing class AUC_AuctionMaintenance {
 		}
 	}
 	
+	private class MyException extends Exception {}
 
     public static Id recordtypeIdAuctionCampaign = [SELECT Id FROM RecordType WHERE DeveloperName=:AUC_AuctionConstants.RECORDTYPE_CAMPAIGN_Auction].Id;
     public static Id recordtypeIdAuctionDonatedItem = [SELECT Id FROM RecordType WHERE DeveloperName=:AUC_AuctionConstants.RECORDTYPE_OPP_AuctionDonatedItem].Id;
@@ -60,6 +61,8 @@ public with sharing class AUC_AuctionMaintenance {
 						and Auction__c= :auctionId limit 1];
 				if (listCampaign.size() > 0) {
 					campaignIdAuctionAttendees = listCampaign[0].Id;
+				} else {
+					throw (new MyException('The auction is missing its required Auction Attendees campaign.'));
 				}
 			}		
 			return campaignIdAuctionAttendees;
@@ -79,6 +82,8 @@ public with sharing class AUC_AuctionMaintenance {
 						and Auction__c= :auctionId limit 1];
 				if (listCampaign.size() > 0) {
 					campaignIdAuctionDonors = listCampaign[0].Id;
+				} else {
+					throw (new MyException('The auction is missing its required Auction Item Donors campaign.'));
 				}
 			}		
 			return campaignIdAuctionDonors;
@@ -98,6 +103,8 @@ public with sharing class AUC_AuctionMaintenance {
 						and Auction__c= :auctionId limit 1];
 				if (listCampaign.size() > 0) {
 					campaignIdAuctionTickets = listCampaign[0].Id;
+				} else {
+					throw (new MyException('The auction is missing its required Auction Tickets campaign.'));
 				}
 			}		
 			return campaignIdAuctionTickets;
