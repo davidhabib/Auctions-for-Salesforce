@@ -181,6 +181,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 					CampaignId = :auctionMaintenance.campaignIdAuctionTickets) 
 				and contactId <> null
 				and contact.Name like :strFilter
+				and Status <> 'RSVP No'
 			order by contact.LastName, contact.FirstName]) {
 			
 			for (CampaignMember cm : listCM) {				
