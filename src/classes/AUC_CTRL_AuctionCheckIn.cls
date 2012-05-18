@@ -664,7 +664,19 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				if (str != null) {
 					// {0} = contactId
 					// {1} = auctionId
-					str = string.format(str, new list<string> { contactIdAttendee, auctionId });
+					// {2} = amount		
+					// {3} = sessionId
+					// {4} = partner server url
+					// {5} = organizationId
+					list<string> listFormat = new list<string>();
+					listFormat.add(contactIdAttendee);
+					listFormat.add(auctionId);
+					listFormat.add('0');
+					listFormat.add(UserInfo.getSessionId());
+					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+					listFormat.add(strServerURL);					
+					listFormat.add(UserInfo.getOrganizationId());					
+					str = string.format(str, listFormat);			
 				}
 				strCreditCardValidateURL = str;
 			}
