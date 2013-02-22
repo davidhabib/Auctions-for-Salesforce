@@ -1,4 +1,4 @@
-// Written by David Habib, copyright (c) 2012 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// Written by David Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
 public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase {
@@ -172,6 +172,13 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		insert ai;
 
 		
+		//point to our VF page with the auctionId as a parameter
+		PageReference p = new PageReference('Page.AuctionItems');
+		p.getParameters().put('auctionId', auction.id); 
+		Test.setCurrentPageReference(p);
+		
+		
+		//instantiate the controller
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
 		PageControllerBase pageCtrl = new AUC_CTRL_AuctionItems();
 		compCtrl.pageController = pageCtrl;

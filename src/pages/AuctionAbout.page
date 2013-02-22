@@ -1,43 +1,8 @@
 <!-- 
-// Written by David Habib, copyright (c) 2009, 2010, 2011, 2012 Groundwire, 1402 3rd Avenue, Suite 1000, Seattle, WA 98101
+// Written by David Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
- -->
-  
-<apex:page >
-<h1>
-<a href="http://groundwire.org/" target="_new">
-<img src="http://gw-logo.s3.amazonaws.com/groundwire-logo-270-noclear.png" border="0" hspace="5" vspace="5" /></a>
-</h1>
-<p/>
-
-<h1>Auctions for Salesforce was created by <a href="http://groundwire.org/labs" target="_new">Groundwire Labs</a>, 
-the product innovation group at <a href="http://groundwire.org/" target="_new">Groundwire</a>. </h1>
-<p/>
-
-<h1>About Groundwire</h1>
-<p>Groundwire is a U.S. nonprofit capacity-building organization that 
-provides online strategy and technology consulting to the environmental movement. 
-We build websites and databases, and consult on email, online advocacy and social media.</p>
-
-<p>Groundwire Labs is on a mission to get affordable and innovative online tools and strategies 
-into the hands of organizations building a sustainable world. It is funded by a combination of individual gifts and foundation grants. </p>
-
-<p>Please consider a <a href="http://groundwire.org/about/invest" target="_new">donation to Groundwire</a> to support 
-future development of this product and more like it.</p>
-
-<h1>Credits</h1>
-<p>Auctions for Salesforce was developed by Groundwire database consultant David Habib. 
-David is a volunteer who came to Groundwire through 
-<a href="http://www.svpseattle.org/" target="_new">Social Venture Partners of Seattle</a>.</p>
-
-<h1>Documentation</h1>
-<p>Documentation for Auctions for Salesforce is available from our website.<br/>
-<a href="http://groundwire.org/apps/auctions-for-salesforce" target="_new">http://groundwire.org/apps/auctions-for-salesforce</a></p>
-
-<h1>Support</h1>
-<p>Support from Groundwire is generally not available for this application. We recommend you submit questions to the <a href="http://groups.google.com/group/npsf" target="_new">Nonprofit Salesforce.com Practitioners Google Group</a>. We monitor this group and will attempt to respond. </p>
-
-<p>If you would like to suggest an improvement or report a bug please create a <a href="http://github.com/Groundwire/Auctions-for-Salesforce/issues" target="_new">new issue on GitHub</a>.<br/></p>
-
-<p>For all other inquiries, please email us at <a href="mailto:labs@groundwire.org">labs@groundwire.org</a>.</p>
+-->
+ 
+<apex:page sidebar="false"  >
+	<iframe src="http://djhconsulting.com/auctions-for-salesforce/" height="1000" width="100%" style="border:none;" />
 </apex:page>
