@@ -47,13 +47,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				strStatus = 'There is no contact in the database with that name.  Enter a new contact in the New Contact section.';
 			} else if (fAttendee && !fCaptain) {
 				strStatus = null;
-				//strStatus = 'Please enter a table captain.';
+				strStatus = 'Please enter a table captain.  Tables hosted by organizations are at the end of the list.';
 			} else if (!fAttendee && fCaptain) {
 				strStatus = 'Select one of the guests from the Guest list below or enter a new contact to add to this Table Captain.';
 			} else if (fAttendee && fCaptain) {
 				strStatus = null;
-				//strStatus = 'You can update the guest\'s information and click <b>Save & Check In Contact</b>.  You can also save their credit card by clicking <b>Save Credit Card</b>.' + 
-				//	'  If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
+				strStatus = 'Update the guest\'s information and click <b>Save & Check In Contact</b>.<br/>Save their credit card by clicking <b>Save Credit Card</b>.' + 
+					'<br/>If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
 			}
 			return strStatus;
 		}
@@ -185,16 +185,31 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public string idCaptain { 
 		get; 
 		set {
+			boolean fFixupAttendeeEdit = false;
+			
 			// invalidate anything dependent on a change
 			if (idCaptain != value) {
 				strNameCaptain = null;
-				attendeeEdit = null;
 				listAttendees = null;
 				oppCaptain = null;
 				cmCaptain = null;
+				
+				// leave the current attendee in place if they are new and not yet saved.  
+				if (attendeeEdit != null && attendeeEdit.con != null && attendeeEdit.con.Id == null) { 
+					fFixupAttendeeEdit = true; 
+				} else {
+					attendeeEdit = null;
+				} 
 			}
 			idCaptain = value;			
-			if (idCaptain == '') idCaptain = null; 
+			if (idCaptain == '') idCaptain = null;
+						 
+			if (fFixupAttendeeEdit)	{
+            	attendeeEdit.cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);	            	
+	            if (cmCaptain != null) {
+	            	attendeeEdit.cm.Table_Name_Number__c = cmCaptain.Table_Name_Number__c;
+	            }
+			}										 
 		}
 	}
 	
@@ -737,19 +752,51 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	/*******************************************************************************************************
 	* @description Javascript Remoting method to return a list of Contacts, optionally filtered by strFilter.
+	* Note that we've changed AuctionCheckIn to now use the version of this that looks at the Auction.
 	* @param strFilter the substring to filter by 
 	* @return list<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static list<Contact> getListContacts(string strFilter) {
-    	strFilter = '%' + strFilter + '%';   	
-        list<Contact> listContacts = [select Id, Name, MailingStreet, MailingCity 
+    	strFilter = '%' + strFilter + '%';  
+		list<Contact> listContacts = [select Id, Name, MailingStreet, MailingCity 
         		from Contact where 
 				Name like :strFilter 
-				order by Name asc];
-			
+				order by Name asc];							
 		return listContacts;
     } 		
 	
+	/*******************************************************************************************************
+	* @description Javascript Remoting method to return a list of Contacts, optionally filtered by strFilter.
+	* To try to avoid loading too many contacts, first search those on the Attendees list.  If none found,
+	* then search all contacts.
+	* @param auctionId the Auction to filter by 
+	* @param strFilter the substring to filter by 
+	* @return list<Contact>, which will be turned into a Javascript collection.
+	********************************************************************************************************/
+    @RemoteAction global static list<Contact> getListAttendees(string auctionId, string strFilter) {
+    	strFilter = '%' + strFilter + '%';  
+		if (auctionId == null || auctionId == '') return null;
+		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
+		auctionMaintenance.auctionId = auctionId;
+
+		// first look for contacts where are on the Attendees campaign    	
+        list<Contact> listContacts = [select Id, Name, MailingStreet, MailingCity 
+        		from Contact where 
+				Name like :strFilter 
+					and Id in (select contactId from CampaignMember where campaignId = :auctionMaintenance.campaignIdAuctionAttendees)
+				order by Name asc];
+
+		// if none found, then search all contacts
+		if (listContacts.size() == 0) {
+			listContacts = [select Id, Name, MailingStreet, MailingCity 
+        		from Contact where 
+				Name like :strFilter 
+				order by Name asc];	
+		}				
+			
+		return listContacts;
+    } 		
+
 	/*******************************************************************************************************
 	* @description Javascript Remoting method to return a list of Contacts and Accounts, who are ticket 
 	* holders or table captains on the specified auction, optionally filtered by strFilter.

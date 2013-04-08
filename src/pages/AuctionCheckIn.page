@@ -18,7 +18,7 @@
 		display: inline-block;
 		vertical-align: middle !important;
 	}
-	.ui-autocomplete {
+	.ui-autocomplete { 
 		max-height: 200px;
 		overflow-y: auto;
 		/* prevent horizontal scrollbar */
@@ -183,16 +183,14 @@
    	 	* setup the Attendee autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboAttendees").autocomplete({
-			minLength: 3,
-			delay: 200,
+			minLength: 4,
+			delay: 500,
 
 		   	// focus called when the user hilights an item by arrowing or mousing over the list 
-		   	// we needed to override this, otherwise the Id was displayed in the textbox.
+		   	// we needed to override and stop this, otherwise the Id was displayed in the textbox.
 		   	focus: function(event, ui) {
-		   		j$(this).val(ui.item.label);
 		   		return false;
-		   	},
-
+		   	} 
 	   	})
 		.data("autocomplete")._renderItem = function(ul, item) {
 			return j$( "<li></li>" )
@@ -209,8 +207,8 @@
 		j$("#txtAttendees").autocomplete("option", "source",
 			function(request, response) {
        			j$('#txtAttendees').addClass('clsWaitRight');	        			
-				var strSearch = request.term.toLowerCase();		
-				GW_Auctions.AUC_CTRL_AuctionCheckIn.getListContacts(strSearch, function(result, event) {
+				var strSearch = j$.trim(request.term.toLowerCase());		
+				GW_Auctions.AUC_CTRL_AuctionCheckIn.getListAttendees(auctionId, strSearch, function(result, event) {
 					j$('#txtAttendees').removeClass('clsWaitRight');	        								
 	        		if (event.type == 'exception') {
 	        			alert(event.message);
@@ -228,7 +226,7 @@
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
 		function fillAndMatchAttendeesCombo(listCons, request, response) {
-			var strSearch = request.term.toLowerCase();		
+			var strSearch = j$.trim(request.term.toLowerCase());		
  			var isMatch = false;
      		response(j$.map(listCons, function(item) {
      			var strLower = item.Name.toLowerCase();
@@ -289,15 +287,14 @@
    	 	* setup the Table Captains autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboCaptains").autocomplete({
-			minLength: 3,
-			delay: 200,
+			minLength: 4,
+			delay: 500,
 
 		   	// focus called when the user hilights an item by arrowing or mousing over the list 
-		   	// we needed to override this, otherwise the Id was displayed in the textbox.
+		   	// we needed to override and stop this, otherwise the Id was displayed in the textbox.
 		   	focus: function(event, ui) {
-		   		j$(this).val(ui.item.label);
 		   		return false;
-		   	},
+		   	}
 	   	});	   	
 
 		/*******************************************************************************************************
@@ -332,7 +329,7 @@
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
 		function fillAndMatchCaptainsCombo(listCapts, request, response) {
-			var strSearch = request.term.toLowerCase();	
+			var strSearch = j$.trim(request.term.toLowerCase());	
 			if (strSearch == '--all--') strSearch = '';					
  			var isMatch = false;
      		response(j$.map(listCapts, function(item) {
@@ -504,7 +501,7 @@
 			                </apex:outputPanel>
 		                </apex:pageBlockSectionItem>		
 		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-				       		<apex:outputLabel value="Table Captain" />
+				       		<apex:outputLabel value="Table Captain<br/>(or organization)" escape="false" />
 		                	<apex:outputPanel id="panelCaptains" >
 							   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
 							    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
@@ -519,7 +516,7 @@
 			</td>
 			<td style="vertical-align:top;">
 				<apex:outputPanel id="panelStatus" >				            
-		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="true" rendered="{!strStatus != null}" />  
+		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" rendered="{!strStatus != null}" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>
 	        </td>              
