@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Check Out</label>
+    <mobileReady>false</mobileReady>
+    <motif>Custom10: Moon</motif>
+    <page>AuctionCheckOut</page>
+</CustomTab>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Auction_Item_Name__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Category__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Auction_Group__c</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Auction_Item__c.Fair_Market_Value__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Minimum_Bid__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Guaranteed_Bid__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Description__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Restrictions__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Display_Board__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Donor_Recognition__c</field>
+    </columns>
+    <columns>
+        <field>Auction_Item__c.Treat_Purchase_as_Gift__c</field>
+    </columns>
+    <description>All auction items with all their information needed to created booklets, boards, etc.</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>FK_NAME</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Auction Items, Full Info</name>
+    <reportType>CustomEntity$Auction_Item__c@Auction_Item__c.Auction__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <timeFrameFilter>
+        <dateColumn>FK_$Auction__c.Auction_Date__c</dateColumn>
+        <interval>INTERVAL_PREVCURY</interval>
+    </timeFrameFilter>
+</Report>

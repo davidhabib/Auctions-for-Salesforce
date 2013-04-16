@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customObject>true</customObject>
+    <description>this standard tab isn&apos;t actually used, but needed to be set so that the New auction item page would use the correct tab style.</description>
+    <mobileReady>false</mobileReady>
+    <motif>Custom93: Shopping Cart</motif>
+</CustomTab>

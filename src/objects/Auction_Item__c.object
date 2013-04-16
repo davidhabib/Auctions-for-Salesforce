@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <content>AuctionItems</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>A purchaseable item at an auction, such as a weekend getaway, a food basket, a certificate for free exercise classes.</description>
+    <enableActivities>false</enableActivities>
+    <enableEnhancedLookup>true</enableEnhancedLookup>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <fieldSets>
+        <fullName>AuctionNewDonatedItemWizardFS</fullName>
+        <availableFields>
+            <field>FMV_Override__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>FMV_Rollup__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Treat_Purchase_as_Gift__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Fair_Market_Value__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Display_Board__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <description>Controls the Auction Item fields displayed in the lower portion of the New Donated Item Wizard.</description>
+        <displayedFields>
+            <field>Auction__c</field>
+            <isRequired>true</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Category__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Name</field>
+            <isRequired>true</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Auction_Group__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Auction_Item_Name__c</field>
+            <isRequired>true</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Minimum_Bid__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Restrictions__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Guaranteed_Bid__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Description__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Donor_Recognition__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <label>AuctionNewDonatedItemWizardFS</label>
+    </fieldSets>
+    <fields>
+        <fullName>Auction_Group__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The auction group this auction item is offered in.</inlineHelpText>
+        <label>Auction Group</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Live round 1</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Live round 2</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Silent round 1</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Silent round 2</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Auction_Item_Name__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The short name for the auction item.</inlineHelpText>
+        <label>Auction Item Name</label>
+        <length>100</length>
+        <required>true</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Auction__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The auction this item is for.</inlineHelpText>
+        <label>Auction</label>
+        <referenceTo>Auction__c</referenceTo>
+        <relationshipLabel>Auction Items</relationshipLabel>
+        <relationshipName>Auction_Items</relationshipName>
+        <required>false</required>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Category__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Category</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Children</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Excursions</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Food and Beverage</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Home and Garden</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Sporting</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The full description of the item to use in the marketing of the item (booklet, placards, etc.)</inlineHelpText>
+        <label>Description</label>
+        <length>32000</length>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Display_Board__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Does this auction item require a display board to be created for it?</inlineHelpText>
+        <label>Display Board</label>
+        <picklist>
+            <picklistValues>
+                <fullName>n/a</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Required</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Completed</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Donor_Recognition__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The donors that you want to recognize for this auction item in the marketing of this item.</inlineHelpText>
+        <label>Donor Recognition</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>FMV_Override__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>If empty, the sum of the Actual FMV&apos;s of all pieces will be used.</inlineHelpText>
+        <label>FMV Override</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>FMV_Rollup__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The FMV of all of the pieces added together</inlineHelpText>
+        <label>FMV Rollup</label>
+        <summarizedField>Auction_Item_Piece__c.Actual_FMV__c</summarizedField>
+        <summaryForeignKey>Auction_Item_Piece__c.Auction_Item__c</summaryForeignKey>
+        <summaryOperation>sum</summaryOperation>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Fair_Market_Value__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(FMV_Override__c &gt; 0, FMV_Override__c, FMV_Rollup__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>The Fair Market Value of the auction item.</inlineHelpText>
+        <label>Fair Market Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Guaranteed_Bid__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The amount that guarantees the bidder this auction item.</inlineHelpText>
+        <label>Guaranteed Bid</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Minimum_Bid__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>The minimum bid to accept for this auction item.</inlineHelpText>
+        <label>Minimum Bid</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Restrictions__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Any restrictions on the donated item, like when it is not available.</inlineHelpText>
+        <label>Restrictions</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>Treat_Purchase_as_Gift__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked, create any purchase opportunity as record type &quot;Gift&quot;, not &quot;Auction Item Purchase&quot;.</inlineHelpText>
+        <label>Treat Purchase as Gift</label>
+        <type>Checkbox</type>
+    </fields>
+    <label>Auction Item</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <label>Auction Item ID</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Auction Items</pluralLabel>
+    <searchLayouts>
+        <customTabListAdditionalFields>Auction_Item_Name__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Auction__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Category__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Auction_Group__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>Fair_Market_Value__c</customTabListAdditionalFields>
+        <lookupDialogsAdditionalFields>Auction_Item_Name__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Auction__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Category__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>Auction_Group__c</lookupDialogsAdditionalFields>
+        <searchFilterFields>NAME</searchFilterFields>
+        <searchFilterFields>Auction_Item_Name__c</searchFilterFields>
+        <searchFilterFields>Auction__c</searchFilterFields>
+        <searchFilterFields>Category__c</searchFilterFields>
+        <searchFilterFields>Auction_Group__c</searchFilterFields>
+        <searchResultsAdditionalFields>Auction_Item_Name__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Auction__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Category__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Auction_Group__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

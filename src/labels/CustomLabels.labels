@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>AuctionReceiptFooter</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>(not used)</shortDescription>
+        <value>This label was replaced by the Custom Setting Auction Receipt Footer 1 &amp; 2.</value>
+    </labels>
+    <labels>
+        <fullName>AuctionReceiptIntro</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>(not used)</shortDescription>
+        <value>This label was replaced by the Custom Setting Auction Receipt Intro 1 &amp; 2.</value>
+    </labels>
+</CustomLabels>

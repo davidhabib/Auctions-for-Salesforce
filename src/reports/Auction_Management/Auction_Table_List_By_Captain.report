@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>LAST_NAME</field>
+    </columns>
+    <columns>
+        <field>FIRST_NAME</field>
+    </columns>
+    <columns>
+        <field>MEMBER_STATUS</field>
+    </columns>
+    <columns>
+        <field>CampaignMember.Paid__c</field>
+    </columns>
+    <columns>
+        <field>CampaignMember.Is_Table_Captain__c</field>
+    </columns>
+    <columns>
+        <field>CampaignMember.Table_Name_Number__c</field>
+    </columns>
+    <columns>
+        <field>CampaignMember.Meal_Preference__c</field>
+    </columns>
+    <columns>
+        <field>CampaignMember.Bid_Number__c</field>
+    </columns>
+    <columns>
+        <field>CampaignMember.Note__c</field>
+    </columns>
+    <filter>
+        <criteriaItems>
+            <column>Campaign.Auction_Campaign_Type__c</column>
+            <operator>equals</operator>
+            <value>Auction Attendees</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Campaign.Auction__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>CampaignMember.Table_Captain__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Auction Table List, By Captain</name>
+    <params>
+        <name>scopeid</name>
+        <value></value>
+    </params>
+    <reportType>CampaignWithCampaignMembers</reportType>
+    <scope>orgActive</scope>
+    <showDetails>true</showDetails>
+</Report>
