@@ -76,7 +76,12 @@
 	            </apex:column>          
 
 	            <apex:column >
-	                <apex:outputLink value="/{!item.id}" >{!item[pageController.strNameField]}</apex:outputLink>
+	                <apex:outputLink value="/{!item.id}" rendered="{!NOT(pageController.fEditNameField)}" >{!item[pageController.strNameField]}</apex:outputLink>
+	                
+					<apex:commandLink action="{!EditItem}" value="{!item[pageController.strNameField]}" rendered="{!pageController.fEditNameField}">
+				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
+	                </apex:commandLink>	                
+	                
 					<apex:facet name="header"> 
 						<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
 							$ObjectType.GW_Auctions__Auction_Item__c.Fields[pageController.strNameField].Label,

@@ -24,6 +24,9 @@ public abstract with sharing class PageControllerBase {
 	public string strNameField { get; set; }
 	
 	public string strObjectType { get; set; }
+	
+	// whether clicking the name field should invoke the EditItem action, or just go to the object's detail page.
+	public boolean fEditNameField { get; set; }
 
 	abstract public PageReference NewItem();
 	

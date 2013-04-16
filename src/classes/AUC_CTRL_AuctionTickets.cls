@@ -7,7 +7,8 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 	public AUC_CTRL_AuctionTickets() {
 		strFields = new list<string>{'Amount', 'StageName', 'CloseDate', 'GW_Auctions__Number_of_Tickets__c' };				        	
        	strNameField = 'Name'; 	
-       	strObjectType = 'Opportunity';			
+       	strObjectType = 'Opportunity';	
+       	fEditNameField = true;		
 	}
 	
 	
