@@ -185,6 +185,26 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 	
+	// the developer field name of an optional Opportunity Payment Method field
+	// that Check Out will save into.
+	public static string strOppPaymentMethodField {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() == 0) return null;
+			return settings[0].Check_Out_Payment_Method_Field__c;
+		}
+	}
+	
+	// the developer field name of an optional Opportunity Check Number field
+	// that Check Out will save into.
+	public static string strOppCheckNumberField {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() == 0) return null;
+			return settings[0].Check_Out_Check_Number_Field__c;
+		}
+	}
+
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
