@@ -26,6 +26,25 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 
 	// private status string for reporting the results of saving.
     private String strSaveResults { get; set; } 
+    
+	// helper routine to return all Opportunity field names
+	private string strOppFields {
+		get {
+			if (strOppFields == null) {				
+				// initialize the list of all fields on Opportunity.
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
+				list<string> listStrFields = new list<string>();
+				listStrFields.addAll(mapS.keySet());  
+				strOppFields = '';
+				for (string str : listStrFields) {
+					strOppFields += 'Opportunity.' + str + ',';
+				}  		
+				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
+			}
+			return strOppFields;
+		}
+		set;
+	}    
 	
  	// the currently selected Auction 
 	public Id auctionId { get; set; }
@@ -33,6 +52,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// the list of Auctions to put in the Auction dropdown
 	public list<SelectOption> listSOAuctions { get; set; }
 	 
+	// action method called when the auction dropdown is changed.	 
 	public PageReference ChangeAuction() {
 		// clear out all state that is specific to the auction
 		auctionMaintenance.auctionId = auctionId;
@@ -50,27 +70,48 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			// first invalidate anything dependent on a change
 			if (contactIdPurchaser != value) {
 				strNamePurchaser = null;
+				strBidderNumber = null;
 				listReceipts = null;
 				strCreditCardChargeURL = null;
 				strOpenReceiptURL = null;
 				fShowPanelCreditCard = false;
+				strPaymentMethod = null;
+				strCheckNumber = null;
+				fOppsToUpdate = false;
 			}
 			contactIdPurchaser = value;
 			if (contactIdPurchaser == '') contactIdPurchaser = null; 
 		}		
 	}
 	
-	// holds the currently selected Purchaser's name	
+	// holds the currently selected Purchaser's name (and bid number)	
 	public string strNamePurchaser { 
 		get {
 			if (strNamePurchaser == null && contactIdPurchaser != null) {
 				Contact con = [select Name from Contact where Id = :contactIdPurchaser];
 				strNamePurchaser = con.Name;
+				if (strBidderNumber != null) strNamePurchaser += ' - ' + strBidderNumber; 
 			}
 			return strNamePurchaser;
 		}
 		private set;
 	}
+	
+	private string strBidderNumber {
+		get {
+			if (strBidderNumber == null && contactIdPurchaser != null) {				
+				list<CampaignMember> listCm = [select contactId, Bid_Number__c from CampaignMember 
+					where (CampaignId = :auctionMaintenance.campaignIdAuctionAttendees or
+					CampaignId = :auctionMaintenance.campaignIdAuctionTickets) 
+					and contactId = :contactIdPurchaser];
+				if (listCm.size() > 0 ) {
+					strBidderNumber = (listCm[0].Bid_Number__c == null ? '' : string.valueOf(integer.valueOf(listCm[0].Bid_Number__c)));
+				}
+			}
+			return strBidderNumber;
+		}
+		private set;		
+	} 
 			
 	// callback when the user changes the Purchaser contact lookup.
 	public PageReference ChangePurchaserLookup() {
@@ -111,7 +152,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			}
 		} else {
 			contactIdPurchaser = null;	
-			strNamePurchaser = null;		
+			strNamePurchaser = null;	
+			strBidderNumber = null;	
 		}
 		return ChangePurchaserLookup();
 	}
@@ -134,16 +176,21 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			} else if (fPurchaser && !fPurchases) {
 				strStatus = 'Guest has no purchases entered for the selected auction.';
 			} else if (fPurchaser && fPurchases) {
-				strStatus = 'Check <b>Pay Now</b> for the purchases you wish to process.';  
-				//if (strCreditCardChargeURL != null) {
-					strStatus += ' Click <b>Charge Credit Card</b> to open a new window to process payment.';
-				//}
-				strStatus += ' Select the appropriate stage value and click <b>Update</b> to complete processing.';
+				strStatus = '1. Check <b>Pay Now</b> for the purchases you wish to process.';  
+				strStatus += '<br/>2. Choose the Payment Method.';
+				if (strCreditCardChargeURL != null) {				
+					  strStatus += '&nbsp;&nbsp;<b>Credit Card</b> will open a new ' + (fShowPaymentProcessorOnPage ? 'panel' : 'window') + ' to process the charge.';
+				}
+				strStatus += '<br/>3. Click <b>Update Opportunities</b> to complete processing.';
+				strStatus += '<br/>4. Continue with next steps.';
 			}
 			return strStatus;
 		}
 		private set;
 	}
+	
+	// boolean to track when the purchaser's opportunities need to be updated
+	public boolean fOppsToUpdate { get; set; }
 
 	//==================== Purchaser Class ======================================
 	// helper class that holds a contact, and their bid number
@@ -208,6 +255,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		return listPurchaser; 
     } 	
     
+	// are there any purchase opportunities to display?
 	public Boolean fHasReceipts {
 		get {
 			if (listReceipts == null) return False;
@@ -241,15 +289,31 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// this is the core of the work.  Getting a list of Receipts for contacts who made purchases.
 	// each receipt contains a list of the opportunities for the contact.
 	// this allows us to use two apex:repeat constructs to loop through the contacts, and all of their opps.
+	// CheckOut doesn't need to handle multiple contacts, but we copied this from AuctionsReceipts which does.
 	private list<Receipt> listReceiptsForlistContactId(list<ID> listContactId) {			
 			
 			list<Receipt> listReceiptsT = new list<Receipt>();
-
-			
-			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);  
-
+			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
 	       	map<ID, Receipt> mapContactIdReceipt = new map<ID, Receipt>();
+	       	string rtPurchase = AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem;
+	       	string rtGift = AUC_AuctionMaintenance.recordtypeIdAuctionGift;
+	       	string rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
+	       	string cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
+	       	string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 
+			string strSoql = 'select contactId, contact.Name, contact.Firstname, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
+				' opportunity.RecordType.Name, ' + AUC_AuctionMaintenance.StrEscape(strOppFields) +
+				' from OpportunityContactRole ' +
+				' where IsPrimary=true and contactId in :listContactId and ' +
+					' (((opportunity.RecordTypeId = :rtPurchase or opportunity.RecordTypeId = :rtGift) ' + 
+						' and opportunity.campaignId = :cmpIdAttendees) ' +
+					' or ' +  
+					' (opportunity.RecordTypeId = :rtTicket ' +
+						' and opportunity.campaignId = :cmpIdTickets ' +
+						' and IsPrimary=true)) ' +
+					' order by contact.LastName, contact.FirstName';
+
+/*			
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
 			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name, contact.FirstName, opportunityId, opportunity.Id, 
 				opportunity.name, opportunity.Amount, opportunity.Auction_Item_Name__c, opportunity.Auction_Deductible_Amount__c, 				
@@ -263,6 +327,9 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 						and opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets
 						and IsPrimary=true)) 
 				order by contact.Name]) {
+*/
+			for (list<OpportunityContactRole> listOCR : database.query(strSoql)) {
+					
 	       
 				// now go through all the opps, and for each contact create the appropriate Receipt objects and their child opportunities.	       
 		        for (OpportunityContactRole ocr : listOCR){
@@ -294,6 +361,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	        			r.decTotalAmountPaid += opp.Amount;
 	        			if (po.IsPayNow) {
 	        				r.decTotalAmountToPay += opp.Amount;
+	        				fOppsToUpdate = true;
 	        			}
 	        		}
 					//r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
@@ -321,6 +389,20 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		strCreditCardChargeURL = null;
 	}
 			
+	// utility to count how many opps are checked.
+	private integer CountCheckOpps(list<Receipt> listR) {
+		if (listR == null) return 0;
+		integer cnt = 0;
+		for (Receipt r : listR) {
+			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
+				if (po.IsPayNow) {
+					cnt++;
+				}
+			}
+		}
+		return cnt;
+	}
+
 	//==================== Receipt Class ======================================
 	// helper class that holds a contact, and their opportunities
 	// the VF Page will iterate through a list of these that the controller provides.
@@ -349,42 +431,54 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	}
 
 	// action method called by page whenever a paynow checkbox is changed.
+	// recalc totals to pay.
 	public PageReference ChangePayNow() {
 		strSaveResults = null;
 		RecalcTotalAmountToPay(listReceipts);	
+		fOppsToUpdate = true;
 		return null;				
 	}
 	
-	// used to specify the new stage for the UpdateOppStages() action method.
-	public Opportunity oppForStage {
-		get {
-			if (oppForStage == null) {
-				oppForStage = new Opportunity(recordtypeId=AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem);
-			}
-			return oppForStage;
-		}
-		private set;
-	}
+	// parameter for ChangePayNow action method, set by page
+	public ID oppIdChecked { get; set; }
 	
+	// utility to find a specific PO in listReceipts
+	private AUC_PurchaseOpportunity POFromOppId(ID oppId) {
+		for (Receipt r : listReceipts) {
+			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
+				if (po.opp.Id == oppId) return po;
+			}
+		}
+		return null;
+	}
+
 	// public method to update all checked opportunities to 
-	// the new stage specified in StageName.
-	public PageReference UpdateOppStages() {
+	// the paid StageName, and to update Payment Method and potentially Check Number on
+	// either custom fields (specified in AuctionSettigns), or on the Payment Object of the NPSP.
+	public PageReference UpdateCheckedOpps() {
 		strSaveResults = null;
-		fShowPanelCreditCard = false;
-		if (listReceipts == null || oppForStage.StageName == '' || oppForStage.StageName == null) {
-			strSaveResults = 'Please specify the new ' + Schema.SObjectType.Opportunity.fields.StageName.label + ' to set.';
+		
+		if (CountCheckOpps(listReceipts) == 0) {
+			strSaveResults = 'You must Check off which Opportunities to update.';
 			return null;
 		}
-			    	
+		
+		fShowPanelCreditCard = false;
+		
 		list<Opportunity> listOppToUpdate = new list<Opportunity>();
 
 		for (Receipt r : listReceipts) {
 			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
 				if (po.IsPayNow) {
-					po.opp.StageName = oppForStage.StageName;
+					po.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
 					listOppToUpdate.add(po.opp);
-					// turn off PayNow
 					po.IsPayNow = false;
+					if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+						po.opp.put(AUC_AuctionConstants.strOppPaymentMethodField, strPaymentMethod);
+					}
+					if (AUC_AuctionConstants.strOppCheckNumberField != null && strPaymentMethod == 'Check') {
+						po.opp.put(AUC_AuctionConstants.strOppCheckNumberField, strCheckNumber);
+					}					
 				}
 			}
 		}
@@ -392,9 +486,32 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		// save the new stages
 		update listOppToUpdate;
 		
-		// force the totals to recalc
-		RecalcTotalAmountToPay(listReceipts);
+		// if using NPSP Payments, update payment info.
+		try {
+			list<SObject> listPayments = new list<SObject>();
+			string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+				' from npe01__OppPayment__c where npe01__Opportunity__c in :listOppToUpdate ';
+			listPayments = database.query(strSoql);
+			if (listPayments.size() > 0) {
+				for (SObject payment : listPayments) {
+					payment.put('npe01__Payment_Method__c', strPaymentMethod);
+					if (strPaymentMethod == 'Check') {
+						payment.put('npe01__Check_Reference_Number__c', strCheckNumber);
+					}
+				}
+				update listPayments;
+			}
+		} catch (Exception e) {
+			// no cleanup needed.
+		}
 		
+		// force the totals to recalc
+		//RecalcTotalAmountToPay(listReceipts);
+		// now force full reload to get all Opp fields updated
+		listReceipts = null;	
+		
+		// clear our flag
+		fOppsToUpdate = false;
 		return null;
 	}
 
@@ -427,6 +544,16 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			}			
 		}
 		private set;
+	}
+	
+	public string strPaymentMethod { get; set; }
+	public string strCheckNumber { get; set; }
+	
+	// public method called by the page when the Payment Method changes
+	public PageReference ChangePaymentMethod() {
+		// new value will be in strPaymentMethod
+		fShowPanelCreditCard = false;
+		return null;
 	}
 	
 	// public property to get the commandButton URL
@@ -506,6 +633,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// public method to show the credit card panel
 	public PageReference ShowPanelCreditCard() {
 		fShowPanelCreditCard = true;
+		strPaymentMethod = 'Credit Card';
 		return null;
 	}
 
@@ -611,9 +739,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 
 		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
     	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_PLEDGED, opp.StageName);
-		system.assert(ctrl.UpdateOppStages() == null);
-		ctrl.oppForStage.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
-		system.assert(ctrl.UpdateOppStages() == null);
+		system.assert(ctrl.UpdateCheckedOpps() == null);
 		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
     	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, opp.StageName);
 		
