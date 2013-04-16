@@ -156,7 +156,7 @@
 	});	
 	
 	/*******************************************************************************************************
-	* the work hours to do all jQueryUI initialization (specifically setting up the autocompletes).
+	* the work horse to do all jQueryUI initialization (specifically setting up the autocompletes).
 	********************************************************************************************************/
 	function myInitializeJQueryUI(strNamePurchaser) {
 	
@@ -173,13 +173,12 @@
    	 	* setup the Purchasers autocomplete textbox
 		*******************************************************************************************************/
 		j$(".clsComboPurchasers").autocomplete({
-			minLength: 3,
-			delay: 200,
+			minLength: 3, // start search at 3 since bid numbers are usually 3 digits.
+			delay: 500,
 
 		   	// focus called when the user hilights an item by arrowing or mousing over the list 
-		   	// we needed to override this, otherwise the Id was displayed in the textbox.
+		   	// we needed to override and stop this, otherwise the Id was displayed in the textbox.
 		   	focus: function(event, ui) { 
-		   		j$(this).val(ui.item.label);
 		   		return false;
 		   	},
 	   	})
@@ -224,20 +223,24 @@
 		* fill in the response with the combo's items that match.
 		*******************************************************************************************************/
 		function fillAndMatchPurchasersCombo(listP, request, response) {
-			var strSearch = request.term.toLowerCase();	
+			var strSearch = j$.trim(request.term.toLowerCase());	
 			if (strSearch == '--all--') strSearch = '';	
  			var isMatch = false;
      		response(j$.map(listP, function(item) {
      			var strLower = item.strName.toLowerCase(); 
      			var strBN = item.strBidderNumber;  
      			if (strBN == null || strBN == '') strBN = 'no bid number';		
+     			
    				if (strLower.indexOf(strSearch) >= 0 || strBN.indexOf(strSearch) >= 0) {
+
+/*** no longer do the automatch, which wasn't as appropriate when entering bid numbers.     			
 	   				// if we find the exact match, get its formal text and id.
 	   				// ideally, we'd select it, but I couldn't figure out how!
 	   				if (strLower == strSearch || strBN == strSearch) {
 	   					j$("#txtPurchasers").val(item.strName).data('Id', item.contactId);
 	   					isMatch = true;
 	   				}	   				
+***/   				
    					return {label: item.strName, value: item.contactId, bidderNumber: item.strBidderNumber };
    				}
    			}));
@@ -254,7 +257,7 @@
 		*******************************************************************************************************/
 		j$('#txtPurchasers').autocomplete("option", "select",
 			function(event, ui) {
-				j$(this).val(ui.item.label).data('Id', ui.item.value);
+				j$(this).val(ui.item.label + ' - ' + ui.item.bidderNumber).data('Id', ui.item.value);
 	   			// call the controller to update the Purchasers panel.
 	   			ChangePurchaserLookup(ui.item.value);			   		
 		   		return false;		   		 
@@ -351,23 +354,23 @@
 			    			<apex:outputLabel value="Auction" for="lbxAuctions" />
 					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
+					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
 					    			oncomplete="auctionId='{!JSENCODE(auctionId)}'; listPurchasers=null; myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />			    			
 					    		<apex:selectOptions value="{!listSOAuctions}" />
 					    	</apex:selectList>	
 						</apex:pageBlockSectionItem>
 		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-				       		<apex:outputLabel value="Guest" />
+				       		<apex:outputLabel value="Guest<br/>(name or bid number)" escape="false" />
 			                <apex:outputPanel >
 							   	<input type="text" id="txtPurchasers" class="clsCombo clsComboPurchasers ui-autocomplete-input" /> 
 							   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
 							    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
+					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
 							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
 							        <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
 							    </apex:actionFunction>
 							    <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons,panelCreditCard" 
+					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
 							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
 							        <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
 							    </apex:actionFunction>
@@ -391,29 +394,23 @@
 							<apex:pageBlockTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" 
 
 								footerClass="clsDTFooter"	
-								rules="rows" 
-								columnsWidth="20px, 260px, 220px, 200px, 80px, 70px" >
+								rules="rows" >
 		
 								<apex:column >
 								</apex:column>
 		
 								<apex:column > 
-							        <apex:facet name="header">Opportunity</apex:facet>
+							        <apex:facet name="header">{!$ObjectType.Opportunity.Label}</apex:facet>
 									<apex:outputLink value="/{!oppAP.opp.Id}" >{!oppAP.opp.Name}</apex:outputLink>
 								</apex:column>
 								
 								<apex:column > 
-							        <apex:facet name="header">Item</apex:facet>
+							        <apex:facet name="header">{!$ObjectType.Auction_Item__c.Label}</apex:facet>
 									<apex:outputText value="{!IF(oppAP.opp.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.opp.Auction_Item_Name__c, oppAP.opp.Description))}"/>
 								</apex:column>
 		
 								<apex:column >
-							        <apex:facet name="header">{!$ObjectType.Opportunity.Fields.StageName.Label}</apex:facet>
-									<apex:outputField value="{!oppAP.opp.StageName}" />
-								</apex:column>				
-								
-								<apex:column >
-							        <apex:facet name="header">Amount</apex:facet>
+							        <apex:facet name="header">{!$ObjectType.Opportunity.Fields.Amount.Label}</apex:facet>
 									<apex:outputText value="{0,Number,$#,###.##}" >
 										<apex:param value="{!oppAP.opp.Amount}" />
 									</apex:outputText>
@@ -425,12 +422,9 @@
 								</apex:column>
 		
 								<apex:column >
-									<apex:facet name="header" >Pay Now</apex:facet>
-									<apex:inputCheckbox value="{!oppAP.IsPayNow}" required="false" immediate="false" >
-							    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangePayNow}"
-							    			rerender="panelPurchases,panelButtons,panelStatus,panelCreditCard" 
-							    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
-							    	</apex:inputCheckbox>
+									<apex:facet name="header" >1. Pay Now</apex:facet>
+									<apex:inputCheckbox value="{!oppAP.IsPayNow}" rendered="{!oppAP.opp.IsClosed == false}" required="false" immediate="false" onchange="ChangePayNow('{!oppAP.opp.Id}');" />
+									<apex:outputText value="paid" rendered="{!oppAP.opp.IsClosed}" style="font-style:italic;" />
 									<Apex:facet name="footer">				
 										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="text-align:center; font-weight:bold;">
 											<apex:param value="{!receipt.decTotalAmountToPay}"/> 
@@ -438,79 +432,112 @@
 									</apex:facet>
 								</apex:column>	
 								 
+				            	<!-- additional Opportunity fields use a fieldset -->
+								<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionCheckOutFS}" var="f" >
+									<apex:column >
+										<apex:facet name="header">{!$ObjectType.Opportunity.Fields[f].Label}</apex:facet>
+				   						<apex:outputField value="{!oppAP.opp[f]}" /> 
+									</apex:column>				   						
+					  			</apex:repeat>                    	
+																
 							</apex:pageBlockTable>
 						</apex:repeat>
 					</apex:pageBlockSection>
+
+		    		<apex:actionFunction action="{!ChangePayNow}" name="ChangePayNow" status="statusLoad" 
+		    			rerender="panelPurchases,panelButtons,panelStatus" 
+		    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
+		    			 <apex:param name="param1" assignTo="{!oppIdChecked}" value="" />
+		    		</apex:actionFunction>					
 				</apex:outputPanel> 
 			      
-			    <apex:outputPanel id="panelButtons">     
-		            <apex:pageBlockSection columns="2"  >
-		                		       
-			            <apex:pageBlockSectionItem >
-			            	<apex:outputPanel >
-								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage==false}" 
-									onclick="if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
-												alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
-											} else if ({!decTotalAmountToPay} == 0) {
-												alert('Please check which items you want to pay for, before opening the payment processor.');
-											} else { 
-												window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
-											} 
-											return false;" 
-								/>&nbsp;&nbsp;							
+			    <apex:outputPanel id="panelButtons" >  
 
-								<apex:commandButton value="Charge Credit Card" rendered="{!fHasReceipts && fShowPaymentProcessorOnPage}" 
-									action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
-									onclick="if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
-												alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
-												return false;
-											} else if ({!decTotalAmountToPay} == 0) {
-												alert('Please check which items you want to pay for, before opening the payment processor.');
-												return false;
-											}"
-									oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />&nbsp;&nbsp;	
-								
-								<apex:commandButton value="View Receipt" rendered="{!fHasReceipts}"
-									onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;" />&nbsp;&nbsp;	
-								<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
-								<apex:commandButton value="Close" action="{!Close}" immediate="true" />&nbsp;&nbsp;							
-							</apex:outputPanel>
-						</apex:pageBlockSectionItem>
-						
-			            <apex:pageBlockSectionItem >
-		                	<apex:outputPanel rendered="{!fHasReceipts}">
-				    			<apex:outputLabel value="Change checked item {!$ObjectType.Opportunity.Fields.StageName.Label}s to" />
-							</apex:outputPanel>			            	
-		                	<apex:outputPanel rendered="{!fHasReceipts}"> 
-		                		<apex:inputField value="{!oppForStage.StageName}" required="false" />
-			                    <apex:commandButton value="Update" action="{!UpdateOppStages}" />
-						   	</apex:outputPanel>
-						</apex:pageBlockSectionItem>
-		            
-		                <apex:pageBlockSectionItem >
-		                </apex:pageBlockSectionItem>
+					<script>			    		
+						/*******************************************************************************************************
+						* utility to invoke the credit card payment processor
+						* NOTE: had to locate this within the outputPanel that gets refreshed, to get the current URL formula.
+						*******************************************************************************************************/
+						function displayPaymentProcessor(strPaymentMethod) {
+							if (strPaymentMethod == 'Check') {
+								ChangePaymentMethod();
+								return;
+							} else if (strPaymentMethod == 'Cash') {
+								ChangePaymentMethod();
+								return;
+							}
+							else if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
+								// assume they are charging the card outside of Salesforce.
+								ChangePaymentMethod();
+								return;
+							} else if ({!decTotalAmountToPay} == 0) {
+								alert('Please check which items you want to pay for, before opening the payment processor.');
+								return;
+							} else if ({!fShowPaymentProcessorOnPage}) { 
+								ShowPanelCreditCard();
+								return; 
+							} else { 
+								ChangePaymentMethod();
+								window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
+								return;
+							}	
+						}		
+					</script>		    		
 
+			    	<apex:actionFunction action="{!ShowPanelCreditCard}" name="ShowPanelCreditCard" status="statusLoad" 
+			    		rerender="panelButtons,panelStatus" 
+			    		oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');"  />			    		
+			    				    	   
+		            <apex:pageBlockSection title="2.  Payment Method" rendered="{!fHasReceipts}" >	
+						<apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value);" >
+							<apex:selectOption itemValue="Cash" itemLabel="Cash" />
+							<apex:selectOption itemValue="Check" itemLabel="Check" />
+							<apex:selectOption itemValue="Credit Card" itemLabel="Credit Card" />
+						</apex:selectRadio>	
+			    		<apex:actionFunction action="{!ChangePaymentMethod}" name="ChangePaymentMethod" status="statusLoad"  
+			    			rerender="panelButtons,panelStatus" 
+			    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
+			    		</apex:actionFunction>																	
+					
+						<apex:outputPanel id="panelCheck" rendered="{!strPaymentMethod == 'Check'}" >
+								<apex:outputLabel value="Check Number" style="font-weight:bold;" />&nbsp;&nbsp;&nbsp;&nbsp;
+								<apex:inputText value="{!strCheckNumber}" />
+						</apex:outputPanel>					
 					</apex:pageBlockSection>
-				</apex:outputPanel>
 
-				<apex:outputPanel id="panelCreditCard" >
-					<apex:outputPanel rendered="{!fShowPanelCreditCard}" >
-						<div class="clsLoadingPP"  >
-						  <p style="vertical-align: middle; text-align:center;" >
-							<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-							<span style="vertical-align: middle;" >Loading Payment Processor...</span>
-						  </p>
-						</div>	       				
-	       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!strCreditCardChargeURL}" />
-	       				<script>
-	       					j$('.clsLoadingPP').fadeIn();
-	       					j$('#iframePP').load(function(){   
-	       						j$('.clsLoadingPP').fadeOut();
-	       					});
-	       				</script>
-					</apex:outputPanel>
-				</apex:outputPanel>						
-				<p/>
+					<apex:outputPanel id="panelCreditCard" rendered="{!fShowPanelCreditCard}" >
+							<div class="clsLoadingPP"  >
+							  <p style="vertical-align: middle; text-align:center;" >
+								<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+								<span style="vertical-align: middle;" >Loading Payment Processor...</span>
+							  </p>
+							</div>	       				
+		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!strCreditCardChargeURL}" />
+		       				<script>
+		       					j$('.clsLoadingPP').fadeIn();
+		       					j$('#iframePP').load(function(){   
+		       						j$('.clsLoadingPP').fadeOut();
+		       					});
+		       				</script>
+					</apex:outputPanel>						
+					<p/>
+					
+					<apex:pageBlockSection title="3.  Complete Processing" collapsible="false" rendered="{!fHasReceipts}" >
+				    	<apex:commandButton value="Update Opportunities" action="{!UpdateCheckedOpps}" status="statusLoad"  
+			    			rerender="panelButtons,panelStatus,panelPurchases" 
+			    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
+					</apex:pageBlockSection>					
+	
+					<apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!fHasReceipts}" >
+						<apex:pageBlockSectionItem >
+						<apex:outputPanel >
+							<apex:commandButton value="View Receipt" onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;" />&nbsp;&nbsp;	
+							<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
+							<apex:commandButton value="Close" action="{!Close}" immediate="true" />
+						</apex:outputPanel>							
+						</apex:pageBlockSectionItem>							
+					</apex:pageBlockSection>										
+				</apex:outputPanel>				
 			</td>
 			</tr>
 			</table> 
