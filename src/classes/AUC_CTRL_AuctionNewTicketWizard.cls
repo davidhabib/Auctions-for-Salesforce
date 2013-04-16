@@ -321,6 +321,16 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         return p;
 	}
 	
+	public PageReference SaveAndClose() {
+		Save();
+		// now see if there was an error
+		if (ApexPages.hasMessages()) {
+			return null;
+		} else {
+			return Cancel();
+		}
+	}
+	
 
 	//==================== TEST METHOD(s) ======================================
 	public static testmethod void CodeCoverageTests() {

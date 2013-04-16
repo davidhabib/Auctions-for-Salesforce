@@ -40,6 +40,7 @@
         <apex:pageBlock title="{!IF(opp.Id!=null,'Edit','New') + ' Auction Ticket'}" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>
+                <apex:commandButton action="{!SaveAndClose}" value="Save & Close"/>
                 <apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strSaveResults), 'Cancel', 'Close')}" immediate="true"/>
             </apex:pageBlockButtons>      
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
