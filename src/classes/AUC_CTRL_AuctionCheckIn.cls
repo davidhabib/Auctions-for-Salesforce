@@ -185,26 +185,18 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public string idCaptain { 
 		get; 
 		set {
-			boolean fFixupAttendeeEdit = false;
-			
 			// invalidate anything dependent on a change
 			if (idCaptain != value) {
 				strNameCaptain = null;
 				listAttendees = null;
 				oppCaptain = null;
 				cmCaptain = null;
-				
-				// leave the current attendee in place if they are new and not yet saved.  
-				if (attendeeEdit != null && attendeeEdit.con != null && attendeeEdit.con.Id == null) { 
-					fFixupAttendeeEdit = true; 
-				} else {
-					attendeeEdit = null;
-				} 
 			}
 			idCaptain = value;			
 			if (idCaptain == '') idCaptain = null;
-						 
-			if (fFixupAttendeeEdit)	{
+				
+			// set the current attendee's captain and table if they are new and not yet saved.  
+			if (attendeeEdit != null && attendeeEdit.con != null && attendeeEdit.con.Id == null) { 
             	attendeeEdit.cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);	            	
 	            if (cmCaptain != null) {
 	            	attendeeEdit.cm.Table_Name_Number__c = cmCaptain.Table_Name_Number__c;
