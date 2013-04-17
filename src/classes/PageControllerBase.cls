@@ -19,6 +19,8 @@ public abstract with sharing class PageControllerBase {
 	
 	abstract public string getStrSoql();
 	
+	abstract public string getStrPageUniqueName();
+	
 	public list<string> strFields { get; set; } 
 	
 	public string strNameField { get; set; }

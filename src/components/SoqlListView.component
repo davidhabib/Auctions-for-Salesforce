@@ -17,13 +17,15 @@
 	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
 		description="the controller of the page" />
 
+	<apex:pageMessages /> 
+
 	<apex:outputText value="Select the Auction:  " />
    	<apex:selectList value="{!auctionId}" size="1" >
    		<apex:actionSupport event="onchange" rerender="panelData" status="retrieveStatus" action="{!ChangeAuction}" />
    		<apex:selectOptions value="{!listSOAuctions}" />
    	</apex:selectList>
 	<apex:actionStatus startText="  Loading..." stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" /><br/><br/>
-	
+		
 	<apex:outputPanel id="panelData" >
 		<apex:pageBlock >		
 			<div class="PagerUI">
@@ -32,13 +34,13 @@
 						<td style="vertical-align:middle;">
 							<apex:panelGrid columns="10" > 
 								<apex:outputText value="" />
-								<apex:commandLink action="{!setCon.first}" rerender="panelData" >First</apex:commandlink>
+								<apex:commandLink action="{!PagingFirst}" rerender="panelData" >First</apex:commandlink>
 								<apex:outputText value=" | " />
-								<apex:commandLink action="{!setCon.previous}" rerender="panelData" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
+								<apex:commandLink action="{!PagingPrevious}" rerender="panelData" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
 								<apex:outputText rendered="{!setCon.HasPrevious}" value=" | " />
-								<apex:commandLink action="{!setCon.next}" rerender="panelData" rendered="{!setCon.HasNext}">Next</apex:commandlink>
+								<apex:commandLink action="{!PagingNext}" rerender="panelData" rendered="{!setCon.HasNext}">Next</apex:commandlink>
 								<apex:outputText rendered="{!setCon.HasNext}" value=" | " />
-								<apex:commandLink action="{!setCon.last}" rerender="panelData" >Last</apex:commandlink>
+								<apex:commandLink action="{!PagingLast}" rerender="panelData" >Last</apex:commandlink>
 								<apex:outputText value="" />
 								<apex:outputText value="&nbsp;&nbsp;&nbsp;Page {0} of {1} &nbsp;&nbsp;({2} records)" escape="false" >
 									<apex:param value="{!setCon.PageNumber}" />
@@ -112,13 +114,13 @@
 			<div class="PagerUI">
 				<apex:panelGrid columns="10" > 
 					<apex:outputText value="" />
-					<apex:commandLink action="{!setCon.first}" rerender="panelData" >First</apex:commandlink>
+					<apex:commandLink action="{!PagingFirst}" rerender="panelData" >First</apex:commandlink>
 					<apex:outputText value=" | " />
-					<apex:commandLink action="{!setCon.previous}" rerender="panelData" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
+					<apex:commandLink action="{!PagingPrevious}" rerender="panelData" rendered="{!setCon.HasPrevious}">Previous</apex:commandlink> 
 					<apex:outputText rendered="{!setCon.HasPrevious}" value=" | " />
-					<apex:commandLink action="{!setCon.next}" rerender="panelData" rendered="{!setCon.HasNext}">Next</apex:commandlink>
+					<apex:commandLink action="{!PagingNext}" rerender="panelData" rendered="{!setCon.HasNext}">Next</apex:commandlink>
 					<apex:outputText rendered="{!setCon.HasNext}" value=" | " />
-					<apex:commandLink action="{!setCon.last}" rerender="panelData" >Last</apex:commandlink>
+					<apex:commandLink action="{!PagingLast}" rerender="panelData" >Last</apex:commandlink>
 					<apex:outputText value="" />
 					<apex:outputText value="&nbsp;&nbsp;&nbsp;Page {0} of {1} &nbsp;&nbsp;({2} records)" escape="false" >
 						<apex:param value="{!setCon.PageNumber}" />

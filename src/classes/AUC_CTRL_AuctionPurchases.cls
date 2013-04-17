@@ -10,7 +10,10 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
        	strObjectType = 'Opportunity';			
 	}
 	
-	
+	public override string getStrPageUniqueName() {
+		return 'Purchases';
+	}
+		
 	public override string getStrSoql() {	
 		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, GW_Auctions__Auction_Item_Name__c from opportunity ' +
         		'where (RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem  + '\'' + 

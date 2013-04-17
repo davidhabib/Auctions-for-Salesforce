@@ -10,7 +10,10 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
        	strNameField = 'GW_Auctions__Auction_Item_Name__c'; 	
        	strObjectType = 'GW_Auctions__Auction_Item__c';			
 	}
-	
+
+	public override string getStrPageUniqueName() {
+		return 'AuctionItems';
+	}	
 	
 	public override string getStrSoql() {	
 		string strSoql = 'select Id, GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c, GW_Auctions__Auction_Group__c, ' +

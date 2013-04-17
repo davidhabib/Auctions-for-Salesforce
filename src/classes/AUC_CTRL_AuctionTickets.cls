@@ -11,6 +11,9 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
        	fEditNameField = true;		
 	}
 	
+	public override string getStrPageUniqueName() {
+		return 'Tickets';
+	}
 	
 	public override string getStrSoql() {	
 		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, GW_Auctions__Number_of_Tickets__c from opportunity ' +

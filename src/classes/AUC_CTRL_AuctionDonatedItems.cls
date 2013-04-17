@@ -10,6 +10,10 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
        	strObjectType = 'Opportunity'; 				
 	}
 	
+	public override string getStrPageUniqueName() {
+		return 'DonatedItems';
+	}
+	
 	
 	public override string getStrSoql() {		
 		string strSoql = 'select Id, GW_Auctions__Auction_Donated_Item_Name__c, Name, Amount, CloseDate, StageName, GW_Auctions__Number_Available__c from opportunity ' + 
