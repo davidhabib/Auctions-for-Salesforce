@@ -725,8 +725,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		ctrl.searchPurchaser = 'David Test';
 		ctrl.SearchPurchaserLookup();
 		system.assertEquals(contact1.id, ctrl.contactIdPurchaser);
-		system.assertEquals('David Test', ctrl.strNamePurchaser);
-		system.assert(ctrl.strStatus.startsWith('Check <b>Pay Now</b>'));
+		system.assertEquals('David Test - ', ctrl.strNamePurchaser);
+		system.assert(ctrl.strStatus.startsWith('1. Check <b>Pay Now</b>'));
 		system.assert(ctrl.listReceipts != null);
 		system.assertEquals(1, ctrl.listReceipts.size());
 		system.assert(ctrl.listReceipts[0].listOppAuctionPurchases != null);
