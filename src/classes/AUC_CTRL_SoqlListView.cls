@@ -210,10 +210,14 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	
 	// action method to delete an item from the database.
 	public PageReference DeleteItem() {
-		if (idDeleteItem != null) {
-			database.delete(idDeleteItem);
-			idDeleteItem = null;
-			setCon = null;
+		try {
+			if (idDeleteItem != null) {
+				database.delete(idDeleteItem);
+				idDeleteItem = null;
+				setCon = null;
+			}
+		} catch (Exception ex) {
+			ApexPages.addMessages(ex);
 		}
 		return null;	
 	}
@@ -223,7 +227,12 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	
 	// action method to edit an item.  defer to the page controller.
 	public PageReference EditItem() {
-		return pageController.EditItem(idEditItem);
+		try {
+			return pageController.EditItem(idEditItem);
+		} catch (Exception ex) {
+			ApexPages.addMessages(ex);
+		}
+		return null;	
 	}
 	
 	// will hold the developer name of the field to be sorted
