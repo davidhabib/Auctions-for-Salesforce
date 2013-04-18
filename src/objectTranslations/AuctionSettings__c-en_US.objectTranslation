@@ -128,6 +128,11 @@
         <name>Payment_Processor_Window_Parameters__c</name>
     </fields>
     <fields>
+        <help><!-- If set, then Auctions will set the Account field on newly created Auction related Opportunities (Donated Items, Tickets, and Purchases).  If you are using the Non Profit Starter Pack and the 1-to-1 Account model, Auctions will automatically do this. --></help>
+        <label><!-- Set Account On New Opportunities --></label>
+        <name>Set_Account_On_New_Opportunities__c</name>
+    </fields>
+    <fields>
         <help><!-- If checked, the payment processor&apos;s terminal will be shown within the Auction page.  If not checked, the terminal will display in a new browser window or tab. --></help>
         <label><!-- Show Payment Processor On Page --></label>
         <name>Show_Payment_Processor_On_Page__c</name>

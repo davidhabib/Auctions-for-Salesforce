@@ -168,7 +168,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 	                
 		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 					// if so, we need to set the Opp's Account to make the rollups work.
-					if (AUC_AuctionConstants.isOneToOne()) {
+					if (AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
 						Contact c = [Select AccountId from Contact where Id=:apo.contactId];
 						apo.opp.AccountId = c.AccountId;
 					}

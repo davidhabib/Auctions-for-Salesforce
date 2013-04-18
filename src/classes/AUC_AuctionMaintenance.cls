@@ -117,14 +117,13 @@ public with sharing class AUC_AuctionMaintenance {
 	// used by both teh NewTicketWizard, and CheckIn.
 	public string StrOppTicketName(Id accountId, Id contactId) {
 		string strTicketOwner;
-	   	if (accountId != null) {
-	        Account acc = [select Id, Name from Account where Id = :accountId];
-			strTicketOwner = acc.Name; 
-	   	} else if (contactId != null) {
+	    if (contactId != null) {
 			Contact contact = [select Name, AccountId from Contact where Id=:contactId];
 			strTicketOwner = contact.Name;
-	   	}
-	   	
+	   	} else if (accountId != null) {
+	        Account acc = [select Id, Name from Account where Id = :accountId];
+			strTicketOwner = acc.Name; 
+	    }
 		string strAuction = AUC_AuctionMaintenance.NameOfAuctionId(auctionId);
 		// remove trailing word Auction if it's there, so we don't get "auction" auction ticket.
 		if (strAuction != null && strAuction.endsWith(' Auction')) {

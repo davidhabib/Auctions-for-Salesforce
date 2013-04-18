@@ -261,13 +261,27 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 
+	// whether to set the Account field on new opportunities
+	public static boolean fSetAccountOnNewAuctionOpps {
+		get {
+			boolean fSetAccount = false;
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() > 0) {
+				fSetAccount = settings[0].Set_Account_On_New_Opportunities__c;
+			}
+			
+			// even if the setting is off, still do this for NPSP 1:1 model
+			return (fSetAccount || AUC_AuctionConstants.isOneToOne()); 
+		}
+	}
+	
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
 
 	//From the Non Profit Starter Pack.
 	//method to tell which model we're currently in for Accounts     
-    public static boolean isOneToOne() {     	
+    private static boolean isOneToOne() {     	
     	boolean isOneToOneModel;     	
     	isOneToOneModel = false;   
     	Map<String, Schema.SObjectField> M = Schema.SObjectType.Contact.fields.getMap();

@@ -277,6 +277,14 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Set_Account_On_New_Opportunities__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>If set, then Auctions will set the Account field on newly created Auction related Opportunities (Donated Items, Tickets, and Purchases).  If you are using the Non Profit Starter Pack and the 1-to-1 Account model, Auctions will automatically do this.</inlineHelpText>
+        <label>Set Account On New Opportunities</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Show_Payment_Processor_On_Page__c</fullName>
         <defaultValue>false</defaultValue>
         <deprecated>false</deprecated>
