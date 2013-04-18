@@ -123,7 +123,7 @@
     </fields>
     <fields>
         <fullName>Fields_On_Tab_Auction_Items__c</fullName>
-        <defaultValue>&quot;GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c,	GW_Auctions__Category__c, GW_Auctions__Auction_Group__c&quot;</defaultValue>
+        <defaultValue>&quot;GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c, GW_Auctions__Category__c, GW_Auctions__Auction_Group__c&quot;</defaultValue>
         <externalId>false</externalId>
         <inlineHelpText>A comma separated list of Auction Item developer field names to display on the Auction Items tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__.</inlineHelpText>
         <label>Fields On Tab Auction Items</label>
