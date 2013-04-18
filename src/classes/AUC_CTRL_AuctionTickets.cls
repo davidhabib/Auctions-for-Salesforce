@@ -5,8 +5,8 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionTickets() {
-		strFields = new list<string>{'Amount', 'StageName', 'CloseDate', 'GW_Auctions__Number_of_Tickets__c' };				        	
-       	strNameField = 'Name'; 	
+		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabTickets;				        	
+       	strNameField = listStrFields[0];  
        	strObjectType = 'Opportunity';	
        	fEditNameField = true;		
 	}
@@ -16,8 +16,9 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 	}
 	
 	public override string getStrSoql() {	
-		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, GW_Auctions__Number_of_Tickets__c from opportunity ' +
-        		'where RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionTicket  + '\'' + 
+		string strSoql = 'select Id, ' + string.join(listStrFields, ',') + 
+				' from opportunity ' +
+        		' where RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionTicket  + '\'' + 
         		' and CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionTickets + '\'';
 		
 		if (ctrlSoqlListView.strAlphaFilter != null) {
@@ -81,7 +82,7 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 		AUC_CTRL_AuctionTickets pageCtrl = new AUC_CTRL_AuctionTickets();
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
 		compCtrl.pageController = pageCtrl;
-		system.assert(pageCtrl.strFields != null);
+		system.assert(pageCtrl.listStrFields != null);
 		system.assert(pageCtrl.strNameField != null);
 		system.assert(pageCtrl.getStrSoql() != null);
 		system.assert(pageCtrl.NewItem() != null);

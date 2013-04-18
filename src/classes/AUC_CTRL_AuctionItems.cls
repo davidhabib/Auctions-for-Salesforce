@@ -5,9 +5,8 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionItems() {
-		strFields = new list<string>{'Name', 'GW_Auctions__Fair_Market_Value__c', 
-			'GW_Auctions__Category__c', 'GW_Auctions__Auction_Group__c' };				        	
-       	strNameField = 'GW_Auctions__Auction_Item_Name__c'; 	
+		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabAuctionItems;		 		        	
+       	strNameField = listStrFields[0]; 
        	strObjectType = 'GW_Auctions__Auction_Item__c';			
 	}
 
@@ -16,15 +15,13 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 	}	
 	
 	public override string getStrSoql() {	
-		string strSoql = 'select Id, GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c, GW_Auctions__Auction_Group__c, ' +
-				'Category__c, GW_Auctions__Auction__c from GW_Auctions__Auction_Item__c ' +
+		string strSoql = 'select Id, ' + string.join(listStrFields, ',') + 
+				' from GW_Auctions__Auction_Item__c ' +
 				'where GW_Auctions__Auction__c=\'' + ctrlSoqlListView.auctionId + '\''; 
 
 		if (ctrlSoqlListView.strAlphaFilter != null) {
 			strSoql += ' and GW_Auctions__Auction_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
-		}        		
-				
-		//strSoql += ' order by GW_Auctions__Auction_Item_Name__c';        		
+		}        						
        	return strSoql;			
 	}
 
@@ -70,7 +67,7 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 		AUC_CTRL_AuctionItems pageCtrl = new AUC_CTRL_AuctionItems();
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
 		compCtrl.pageController = pageCtrl;
-		system.assert(pageCtrl.strFields != null);
+		system.assert(pageCtrl.listStrFields != null);
 		system.assert(pageCtrl.strNameField != null);
 		system.assert(pageCtrl.getStrSoql() != null);
 		system.assert(pageCtrl.NewItem() != null);

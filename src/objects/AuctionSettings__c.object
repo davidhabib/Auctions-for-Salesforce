@@ -122,6 +122,50 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Fields_On_Tab_Auction_Items__c</fullName>
+        <defaultValue>&quot;GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c,	GW_Auctions__Category__c, GW_Auctions__Auction_Group__c&quot;</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>A comma separated list of Auction Item developer field names to display on the Auction Items tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__.</inlineHelpText>
+        <label>Fields On Tab Auction Items</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fields_On_Tab_Donated_Items__c</fullName>
+        <defaultValue>&quot;GW_Auctions__Auction_Donated_Item_Name__c, Name, Amount, StageName, CloseDate, GW_Auctions__Number_Available__c&quot;</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>A comma separated list of Opportunity developer field names to display on the Donated Items tab.  Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__.</inlineHelpText>
+        <label>Fields On Tab Donated Items</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fields_On_Tab_Purchases__c</fullName>
+        <defaultValue>&quot;Name, GW_Auctions__Auction_Item_Name__c, Amount, StageName, CloseDate&quot;</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>A comma separated list of Opportunity developer field names to display on the Purchases tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__.</inlineHelpText>
+        <label>Fields On Tab Purchases</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fields_On_Tab_Tickets__c</fullName>
+        <defaultValue>&quot;Name,Amount, StageName, CloseDate, GW_Auctions__Number_of_Tickets__c&quot;</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>A comma separated list of Opportunity developer field names to display on the Tickets tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__.</inlineHelpText>
+        <label>Fields On Tab Tickets</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Number_of_Purchase_Grid_Rows__c</fullName>
         <defaultValue>10</defaultValue>
         <deprecated>false</deprecated>

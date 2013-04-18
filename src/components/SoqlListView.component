@@ -77,26 +77,8 @@
 	                </apex:commandLink>
 	            </apex:column>          
 
-	            <apex:column >
-	                <apex:outputLink value="/{!item.id}" rendered="{!NOT(pageController.fEditNameField)}" >{!item[pageController.strNameField]}</apex:outputLink>
-	                
-					<apex:commandLink action="{!EditItem}" value="{!item[pageController.strNameField]}" rendered="{!pageController.fEditNameField}">
-				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
-	                </apex:commandLink>	                
-	                
-					<apex:facet name="header"> 
-						<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
-							$ObjectType.GW_Auctions__Auction_Item__c.Fields[pageController.strNameField].Label,
-							$ObjectType.Opportunity.Fields[pageController.strNameField].Label)}" >
-							<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!pageController.strNameField}" />
-							<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol" 
-								value="{!IF(SortItemField=pageController.strNameField, IF(SortItemAsc, ' ↑' , ' ↓'), '')}" escape="false" />
-						</apex:commandLink>
-					</apex:facet>	                 
-	            </apex:column>          
-
-				<apex:repeat value="{!pageController.strFields}" var="f" > 
-					<apex:column value="{!item[f]}" >
+				<apex:repeat value="{!pageController.listStrFields}" var="f" >  
+					<apex:column >
 						<apex:facet name="header"> 
 							<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
 								$ObjectType.GW_Auctions__Auction_Item__c.Fields[f].Label,
@@ -106,6 +88,12 @@
 									value="{!IF(SortItemField=f, IF(SortItemAsc, ' ↑' , ' ↓'), '')}" escape="false" />
 							</apex:commandLink>
 						</apex:facet>
+						<!-- special case Name field to be link to view/edit object -->
+						<apex:outputField value="{!item[f]}"  rendered="{!(f <> pageController.strNameField)}" />												
+		                <apex:outputLink value="/{!item.id}" rendered="{!(f == pageController.strNameField) && NOT(pageController.fEditNameField)}" >{!item[pageController.strNameField]}</apex:outputLink>		                
+						<apex:commandLink action="{!EditItem}" value="{!item[pageController.strNameField]}" rendered="{!(f == pageController.strNameField) && pageController.fEditNameField}">
+					    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
+		                </apex:commandLink>	                
 					</apex:column> 
 	  			</apex:repeat>         
 	            	            

@@ -5,10 +5,10 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 
 	// constructor
 	public AUC_CTRL_AuctionDonatedItems() {
-		strFields = new list<string>{'Name', 'Amount', 'StageName', 'CloseDate', 'GW_Auctions__Number_Available__c'};				        	
-       	strNameField = 'GW_Auctions__Auction_Donated_Item_Name__c';
+		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabDonatedItems;				        	
+       	strNameField = listStrFields[0]; 
        	strObjectType = 'Opportunity'; 				
-	}
+	} 
 	
 	public override string getStrPageUniqueName() {
 		return 'DonatedItems';
@@ -16,9 +16,11 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 	
 	
 	public override string getStrSoql() {		
-		string strSoql = 'select Id, GW_Auctions__Auction_Donated_Item_Name__c, Name, Amount, CloseDate, StageName, GW_Auctions__Number_Available__c from opportunity ' + 
-        		'where RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem  + 
+		string strSoql = 'select Id, ' + string.join(listStrFields, ',') + 
+				' from opportunity ' + 
+        		' where RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem  + 
         		'\' and CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionDonors + '\'';
+        		
 		if (ctrlSoqlListView.strAlphaFilter != null) {
 			strSoql += ' and GW_Auctions__Auction_Donated_Item_Name__c like \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        		
@@ -67,7 +69,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 		AUC_CTRL_AuctionDonatedItems pageCtrl = new AUC_CTRL_AuctionDonatedItems();
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
 		compCtrl.pageController = pageCtrl;
-		system.assert(pageCtrl.strFields != null);
+		system.assert(pageCtrl.listStrFields != null);
 		system.assert(pageCtrl.strNameField != null);
 		system.assert(pageCtrl.getStrSoql() != null);
 		system.assert(pageCtrl.NewItem() != null);

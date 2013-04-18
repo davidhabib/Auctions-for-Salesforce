@@ -2,7 +2,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
 public with sharing virtual class ComponentControllerBase { 
-	
+	 
 	public PageControllerBase pageController { 
   		get; 
     	set {

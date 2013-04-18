@@ -5,8 +5,8 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionPurchases() {
-		strFields = new list<string>{'GW_Auctions__Auction_Item_Name__c', 'Amount', 'StageName', 'CloseDate' };				        	
-       	strNameField = 'Name'; 	
+		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabPurchases;		 		        	
+       	strNameField = listStrFields[0]; 
        	strObjectType = 'Opportunity';			
 	}
 	
@@ -15,7 +15,8 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 	}
 		
 	public override string getStrSoql() {	
-		string strSoql = 'select Id, Name, Amount, CloseDate, StageName, GW_Auctions__Auction_Item_Name__c from opportunity ' +
+		string strSoql = 'select Id, ' + string.join(listStrFields, ',') + 
+				' from opportunity ' +
         		'where (RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem  + '\'' + 
         		' or RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionGift  + '\') ' +
         		' and CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionAttendees + '\'';
@@ -73,7 +74,7 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 		AUC_CTRL_AuctionPurchases pageCtrl = new AUC_CTRL_AuctionPurchases();
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
 		compCtrl.pageController = pageCtrl;
-		system.assert(pageCtrl.strFields != null);
+		system.assert(pageCtrl.listStrFields != null);
 		system.assert(pageCtrl.strNameField != null);
 		system.assert(pageCtrl.getStrSoql() != null);
 		system.assert(pageCtrl.NewItem() != null);
