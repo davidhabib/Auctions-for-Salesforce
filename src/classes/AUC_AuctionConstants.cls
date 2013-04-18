@@ -281,7 +281,12 @@ public with sharing class AUC_AuctionConstants {
 
 	//From the Non Profit Starter Pack.
 	//method to tell which model we're currently in for Accounts     
-    private static boolean isOneToOne() {     	
+    private static boolean isOneToOne() { 
+    	
+    	/*** Kevin Bromer told me in Julyu 2012 that while this code will work, the 
+    	correct way to detect one-to-one is to look at custom settings (which I now
+    	do below.
+    	    	
     	boolean isOneToOneModel;     	
     	isOneToOneModel = false;   
     	Map<String, Schema.SObjectField> M = Schema.SObjectType.Contact.fields.getMap();
@@ -295,8 +300,38 @@ public with sharing class AUC_AuctionConstants {
     			if(pe.getValue()==ONE_TO_ONE_PROCESSOR){ isOneToOneModel = true;} 			
     		} 		
     	} 		     	
-    	return isOneToOneModel;     
+    	return isOneToOneModel;  
+    	*****/
+    	
+		// Kevin Bromer says: The npe01__Account_Processor__c field in the npe01__Contacts_And_Orgs_Settings__c 
+		// setting will either be “One-to-One” or “Individual”   
+		if (IsNPSPInstalled) {
+			string strSoql = 'Select Id, Name, npe01__Account_Processor__c From npe01__Contacts_And_Orgs_Settings__c';
+			list<SObject> listSObj = database.query(strSoql);
+			if (listSObj != null && listSObj.size() > 0) {
+				string strModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
+				if (strModel == 'One-to-One')
+					return true;			
+			}
+			return false;
+		} else {
+			return false;
+		}
     } 	
+
+	// public property to tell Auctions whether NPSP package is installed.
+	private static boolean fCheckedForNPSP = false;
+	public static boolean IsNPSPInstalled {
+		get {
+			if (!fCheckedForNPSP) {
+				Schema.SObjectType token = Schema.getGlobalDescribe().get('npe01__Contacts_And_Orgs_Settings__c');
+				IsNPSPInstalled = (token != null);
+				fCheckedForNPSP = true;
+			}
+			return IsNPSPInstalled;
+		}
+		set;
+	}
     
 	// in order to avoid duplicate contact roles being created by us and the NPSP,
 	// we have to be smart about when to do it.
@@ -317,13 +352,27 @@ public with sharing class AUC_AuctionConstants {
     // public static boolean fCreateOppContactRoles() { 
 	//    	return !isOneToOne();    	
     // }
-
+	// At some point, I found this rule not good enough for all environments (Common Ground?  newer NPSP?  other?)
+	// and so we just check for an OCR after the opp is saved, and if we don't find it, tell Auctions to create one.
     public static boolean fCreateOppContactRoles(ID oppId, ID contactId) {
     	if (oppId == null || contactId == null) return false;
     	OpportunityContactRole[] listOCR = [select Id from OpportunityContactRole where contactId=:contactId and OpportunityId=:oppId and IsPrimary=true]; 
     	return (listOCR.size() == 0);    	
     }
     
+	// public property to tell Auctions whether NPSP Householding package is installed.
+	private static boolean fCheckedForNPSPHH = false;
+	public static boolean IsNPSPHHInstalled {
+		get {
+			if (!fCheckedForNPSPHH) {
+				Schema.SObjectType token = Schema.getGlobalDescribe().get('npo02__Household__c');
+				IsNPSPHHInstalled = (token != null);
+				fCheckedForNPSPHH = true;
+			}
+			return IsNPSPHHInstalled;
+		}
+		set;
+	}
     
     // method accepts the ID of any object type and returns the full name, including prefix of the sObject
 	//type to which it belongs.
