@@ -189,8 +189,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			if (idCaptain != value) {
 				strNameCaptain = null;
 				listAttendees = null;
-				oppCaptain = null;
+				listOppCaptain = null;
 				cmCaptain = null;
+				mapTicketOppIdAttendeesLeft = null;
 			}
 			idCaptain = value;			
 			if (idCaptain == '') idCaptain = null;
@@ -242,40 +243,39 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		return null;
 	}  
 	
-	// the ticket opportunity for the currently selected Captain
-	private Opportunity oppCaptain { 
+	// the ticket opportunity(ies) for the currently selected Captain
+	private list<Opportunity> listOppCaptain { 
 		get {
-			if (oppCaptain == null) {	
+			if (listOppCaptain == null) {
+				listOppCaptain = new list<Opportunity>();
+					
 				// if we have a table captain, look for their ticket first.
 				if (idCaptain != null) {
-					list<Opportunity> listOpp;
 					if (IsCaptainContact) {
-					 	listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName, IsWon 
+					 	listOppCaptain = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName, IsWon 
 							from Opportunity 
 							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
 								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
 								and Id in (select OpportunityId from OpportunityContactRole where contactId = :idCaptain)];
 					} else {
-						listOpp = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName
+						listOppCaptain = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName
 							from Opportunity
 							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
 								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
 								and AccountId  = :idCaptain];
 					}
-					if (listOpp.size() > 0) {
-						oppCaptain = listOpp[0];
-						return oppCaptain;
+					if (listOppCaptain.size() > 0) {
+						return listOppCaptain;
 					}					
 				}
 				// if there is no ticket holder, create a new ticket opp.
-				oppCaptain = new Opportunity(
+				listOppCaptain.add(new Opportunity(
 					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
-					CampaignId = auctionMaintenance.campaignIdAuctionTickets
-				);
+					CampaignId = auctionMaintenance.campaignIdAuctionTickets));
 			} 
-			return oppCaptain;
+			return listOppCaptain;
 		}
-		private set; 
+		private set;			 
 	}  
 	
 	// the campaign member for the currently selected Captain
@@ -333,22 +333,33 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		private set;
 	}
 
+	// a map to track number of slots left for each ticket
+	private map<ID, double> mapTicketOppIdAttendeesLeft { get; set; } 
+	
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<Attendee> listAttendees {
     	get {
     		if (listAttendees == null) {
-    			listAttendees = new list<Attendee>(); 			
+    			listAttendees = new list<Attendee>(); 
+    			mapTicketOppIdAttendeesLeft = new map<ID, double>();			
     			
-    			// find any existing attendees on this ticket
-    			if (oppCaptain.Id != null) {
+    			// find any existing attendees on the captain's ticket(s)
+    			if (listOppCaptain.size() > 0 && listOppCaptain[0].Id != null) {
+    				set<ID> setTicketOppId = new set<ID>();
+					double numTickets = 0;
+    				for (Opportunity opp : listOppCaptain) {
+    					setTicketOppId.add(opp.Id);
+			    		numTickets += opp.Number_Of_Tickets__c;	
+			    		mapTicketOppIdAttendeesLeft.put(opp.Id, opp.Number_Of_Tickets__c);			    				    		
+    				}
     				
 	    			// load up their CM info.
 	    			string strSoql = 'select ' + strCMFields +
     					' from CampaignMember' + 
     					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
-    						' (GW_Auctions__Auction_Ticket_OppId__c = \'' + oppCaptain.Id + '\'';
+    						' (GW_Auctions__Auction_Ticket_OppId__c in :setTicketOppId ';
     				if (IsCaptainContact && idCaptain != null) {
-    					strSoql += 'or GW_Auctions__Table_Captain__c = \'' + AUC_AuctionMaintenance.StrEscape(idCaptain) + '\'';
+    					strSoql += ' or GW_Auctions__Table_Captain__c = :idCaptain ';
     				}
     				strSoql += ')';
     				
@@ -370,19 +381,26 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    				listAttendees.add(new Attendee(mapContactIdCM.get(con.Id), con));
 	    			}
 	    			    					
-					// create new CampaignMembers for any additional attendees on this ticket    					
-		    		double numTickets = oppCaptain.Number_Of_Tickets__c;
+					// add slots for people who specified this table captain, but aren't on the captain's ticket opp
+					for (CampaignMember cm : listCM) {
+						if (!setTicketOppId.contains(cm.GW_Auctions__Auction_Ticket_OppId__c)) {
+							numTickets++;
+						} else {
+							double cLeft = mapTicketOppIdAttendeesLeft.get(cm.GW_Auctions__Auction_Ticket_OppId__c);
+							mapTicketOppIdAttendeesLeft.put(cm.GW_Auctions__Auction_Ticket_OppId__c, cLeft - 1);
+						}
+					}
+					
+					// create new CampaignMembers for any additional attendees on this ticket  					
 		    		if (numTickets == null || numTickets == 0) numTickets = 1;
 		    		CampaignMember cmCaptain = mapContactIdCM.get(idCaptain);
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
 	                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
-	                	//cm.Status = 'RSVP Yes';
-	                	cm.Paid__c = (oppCaptain.amount != null);
+	                	cm.Paid__c = (listOppCaptain[0].amount != null);
 	                	if (cmCaptain != null) {
 	                		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
-	                	}
-	                	
+	                	}	                	
 	                	Contact con = new Contact();
 	    				listAttendees.add(new Attendee(cm, con));
 		            }
@@ -478,8 +496,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
                 	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
                 	cm.contactId = contactIdAttendee;
-                	//cm.Status = 'Checked In';
-                	cm.Paid__c = (oppCaptain.amount != null);
+                	cm.Paid__c = (listOppCaptain[0].amount != null);
                 	if (cmCaptain != null) {
                 		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
                 	}
@@ -501,7 +518,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    						// go ahead and prefill the current table captain.
 			                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
 	    					}
-	                		//cm.Status = 'Checked In';
 	    				}
 					}
                 	attendeeEdit = new Attendee(cm, con);
@@ -606,12 +622,21 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				attendeeEdit.cm.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
 			}
-			//attendeeEdit.cm.Checked_In__c = true;
 			AllowCheckedInStatus();
 			attendeeEdit.cm.Status = 'Checked In';
-			attendeeEdit.cm.Auction_Ticket_OppId__c = (fAddTicketPurchase ? oppTicketAttendee.Id : oppCaptain.Id);
 			if (fAddTicketPurchase) {
 				attendeeEdit.cm.Paid__c = true;
+				attendeeEdit.cm.Auction_Ticket_OppId__c = oppTicketAttendee.Id; 
+			} else if (attendeeEdit.cm.Auction_Ticket_OppId__c == null) {
+				// find which captain's ticket has room for this attendee
+				for (Opportunity opp : listOppCaptain) {
+					if (mapTicketOppIdAttendeesLeft.get(opp.Id) > 0) {
+						attendeeEdit.cm.Auction_Ticket_OppId__c = opp.Id;
+						attendeeEdit.cm.Paid__c = opp.Amount != null;
+						mapTicketOppIdAttendeesLeft = null; // so it will refresh
+						break;
+					}
+				}								
 			}
 			if (attendeeEdit.cm.id == null) {
 				insert attendeeEdit.cm;				
@@ -624,7 +649,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			// 4. save done, so clear our complete state
 			listAttendees = null;	
 			oppTicketAttendee = null;
-			oppCaptain = null;	
+			listOppCaptain = null;	
 			fAddTicketPurchase = false;
 			strNameAttendee = null;
 			strNameCaptain = null;
@@ -996,8 +1021,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		system.assertEquals('Another Test Account', ctrl.strNameCaptain);
 		system.assertEquals(false, ctrl.IsCaptainContact);
 		system.assertEquals(acc2.Id, ctrl.idCaptain);
-		system.assert(ctrl.oppCaptain != null);
-		system.assertEquals(ctrl.oppCaptain.Id, opp.Id);
+		system.assert(ctrl.listOppCaptain != null);
+		system.assertEquals(ctrl.listOppCaptain[0].Id, opp.Id);
 		system.debug(ctrl.listAttendees);
 		system.assertEquals(10, ctrl.listAttendees.size());
 		
