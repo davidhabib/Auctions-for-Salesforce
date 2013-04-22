@@ -159,8 +159,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
                 	cmpmbr.Paid__c = (opp.amount != null);
 	                // add the ticket purchaser as the first attendee
 	                if (i == 1) {
-	                	cmpmbr.contactId = contactRole.contactId;
-	                	cmpmbr.Is_Table_Captain__c = true;
+	                	// but make sure they aren't already an attendee
+	                	list<CampaignMember> listCmpMbr = [select Id from CampaignMember
+	                		where CampaignId = :cmpmbr.CampaignId and ContactId = :contactRole.contactId];
+	                	if (listCmpMbr.size() == 0) {	                	
+		                	cmpmbr.contactId = contactRole.contactId;
+		                	cmpmbr.Is_Table_Captain__c = true;
+	                	}
 	                } 
 	                listCmpMbrAttendees.add(cmpmbr);
 	            }
@@ -223,9 +228,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	
         	// name the opp if empty (new scenario)
         	if (opp.Name == null) {
-
-		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
-					// if so, we need to set the Opp's Account to make the rollups work.
+	            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
+				// if so, we need to set the Opp's Account to make the rollups work.
 	        	if (opp.AccountId == null && contactRole.ContactId != null && AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
 					Contact contact = [select AccountId from Contact where Id=:contactRole.ContactId];
 					opp.AccountId = contact.AccountId;
@@ -263,7 +267,12 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 					cm.CampaignId = opp.CampaignId;
 					cm.ContactId = contactRole.ContactId;
 					cm.Status = 'Donated';
-					insert cm;
+					// note that they may already be on the tickets campaign.
+					try {
+						insert cm;
+					} catch (Exception ex) {
+						// silently handle.
+					}
 				}				
 			} else {
         		update contactRole;
@@ -274,6 +283,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			// now create the Attendee CampaignMembers
 			list<CampaignMember> listCmpMbrCreate = new list<CampaignMember>();
 			list<CampaignMember> listCmpMbrUpdate = new list<CampaignMember>();
+			set<ID> setContactIdCreate = new set<ID>();
+			
 			for (CampaignMember cmpmbr : listCmpMbrAttendees) {
 				if (cmpmbr.Id != null) {
 					listCmpMbrUpdate.add(cmpmbr);					
@@ -282,23 +293,25 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 					if (cmpmbr.Bid_Number__c == null) cmpmbr.Bid_Number__c = null;	// force it so updates won't use previous value.
 					cmpmbr.Auction_Ticket_OppId__c = opp.id;
 					listCmpMbrCreate.add(cmpmbr);
+					setContactIdCreate.add(cmpmbr.ContactId);
 				}
 			}
 			
 			update listCmpMbrUpdate;
+
+			// before inserting new CM's, make sure the contacts weren't already on the Attendees campaign.
+			// if they were, go ahead and delete their previous CM, and save their new CM.
+			list<CampaignMember> listCmpMbrDelete = new list<CampaignMember>();
+			listCmpMbrDelete = [select Id from CampaignMember where CampaignId = :auctionMaintenance.campaignIdAuctionAttendees
+				and ContactId in :setContactIdCreate];
+			delete listCmpMbrDelete;
+			// now it is safe to add them			 
 			insert listCmpMbrCreate;
+			
 			strSaveResults += '  ' + String.valueOf(listCmpMbrCreate.size()) + ' contacts have been added to the auction attendee campaign.';
 			if (listCmpMbrUpdate.size() > 0) {
 				strSaveResults += '  ' + String.valueOf(listCmpMbrUpdate.size()) + ' contacts have been updated in the auction attendee campaign.'; 
-			}	
-			
-			/* save done, so clear our complete state
-			listCmpMbrAttendees = null;							 
-			opp = new Opportunity(RecordTypeId=AUC_auctionMaintenance.recordtypeIdAuctionTicket);
-			opp.CloseDate = system.Today();
-			opp.CampaignId = auctionMaintenance.campaignIdAuctionTickets;
-			contactRole = new OpportunityContactRole();
-			DECIDED to leave at current info page. */		
+			}			
 			return null;	
 			        
         } catch (Exception e) {
