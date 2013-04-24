@@ -5,6 +5,10 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 
 	// constructor
 	public AUC_CTRL_AuctionCheckOut() {
+		
+		// resolve UI defects with jQueryUI in IE10 by forcing IE into Standards mode
+		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=10');		
+				
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
 		
