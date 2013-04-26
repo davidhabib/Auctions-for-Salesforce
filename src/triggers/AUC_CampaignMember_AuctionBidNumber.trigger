@@ -59,7 +59,7 @@ trigger AUC_CampaignMember_AuctionBidNumber on CampaignMember (before insert, be
 				mapCampaignIdBidNumberToId.put(strKey, setId);	
 				// system.debug('Testing our map: just added strkey: ' + strKey + '  contactId: ' + cm.ContactId);			
 			} else if (setId.size() > 1 || !setId.contains(cm.ContactId)) { // bid number is used, and not just by this item.
-				cm.addError ('Bid Number ' + cm.Bid_Number__c + ' is already used.');
+				cm.addError ('Bid Number ' + cm.Bid_Number__c + ' is already used.  It is recommended that only one member of a Household should be given a Bid Number.');
 				// system.debug('Bid Number ' + cm.Bid_Number__c + ' is already used.');
 			}
 		}
