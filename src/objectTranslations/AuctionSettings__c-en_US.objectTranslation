@@ -49,6 +49,16 @@
         <name>Check_Out_Payment_Method_Field__c</name>
     </fields>
     <fields>
+        <help><!-- The developer name of a lookup field to households on Contacts.  If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__c.  If using Accounts for householding, specify AccountId. --></help>
+        <label><!-- Contact Household Field --></label>
+        <name>Contact_Household_Field__c</name>
+    </fields>
+    <fields>
+        <help><!-- The developer path name to the name field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.Name. If using Accounts for householding, specify Account.Name. --></help>
+        <label><!-- Contact Household Name Field --></label>
+        <name>Contact_Household_Name_Field__c</name>
+    </fields>
+    <fields>
         <help><!-- A URL that invokes the virtual terminal of a credit card processor to charge their credit card. The guest&apos;s contactId will be substituted into the URL wherever you have {0}. The amount to charge will be substituted wherever you have {1}. --></help>
         <label><!-- Credit Card Charge URL Formula --></label>
         <name>CreditCardChargeURLFormula__c</name>

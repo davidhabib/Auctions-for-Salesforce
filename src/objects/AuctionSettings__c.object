@@ -88,6 +88,26 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Contact_Household_Field__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The developer name of a lookup field to households on Contacts.  If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__c.  If using Accounts for householding, specify AccountId.</inlineHelpText>
+        <label>Contact Household Field</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Contact_Household_Name_Field__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The developer path name to the name field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.Name. If using Accounts for householding, specify Account.Name.</inlineHelpText>
+        <label>Contact Household Name Field</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>CreditCardChargeURLFormula__c</fullName>
         <deprecated>false</deprecated>
         <description>A URL that invokes the virtual terminal of a credit card processor to charge their credit card. The guest&apos;s contactId will be substituted into the URL wherever you have {0}. The amount to charge will be substituted wherever you have {1}.  See documentation for IATS and Click &amp; Pledge examples.</description>

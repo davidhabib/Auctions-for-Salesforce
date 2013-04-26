@@ -275,6 +275,35 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 	
+	// developer name of a lookup field on Contact that points to Households
+	public static string strContactHouseholdField {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() > 0) {
+				strContactHouseholdField = settings[0].Contact_Household_Field__c;
+			}
+			if (strContactHouseholdField == null && IsNPSPHHInstalled) {
+				strContactHouseholdField = 'npo02__Household__c';	
+			}
+			return strContactHouseholdField;			
+		}
+		set;
+	}
+	
+	// the developer path to the Name field on Households from Contact
+	public static string strContactHouseholdNameField {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() > 0) {
+				strContactHouseholdNameField = settings[0].Contact_Household_Name_Field__c;
+			}
+			if (strContactHouseholdNameField == null && IsNPSPHHInstalled) {
+				strContactHouseholdNameField = 'npo02__Household__r.Name';	
+			}
+			return strContactHouseholdNameField;			
+		}
+		set;
+	}
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
