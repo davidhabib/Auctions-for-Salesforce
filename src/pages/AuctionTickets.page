@@ -8,7 +8,7 @@
 	   	<apex:sectionHeader title="Auction Tickets" />      
 		<div style="text-align:center;">
 			<apex:commandButton action="{!AuctionCheckIn}" value="Auction Check In" immediate="true" />&nbsp;&nbsp;&nbsp;&nbsp;
-			<apex:commandButton action="{!AutoAssignBidNumbers}" value="Auto Assign Bid Numbers" immediate="true" />
+			<apex:commandButton action="{!AutoAssignBidNumbers}" value="Assign Bid Numbers" immediate="true" />
 		</div>
 		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
 	</apex:form>		
