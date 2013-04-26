@@ -376,10 +376,12 @@
 		    		</apex:outputText>
 		    	</p>
 		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
+				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
-				<apex:outputText value="{!receipt.strContactAddrLine2}" /></p><p/>
-				
-		    	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
+				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
+				</p><p/>
+			
+			 	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
 					<tr><td>
@@ -388,7 +390,7 @@
 					<table cellspacing="2px" >
 						<tr style="vertical-align:bottom;text-align:left; font-weight:bold; ">
 							<td>Item</td>
-							<td style="width:80px;" >Amount<br/>Paid</td>
+							<td style="width:80px;" >Amount</td>
 							<td>Fair Market<br/>Value</td>
 			            	<!-- additional Opportunity fields use a fieldset -->
 							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
@@ -464,12 +466,17 @@
     	<apex:repeat var="receipt" value="{!listReceipts2}">   	    	
 		<div style="page-break-after:{!IF(contactIdPurchaser=='', 'always', 'none')};">
 	    	<apex:outputPanel id="panelReceipt2" >		
-		    	<h2><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
-		    	<p><apex:outputText value="{0,date,MMMM d, yyyy}" >
+		    	<h2 style="text-align:center"><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
+		    	<p style="text-align:center"><apex:outputText value="{0,date,MMMM d, yyyy}" >
 		    			<apex:param value="{!receipt.dtAuction}" />
 		    		</apex:outputText>
 		    	</p>
-		    	<p>Dear {!receipt.strContactFirstName},<br/><br/>
+		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
+				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
+				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
+				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
+				</p><p/>
+			 	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
 					<tr><td>
@@ -478,7 +485,7 @@
 					<table cellspacing="2px" >
 						<tr style="vertical-align:bottom;text-align:left; font-weight:bold; ">
 							<td>Item</td>
-							<td style="width:80px;" >Amount<br/>Paid</td>
+							<td style="width:80px;" >Amount</td>
 							<td>Fair Market<br/>Value</td>
 			            	<!-- additional Opportunity fields use a fieldset -->
 							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
