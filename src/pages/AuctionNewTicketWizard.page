@@ -65,6 +65,7 @@
 
             <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
             	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
+            	<p style="font-style:italic;">Note that you can leave Bid Number empty for now, and use the Assign Bid Number button on the Tickets tab.</p>
             	<br/>
         
 				<apex:pageBlockTable value="{!listCmpMbrAttendees}" var="cmpmbr" >
