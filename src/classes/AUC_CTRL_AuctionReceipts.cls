@@ -425,7 +425,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		
 		public String strPageTitle {
 			get { 
-				return UserInfo.getOrganizationName() + ' Auction receipt for ' + strContactName;
+				return UserInfo.getOrganizationName() + ' receipt for ' + strContactName;
 			}
 		}			
 	}
