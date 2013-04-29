@@ -578,6 +578,7 @@
 					<apex:commandButton value="Close" action="{!Close}" immediate="true" />	
 					<br/><br/>														       
 					</div>
+					<apex:messages styleClass="Error" />					
 				</apex:outputPanel>  
 			</td> 
 			<td style="vertical-align:top;" >
