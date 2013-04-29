@@ -329,7 +329,17 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	       	}
 
 			string strSoql = 'select contactId, contact.Name, contact.Firstname, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
-				' opportunity.RecordType.Name, ' + AUC_AuctionMaintenance.StrEscape(strOppFields) +
+				' opportunity.RecordType.Name, '; 
+			if (AUC_AuctionConstants.strContactHouseholdField != null) {
+				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdField + ', ';
+			}
+			if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
+				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdNameField + ', ';		
+			}
+			if (AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
+				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdGreetingField + ', ';
+			}
+			strSoql += AUC_AuctionMaintenance.StrEscape(strOppFields) +
 				' from OpportunityContactRole ' +
 				' where IsPrimary=true and contactId in :listContactId and ' +
 					' (((opportunity.RecordTypeId = :rtPurchase or opportunity.RecordTypeId = :rtGift) ' + 
@@ -370,6 +380,31 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		        		r.listOppAuctionPurchases = new list<Opportunity>();
 		        		r.strContactName = ocr.Contact.Name;
 		        		r.strContactFirstName = NullStr(ocr.Contact.FirstName);
+
+		        		// use household fields instead if appropriate
+						if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
+							list<string> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
+							if (listStr.size() > 1) {
+								Contact con = ocr.contact;
+								string strRelatedObj = listStr[0].replace('__r', '__c');
+								Sobject hh = con.getSobject(strRelatedObj);
+								string strHousehold;
+								if (hh != null) strHousehold = (string)hh.get(listStr[1]);
+								if (strHousehold != null) r.strContactName = strHousehold;
+							}
+						}
+						if (AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
+							list<string> listStr = AUC_AuctionConstants.strContactHouseholdGreetingField.split('\\.', 0);
+							if (listStr.size() > 1) {
+								Contact con = ocr.contact;
+								string strRelatedObj = listStr[0].replace('__r', '__c');
+								Sobject hh = con.getSobject(strRelatedObj);
+								string strHousehold;
+								if (hh != null) strHousehold = (string)hh.get(listStr[1]);
+								if (strHousehold != null) r.strContactFirstName = strHousehold;
+							}
+						}
+
 		        		r.strContactAddrLine1 = NullStr(ocr.Contact.MailingStreet);
 		        		r.strContactAddrLine2 = NullStr(ocr.Contact.MailingCity) + (ocr.Contact.MailingCity <> null ? ', ' : '') + 
 		        			NullStr(ocr.Contact.MailingState) + '  ' + NullStr(ocr.Contact.MailingPostalCode);

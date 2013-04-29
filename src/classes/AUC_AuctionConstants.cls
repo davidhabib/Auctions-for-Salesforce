@@ -304,6 +304,22 @@ public with sharing class AUC_AuctionConstants {
 		}
 		set;
 	}
+
+	// the developer path to the Greeting field on Households from Contact
+	public static string strContactHouseholdGreetingField {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() > 0) {
+				strContactHouseholdGreetingField = settings[0].Contact_Household_Greeting_Field__c;
+			}
+			if (strContactHouseholdGreetingField == null && IsNPSPHHInstalled) {
+				strContactHouseholdGreetingField = 'npo02__Household__r.Contact_Household_Greeting_Field__c';	
+			}
+			return strContactHouseholdGreetingField;			
+		}
+		set;
+	}
+
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
