@@ -9,27 +9,27 @@
         <value>AuctionSettings</value>
     </caseValues>
     <fields>
-        <help><!-- Whether to disable the trigger that enforces unique Bid Numbers for each attendee per Auction. --></help>
+        <help><!-- Whether to disable the trigger that enforces unique Bid Numbers for each attendee per Auction.      NOTE: It is recommended that only one member of a Household should be given a Bid Number, and that this setting remain unchecked. --></help>
         <label><!-- Allow Duplicate Bid Numbers --></label>
         <name>Allow_Duplicate_Bid_Numbers__c</name>
     </fields>
     <fields>
-        <help><!-- Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters. --></help>
+        <help><!-- HTML Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters. --></help>
         <label><!-- Auction Receipts Footer 1 --></label>
         <name>Auction_Receipts_Footer_1__c</name>
     </fields>
     <fields>
-        <help><!-- Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters. --></help>
+        <help><!-- HTML Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters. --></help>
         <label><!-- Auction Receipts Footer 2 --></label>
         <name>Auction_Receipts_Footer_2__c</name>
     </fields>
     <fields>
-        <help><!-- Introductory text on the Auction Receipts report.   Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters. --></help>
+        <help><!-- Introductory HTML text on the Auction Receipts report.   Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters. --></help>
         <label><!-- Auction Receipts Intro 1 --></label>
         <name>Auction_Receipts_Intro_1__c</name>
     </fields>
     <fields>
-        <help><!-- Introductory text on the Auction Receipts report. Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters. --></help>
+        <help><!-- Introductory HTML text on the Auction Receipts report. Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters. --></help>
         <label><!-- Auction Receipts Intro 2 --></label>
         <name>Auction_Receipts_Intro_2__c</name>
     </fields>
@@ -52,6 +52,11 @@
         <help><!-- The developer name of a lookup field to households on Contacts.  If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__c.  If using Accounts for householding, specify AccountId. --></help>
         <label><!-- Contact Household Field --></label>
         <name>Contact_Household_Field__c</name>
+    </fields>
+    <fields>
+        <help><!-- The developer path name to the informal greeting field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.npo02__Informal_Greeting__c.  Used by the Auction Receipts page. --></help>
+        <label><!-- Contact Household Greeting Field --></label>
+        <name>Contact_Household_Greeting_Field__c</name>
     </fields>
     <fields>
         <help><!-- The developer path name to the name field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.Name. If using Accounts for householding, specify Account.Name. --></help>
