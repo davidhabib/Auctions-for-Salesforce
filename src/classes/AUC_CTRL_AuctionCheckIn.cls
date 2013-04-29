@@ -57,7 +57,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			} else if (fAttendee && fCaptain) {
 				strStatus = null;
 				strStatus = 'Update the guest\'s information and click <b>Save & Check In Contact</b>.<br/>Save their credit card by clicking <b>Save Credit Card</b>.' + 
-					'<br/>If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.';
+					'<br/>If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.' + 
+					'<br/><br/>It is <b>recommended</b> that only one person per household provide credit card information and have a bid number.';
 			}
 			return strStatus;
 		}
