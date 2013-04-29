@@ -6,6 +6,21 @@
 <apex:page controller="AUC_CTRL_AuctionNewPurchaseWizard" title="Auction Purchases" tabStyle="Auction_Purchases__tab">
 
 	<script>
+	
+		// eat the enter button, to prevent it from canceling or submitting the form.
+		alert('about to set enter keydown handler');
+		document.onkeydown = function(event) {
+			if (event.which == 13) {
+				// only eat it if one of our lookup listboxes doesn't have the focus.
+				if (event.target.id.indexOf('lbxLookup') == -1) {
+			    	event.preventDefault();
+			    	event.stopPropagation();
+			    	return false; // does preventDefault and stopPropagation
+			    }
+		  	}
+		};  
+	
+	
 		////////////////////////// BidNumberPicker /////////////////////////////////////////////////////
 		// the following functions and variables are used to implement the BidNumberPicker listbox.
 		// the code has assumptions about the location of HTML elements on the page.
