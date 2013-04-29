@@ -212,7 +212,7 @@
         <fullName>Bid_Number__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <inlineHelpText>The attendee&apos;s Bid Number, used to identify their purchases.</inlineHelpText>
+        <inlineHelpText>The attendee&apos;s Bid Number, used to identify their purchases.  It is recommended that only one person per household is given a Bid Number.</inlineHelpText>
         <label>Bid Number</label>
         <precision>4</precision>
         <required>false</required>
