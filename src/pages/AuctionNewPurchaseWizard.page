@@ -8,7 +8,6 @@
 	<script>
 	
 		// eat the enter button, to prevent it from canceling or submitting the form.
-		alert('about to set enter keydown handler');
 		document.onkeydown = function(event) {
 			if (event.which == 13) {
 				// only eat it if one of our lookup listboxes doesn't have the focus.
