@@ -9,11 +9,13 @@
 	
 		// eat the enter button, to prevent it from canceling or submitting the form.
 		document.onkeydown = function(event) {
-			if (event.which == 13) {
+       		if (!event) event = window.event;	// for IE	
+			if (event.keyCode == 13) { 
 				// only eat it if one of our lookup listboxes doesn't have the focus.
-				if (event.target.id.indexOf('lbxLookup') == -1) {
-			    	event.preventDefault();
-			    	event.stopPropagation();
+				var target = event.target || event.srcElement;  // to handle both IE, Firefox, Chrome
+				if (target.id.indexOf('lbxLookup') == -1) {
+			    	if(event.preventDefault) event.preventDefault();
+			    	if(event.stopPropagation) event.stopPropagation();
 			    	return false; // does preventDefault and stopPropagation
 			    }
 		  	}
