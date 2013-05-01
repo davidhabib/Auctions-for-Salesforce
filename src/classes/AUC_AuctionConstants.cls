@@ -203,63 +203,7 @@ public with sharing class AUC_AuctionConstants {
 			if (settings.size() == 0) return null;
 			return settings[0].Check_Out_Check_Number_Field__c;
 		}
-	}
-	
-	// returns a list of Opportunity Developer field names for the Donated Items tab
-	public static list<string> listStrFieldsOnTabDonatedItems {
-		get {
-			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			string str;
-			if (settings.size() > 0) {
-				str = settings[0].Fields_On_Tab_Donated_Items__c;
-			}
-			if (str == null) str = 'GW_Auctions__Auction_Donated_Item_Name__c, Name, Amount, StageName, CloseDate, GW_Auctions__Number_Available__c';
-			str = str.replace(' ', '');
-			return str.split(',', 0);		
-		}
-	}
-
-	// returns a list of Auction Item Developer field names for the Auction Items tab
-	public static list<string> listStrFieldsOnTabAuctionItems {
-		get {
-			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			string str;
-			if (settings.size() > 0) {
-				str = settings[0].Fields_On_Tab_Auction_Items__c;
-			}
-			if (str == null) str = 'GW_Auctions__Auction_Item_Name__c, Name, GW_Auctions__Fair_Market_Value__c, GW_Auctions__Category__c, GW_Auctions__Auction_Group__c';
-			str = str.replace(' ', '');
-			return str.split(',', 0);		
-		}
-	}
-
-	// returns a list of Opportunity Developer field names for the Tickets tab
-	public static list<string> listStrFieldsOnTabTickets {
-		get {
-			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			string str;
-			if (settings.size() > 0) {
-				str = settings[0].Fields_On_Tab_Tickets__c;
-			}
-			if (str == null) str = 'Name, Amount, StageName, CloseDate, GW_Auctions__Number_of_Tickets__c';
-			str = str.replace(' ', '');
-			return str.split(',', 0);		
-		}
-	}
-	
-	// returns a list of Opportunity Developer field names for the Purchases tab
-	public static list<string> listStrFieldsOnTabPurchases {
-		get {
-			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			string str;
-			if (settings.size() > 0) {
-				str = settings[0].Fields_On_Tab_Purchases__c;
-			}
-			if (str == null) str = 'Name, GW_Auctions__Auction_Item_Name__c, Amount, StageName, CloseDate';
-			str = str.replace(' ', '');
-			return str.split(',', 0);		
-		}
-	}
+	}	
 
 	// whether to set the Account field on new opportunities
 	public static boolean fSetAccountOnNewAuctionOpps {

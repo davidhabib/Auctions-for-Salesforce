@@ -5,7 +5,7 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionTickets() {
-		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabTickets;				        	
+        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionTicketsTabFS');
        	strNameField = listStrFields[0];  
        	strObjectType = 'Opportunity';	
        	fEditNameField = true;		

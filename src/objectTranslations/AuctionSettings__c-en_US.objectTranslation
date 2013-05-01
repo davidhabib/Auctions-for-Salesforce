@@ -78,26 +78,6 @@
         <name>Donated_Item_Opportunity_Stages__c</name>
     </fields>
     <fields>
-        <help><!-- A comma separated list of Auction Item developer field names to display on the Auction Items tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__. --></help>
-        <label><!-- Fields On Tab Auction Items --></label>
-        <name>Fields_On_Tab_Auction_Items__c</name>
-    </fields>
-    <fields>
-        <help><!-- A comma separated list of Opportunity developer field names to display on the Donated Items tab.  Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__. --></help>
-        <label><!-- Fields On Tab Donated Items --></label>
-        <name>Fields_On_Tab_Donated_Items__c</name>
-    </fields>
-    <fields>
-        <help><!-- A comma separated list of Opportunity developer field names to display on the Purchases tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__. --></help>
-        <label><!-- Fields On Tab Purchases --></label>
-        <name>Fields_On_Tab_Purchases__c</name>
-    </fields>
-    <fields>
-        <help><!-- A comma separated list of Opportunity developer field names to display on the Tickets tab. Note that custom fields must end in __c and Auctions package fields must start with GW_Auctions__. --></help>
-        <label><!-- Fields On Tab Tickets --></label>
-        <name>Fields_On_Tab_Tickets__c</name>
-    </fields>
-    <fields>
         <help><!-- The number of empty rows to display in the New Auction Purchases Wizard. --></help>
         <label><!-- Number of Purchase Grid Rows --></label>
         <name>Number_of_Purchase_Grid_Rows__c</name>

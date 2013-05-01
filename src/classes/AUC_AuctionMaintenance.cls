@@ -163,6 +163,26 @@ public with sharing class AUC_AuctionMaintenance {
 		if (str == null) return null;
 		return string.escapeSingleQuotes(str);
 	}
+	
+	// utility to return a list of strings from a field set.
+	public static list<string> listStrFromFieldSet(string strObject, string strFS) {
+		list<string> listStrFields = new list<string>();
+		Schema.FieldSet fs;		
+		if (strObject.equalsIgnoreCase('Opportunity')) {
+			fs = Schema.SObjectType.Opportunity.fieldSets.getMap().get(strFS);
+		} else if (strObject.equalsIgnoreCase('Auction_Item__c')) {
+			fs = Schema.SObjectType.Auction_Item__c.fieldSets.getMap().get(strFS);			
+		} else {
+			throw (new MyException('Unsupported object passed to listStrFromFieldSet().'));
+		}		
+		for(Schema.FieldSetMember f : fs.getFields()) {
+			if (f.getFieldPath().contains('.')) {
+				throw (new MyException('Auctions does not support related fields in field sets.  You can only include fields directly on the object.'));
+			}
+            listStrFields.add(f.getFieldPath());
+        }
+		return listStrFields;
+	}
 		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {

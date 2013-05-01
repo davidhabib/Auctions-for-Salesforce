@@ -3,9 +3,10 @@
 
 public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 
+	
 	// constructor
 	public AUC_CTRL_AuctionItems() {
-		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabAuctionItems;		 		        	
+        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Auction_Item__c', 'GW_Auctions__AuctionItemsTabFS');
        	strNameField = listStrFields[0]; 
        	strObjectType = 'GW_Auctions__Auction_Item__c';			
 	}

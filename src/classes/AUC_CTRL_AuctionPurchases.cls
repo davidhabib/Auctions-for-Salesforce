@@ -5,7 +5,7 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionPurchases() {
-		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabPurchases;		 		        	
+        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionPurchasesTabFS');
        	strNameField = listStrFields[0]; 
        	strObjectType = 'Opportunity';			
 	}

@@ -5,7 +5,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 
 	// constructor
 	public AUC_CTRL_AuctionDonatedItems() {
-		listStrFields = AUC_AuctionConstants.listStrFieldsOnTabDonatedItems;				        	
+        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionDonatedItemsTabFS');
        	strNameField = listStrFields[0]; 
        	strObjectType = 'Opportunity'; 				
 	} 
