@@ -23,6 +23,7 @@ public with sharing class AUC_PurchaseOpportunity {
     public string contactId { get; set; } // could not use ID, or page's submit would fail since it would try to set these to ''
     public string strBidderNumberAndName { get; set; }
     public string strAuctionItemIDAndName { get; set; }
+    public string strAmount { get; set; }  // to allow purchase page to bind to a string to detect null vs. $0.
 
     public integer BidderNumber { 
     	get {

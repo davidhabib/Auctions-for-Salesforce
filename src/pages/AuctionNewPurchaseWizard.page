@@ -239,30 +239,114 @@
 		
  
 	</script>
+	
+	<style>
+	
+		.cssTabHelpLink {
+			cursor: pointer;
+			border-style: solid;
+			border-radius: 4px;
+			border-width: 1px;
+			border-color: #DEEFF5;
+			width: 110px;
+			height: 20px; 
+			color: black;
+			vertical-align: middle;
+			text-align: center;
+			background-color: #FCFFFE;
+			margin-top: 10px;
+			margin-left: 10px;
+			margin-bottom: 10px;
+			padding-top: 4px;	
+		}
+		
+		.cssTabHelpLink .helpLink {
+			text-decoration: none;
+			color: black;
+			font-size: 105%;
+			vertical-align: bottom;
+		}
+
+		.hideHelpLink {
+			cursor: pointer;
+			color: black;
+		}
+		
+		.hideHelpLink .helpLink {
+			color: grey;
+			text-decoration: none;
+		}
+		
+		.cssHelpText {
+			background-color: mintcream;
+			border-style: solid;
+			border-width: 1px;
+			border-color: lightBlue;
+			border-radius: 10px;
+			padding-top: 5px;	
+			padding-bottom: 10px;
+			padding-left: 10px;
+			padding-right: 10px;	
+			margin-top: 10px;
+			margin-bottom: 10px;
+			margin-right: 10px;
+			margin-left: 10px;
+		}
+	
+		.clsLoading {
+			z-index: 99;
+			position: fixed;
+			top: 30%;
+			left: 30%;
+			background: lightyellow;
+			width: 400px;
+			height: 40px;		
+		}   	    	    
+	
+	</style>
 
    	<apex:sectionHeader title="Auction Purchases" />      
     <apex:form >
 
-		<apex:outputPanel id="panelDebugging" rendered="false">
-	    	<apex:outputText value="{!campaignIdAuctionAttendees}" id="txtAuctionAttendeeCampaignID" Style="color:red;" /><br/>
-    		<apex:outputText value="{!auctionId}" id="txtAuctionID" Style="color:red;" /><br/>
-		</apex:outputPanel>
-    	    	 
 		<apex:outputPanel id="panelPurchases"  >
-            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!auctionId==null}" />  
-	        <apex:pageBlock title="Auction Purchases to be Created" rendered="{!auctionId!=null}"  mode="edit">
+            <apex:pageMessage summary="{!strSaveResults}" severity="error" strength="2" rendered="{!auctionId==null}" />
+	        <apex:pageBlock title="New Auction Purchases" rendered="{!auctionId!=null}"  mode="edit"> 
 		        <apex:pageBlockButtons >
-			       	<apex:commandButton action="{!createAuctionPurchases}" value="Save" reRender="panelPurchases" status="retrieveCreateStatus" id="btnCreate" immediate="false" />
+			       	<apex:commandButton action="{!createAuctionPurchases}" value="Save" reRender="panelPurchases" status="statusLoading" id="btnCreate" immediate="false" />
                 	<apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strSaveResults), 'Cancel', 'Close')}"  immediate="true"/>
-		        </apex:pageBlockButtons>        								
+		        </apex:pageBlockButtons>  
+		        
+       			<apex:actionStatus id="statusLoading" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
+				<div class="loading clsLoading" id="divLoading" style="display:none" >
+				  <p style="vertical-align: middle;" >
+					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+					<span class="loadingText" style="vertical-align: middle;" >Saving...</span>
+				  </p>
+				</div>        				            					            
+		        
 		    	<apex:outputText value="There are no attendees for this auction." rendered="{!auctionId!=null && campaignIdAuctionAttendees==null}" Style="color:red;" />
-				<apex:actionStatus layout="block" startText="Saving...." stopText="" id="retrieveCreateStatus" startStyle="color:green; font-style:italic" stopStyle="color:black;"/>
 	            <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
-	            <apex:pageMessages showDetail="true" />
-	            <br/> 
-	            <apex:outputText value="Enter the Bid Number(s) and Auction Item ID(s) directly, or click on the dropdown button to choose them." style="font-style:italic" /><br/>             
-				<br/>
-		
+	            <apex:pageMessages />
+		        
+	 			<div class="cssTabHelpLink" id="linkHelp">
+		  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+						<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+					</a>
+				</div>
+		   		<div id="divHelp" class="cssHelpText" style="display:none" >
+		       		<div class="hideHelpLink">	       			
+						<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+							<img src="/img/arrowDown.gif" />Hide
+						</a>
+					</div>
+					<ul>
+					<li>Enter the Bid Number and Auction Item ID directly and enter Tab to have them do an auto lookup, or click on the dropdown button to choose from the list.</li>  	   		
+					<li>Do not check items Paid, unless you have already received payment.</li>
+					<li>You can control how many rows are displayed by using the custom setting <b>Number of Purchase Grid Rows</b></li>
+					<li>You can add additional Opportunity fields to the grid using the Opportunity Field Set <b>AuctionNewPurchaseWizardFS</b></li>
+					</ul>
+		  		</div>
+		        
 		    	<!-- the hidden listbox of attendees and their bid numbers -->
 		    	<apex:selectList id="lbxLookupBidNumber" size="8" onclick="OnClickLbxLookupBidNumber(this);" onkeypress="OnKeyPressLbxLookupBidNumber(event, this);" style="visibility:hidden;display:none" required="false" >
 		    		<apex:selectOptions value="{!listSOLookupBidNumbers}" />
@@ -292,7 +376,7 @@
 					</apex:column>					
 					<apex:column >					
 						<apex:facet name="header">Amount</apex:facet>
-						<apex:inputText value="{!apo.opp.Amount}" required="false" style="width:80px" />
+						<apex:inputText value="{!apo.strAmount}" required="false" style="width:80px" />
 					</apex:column>
 					<apex:column >
 						<apex:facet name="header">Paid</apex:facet>

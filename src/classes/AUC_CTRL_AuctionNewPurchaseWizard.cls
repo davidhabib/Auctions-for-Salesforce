@@ -62,7 +62,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			listSOLookupBidNumbers.add(new SelectOption('', ''));
 			integer cCM = 0;
 			for (list<CampaignMember> listCM : [select Bid_Number__c, Contact.Name, Contact.Id, Id from CampaignMember 
-					where CampaignId=:auctionMaintenance.campaignIdAuctionAttendees and contactId<>null and Status<>'RSVP No' order by Contact.LastName, Contact.FirstName]) {
+					where CampaignId=:campaignIdAuctionAttendees and contactId<>null and Status<>'RSVP No' order by Contact.LastName, Contact.FirstName]) {
 				for (CampaignMember cm : listCM) {
 					String strBidNumber = (cm.Bid_Number__c == null ? '' : string.valueOf(integer.valueOf(cm.Bid_Number__c)));
 					cCM++;
@@ -72,7 +72,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 						if (listSOLookupBidNumbers2 == null) listSOLookupBidNumbers2 = new list<SelectOption>();
 						listSOLookupBidNumbers2.add(new SelectOption(cm.Contact.Id, strBidNumber + ': ' + cm.Contact.Name));						
 					} else {
-						strSaveResults = 'This page can only display the first 2000 contacts from the Attendees campaign whose status is different than  "RSVP No". ' +
+						strSaveResults = 'This page can only display the first 2000 contacts from the Attendees campaign whose status is different than "RSVP No". ' +
 							' You should change the status of non-attendees to "RSVP No" in order to have this page list all the contacts who actually attended.';
 						return listSOLookupBidNumbers;					
 					}
@@ -93,8 +93,10 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			listSOLookupAuctionItems = new list<SelectOption>();
 			listSOLookupAuctionItems.add(new SelectOption('', ''));
 			integer cCM = 0;
+					
 			for (list<Auction_Item__c> listAI : [select Id, Name, Auction_Item_Name__c from Auction_Item__c 
-				where Auction__c=:auctionId order by Name, Auction_Item_Name__c]) {
+				where (Auction__c = :auctionId and (Id not in :setAuctionItemIdPurchased or Allow_Multiple_Purchases__c = true))
+					order by Name, Auction_Item_Name__c]) {
 				for (Auction_Item__c ai : listAI) {
 					cCM++;
 					if (cCM < 1000) {
@@ -118,7 +120,25 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 
 	// status string for reporting the results of saving.
     public String strSaveResults { get; set; }
-      
+    
+	// the set of items already purchased 
+	private set<ID> setAuctionItemIdPurchased {
+		get {
+			if (setAuctionItemIdPurchased == null) {
+				// see what has already been purchased
+				list<Opportunity> listPurchaseOpp = [select Auction_Item_Purchased__c from Opportunity 
+					where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionPurchasedItem 
+						and campaignId = :campaignIdAuctionAttendees];
+				setAuctionItemIdPurchased = new set<ID>();
+				for (Opportunity opp : listPurchaseOpp) {
+					setAuctionItemIdPurchased.add(opp.Auction_Item_Purchased__c);
+				}						
+			}
+			return setAuctionItemIdPurchased;
+		}
+		set;
+	}
+         
     // The list of new Auction Purchased Items to create (opps).
     private list<AUC_PurchaseOpportunity> listAuctionPurchasedItems = new list<AUC_PurchaseOpportunity>();
     
@@ -127,12 +147,14 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
             for (integer i = 0; i < AUC_AuctionConstants.CROWS_PURCHASE_GRID; i++) { 
                 AUC_PurchaseOpportunity apo = new AUC_PurchaseOpportunity();
                 apo.opp.CloseDate = system.today();
-                apo.IsPayNow = true; // Paid checkbox default to true.
+                apo.IsPayNow = false; // no longer have Paid checkbox default to true.
                 listAuctionPurchasedItems.add(apo);
             } 
         }
         return listAuctionPurchasedItems;
     }     
+ 
+ 	private class MyException extends Exception {}
  
     //create the new Auction Purchases
     public PageReference CreateAuctionPurchases() {
@@ -148,10 +170,27 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
                 double BidderNum = apo.BidderNumber;
                 //Contact c = mapBidders.get(BidderNum);
                 //Auction_Item__c item = mapAuctionItems.get(apo.strAuctionItemID);
-                if (apo.contactId != null && apo.contactId != '' && apo.opp.Auction_Item_Purchased__c != null && apo.opp.Amount > 0) {
+                if (apo.contactId != null && apo.contactId != '' && apo.opp.Auction_Item_Purchased__c != null) {
+                	
+                	// ensure Amount specified (allowing 0)
+                	if (apo.strAmount == null || apo.strAmount == '') {
+                		throw (new MyException('Amount not specified'));
+                	}
+                	apo.opp.Amount = decimal.valueOf(apo.strAmount);
+                	
                 	string strOppTypeName;
-                	apo.opp.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-                	Auction_Item__c item = [select Id, Treat_Purchase_as_Gift__c, Fair_Market_Value__c, Description__c, Restrictions__c from Auction_Item__c where Id = :apo.opp.Auction_Item_Purchased__c];
+                	apo.opp.campaignId = campaignIdAuctionAttendees;
+                	Auction_Item__c item = [select Id, Name, Auction_Item_Name__c, Allow_Multiple_Purchases__c, 
+                		Treat_Purchase_as_Gift__c, Fair_Market_Value__c, Description__c, Restrictions__c 
+                		from Auction_Item__c 
+                		where Id = :apo.opp.Auction_Item_Purchased__c];
+
+                	// prevent duplicate purchases
+                	if (setAuctionItemIdPurchased.contains(item.Id) && item.Allow_Multiple_Purchases__c == false)  {
+                		throw (new MyException(item.Name + ': ' + item.Auction_Item_Name__c + ' has already been purchased.'));                		
+                	}
+                	setAuctionItemIdPurchased.add(item.Id);
+
                 	if (item.Treat_Purchase_as_Gift__c) {
 		                apo.opp.RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionGift;
 		                strOppTypeName = AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionGift;
@@ -211,11 +250,14 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
         		}
         	}
         	strSaveResults = 'Successfully saved ' + cOpps + ' auction purchase(s).';      
-            listAuctionPurchasedItems.clear();     
+            listAuctionPurchasedItems.clear();  
+            setAuctionItemIdPurchased = null;   
+            listSOLookupAuctionItems = null;
             
         } catch (Exception e) {
             strSaveResults = 'Error encountered while trying to save auction purchases.  ';
-            strSaveResults += e.getMessage();
+            ApexPages.addMessages(e);                        
+            setAuctionItemIdPurchased = null;   
             return null;
         }
                 
