@@ -405,20 +405,22 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		listAPO[0].contactId = contact.Id;
 		listAPO[0].strAuctionItemIDAndName = strAIName + ': ' + auctionitem.Auction_Item_Name__c;
 		listAPO[0].opp.Auction_Item_Purchased__c = auctionitem.Id;
-		listAPO[0].opp.Amount = 99;
+		listAPO[0].strAmount = '99';
 		listAPO[0].IsPayNow = false;
 		listAPO[0].opp.CloseDate = date.valueof('2049-12-31');
-		listAPO[1].strBidderNumberAndName = '456: invalid number';
-		listAPO[1].strAuctionItemIDAndName = 'not there';
+		//listAPO[1].strBidderNumberAndName = '456: invalid number';
+		//listAPO[1].strAuctionItemIDAndName = 'not there';
 		
 		//controller.LoadBidder();
 		//controller.LoadAuctionItem();
 		system.AssertEquals('Johnny Test', listAPO[0].strBidderName);
 		system.AssertEquals('Test Auction item', listAPO[0].strAuctionItemName);
-		system.AssertEquals('invalid number', listAPO[1].strBidderName);
-		system.AssertEquals('not there', listAPO[1].strAuctionItemName);
+		//system.AssertEquals('invalid number', listAPO[1].strBidderName);
+		//system.AssertEquals('not there', listAPO[1].strAuctionItemName);
 		
 		// do the save and validate it works
+		//listAPO[1].strBidderNumberAndName = null;
+		//listAPO[1].strAuctionItemIDAndName = null;
 		controller.CreateAuctionPurchases();
 		System.AssertEquals('Successfully saved 1 auction purchase(s).', controller.strSaveResults);
 		list<Opportunity> auctionpurchases = [select Amount, Auction_Item_Name__c from Opportunity where CloseDate=:date.valueof('2049-12-31')];
