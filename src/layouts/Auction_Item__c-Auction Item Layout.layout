@@ -39,6 +39,10 @@
                 <behavior>Edit</behavior>
                 <field>Donor_Recognition__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Allow_Multiple_Purchases__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

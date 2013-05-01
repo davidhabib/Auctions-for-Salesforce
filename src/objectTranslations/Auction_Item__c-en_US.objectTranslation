@@ -9,6 +9,11 @@
         <value>Auction Items</value>
     </caseValues>
     <fields>
+        <help><!-- Check if you want the Auction Purchases page to allow this item to be purchased multiple times. --></help>
+        <label><!-- Allow Multiple Purchases --></label>
+        <name>Allow_Multiple_Purchases__c</name>
+    </fields>
+    <fields>
         <help><!-- The auction group this auction item is offered in. --></help>
         <label><!-- Auction Group --></label>
         <name>Auction_Group__c</name>
