@@ -532,7 +532,7 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Auction_Donated_Item_Name__c</field>
+            <field>Type</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -691,11 +691,11 @@
             <field>TotalOpportunityQuantity</field>
             <isRequired>false</isRequired>
         </availableFields>
-        <description>the set of fields to display in the New Purchase wizard.</description>
-        <displayedFields>
-            <field>Type</field>
+        <availableFields>
+            <field>Auction_Donated_Item_Name__c</field>
             <isRequired>false</isRequired>
-        </displayedFields>
+        </availableFields>
+        <description>the set of fields to display in the New Purchase wizard.</description>
         <label>AuctionNewPurchaseWizardFS</label>
     </fieldSets>
     <fieldSets>
