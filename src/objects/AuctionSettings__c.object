@@ -197,7 +197,7 @@
     </fields>
     <fields>
         <fullName>Number_of_Purchase_Grid_Rows__c</fullName>
-        <defaultValue>10</defaultValue>
+        <defaultValue>15</defaultValue>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The number of empty rows to display in the New Auction Purchases Wizard.</inlineHelpText>
