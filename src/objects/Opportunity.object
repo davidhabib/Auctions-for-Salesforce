@@ -1311,6 +1311,11 @@ IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductibl
     </fields>
     <listViews>
         <fullName>AllOpportunities</fullName>
+        <columns>OPPORTUNITY.NAME</columns>
+        <columns>OPPORTUNITY.RECORDTYPE</columns>
+        <columns>OPPORTUNITY.AMOUNT</columns>
+        <columns>ACCOUNT.NAME</columns>
+        <columns>OPPORTUNITY.STAGE_NAME</columns>
         <filterScope>Everything</filterScope>
         <label>All Opportunities</label>
     </listViews>
@@ -1417,7 +1422,7 @@ IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductibl
         <fullName>GW_Auction_Donated_Item</fullName>
         <active>true</active>
         <businessProcess>Auctions</businessProcess>
-        <description>Groundwire Auction Donated Item</description>
+        <description>Auction Donated Item</description>
         <label>GW Auction Donated Item</label>
         <picklistValues>
             <picklist>Delivery_Status__c</picklist>
@@ -1492,7 +1497,7 @@ IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductibl
         <fullName>GW_Auction_Purchased_Item</fullName>
         <active>true</active>
         <businessProcess>Auctions</businessProcess>
-        <description>Groundwire Auction Purchased Item</description>
+        <description>Auction Purchased Item</description>
         <label>GW Auction Purchased Item</label>
         <picklistValues>
             <picklist>Delivery_Status__c</picklist>
@@ -1579,7 +1584,7 @@ IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductibl
         <fullName>GW_Auction_Ticket</fullName>
         <active>true</active>
         <businessProcess>Auctions</businessProcess>
-        <description>Groundwire Auction Ticket</description>
+        <description>Auction Ticket</description>
         <label>GW Auction Ticket</label>
         <picklistValues>
             <picklist>Delivery_Status__c</picklist>
