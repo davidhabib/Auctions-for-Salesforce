@@ -84,7 +84,7 @@ public with sharing class AUC_AuctionConstants {
 	public static integer CROWS_PURCHASE_GRID {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 10;
+			if (settings.size() == 0) return 15;
 			double db = settings[0].Number_of_Purchase_Grid_Rows__c;
 			return db.intValue();
 		}
