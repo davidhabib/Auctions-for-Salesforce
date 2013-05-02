@@ -205,15 +205,13 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	}
 	
 	// helper routine to return all Opportunity field names from the Field Set
-	// (which of course we currently can't get in Apex, so get them all!!)
 	private string strOppFields {
 		get {
 			if (strOppFields == null) {
 				
 				// initialize the list of all fields on Opportunity.
 				// ideally, we'd only include the fields in the Field Set,
-				// but Apex currently has no way to see what those are.
-				// so for now, we just include all fields on Opportunity.
+				// but our page needs multiple opp fields, so it is easier to get them all.
 				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
 				list<string> listStrFields = new list<string>();
 				listStrFields.addAll(mapS.keySet());  
