@@ -36,6 +36,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		get {
 			if (strOppFields == null) {				
 				// initialize the list of all fields on Opportunity.
+				// we could have just queried the field set, but our page also looks at
+				// multiple other Opp fields, so it is easiest to just get them all.
 				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
 				list<string> listStrFields = new list<string>();
 				listStrFields.addAll(mapS.keySet());  
