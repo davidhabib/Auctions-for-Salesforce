@@ -5,11 +5,6 @@
 
 <apex:page controller="AUC_CTRL_AuctionAutoBidNumbers" title="Auction Bid Numbers"  >
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	    var j$ = jQuery.noConflict();
-	</script>
-	
 	<style>
 	    .Error { 
 	    	color: red; 
@@ -57,7 +52,7 @@
 				</apex:pageBlockSectionItem>							
 
 				<apex:pageBlockSectionItem />  
-       			<apex:actionStatus id="statusLoading" onstart="j$('.loading').show();" onstop="j$('.loading').hide();" />       			
+       			<apex:actionStatus id="statusLoading" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
 				<div class="loading clsLoading" id="divLoading" style="display:none" >
 				  <p style="vertical-align: middle;" >
 					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
