@@ -313,8 +313,11 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					string rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
 					string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 					
-					string strSoql = 'select Id, ' + strOppFields +
-					' from OpportunityContactRole ' +
+					string strSoql = 'select Id';
+					for (string str : AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionCheckInFS')) {
+						strSoql += ', Opportunity.' + str;
+					}
+					strSoql += ' from OpportunityContactRole ' +
 					' where IsPrimary=true and contactId = :contactIdAttendee and ' +
 						' opportunity.RecordTypeId = :rtTicket and opportunity.campaignId = :cmpIdTickets';			
 				
@@ -418,23 +421,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     } 	
 
 	// helper routine to return all Contact field names from the Field Set
-	// (which of course we currently can't get in Apex, so get them all!!)
 	private string strContactFields {
 		get {
 			if (strContactFields == null) {
+				strContactFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS');
 				
-				// initialize the list of all fields on Contact.
-				// ideally, we'd only include the fields in the Field Set,
-				// but Apex currently has no way to see what those are.
-				// so for now, we just include all fields on Contact.
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Contact.fields.getMap();
-				list<string> listStrFields = new list<string>();
-				listStrFields.addAll(mapS.keySet());  
-				strContactFields = '';
-				for (string str : listStrFields) {
-					strContactFields += str + ',';
-				}  		
-				strContactFields = strContactFields.substring(0, strContactFields.length()-1);
+				// make sure Name field that is used in Guests datatable is included.
+				if (!strContactFields.contains(' Name,')) strContactFields += ', Name';
 			}
 			return strContactFields;
 		}
@@ -442,15 +435,11 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 	
 	// helper routine to return all CampaignMember field names from the Field Set
-	// (which of course we currently can't get in Apex, so get them all!!)
+	// we could optimize this to use fieldset api, but the CM fields are used
+	// in two places that may require different fields.  so its easiest to just load them all.
 	private string strCMFields {
 		get {
 			if (strCMFields == null) {
-				
-				// initialize the list of all fields on Contact.
-				// ideally, we'd only include the fields in the Field Set,
-				// but Apex currently has no way to see what those are.
-				// so for now, we just include all fields on Contact.
 				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.CampaignMember.fields.getMap();
 				list<string> listStrFields = new list<string>();
 				listStrFields.addAll(mapS.keySet());  
@@ -461,30 +450,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				strCMFields = strCMFields.substring(0, strCMFields.length()-1);
 			}
 			return strCMFields;
-		}
-		set;
-	}
-
-	// helper routine to return all Opportunity field names from the Field Set
-	// (which of course we currently can't get in Apex, so get them all!!)
-	private string strOppFields {
-		get {
-			if (strOppFields == null) {
-				
-				// initialize the list of all fields on Opportunity.
-				// ideally, we'd only include the fields in the Field Set,
-				// but Apex currently has no way to see what those are.
-				// so for now, we just include all fields on Opportunity.
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
-				list<string> listStrFields = new list<string>();
-				listStrFields.addAll(mapS.keySet());  
-				strOppFields = '';
-				for (string str : listStrFields) {
-					strOppFields += 'Opportunity.' + str + ',';
-				}  		
-				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
-			}
-			return strOppFields;
 		}
 		set;
 	}
