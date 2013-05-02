@@ -167,21 +167,27 @@ public with sharing class AUC_AuctionMaintenance {
 	// utility to return a list of strings from a field set.
 	public static list<string> listStrFromFieldSet(string strObject, string strFS) {
 		list<string> listStrFields = new list<string>();
-		Schema.FieldSet fs;		
-		if (strObject.equalsIgnoreCase('Opportunity')) {
-			fs = Schema.SObjectType.Opportunity.fieldSets.getMap().get(strFS);
-		} else if (strObject.equalsIgnoreCase('Auction_Item__c')) {
-			fs = Schema.SObjectType.Auction_Item__c.fieldSets.getMap().get(strFS);			
-		} else {
-			throw (new MyException('Unsupported object passed to listStrFromFieldSet().'));
-		}		
+		Schema.SObjectType targetType = Schema.getGlobalDescribe().get(strObject);
+		Schema.DescribeSObjectResult d = targetType.getDescribe(); 
+		Schema.FieldSet fs = d.fieldSets.getMap().get(strFS);		
+
 		for(Schema.FieldSetMember f : fs.getFields()) {
 			if (f.getFieldPath().contains('.')) {
-				throw (new MyException('Auctions does not support related fields in field sets.  You can only include fields directly on the object.'));
+				throw (new MyException('Auctions does not support related field \'' + f.getFieldPath() + 
+					'\' in field set \'' + strFS + '\'.  You can only include fields directly on object \'' + strObject + '\'.'));
 			}
             listStrFields.add(f.getFieldPath());
         }
 		return listStrFields;
+	}
+	
+	// utility to return a comma separated string of field names from a field set
+	public static string strFieldNamesFromFieldSet(string strObject, string strFS) {
+		string strFields = '';
+		for (string str : listStrFromFieldSet(strObject, strFS)) {
+			strFields += str + ',';
+		}  		
+		return strFields.substring(0, strFields.length()-1);		
 	}
 		
 	//==================== TEST METHOD(s) ======================================
