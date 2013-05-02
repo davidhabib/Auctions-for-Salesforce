@@ -69,23 +69,17 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	public OpportunityContactRole contactRole { get; set; }
 	
 	// helper routine to return all Opportunity field names from the Field Set
-	// (which of course we currently can't get in Apex, so get them all!!)
 	private string strOppFields {
 		get {
 			if (strOppFields == null) {
-				
-				// initialize the list of all fields on Opportunity.
-				// ideally, we'd only include the fields in the Field Set,
-				// but Apex currently has no way to see what those are.
-				// so for now, we just include all fields on Opportunity.
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
-				list<string> listStrFields = new list<string>();
-				listStrFields.addAll(mapS.keySet());  
-				strOppFields = '';
-				for (string str : listStrFields) {
-					strOppFields += str + ',';
-				}  		
-				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
+				strOppFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Opportunity', 'GW_Auctions__AuctionNewTicketWizardFS');
+
+				// make sure Name field is included.
+				if (!strOppFields.contains(' Name,')) strOppFields += ', Name';
+
+				// make sure Number Of Tickets field is included.
+				if (!strOppFields.contains(' Number_of_Tickets__c,')) strOppFields += ', Number_of_Tickets__c';
+
 			}
 			return strOppFields;
 		}
@@ -93,23 +87,10 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 		
 	// helper routine to return all CampaignMember field names from the Field Set
-	// (which of course we currently can't get in Apex, so get them all!!)
 	private string strCMFields {
 		get {
 			if (strCMFields == null) {
-				
-				// initialize the list of all fields on Contact.
-				// ideally, we'd only include the fields in the Field Set,
-				// but Apex currently has no way to see what those are.
-				// so for now, we just include all fields on Contact.
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.CampaignMember.fields.getMap();
-				list<string> listStrFields = new list<string>();
-				listStrFields.addAll(mapS.keySet());  
-				strCMFields = '';
-				for (string str : listStrFields) {
-					strCMFields += str + ',';
-				}  		
-				strCMFields = strCMFields.substring(0, strCMFields.length()-1);
+				strCMFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('CampaignMember', 'GW_Auctions__AuctionNewTicketWizardFS');
 			}
 			return strCMFields;
 		}
