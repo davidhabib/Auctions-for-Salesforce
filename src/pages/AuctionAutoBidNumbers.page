@@ -19,9 +19,61 @@
 			background: lightyellow;
 			width: 400px;
 			height: 40px;		
-		}   	    	    
-    </style>
+		} 
+        
+		.cssTabHelpLink {
+			cursor: pointer;
+			border-style: solid;
+			border-radius: 4px;
+			border-width: 1px;
+			border-color: #DEEFF5;
+			width: 110px;
+			height: 20px; 
+			color: black;
+			vertical-align: middle;
+			text-align: center;
+			background-color: #FCFFFE;
+			margin-top: 10px;
+			margin-left: 10px;
+			margin-bottom: 10px;
+			padding-top: 4px;	
+		}
+		
+		.cssTabHelpLink .helpLink {
+			text-decoration: none;
+			color: black;
+			font-size: 105%;
+			vertical-align: bottom;
+		}
+
+		.hideHelpLink {
+			cursor: pointer;
+			color: black;
+		}
+		
+		.hideHelpLink .helpLink {
+			color: grey;
+			text-decoration: none;
+		}
+		
+		.cssHelpText {
+			background-color: mintcream;
+			border-style: solid;
+			border-width: 1px;
+			border-color: lightBlue;
+			border-radius: 10px;
+			padding-top: 5px;	
+			padding-bottom: 10px;
+			padding-left: 10px;
+			padding-right: 10px;	
+			margin-top: 10px;
+			margin-bottom: 10px;
+			margin-right: 10px;
+			margin-left: 10px;
+		}
 	
+    </style>
+        	
 	<apex:sectionHeader title="Auction Bid Numbers" />  
 	<apex:form >
 		<apex:pageBlock title="Assign Auction Bid Numbers" mode="edit" id="pbMain" >
@@ -31,8 +83,30 @@
             </apex:pageBlockButtons>      
             <apex:pageMessage summary="{!strAutoBidNumberResult}" severity="info" strength="2" rendered="{!strAutoBidNumberResult!=null}" />  
             <apex:messages styleClass="Error" />
-			<apex:pageBlockSection columns="1" >
+                
+ 			<div class="cssTabHelpLink" id="linkHelp">
+	  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+					<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+				</a>
+			</div>
+	   		<div id="divHelp" class="cssHelpText" style="display:none" >
+	       		<div class="hideHelpLink">	       			
+					<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+						<img src="/img/arrowDown.gif" />Hide
+					</a>
+				</div>
+				<p style="padding-left:30px">Below are all the attendees of the current auction (any contact on the auction's Attendees campaign whose status is not 'RSVP No').</p>
+				<ul>
+				<li>It is recommended that you only assign a bid number to one member of a household.</li>
+				<li>You can set	Auction Custom Settings to specify how your organization tracks households.</li>
+				<li>If you change the Starting Bid Number or Households checkbox, the page will refresh with New Bid Numbers.</li>
+				<li>Click on Assign to assign the New Bid Numbers to the Attendees.</li>
+				<li>There is an Auction Custom Setting you can set to allow multiple contacts to have the same bid number.</li>
+				</ul>
+	  		</div>
 			
+			<apex:pageBlockSection columns="1" >
+
 				<apex:outputLabel value="<p><i>It is recommended that you only assign a bid number to one member of a household.  You can set
 					Auction Custom Settings to specify how your organization tracks households.  Please see the Auctions for Salesforce documentation.</i></p><br/>" 
 					rendered="{!NOT(fHasHouseholds)}" escape="false" />
@@ -51,7 +125,6 @@
 					</apex:inputText>
 				</apex:pageBlockSectionItem>							
 
-				<apex:pageBlockSectionItem />  
        			<apex:actionStatus id="statusLoading" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
 				<div class="loading clsLoading" id="divLoading" style="display:none" >
 				  <p style="vertical-align: middle;" >
