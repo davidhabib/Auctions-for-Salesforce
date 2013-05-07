@@ -8,7 +8,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     	get {
             if(setCon == null) {
 
-            	string strSoql = pageController.getStrSoql();
+            	string strSoql = pageController.getStrSoql(); 
             	
 				// start out sorting on the main name field.
             	if (SortItemField == null || SortItemField == '') {
@@ -30,8 +30,16 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
             }
             return setCon;
         } 
-        set;
+        set {
+        	if (setCon != value) {
+        		setCon = value;
+        		listPagedItem = null;
+        	}
+        }
     }
+       
+	// whether to include checkboxes in the list view       
+  	public boolean fShowCheckboxes { get; set; }
         
 	// how many records per page to display
 	public integer cRecordsPerPage {
@@ -156,10 +164,34 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     	return null;
 	}
 		
+	// wrapper class to hold a Donated Item and a checkbox
+	public class PagedItem {
+		
+		public SObject sobj { get; set; }
+		public boolean isChecked { get; set; }
+				
+		public PagedItem(Sobject sobjT) {
+			sobj = sobjT;
+			isChecked = false;
+		}
+	}
+		
 	// returns a list of sObject's for the current page view.
-	public list<SObject> getlistPagedItem() {
-   		return (list<SObject>) setCon.getRecords();
+	public list<PagedItem> listPagedItem {
+		get {
+			if (listPagedItem == null) {
+				listPagedItem = new list<PagedItem>();
+				for (Sobject sobj : setCon.getRecords()) {
+					listPagedItem.add(new PagedItem(sobj));
+				}				
+			}
+			return listPagedItem;
+		}
+		set;
    	} 
+   	
+   	// holds the global checkbox for the header (if fShowCheckboxes is on.)
+   	public boolean isCheckedAll { get; set; }
 	
 	// holds the current letter we are filtering on 
 	// we save this in a cookie for the page, so we remember our place when coming back to this tab.
@@ -320,6 +352,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public PageReference PagingFirst() {
 		setCon.first();
 		iPageNumber = setCon.getPageNumber();
+		listPagedItem = null;
 		return null;
 	}
 
@@ -327,6 +360,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public PageReference PagingPrevious() {
 		setCon.previous();
 		iPageNumber = setCon.getPageNumber();
+		listPagedItem = null;
 		return null;
 	}
 
@@ -334,6 +368,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public PageReference PagingNext() {
 		setCon.next();
 		iPageNumber = setCon.getPageNumber();
+		listPagedItem = null;
 		return null;
 	}
 
@@ -341,6 +376,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public PageReference PagingLast() {
 		setCon.last();
 		iPageNumber = setCon.getPageNumber();
+		listPagedItem = null;
 		return null;
 	}
 
@@ -375,7 +411,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		system.assert(compCtrl.NumberOfItems >= 1);
 		system.assertEquals(auction.Id, compCtrl.listSOAuctions[1].getValue());
 		system.assertEquals(null, compCtrl.ChangeAuction());
-		system.assertNotEquals(null, compCtrl.getlistPagedItem());
+		system.assertNotEquals(null, compCtrl.listPagedItem);
 		system.assertEquals('%', compCtrl.strAlphaFilter);
 		system.assertNotEquals(null, compCtrl.listAlphaFilters);
 		compCtrl.strAlphaFilter = 'A';
