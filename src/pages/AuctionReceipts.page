@@ -406,7 +406,7 @@
 						<apex:repeat value="{!receipt.listOppAuctionPurchases}" var="oppAP" >
 						<tr>
 							<td style="vertical-align:center" >
-								<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
+								<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
 								&nbsp;&nbsp;&nbsp;
 							</td>
 							<td>
