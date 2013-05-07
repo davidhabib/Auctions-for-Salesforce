@@ -13,9 +13,26 @@
         	padding: 0 5px; 
         }
     </style>
+    
+    <script>
+
+		// function to check/uncheck all selection checkboxes
+		function OnChangeCbxSelectAll(cbx) {
+			var rg = document.getElementsByTagName('input');
+			var i = 0; 
+			for (i = 0; i < rg.length; i++) {
+				if (rg[i].id.indexOf('cbxSelect') > -1) {
+					rg[i].checked = cbx.checked;
+				}
+			}
+ 		}
+    
+    </script>
 
 	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
 		description="the controller of the page" />
+	<apex:attribute name="fShowCheckboxes" type="boolean" assignTo="{!fShowCheckboxes}" required="false"
+		description="whether to have the list provide a checkbox for each item" />
 
 	<apex:pageMessages /> 
 
@@ -68,12 +85,19 @@
 
 	        <apex:pageBlockTable value="{!listPagedItem}" var="item" rows="{!cRecordsPerPage}" >  
 
+	            <apex:column rendered="{!fShowCheckboxes}" width="10px" >
+	            	<apex:facet name="header">
+		                <apex:inputCheckbox value="{!isCheckedAll}" id="cbxSelectAll" onchange="OnChangeCbxSelectAll(this);" />
+	            	</apex:facet>
+	                <apex:inputCheckbox value="{!item.isChecked}" id="cbxSelect" />
+				</apex:column>
+				
 	            <apex:column headerValue="Action" >
 	                <apex:commandLink action="{!EditItem}" value="Edit">
-				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
+				    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.sobj.id}" /> 
 	                </apex:commandLink>&nbsp;|&nbsp;
 	                <apex:commandLink action="{!DeleteItem}" value="Del" onclick="if (confirm('Are you sure?')==false) { return false;}" >
-				    	<apex:param assignTo="{!idDeleteItem}" name="idDeleteItem" value="{!item.id}" /> 
+				    	<apex:param assignTo="{!idDeleteItem}" name="idDeleteItem" value="{!item.sobj.id}" /> 
 	                </apex:commandLink>
 	            </apex:column>          
 
@@ -89,10 +113,10 @@
 							</apex:commandLink>
 						</apex:facet>
 						<!-- special case Name field to be link to view/edit object -->
-						<apex:outputField value="{!item[f]}"  rendered="{!(f <> pageController.strNameField)}" />												
-		                <apex:outputLink value="/{!item.id}" rendered="{!(f == pageController.strNameField) && NOT(pageController.fEditNameField)}" >{!item[pageController.strNameField]}</apex:outputLink>		                
-						<apex:commandLink action="{!EditItem}" value="{!item[pageController.strNameField]}" rendered="{!(f == pageController.strNameField) && pageController.fEditNameField}">
-					    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.id}" /> 
+						<apex:outputField value="{!item.sobj[f]}"  rendered="{!(f <> pageController.strNameField)}" />												
+		                <apex:outputLink value="/{!item.sobj.id}" rendered="{!(f == pageController.strNameField) && NOT(pageController.fEditNameField)}" >{!item.sobj[pageController.strNameField]}</apex:outputLink>		                
+						<apex:commandLink action="{!EditItem}" value="{!item.sobj[pageController.strNameField]}" rendered="{!(f == pageController.strNameField) && pageController.fEditNameField}">
+					    	<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.sobj.id}" /> 
 		                </apex:commandLink>	                
 					</apex:column> 
 	  			</apex:repeat>         
