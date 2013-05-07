@@ -39,6 +39,16 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 			'&retURL=/apex/GW_Auctions__AuctionItems');
 		return p;
 	}
+	
+	public PageReference DonatedItemConverter() {
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionDonatedItemConverter?auctionId=' + 
+			ctrlSoqlListView.auctionId +
+			'&retURL=' +
+			ApexPages.currentPage().getUrl());
+		return p;
+	}
+	
+	
 
 
 	//==================== TEST METHOD(s) ======================================

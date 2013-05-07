@@ -6,6 +6,9 @@
 <apex:page controller="AUC_CTRL_AuctionDonatedItems" title="Auction Donated Items"  tabStyle="Auction_Donated_Items__tab">
 	<apex:form >
 	   	<apex:sectionHeader title="Auction Donated Items" />      
-		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
+		<div style="text-align:center;">
+			<apex:commandButton action="{!DonatedItemConverter}" value="Donated Item Converter" immediate="true" />
+		</div>
+		<c:SoqlListView pageController="{!this}" ></c:SoqlListView> 
 	</apex:form>		
 </apex:page>

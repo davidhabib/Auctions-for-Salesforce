@@ -74,6 +74,11 @@
         <name>CreditCardValidateURLFormula__c</name>
     </fields>
     <fields>
+        <help><!-- The maximum number of new Auction Item rows to display in the Donated Item Converter page  at a time. --></help>
+        <label><!-- Donated Item Converter Batch Size --></label>
+        <name>Donated_Item_Converter_Batch_Size__c</name>
+    </fields>
+    <fields>
         <label><!-- Unused2 --></label>
         <name>Donated_Item_Opportunity_Stages__c</name>
     </fields>

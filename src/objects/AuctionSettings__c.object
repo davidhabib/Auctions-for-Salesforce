@@ -142,6 +142,18 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Donated_Item_Converter_Batch_Size__c</fullName>
+        <defaultValue>25</defaultValue>
+        <externalId>false</externalId>
+        <inlineHelpText>The maximum number of new Auction Item rows to display in the Donated Item Converter page  at a time.</inlineHelpText>
+        <label>Donated Item Converter Batch Size</label>
+        <precision>3</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Donated_Item_Opportunity_Stages__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>

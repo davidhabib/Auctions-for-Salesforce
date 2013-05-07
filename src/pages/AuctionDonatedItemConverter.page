@@ -1,0 +1,160 @@
+<!-- 
+// Written by David Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+-->
+
+<apex:page controller="AUC_CTRL_AuctionDonatedItemConverter" title="Donated Item Converter"  >
+
+	<style>
+	    .Error { 
+	    	color: red; 
+	    	font-weight: strong;
+	    }
+	    
+		.clsLoading {
+			z-index: 99;
+			position: fixed;
+			top: 30%;
+			left: 30%;
+			background: lightyellow;
+			width: 400px;
+			height: 40px;		
+		}  
+		
+		.cssTextArea {
+			height: 15px;	// force textarea fields to still be a single line.
+		}
+		
+		.cssCurrency {
+			width: 40px;
+		}
+		
+		.cssShortText {
+			width: 60px;
+		}
+		
+		.cssLongText {
+			width: 180px;
+		}
+				 	    	    
+		.cssTabHelpLink {
+			cursor: pointer;
+			border-style: solid;
+			border-radius: 4px;
+			border-width: 1px;
+			border-color: #DEEFF5;
+			width: 110px;
+			height: 20px; 
+			color: black;
+			vertical-align: middle;
+			text-align: center;
+			background-color: #FCFFFE;
+			margin-top: 10px;
+			margin-left: 10px;
+			margin-bottom: 10px;
+			padding-top: 4px;	
+		}
+		
+		.cssTabHelpLink .helpLink {
+			text-decoration: none;
+			color: black;
+			font-size: 105%;
+			vertical-align: bottom;
+		}
+
+		.hideHelpLink {
+			cursor: pointer;
+			color: black;
+		}
+		
+		.hideHelpLink .helpLink {
+			color: grey;
+			text-decoration: none;
+		}
+		
+		.cssHelpText {
+			background-color: mintcream;
+			border-style: solid;
+			border-width: 1px;
+			border-color: lightBlue;
+			border-radius: 10px;
+			padding-top: 5px;	
+			padding-bottom: 10px;
+			padding-left: 10px;
+			padding-right: 10px;	
+			margin-top: 10px;
+			margin-bottom: 10px;
+			margin-right: 10px;
+			margin-left: 10px;
+		}
+	
+    </style>
+	
+	<apex:sectionHeader title="Donated Item Converter" />  
+	<apex:form >
+		<apex:pageBlock title="Create Auction Items from Available Donated Items" mode="edit" id="pbMain" >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!Convert}" value="Create" rerender="pbMain" status="statusLoading" />
+                <apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strConvertResult), 'Cancel', 'Close')}" immediate="true"/>
+            </apex:pageBlockButtons>      
+            <apex:pageMessage summary="{!strConvertResult}" severity="info" strength="2" rendered="{!strConvertResult!=null}" />  
+            <apex:messages styleClass="Error" />
+            	
+ 			<div class="cssTabHelpLink" id="linkHelp">
+	  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+					<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+				</a>
+			</div>
+	   		<div id="divHelp" class="cssHelpText" style="display:none" >
+	       		<div class="hideHelpLink">	       			
+					<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+						<img src="/img/arrowDown.gif" />Hide
+					</a>
+				</div>
+				<p style="padding-left:30px">Below are the new Auction Items that will be created for Donated Items whose <b>Number Available</b> field was greater than 0.</p>
+				<ul>
+				<li>Uncheck the Auction Items you do not want created. </li>
+				<li>Make sure to fill in the appropriate fields for the new Auction Items before saving.</li>
+				<li>The Auction Item ID field is pre-filled with suggested unique values, but you can change them to your own ID scheme.</li>
+				<li>If there are more Donated Items available, the next set to be processed will be displayed after choosing Create.</li>
+				<li>You can set the number of new Auction Items to process at a time by using the custom setting <b>Donated Item Converter Batch Size</b></li>
+				<li>You can add additional Auction Item fields to the grid using the Auction Item Field Set <b>AuctionDonatedItemConverterFS</b></li>
+				</ul>
+	  		</div>
+            	
+            	
+			<apex:pageBlockSection columns="1" >
+					
+       			<apex:actionStatus id="statusLoading" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
+				<div class="loading clsLoading" id="divLoading" style="display:none" >
+				  <p style="vertical-align: middle;" >
+					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+					<span class="loadingText" style="vertical-align: middle;" >Processing...</span>
+				  </p>
+				</div>        				            					            
+       							
+		        <apex:pageBlockTable value="{!listNewAuctionItem}" var="nai" >
+		        	<apex:column > 
+		        		<apex:inputCheckbox value="{!nai.isChecked}" />
+					</apex:column>
+							        				        
+	            	<!-- Auction Item fields use a fieldset -->
+					<apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionDonatedItemConverterFS}" var="f" >
+	   					<apex:column >
+	   						<apex:facet name="header"><div style="white-space:normal;">{!f.Label}</div></apex:facet>
+	   						<apex:inputField required="false" value="{!nai.ai[f]}" 
+	   							styleClass="{!CASE(f.Type,
+	   								'textarea', 'cssTextArea', 
+	   								'currency', 'cssCurrency',
+	   								'') + ' ' + CASE(f.Label,
+	   								'Auction Item ID', 'cssShortText',
+	   								'Auction Item Name', 'cssLongText',
+	   								'') }"/>
+	   					</apex:column>
+		  			</apex:repeat>                    			        
+		        </apex:pageBlockTable> 
+	        </apex:pageBlockSection>
+        </apex:pageBlock>              
+	</apex:form>              
+
+</apex:page>

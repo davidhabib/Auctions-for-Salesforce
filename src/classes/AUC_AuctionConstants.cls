@@ -264,6 +264,18 @@ public with sharing class AUC_AuctionConstants {
 		set;
 	}
 
+	// maximum number of new Auction Item rows to show in the Donated Item Converter.
+	public static integer cDonatedItemConverterBatchSize {
+		get {
+			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+			if (settings.size() == 0) return 25;
+			double db = settings[0].Donated_Item_Converter_Batch_Size__c;
+			if (db == 0 || db == null) return 25;
+			return db.intValue();
+		}
+	}
+
+
 	//From the Non Profit Starter Pack.
 	//One-to-One value for system processor field 	
 	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 

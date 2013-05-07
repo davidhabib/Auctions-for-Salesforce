@@ -4,7 +4,10 @@
  -->
 <apex:page controller="AUC_CTRL_AuctionItems" title="Auction Items"  tabStyle="Auction_Items__tab">
 	<apex:form >
-	   	<apex:sectionHeader title="Auction Items" />      
+	   	<apex:sectionHeader title="Auction Items" />  
+		<div style="text-align:center;">
+			<apex:commandButton action="{!DonatedItemConverter}" value="Donated Item Converter" immediate="true" />
+		</div>	   	    
 		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
 	</apex:form>		
 </apex:page>

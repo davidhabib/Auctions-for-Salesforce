@@ -7,13 +7,12 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 	public AUC_CTRL_AuctionDonatedItems() {
         listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionDonatedItemsTabFS');
        	strNameField = listStrFields[0]; 
-       	strObjectType = 'Opportunity'; 				
+       	strObjectType = 'Opportunity'; 	
 	} 
 	
 	public override string getStrPageUniqueName() {
 		return 'DonatedItems';
 	}
-	
 	
 	public override string getStrSoql() {		
 		string strSoql = 'select Id, ' + string.join(listStrFields, ',') + 
@@ -30,6 +29,14 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 	public override PageReference NewItem() { 
 		PageReference p = new PageReference('/apex/GW_Auctions__AuctionNewDonatedItemWizard?auctionId=' + ctrlSoqlListView.auctionId);
 		return p;		
+	}
+	
+	public PageReference DonatedItemConverter() {
+		PageReference p = new PageReference('/apex/GW_Auctions__AuctionDonatedItemConverter?auctionId=' + 
+			ctrlSoqlListView.auctionId +
+			'&retURL=' +
+			ApexPages.currentPage().getUrl());
+		return p;
 	}
 	
 
