@@ -94,6 +94,57 @@
 		font-size: 95%;
 		padding: 4px;			
 	}   
+
+	.cssTabHelpLink {
+		cursor: pointer;
+		border-style: solid;
+		border-radius: 4px;
+		border-width: 1px;
+		border-color: #DEEFF5;
+		width: 110px;
+		height: 20px; 
+		color: black;
+		vertical-align: middle;
+		text-align: center;
+		background-color: #FCFFFE;
+		margin-top: 10px;
+		margin-left: 10px;
+		margin-bottom: 10px;
+		padding-top: 4px;	
+	}
+	
+	.cssTabHelpLink .helpLink {
+		text-decoration: none;
+		color: black;
+		font-size: 105%;
+		vertical-align: bottom;
+	}
+
+	.hideHelpLink {
+		cursor: pointer;
+		color: black;
+	}
+	
+	.hideHelpLink .helpLink {
+		color: grey;
+		text-decoration: none;
+	}
+	
+	.cssHelpText {
+		background-color: mintcream;
+		border-style: solid;
+		border-width: 1px;
+		border-color: lightBlue;
+		border-radius: 10px;
+		padding-top: 5px;	
+		padding-bottom: 10px;
+		padding-left: 10px;
+		padding-right: 10px;	
+		margin-top: 10px;
+		margin-bottom: 10px;
+		margin-right: 10px;
+		margin-left: 10px;
+	}
 	
 </style>
 
@@ -298,6 +349,28 @@
 				<span style="vertical-align: middle;" >Loading...</span>
 			  </p>
 			</div>  
+
+ 			<div class="cssTabHelpLink" id="linkHelp">
+	  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+					<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+				</a>
+			</div>
+	   		<div id="divHelp" class="cssHelpText" style="display:none" >
+	       		<div class="hideHelpLink">	       			
+					<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+						<img src="/img/arrowDown.gif" />Hide
+					</a>
+				</div>
+				<p style="padding-left:30px">Auction Receipts creates a PDF report you can save or print.</p>
+				<ul>
+				<li>You can create a single page PDF for the specified Guest, or a multi-page PDF with a separate page for each Guest.</li>
+				<li>You can add additional Auction Purchase fields to the report's table using the Opportunity Field Set <b>AuctionReceiptsFS</b>.</li>
+				<li>You can provide formatted text for the introduction on each page by setting the Auction Custom Settings <b>Auction Receipts Intro 1 &amp; 2</b>.</li>
+				<li>You can provide formatted text for the footer on each page by setting the Auction Custom Settings <b>Auction Receipts Footer 1 &amp; 2</b>.</li>
+				<li>The footer can even include an image tag to an image stored in Salesforce or on your public website.  See the documentation for details.</li>
+				</ul>
+	  		</div>
+
 
 			<apex:outputPanel id="panelSearch" styleClass="panelSearch" >				            
 	            <apex:pageBlockSection columns="1"  >
