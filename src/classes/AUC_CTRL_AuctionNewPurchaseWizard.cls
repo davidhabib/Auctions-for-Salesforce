@@ -163,7 +163,35 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		List<Opportunity> listOppsToCreate = new List<Opportunity>();
 		List<OpportunityContactRole> listCRToCreate = new List<OpportunityContactRole>();
 	        
-        try {     	
+        try {   
+        	// do any bulk soqls we can up front to avoid too many calls.
+        	set<ID> setAuctionItemId = new set<ID>();        	
+        	set<ID> setContactId = new set<ID>();
+            for (AUC_PurchaseOpportunity apo : listAuctionPurchasedItems) {
+                if (apo.contactId != null && apo.contactId != '' && apo.opp.Auction_Item_Purchased__c != null) {
+					setAuctionItemId.add(apo.opp.Auction_Item_Purchased__c);
+					setContactId.add(apo.contactId);
+                }
+            }
+            // cache all the auction items
+            map<ID, Auction_Item__c> mapIDtoAuctionItem = new map<ID, Auction_Item__c>();
+            list<Auction_Item__c> listAuctionItem = [select Id, Name, Auction_Item_Name__c, Allow_Multiple_Purchases__c, 
+                		Treat_Purchase_as_Gift__c, Fair_Market_Value__c, Description__c, Restrictions__c 
+                		from Auction_Item__c 
+                		where Id in :setAuctionItemId];
+            for (Auction_Item__c ai : listAuctionItem) {
+            	mapIDToAuctionItem.put(ai.Id, ai);
+            }
+            // cache all the contact's accounts.
+            map<ID, ID> mapContactIdtoAccountId = new map<ID, ID>();
+            if (AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
+            	list<Contact> listCon = [select Id, AccountId from Contact where Id in :setContactId];
+            	for (Contact con : listCon) {
+            		mapContactIdtoAccountId.put(con.Id, con.AccountId);
+            	}            	
+            }
+            
+                    	  	
         	// loop through the opps of the grid, and save the valid ones.
             for (AUC_PurchaseOpportunity apo : listAuctionPurchasedItems) {
                 strSaveResults = 'Saved ' + cOpps + ' auction purchases...';                               
@@ -180,10 +208,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
                 	
                 	string strOppTypeName;
                 	apo.opp.campaignId = campaignIdAuctionAttendees;
-                	Auction_Item__c item = [select Id, Name, Auction_Item_Name__c, Allow_Multiple_Purchases__c, 
-                		Treat_Purchase_as_Gift__c, Fair_Market_Value__c, Description__c, Restrictions__c 
-                		from Auction_Item__c 
-                		where Id = :apo.opp.Auction_Item_Purchased__c];
+                	Auction_Item__c item = mapIDToAuctionItem.get(apo.opp.Auction_Item_Purchased__c);
 
                 	// prevent duplicate purchases
                 	if (setAuctionItemIdPurchased.contains(item.Id) && item.Allow_Multiple_Purchases__c == false)  {
@@ -208,8 +233,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 					// if so, we need to set the Opp's Account to make the rollups work.
 					if (AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
-						Contact c = [Select AccountId from Contact where Id=:apo.contactId];
-						apo.opp.AccountId = c.AccountId;
+						apo.opp.AccountId = mapContactIdtoAccountId.get(apo.contactId);
 					}
 				
 	                apo.opp.Auction_Non_Deductible_Amount__c = item.Fair_Market_Value__c;
@@ -238,11 +262,24 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
         			// has a 1:1 account or a company account, we will check each Opp, to see if it needs a contact role or not.
         			list<OpportunityContactRole> listCR = new list<OpportunityContactRole>();
         			
+        			// we used to do this with individual calls to fCreateOppContactRoles, but that is inefficient.
+        			// query for all the contact roles in one soql
+        			set<ID> setOppId = new set<ID>();
+        			for (Opportunity opp : listOppstoCreate) {
+        				setOppId.add(opp.Id);
+        			}
+			    	list<OpportunityContactRole> listCRExisting = [select Id, OpportunityId from OpportunityContactRole where IsPrimary=true and OpportunityId in :setOppId]; 
+        			setOppId.clear();
+        			for (OpportunityContactRole cr : listCRExisting) {
+        				setOppId.add(cr.OpportunityId);
+        			}
+        			
 	        		// now fixup the opp ids in the contact roles
 	        		for (integer i = 0; i < cOpps; i++) {
 	        			listCRTOCreate[i].OpportunityId = listOppsToCreate[i].Id;
 	        			// see if anyone (NPSP) already created the ContactRole
-	        			if (AUC_AuctionConstants.fCreateOppContactRoles(listCRTOCreate[i].OpportunityId, listCRTOCreate[i].ContactId)) {
+	        			//if (AUC_AuctionConstants.fCreateOppContactRoles(listCRTOCreate[i].OpportunityId, listCRTOCreate[i].ContactId)) {
+	        			if (!setOppId.contains(listCRTOCreate[i].OpportunityId)) {
 	        				listCR.add(listCRToCreate[i]);
 	        			}	        		
 	        		}	
