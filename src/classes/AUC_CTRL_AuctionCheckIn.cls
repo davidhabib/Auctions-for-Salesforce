@@ -402,7 +402,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					}
 					
 					// create new CampaignMembers for any additional attendees on this ticket  					
-		    		if (numTickets == null || numTickets == 0) numTickets = 1;
+		    		//if (numTickets == null || numTickets == 0) numTickets = 1;
 		    		CampaignMember cmCaptain = mapContactIdCM.get(idCaptain);
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
@@ -908,7 +908,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		system.assert(ctrl.oppTicketAttendee != null);
 		system.assert(ctrl.listSOAuctions.size() > 0);
 		system.assert(ctrl.listSOAuctions.size() > 0);
-		system.assert(ctrl.listAttendees.size() == 0);
+		system.assertEquals(0, ctrl.listAttendees.size());
 		system.assertEquals(null, ctrl.attendeeFromId(null));
 		system.assertEquals(null, ctrl.idCaptainForcontactIdAttendee(null));
 		system.assertEquals(null, ctrl.fAddTicketPurchase);
