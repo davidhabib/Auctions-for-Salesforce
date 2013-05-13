@@ -215,7 +215,7 @@ public with sharing class AUC_AuctionConstants {
 			}
 			
 			// even if the setting is off, still do this for NPSP 1:1 model
-			return (fSetAccount || AUC_AuctionConstants.isOneToOne()); 
+			return (fSetAccount || AUC_AuctionConstants.isOneToOne); 
 		}
 	}
 	
@@ -282,12 +282,34 @@ public with sharing class AUC_AuctionConstants {
 
 	//From the Non Profit Starter Pack.
 	//method to tell which model we're currently in for Accounts     
-    private static boolean isOneToOne() { 
-    	
+	private static boolean fCheckedForOneToOne = false;
+    private static boolean isOneToOne { 
+    	get {
+			// Kevin Bromer says: The npe01__Account_Processor__c field in the npe01__Contacts_And_Orgs_Settings__c 
+			// setting will either be “One-to-One” or “Individual”  
+			if (!fCheckedForOneToOne) { 
+				if (IsNPSPInstalled) {
+					string strSoql = 'Select Id, Name, npe01__Account_Processor__c From npe01__Contacts_And_Orgs_Settings__c';
+					list<SObject> listSObj = database.query(strSoql);
+					if (listSObj != null && listSObj.size() > 0) {
+						string strModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
+						if (strModel == 'One-to-One')
+							isOneToOne = true;			
+					}
+					isOneToOne = false;
+				} else {
+					isOneToOne = false;
+				}
+			fCheckedForOneToOne = true;
+			}
+			return isOneToOne;
+	    }
+    	set;
+    } 	
+
     	/*** Kevin Bromer told me in Julyu 2012 that while this code will work, the 
     	correct way to detect one-to-one is to look at custom settings (which I now
-    	do below.
-    	    	
+    	do below.    	    	
     	boolean isOneToOneModel;     	
     	isOneToOneModel = false;   
     	Map<String, Schema.SObjectField> M = Schema.SObjectType.Contact.fields.getMap();
@@ -303,22 +325,6 @@ public with sharing class AUC_AuctionConstants {
     	} 		     	
     	return isOneToOneModel;  
     	*****/
-    	
-		// Kevin Bromer says: The npe01__Account_Processor__c field in the npe01__Contacts_And_Orgs_Settings__c 
-		// setting will either be “One-to-One” or “Individual”   
-		if (IsNPSPInstalled) {
-			string strSoql = 'Select Id, Name, npe01__Account_Processor__c From npe01__Contacts_And_Orgs_Settings__c';
-			list<SObject> listSObj = database.query(strSoql);
-			if (listSObj != null && listSObj.size() > 0) {
-				string strModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
-				if (strModel == 'One-to-One')
-					return true;			
-			}
-			return false;
-		} else {
-			return false;
-		}
-    } 	
 
 	// public property to tell Auctions whether NPSP package is installed.
 	private static boolean fCheckedForNPSP = false;
@@ -410,7 +416,7 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.OPP_STAGE_PLEDGED != null);
 		System.Assert(AUC_AuctionConstants.CAMPAIGN_Status_Default != null);
 		System.Assert(AUC_AuctionConstants.CROWS_PURCHASE_GRID != null);
-		System.Assert(AUC_AuctionConstants.isOneToOne() == false || AUC_AuctionConstants.isOneToOne() == true);
+		System.Assert(AUC_AuctionConstants.isOneToOne == false || AUC_AuctionConstants.isOneToOne == true);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsIntro() != null);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsFooter() != null);
 		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
