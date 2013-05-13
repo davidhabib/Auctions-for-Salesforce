@@ -343,7 +343,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	// a map to track number of slots left for each ticket
 	private map<ID, double> mapTicketOppIdAttendeesLeft { get; set; } 
-	
+		
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
     public list<Attendee> listAttendees {
     	get {
@@ -352,13 +352,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     			mapTicketOppIdAttendeesLeft = new map<ID, double>();			
     			
     			// find any existing attendees on the captain's ticket(s)
-    			if (listOppCaptain.size() > 0 && listOppCaptain[0].Id != null) {
+    			if (listOppCaptain.size() > 0) { 
     				set<ID> setTicketOppId = new set<ID>();
 					double numTickets = 0;
     				for (Opportunity opp : listOppCaptain) {
-    					setTicketOppId.add(opp.Id);
-			    		numTickets += opp.Number_Of_Tickets__c;	
-			    		mapTicketOppIdAttendeesLeft.put(opp.Id, opp.Number_Of_Tickets__c);			    				    		
+    					if (opp.Id != null) {
+	    					setTicketOppId.add(opp.Id);
+				    		numTickets += opp.Number_Of_Tickets__c;	
+				    		mapTicketOppIdAttendeesLeft.put(opp.Id, opp.Number_Of_Tickets__c);
+    					}			    				    		
     				}
     				
 	    			// load up their CM info.
