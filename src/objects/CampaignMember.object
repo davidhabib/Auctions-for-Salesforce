@@ -195,6 +195,63 @@
         </displayedFields>
         <label>AuctionsCheckInCMFS</label>
     </fieldSets>
+    <fieldSets>
+        <fullName>AuctionsCheckInGuestsCMFS</fullName>
+        <availableFields>
+            <field>Auction_Ticket_OppId__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Table_Captain__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Id</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>ContactId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>CampaignId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Is_Table_Captain__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Note__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <description>The set of fields to display in the Guests data table shown on the right hand side of the Check In page.</description>
+        <displayedFields>
+            <field>Status</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Bid_Number__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Table_Name_Number__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Meal_Preference__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Paid__c</field>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <label>AuctionsCheckInGuestsCMFS</label>
+    </fieldSets>
     <fields>
         <fullName>Auction_Ticket_OppId__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>

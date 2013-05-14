@@ -602,26 +602,10 @@
 									<apex:commandLink value="(available ticket)" rendered="{!attendee.con.Id == null}" />
 								</span>
 							</apex:column>					
-							<apex:column style="text-align:center;">
-								<apex:facet name="header">Status</apex:facet>
-								<apex:outputField value="{!attendee.cm.Status}" />
-							</apex:column>
-							<apex:column style="text-align:center;">
-								<apex:facet name="header">Bid Number</apex:facet>
-								<apex:outputField value="{!attendee.cm.Bid_Number__c}"  style="width:50px"  />
-							</apex:column> 
-							<apex:column style="text-align:center;">					
-								<apex:facet name="header">Table Name/Number</apex:facet>
-								<apex:outputField id="txtTableNameNumber" value="{!attendee.cm.Table_Name_Number__c}" />
-							</apex:column>
-							<apex:column style="text-align:center;">					
-								<apex:facet name="header">Meal Preference</apex:facet>
-								<apex:outputField value="{!attendee.cm.Meal_Preference__c}" />
-							</apex:column>
-							<apex:column style="text-align:center;">
-								<apex:facet name="header">Paid</apex:facet>
-								<apex:inputCheckbox value="{!attendee.cm.Paid__c}" required="false" disabled="true" />
-							</apex:column>
+			            	<!-- CM fields use a fieldset -->
+							<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionsCheckInGuestsCMFS}" var="f" >
+			   					<apex:column value="{!attendee.cm[f]}" /> 
+				  			</apex:repeat>        	            	 
 						</apex:pageBlockTable>	
 		            </apex:pageBlockSection>
 				</apex:outputPanel>        				
