@@ -154,6 +154,16 @@ public with sharing class AUC_AuctionConstants {
 		}
 	}
 		
+	// read the custom setting and return the string for the Auction Receipts URL formula for the CheckOut page.
+	public static string StrCheckOutReceiptsURLFormula() {
+		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		if (settings.size() > 0) {
+			return settings[0].Check_Out_Receipts_URL__c;
+		} else {
+			return null;
+		}
+	}
+		
 	// read the custom setting and return the string for the window.open() parameters
 	// when opening the Payment Processor Virtual Terminal.
 	public static string StrPaymentProcessorWindowParameters() {

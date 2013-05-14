@@ -595,7 +595,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 		private set;
 	}
-	
+		
 	// public property for the Window.Open() parameters
 	// for the virtual terminal window.
 	public string strPaymentProcessorWindowParameters {
@@ -624,11 +624,35 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// for the View button, to invoke the receipts page  
 	public string strOpenReceiptURL {
 		get {
-			return '/apex/GW_Auctions__AuctionReceipts' +
-	        	'?RenderFormat=pdf' +
-	        	'&auctionId=' + auctionId +
-	        	'&contactId=' + contactIdPurchaser +
-	        	'&IncludeTickets=true';
+			string str = AUC_AuctionConstants.StrCheckOutReceiptsURLFormula();
+			if (str != null) {
+				// {0} = contactId
+				// {1} = auctionId
+				// {2} = amount		
+				// {3} = sessionId
+				// {4} = partner server url
+				// {5} = organizationId
+				list<string> listFormat = new list<string>();
+				listFormat.add(contactIdPurchaser);
+				listFormat.add(auctionId);
+				if (listReceipts.size() > 0) {
+					listFormat.add(string.valueOf(listReceipts[0].decTotalAmountToPay));
+				} else {
+					listFormat.add('0');
+				}
+				listFormat.add(UserInfo.getSessionId());
+				string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+				listFormat.add(strServerURL);					
+				listFormat.add(UserInfo.getOrganizationId());					
+				str = string.format(str, listFormat);	
+				return str;		
+			} else {			
+				return '/apex/GW_Auctions__AuctionReceipts' +
+		        	'?RenderFormat=pdf' +
+		        	'&auctionId=' + auctionId +
+		        	'&contactId=' + contactIdPurchaser +
+		        	'&IncludeTickets=true';
+			}
 		}
 		private set;
 	}

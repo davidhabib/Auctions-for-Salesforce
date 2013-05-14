@@ -88,6 +88,14 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Check_Out_Receipts_URL__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>A custom URL to override the default Auction Receipts button on the Check Out page.  This allows you to use Conga Composer for the report.  Supports parameter substitution; see documentation.</inlineHelpText>
+        <label>Check Out Receipts URL Formula</label>
+        <required>false</required>
+        <type>TextArea</type>
+    </fields>
+    <fields>
         <fullName>Contact_Household_Field__c</fullName>
         <externalId>false</externalId>
         <inlineHelpText>The developer name of a lookup field to households on Contacts.  If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__c.  If using Accounts for householding, specify AccountId.</inlineHelpText>
