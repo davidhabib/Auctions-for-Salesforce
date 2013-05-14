@@ -120,7 +120,7 @@
 				<li>You can set the number of new Auction Items to process at a time by using the custom setting <b>Donated Item Converter Batch Size</b></li>
 				<li>You can add additional Auction Item fields to the grid using the Auction Item Field Set <b>AuctionDonatedItemConverterFS</b></li>
 				</ul>
-	  		</div>
+	  		</div> 
             	
             	
 			<apex:pageBlockSection columns="1" >

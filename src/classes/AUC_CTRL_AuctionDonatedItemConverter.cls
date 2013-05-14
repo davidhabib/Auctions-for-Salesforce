@@ -40,7 +40,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 				listNewAuctionItem = new list<NewAuctionItem>();
 				
 				list<Opportunity> listOpp = [select Id, Name, Amount, Number_of_Items__c, Number_Available__c, 
-					Auction_Donated_Item_Name__c, Description from Opportunity
+					Auction_Donated_Item_Name__c, Description, Auction_Donated_Item_Restrictions__c from Opportunity
 					where CampaignId = :auctionMaintenance.campaignIdAuctionDonors and 
 						RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem and
 						Number_Available__c > 0 
@@ -60,6 +60,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 					ai.Auction__c = auctionMaintenance.auctionId;
 					ai.Auction_Item_Name__c = opp.Auction_Donated_Item_Name__c;  
 					ai.Description__c = opp.Description;
+					ai.Restrictions__c = opp.Auction_Donated_Item_Restrictions__c;
 					
 					// generate a free auction item id
 					while (setItemId.contains(string.valueOf(itemId))) itemId++; 

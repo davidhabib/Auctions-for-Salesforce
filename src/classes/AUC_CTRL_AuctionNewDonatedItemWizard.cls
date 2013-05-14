@@ -51,6 +51,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		if (fCreateAuctionItem) {
 			if (auctionItem.Auction_Item_Name__c == null) auctionItem.Auction_Item_Name__c = opp.Auction_Donated_Item_Name__c;
 			if (auctionItem.Description__c == null) auctionItem.Description__c = opp.Description; 
+			if (auctionItem.Restrictions__c == null) auctionItem.Restrictions__c = opp.Auction_Donated_Item_Restrictions__c;
 		}
 		return null;
 	}	
@@ -188,14 +189,16 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		ctrl.opp.Amount = 150;
 		ctrl.opp.Number_of_Items__c = 1;
 		ctrl.opp.Description = 'my description of the donated item';
+		ctrl.opp.Auction_Donated_Item_Restrictions__c = 'you are restricted!';
 		
 		ctrl.fCreateAuctionItem = true;
 		system.AssertEquals('true', ctrl.StrFCreateAuctionItem);
 		ctrl.ToggleCreateAuctionItem();
 		system.AssertEquals(ctrl.fCreateAuctionItem, true);
 		system.AssertEquals(ctrl.auctionItem.Auction__c, auction.id);
-		//system.AssertEquals(ctrl.auctionItem.Auction_Item_Name__c, ctrl.opp.Auction_Donated_Item_Name__c);
+		system.AssertEquals(ctrl.auctionItem.Auction_Item_Name__c, ctrl.opp.Auction_Donated_Item_Name__c);
 		system.AssertEquals(ctrl.auctionItem.Description__c, ctrl.opp.Description);
+		system.AssertEquals(ctrl.auctionItem.Restrictions__c, ctrl.opp.Auction_Donated_Item_Restrictions__c);
 
 		ctrl.auctionItem.Auction_Item_Name__c = 'my test auction item';
 		
