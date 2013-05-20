@@ -26,10 +26,6 @@
                 <behavior>Readonly</behavior>
                 <field>HasResponded</field>
             </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Auction_Ticket_OppId__c</field>
-            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -95,6 +91,10 @@
         <editHeading>true</editHeading>
         <label>Auction Attendee Info</label>
         <layoutColumns>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Auction_Ticket_OppId__c</field>
+            </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Bid_Number__c</field>
