@@ -190,6 +190,21 @@ public with sharing class AUC_AuctionMaintenance {
 		return strFields.substring(0, strFields.length()-1);		
 	}
 		
+	// utility to copy all the field values from one SObject to another
+	public static void CloneObject (SObject sobjSrc, SObject sobjDst, list<string> listStrFields) {
+        for (string strF : listStrFields) {
+         	if (sobjSrc.get(strF) != null) { 
+          		try {
+           			sobjDst.put(strF, sobjSrc.get(strF));
+           		} catch(exception ex) { 
+					// exceptions will be thrown on readonly fields
+					// so we want to continue, not fail.            			
+           		}
+           	}
+        }
+	}
+	
+		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
     	// create needed data

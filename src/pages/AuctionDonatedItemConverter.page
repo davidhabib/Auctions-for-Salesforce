@@ -115,7 +115,8 @@
 				<ul>
 				<li>Uncheck the Auction Items you do not want created. </li>
 				<li>Make sure to fill in the appropriate fields for the new Auction Items before saving.</li>
-				<li>The Auction Item ID field is pre-filled with suggested unique values, but you can change them to your own ID scheme.</li>
+				<li>The <b>Auction Item ID</b> field is pre-filled with suggested unique values, but you can change them to your own ID scheme.</li>
+				<li>The <b>Fair Market Value</b> field shows the value of all of the remaining Donated Items, which is pre-filled in the <b>Quantity</b> field.</li>
 				<li>If there are more Donated Items available, the next set to be processed will be displayed after choosing Create.</li>
 				<li>You can set the number of new Auction Items to process at a time by using the custom setting <b>Donated Item Converter Batch Size</b></li>
 				<li>You can add additional Auction Item fields to the grid using the Auction Item Field Set <b>AuctionDonatedItemConverterFS</b></li>
@@ -137,7 +138,19 @@
 		        	<apex:column > 
 		        		<apex:inputCheckbox value="{!nai.isChecked}" />
 					</apex:column>
+					
+					<apex:column >
+   						<apex:facet name="header"><div style="white-space:normal;">Fair Market Value</div></apex:facet>
+						<apex:outputText value="{0, number, $#,###}">
+							<apex:param value="{!nai.FMV}" />
+						</apex:outputText>
+					</apex:column>					
 							        				        
+		        	<apex:column > 
+   						<apex:facet name="header"><div style="white-space:normal;">Quantity</div></apex:facet>
+		        		<apex:inputText value="{!nai.quantity}" styleClass="cssShortText" />
+					</apex:column>
+
 	            	<!-- Auction Item fields use a fieldset -->
 					<apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionDonatedItemConverterFS}" var="f" >
 	   					<apex:column >

@@ -25,11 +25,15 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 		public Auction_Item__c ai { get; set; }
 		public Opportunity donatedItem { get; set; }
 		public boolean isChecked { get; set; }
+		public integer quantity { get; set; }
+		public decimal FMV { get; set; }
 		
 		public NewAuctionItem(Auction_Item__c aiT, Opportunity donatedItemT) {
 			ai = aiT;
 			donatedItem = donatedItemT;
 			isChecked = true;
+			quantity = integer.valueOf(donatedItemT.Number_Available__c);
+			FMV = (donatedItemT.Amount / donatedItemT.Number_of_Items__c) * quantity;
 		}
 	}
 	
@@ -74,6 +78,22 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 		set;
 	}				
 	
+	// list of all fieldnames for Auction Items.
+	private list<string> listStrAIFields {
+		get {
+			if (listStrAIFields == null) {
+				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Auction_Item__c.fields.getMap();
+				listStrAIFields = new list<string>();
+				listStrAIFields.addAll(mapS.keySet());  
+			}
+			return listStrAIFields;
+		}
+		set;
+	}
+	
+	// so we can throw an exception with an error message	
+ 	private class MyException extends Exception {}
+	
 	// action method to create the auction items			
 	public PageReference Convert() {
 		list<Auction_Item__c> listAI = new list<Auction_Item__c>();
@@ -84,18 +104,32 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 			// first create the Auction Item's
 			for (NewAuctionItem nai : listNewAuctionItem) {
 				if (nai.isChecked) {
-					listAI.add(nai.ai);
+					// in order to handle the insert of AI's succeeding, but 
+					// then a later operation causing us to rollback,
+					// we have to clone the AI's so their ID won't get set
+					// by the insert!
+					Auction_Item__c ai = new Auction_Item__c();
+					AUC_AuctionMaintenance.CloneObject(nai.ai, ai, listStrAIFields);
+					listAI.add(ai);
 				}
 			}
 			insert listAI;
 			
 			// now create the Auction Item Pieces
+			integer iAI = 0;
 			for (NewAuctionItem nai : listNewAuctionItem) {
 				if (nai.isChecked) {
 					Auction_Item_Piece__c aip = new Auction_Item_Piece__c();
-					aip.Auction_Item__c = nai.ai.Id;
+					aip.Auction_Item__c = listAI[iAI++].Id;
 					aip.Opportunity__c = nai.donatedItem.Id;
-					aip.Quantity__c = nai.donatedItem.Number_Available__c;
+					if (nai.quantity == null || nai.quantity <= 0) {
+                		throw (new MyException(nai.ai.Auction_Item_Name__c + ': Quantity cannot be less than one.'));												
+					}
+					if (nai.quantity > nai.donatedItem.Number_Available__c) {
+                		throw (new MyException(nai.ai.Auction_Item_Name__c + 
+                			': Quantity cannot be more than the number available (' + nai.donatedItem.Number_Available__c + ').'));						
+					}
+					aip.Quantity__c = nai.quantity;
 					aip.Actual_FMV__c = (nai.donatedItem.Amount / nai.donatedItem.Number_Of_Items__c) * aip.Quantity__c;
 					listAIP.add(aip);
 				}
@@ -105,8 +139,8 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 			strConvertResult = listAIP.size() + ' Auction Items were created.  The list has been refreshed to show remaining Donated Items.';
 			listNewAuctionItem = null;
         } catch (Exception e) {
-        	// undo our intial delete of all bid numbers
-        	Database.rollback(sp);        	
+        	// undo our partially saved state
+        	Database.rollback(sp);        				
 			strConvertResult = 'Errors occurred: ';
             ApexPages.addMessages(e);            
         }
