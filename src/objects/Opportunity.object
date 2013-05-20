@@ -1406,6 +1406,18 @@ IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductibl
         <type>Currency</type>
     </fields>
     <fields>
+        <fullName>Bid_Number__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>The purchaser&apos;s Bid Number at the time the purchase was recorded in the Purchases tab.</inlineHelpText>
+        <label>Bid Number</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Delivery_Status__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>

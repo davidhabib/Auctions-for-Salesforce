@@ -45,8 +45,8 @@
         </criteriaItems>
         <criteriaItems>
             <column>MEMBER_STATUS</column>
-            <operator>equals</operator>
-            <value>Donated,RSVP Yes</value>
+            <operator>notEqual</operator>
+            <value>RSVP No</value>
         </criteriaItems>
     </filter>
     <format>Summary</format>
@@ -67,7 +67,7 @@
     </params>
     <params>
         <name>co</name>
-        <value>0</value>
+        <value>1</value>
     </params>
     <reportType>CampaignWithCampaignMembers</reportType>
     <scope>orgActive</scope>

@@ -6,10 +6,10 @@
     <description>Auction Items and their Purchase Opportunities</description>
     <join>
         <join>
-            <outerJoin>false</outerJoin>
+            <outerJoin>true</outerJoin>
             <relationship>OpportunityContactRoles</relationship>
         </join>
-        <outerJoin>false</outerJoin>
+        <outerJoin>true</outerJoin>
         <relationship>Opportunities__r</relationship>
     </join>
     <label>Auction Items and their Purchases</label>

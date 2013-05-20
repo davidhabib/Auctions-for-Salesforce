@@ -182,7 +182,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
             for (Auction_Item__c ai : listAuctionItem) {
             	mapIDToAuctionItem.put(ai.Id, ai);
             }
-            // cache all the contact's accounts.
+            // cache all the contacts' accounts.
             map<ID, ID> mapContactIdtoAccountId = new map<ID, ID>();
             if (AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
             	list<Contact> listCon = [select Id, AccountId from Contact where Id in :setContactId];
@@ -190,7 +190,13 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
             		mapContactIdtoAccountId.put(con.Id, con.AccountId);
             	}            	
             }
-            
+            // cache all the contacts' bid numbers.
+            map<ID, decimal> mapContactIdtoBidNumber = new map<ID, decimal>();
+            list<CampaignMember> listCM = [select Bid_Number__c, contactId from CampaignMember 
+					where CampaignId = :campaignIdAuctionAttendees and contactId in :setContactId];
+            for (CampaignMember cm : listCM) {
+            	mapContactIdtoBidNumber.put(cm.contactId, cm.Bid_Number__c);
+            }
                     	  	
         	// loop through the opps of the grid, and save the valid ones.
             for (AUC_PurchaseOpportunity apo : listAuctionPurchasedItems) {
@@ -239,6 +245,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 	                apo.opp.Auction_Non_Deductible_Amount__c = item.Fair_Market_Value__c;
 	                apo.opp.Description = (item.Description__c != null ? item.Description__c : '') + 
 	                	(item.Restrictions__c != null ? '\nRestrictions: ' + item.Restrictions__c : '');
+					apo.opp.Bid_Number__c = mapContactIdtoBidNumber.get(apo.contactId);	                	
 	                listOppsToCreate.add(apo.opp);
   
   	                OpportunityContactRole cr = new OpportunityContactRole();

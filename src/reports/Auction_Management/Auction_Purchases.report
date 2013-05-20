@@ -7,9 +7,19 @@
         <field>OPPORTUNITY_NAME</field>
     </columns>
     <columns>
+        <field>CONTACT</field>
+    </columns>
+    <columns>
+        <field>Opportunity.Bid_Number__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity.Auction_Item_Purchased__c</field>
+    </columns>
+    <columns>
         <field>Opportunity.Auction_Item_Name__c</field>
     </columns>
     <columns>
+        <aggregateTypes>Sum</aggregateTypes>
         <field>AMOUNT</field>
     </columns>
     <columns>
@@ -25,7 +35,12 @@
             <value>Opportunity.GW_Auction_Purchased_Item</value>
         </criteriaItems>
     </filter>
-    <format>Tabular</format>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>CAMPAIGN_SOURCE</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
     <name>Auction Purchases</name>
     <params>
         <name>open</name>
@@ -46,6 +61,6 @@
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>
         <dateColumn>CLOSE_DATE</dateColumn>
-        <interval>INTERVAL_CURY</interval>
+        <interval>INTERVAL_CUSTOM</interval>
     </timeFrameFilter>
 </Report>

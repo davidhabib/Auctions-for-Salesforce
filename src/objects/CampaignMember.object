@@ -410,10 +410,6 @@
                 <default>false</default>
             </picklistValues>
             <picklistValues>
-                <fullName>No Thanks</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
                 <fullName>Planned</fullName>
                 <default>false</default>
             </picklistValues>
@@ -435,10 +431,6 @@
             </picklistValues>
             <picklistValues>
                 <fullName>Sent</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Yes Please</fullName>
                 <default>false</default>
             </picklistValues>
             <sorted>true</sorted>
