@@ -167,8 +167,20 @@
 		    	event.stopPropagation();
 		    	return false; // does preventDefault and stopPropagation
 		  	}  
-		});		
-
+		});	
+		
+		/****
+		// wanted to prevent window from closing, but had trouble getting fOppsToUpdate
+		// correctly loaded in a consistent fashion.  so I am punting on this.
+		j$(window).bind('beforeunload', function() {
+			if ({!fOppsToUpdate}) {
+				return 'The Purchase Opportunities should be updated first.';
+			} else {
+				return;
+			}
+		});
+		****/
+		
 		/*******************************************************************************************************
    	 	* setup the Purchasers autocomplete textbox
 		*******************************************************************************************************/
@@ -333,6 +345,16 @@
 		return (str == null ? '' : str);
 	}
 		
+	/*******************************************************************************************************
+	* prompt the user if the opportunities have not been updated
+	*******************************************************************************************************/
+	function areOppsUpdated(needToUpdate) {
+		if (needToUpdate) {
+			alert('The Purchase Opportunities should be updated first.');
+			return false;
+		}
+		return true;
+	}
 </script>
  	
    	<apex:sectionHeader title="Auction Check Out" />      
@@ -531,12 +553,12 @@
 					<apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!fHasReceipts}" >
 						<apex:pageBlockSectionItem >
 						<apex:outputPanel >
-							<apex:commandButton value="View Receipt" onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;" />&nbsp;&nbsp;	
-							<apex:commandButton value="Next Guest" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
-							<apex:commandButton value="Close" action="{!Close}" immediate="true" />
+							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
+							<apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
+							<apex:commandButton value="Close" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!Close}" immediate="true" />
 						</apex:outputPanel>							
 						</apex:pageBlockSectionItem>							
-					</apex:pageBlockSection>										
+					</apex:pageBlockSection>	
 				</apex:outputPanel>				
 			</td>
 			</tr>
