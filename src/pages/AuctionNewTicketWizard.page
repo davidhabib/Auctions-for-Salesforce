@@ -113,7 +113,7 @@
 				<li>For ticket purchases by an individual, fill in the <b>Contact</b> field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the <b>{!$ObjectType.Account.Label}</b> field.</li>
 				<li>The <b>Per Ticket Non-Deductible Amount</b> field is pre-filled with the amount specified in the Auction.  You can change it if needed, if you have different ticket levels.</li>
 				<li>When you change the <b>Number of Tickets</b> field the page will refresh the Attendees grid.</li>
-				<li>You can leave <b>Bid Number</b> empty for now, and use the <b>Assign Bid Number</b> button on the Tickets tab.</li>
+				<li>You can leave <b>Bid Number</b> empty for now, and later use the <b>Assign Bid Number</b> button on the Tickets tab.</li>
 				<li>You can add additional Ticket fields to the page using the Opportunity Field Set <b>AuctionNewTicketWizardFS</b>.</li>
 				<li>You can add additional fields to the Attendees grid using the Campaign Member Field Set <b>AuctionNewTicketWizardFS</b>.</li>
 				</ul>
