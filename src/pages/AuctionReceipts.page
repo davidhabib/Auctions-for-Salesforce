@@ -462,12 +462,14 @@
 					<h3>Your Purchases</h3> 
 					<table cellspacing="2px" >
 						<tr style="vertical-align:bottom;text-align:left; font-weight:bold; ">
-							<td>Item</td>
-							<td style="width:80px;" >Amount</td>
-							<td>Fair Market<br/>Value</td>
+							<td>Item&nbsp;&nbsp;&nbsp;</td>
+							<td  style="text-align:right" >&nbsp;&nbsp;&nbsp;Amount</td>
+							<td style="text-align:right" >&nbsp;&nbsp;&nbsp;Fair Market<br/>Value</td>
+							<td style="text-align:right" >&nbsp;&nbsp;&nbsp;Deductible<br/>Amount</td>
+							<td style="text-align:right" >&nbsp;&nbsp;&nbsp;</td>
 			            	<!-- additional Opportunity fields use a fieldset -->
 							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
-								<td>{!f.Label}</td>					
+								<td>{!f.Label}&nbsp;&nbsp;&nbsp;</td>					
 							</apex:repeat>
 						</tr>
 						<tr>
@@ -482,16 +484,22 @@
 								<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
 								&nbsp;&nbsp;&nbsp;
 							</td>
-							<td>
+							<td style="text-align:right" >
 								<apex:outputText value="{0,Number,$#,###.##}" >
 									<apex:param value="{!oppAP.Amount}" />
 								</apex:outputText>
 							</td>
-							<td>
+							<td style="text-align:right" >
 								<apex:outputText value="{0,Number,$#,###.##}" >
 									<apex:param value="{!oppAP.Auction_Non_Deductible_Amount__c}"/>
 								</apex:outputText>
 							</td>
+							<td style="text-align:right" >
+								<apex:outputText value="{0,Number,$#,###.##}" >
+									<apex:param value="{!oppAP.Auction_Deductible_Amount__c}"/>
+								</apex:outputText>
+							</td>
+							<td></td>
 			            	<!-- additional Opportunity fields use a fieldset -->
 							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
 								<td style="vertical-align:center" >
@@ -509,16 +517,22 @@
 
 						<tr style="vertical-align:bottom;text-align:left; font-weight:bold;">
 							<td>Totals</td>
-							<td>
+							<td style="text-align:right" >
 								<apex:outputText value="{0,Number,$#,###.##}" >
 									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
 								</apex:outputText>							
 							</td>
-							<td>
+							<td style="text-align:right" >
 								<apex:outputText value="{0,Number,$#,###.##}" >
 									<apex:param value="{!receipt.decTotalFMV}"/> 
 								</apex:outputText>								
 							</td>
+							<td style="text-align:right" >
+								<apex:outputText value="{0,Number,$#,###.##}" >
+									<apex:param value="{!receipt.decTotalAmountDeductible}"/> 
+								</apex:outputText>								
+							</td>
+							<td></td>
 			            	<!-- additional Opportunity fields use a fieldset -->
 							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
 								<td></td>					
