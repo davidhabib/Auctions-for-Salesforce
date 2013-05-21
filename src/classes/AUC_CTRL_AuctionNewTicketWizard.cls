@@ -52,6 +52,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			auctionMaintenance.auctionId = auctionId;
 			opp.CampaignId = auctionMaintenance.campaignIdAuctionTickets;				
 		}
+		
+		decTicketFMV = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId);
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -67,6 +69,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	
 	// we instantiate this object to get the Contact lookup field. We also will save it.
 	public OpportunityContactRole contactRole { get; set; }
+	
+	// the per ticket FMV to use
+	public decimal decTicketFMV { get; set; }
 	
 	// helper routine to return all Opportunity field names from the Field Set
 	private string strOppFields {
@@ -218,7 +223,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	        	opp.Name = auctionMaintenance.StrOppTicketName(opp.accountId, contactRole.contactId);
         	}        	
  
-			opp.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * opp.Number_Of_Tickets__c;     
+			opp.Auction_Non_Deductible_Amount__c = decTicketFMV * opp.Number_Of_Tickets__c;
 			if (opp.StageName == null) { 	
 	        	if (opp.amount == null) {
 	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;

@@ -33,6 +33,57 @@
 		border-bottom: 1px solid #D4DADC;
 	}
 	
+		.cssTabHelpLink {
+			cursor: pointer;
+			border-style: solid;
+			border-radius: 4px;
+			border-width: 1px;
+			border-color: #DEEFF5;
+			width: 110px;
+			height: 20px; 
+			color: black;
+			vertical-align: middle;
+			text-align: center;
+			background-color: #FCFFFE;
+			margin-top: 10px;
+			margin-left: 10px;
+			margin-bottom: 10px;
+			padding-top: 4px;	
+		}
+		
+		.cssTabHelpLink .helpLink {
+			text-decoration: none;
+			color: black;
+			font-size: 105%;
+			vertical-align: bottom;
+		}
+
+		.hideHelpLink {
+			cursor: pointer;
+			color: black;
+		}
+		
+		.hideHelpLink .helpLink {
+			color: grey;
+			text-decoration: none;
+		}
+		
+		.cssHelpText {
+			background-color: mintcream;
+			border-style: solid;
+			border-width: 1px;
+			border-color: lightBlue;
+			border-radius: 10px;
+			padding-top: 5px;	
+			padding-bottom: 10px;
+			padding-left: 10px;
+			padding-right: 10px;	
+			margin-top: 10px;
+			margin-bottom: 10px;
+			margin-right: 10px;
+			margin-left: 10px;
+		}
+		
 </style>
  
    	<apex:sectionHeader title="Auction Tickets" />      
@@ -45,7 +96,30 @@
             </apex:pageBlockButtons>      
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" />  
             <apex:messages styleClass="Error" />  
-            <p><i>&nbsp;&nbsp;For ticket purchases by an individual, fill in the Contact field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the {!$ObjectType.Account.Label} field.</i></p><br/>            
+            
+ 			<div class="cssTabHelpLink" id="linkHelp">
+	  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+					<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+				</a>
+			</div>
+	   		<div id="divHelp" class="cssHelpText" style="display:none" >
+	       		<div class="hideHelpLink">	       			
+					<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+						<img src="/img/arrowDown.gif" />Hide
+					</a>
+				</div>
+				<p style="padding-left:30px">Fill in the fields for the Ticket purchase, followed by the Attendees paid for by this ticket.</p>
+				<ul>
+				<li>For ticket purchases by an individual, fill in the <b>Contact</b> field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the <b>{!$ObjectType.Account.Label}</b> field.</li>
+				<li>The <b>Per Ticket Non-Deductible Amount</b> field is pre-filled with the amount specified in the Auction.  You can change it if needed, if you have different ticket levels.</li>
+				<li>When you change the <b>Number of Tickets</b> field the page will refresh the Attendees grid.</li>
+				<li>You can leave <b>Bid Number</b> empty for now, and use the <b>Assign Bid Number</b> button on the Tickets tab.</li>
+				<li>You can add additional Ticket fields to the page using the Opportunity Field Set <b>AuctionNewTicketWizardFS</b>.</li>
+				<li>You can add additional fields to the Attendees grid using the Campaign Member Field Set <b>AuctionNewTicketWizardFS</b>.</li>
+				</ul>
+	  		</div>
+            
+                        
             <apex:pageBlockSection title="Ticketing Information" columns="2">
                 <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
                 <apex:inputField value="{!contactRole.ContactId}" required="false" />                	       			
@@ -61,11 +135,17 @@
     	        		rerender="pbsAttendees, pbMain" focus="txtDescription" status="statusLoading" />
         			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
                 </apex:inputField>
+
+                <!-- special case FMV Override. -->
+                <apex:pageBlockSectionItem >
+                	<apex:outputLabel value="Per Ticket Non-Deductible Amount" />
+                	<apex:inputText value="{!decTicketFMV}" required="true" id="PerTicketNon-DeductibleAmount" />
+				</apex:pageBlockSectionItem>
+				
             </apex:pageBlockSection>
 
             <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
             	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
-            	<p style="font-style:italic;">Note that you can leave Bid Number empty for now, and use the Assign Bid Number button on the Tickets tab.</p>
             	<br/>
         
 				<apex:pageBlockTable value="{!listCmpMbrAttendees}" var="cmpmbr" >
