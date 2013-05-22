@@ -350,8 +350,7 @@
 	*******************************************************************************************************/
 	function areOppsUpdated(needToUpdate) {
 		if (needToUpdate) {
-			alert('The Purchase Opportunities should be updated first.');
-			return false;
+			return (window.confirm('The Purchase Opportunities should be updated first.  Do you want to still continue?'));
 		}
 		return true;
 	}
@@ -553,7 +552,7 @@
 					<apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!fHasReceipts}" >
 						<apex:pageBlockSectionItem >
 						<apex:outputPanel >
-							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!URLENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
+							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
 							<apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
 							<apex:commandButton value="Close" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!Close}" immediate="true" />
 						</apex:outputPanel>							
