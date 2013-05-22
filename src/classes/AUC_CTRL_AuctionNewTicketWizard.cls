@@ -49,6 +49,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		} else {
 			opp = new Opportunity(RecordTypeId=AUC_auctionMaintenance.recordtypeIdAuctionTicket);
 			opp.CloseDate = system.Today();
+			opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;  // assume new tickets are going in as paid.
 			contactRole = new OpportunityContactRole();			
 				
 			// use auctionId passed in if there, else use latest auction.
