@@ -500,7 +500,7 @@
 								return; 
 							} else { 
 								ChangePaymentMethod();
-								window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
+								window.open('{!URLENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
 								return;
 							}	
 						}		
@@ -534,7 +534,7 @@
 								<span style="vertical-align: middle;" >Loading Payment Processor...</span>
 							  </p>
 							</div>	       				
-		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!strCreditCardChargeURL}" />
+		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!URLENCODE(strCreditCardChargeURL)}" />
 		       				<script>
 		       					j$('.clsLoadingPP').fadeIn();
 		       					j$('#iframePP').load(function(){   
@@ -553,7 +553,7 @@
 					<apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!fHasReceipts}" >
 						<apex:pageBlockSectionItem >
 						<apex:outputPanel >
-							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
+							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!URLENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
 							<apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
 							<apex:commandButton value="Close" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!Close}" immediate="true" />
 						</apex:outputPanel>							

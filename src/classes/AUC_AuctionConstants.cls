@@ -201,7 +201,7 @@ public with sharing class AUC_AuctionConstants {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
 			if (settings.size() == 0) return null;
-			return settings[0].Check_Out_Payment_Method_Field__c;
+			return settings[0].Opportunity_Payment_Method_Field__c;
 		}
 	}
 	
@@ -211,7 +211,7 @@ public with sharing class AUC_AuctionConstants {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
 			if (settings.size() == 0) return null;
-			return settings[0].Check_Out_Check_Number_Field__c;
+			return settings[0].Opportunity_Check_Number_Field__c;
 		}
 	}	
 

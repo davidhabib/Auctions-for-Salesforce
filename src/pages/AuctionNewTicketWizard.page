@@ -33,6 +33,17 @@
 		border-bottom: 1px solid #D4DADC;
 	}
 	
+    .clsLoading {
+		display: none;
+		z-index: 99;
+		position: fixed;
+		top: 45%;
+		left: 30%;
+		background: lightyellow;
+		width: 400px;
+		height: 40px;		
+	}   
+		 
 		.cssTabHelpLink {
 			cursor: pointer;
 			border-style: solid;
@@ -132,7 +143,7 @@
                 <!-- special case Number of Tickets, so we can update the attendees panel. -->
                 <apex:inputField value="{!opp.Number_of_Tickets__c}" required="true" >
     	        	<apex:actionSupport immediate="false" event="onchange" action="{!OnChange_NumberOfTickets}" 
-    	        		rerender="pbsAttendees, pbMain" focus="txtDescription" status="statusLoading" />
+    	        		rerender="pbsAttendees, pbMain" focus="txtDescription" status="statusLoad" />
         			<apex:actionStatus startText="Loading..." stopText="" id="statusLoading" startStyle="color:green; font-style:italic" />
                 </apex:inputField>
 
@@ -143,7 +154,71 @@
 				</apex:pageBlockSectionItem>
 				
             </apex:pageBlockSection>
+            
+   			<apex:actionStatus id="statusLoad" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
+			<div class="loading clsLoading" id="divLoading" style="display:none" >
+			  <p style="vertical-align: middle;" >
+				<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+				<span class="loadingText" style="vertical-align: middle;" >Processing...</span>
+			  </p>
+			</div>        				            					            
+                        
+	    <apex:outputPanel id="panelPayment" > 
+			<script>			    		
+				/*******************************************************************************************************
+				* utility to invoke the credit card payment processor
+				* NOTE: had to locate this within the outputPanel that gets refreshed, to get the current URL formula.
+				*******************************************************************************************************/
+				function displayPaymentProcessor(strPaymentMethod) {
+					if (strPaymentMethod == 'Check') {
+						ChangePaymentMethod();
+						return;
+					} else if (strPaymentMethod == 'Cash') {
+						ChangePaymentMethod();
+						return;
+					}
+					else if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
+						// assume they are charging the card outside of Salesforce.
+						ChangePaymentMethod();
+						return;
+					} else if ({!opp.Amount} == 0) {
+						alert('Please fill in the Ticket Amount, before opening the payment processor.');
+						return;
+					} else if ({!fShowPaymentProcessorOnPage}) { 
+						ShowPanelCreditCard();
+						return; 
+					} else { 
+						ChangePaymentMethod();
+						window.open('{!URLENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
+						return;
+					}	
+				}		
+			</script>		    		
 
+	    	<apex:actionFunction action="{!ShowPanelCreditCard}" name="ShowPanelCreditCard" status="statusLoad" 
+	    		rerender="panelPayment" />			    		
+	    				    	   
+            <apex:pageBlockSection title="Payment Method" rendered="true" >	
+				<apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value);" >
+					<apex:selectOption itemValue="Cash" itemLabel="Cash" />
+					<apex:selectOption itemValue="Check" itemLabel="Check" />
+					<apex:selectOption itemValue="Credit Card" itemLabel="Credit Card" />
+				</apex:selectRadio>	
+	    		<apex:actionFunction action="{!ChangePaymentMethod}" name="ChangePaymentMethod" status="statusLoad"  
+	    			rerender="panelPayment" >
+	    		</apex:actionFunction>																	
+			
+				<apex:outputPanel id="panelCheck" rendered="{!strPaymentMethod == 'Check'}" >
+						<apex:outputLabel value="Check Number" style="font-weight:bold;" />&nbsp;&nbsp;&nbsp;&nbsp;
+						<apex:inputText value="{!strCheckNumber}" />
+				</apex:outputPanel>					
+			</apex:pageBlockSection>
+
+			<apex:outputPanel id="panelCreditCard" rendered="{!fShowPanelCreditCard}" >
+   				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!URLENCODE(strCreditCardChargeURL)}" />
+			</apex:outputPanel>						
+		</apex:outputPanel>						
+            
             <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
             	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
             	<br/>

@@ -204,6 +204,28 @@ public with sharing class AUC_AuctionMaintenance {
         }
 	}
 	
+	// utility to check if using NPSP Payments, and update payment info for the list of Opps.
+	public static void UpdateNPSPPayments(list<Opportunity> listOppToUpdate, string strPaymentMethod, string strCheckNumber) {
+		if (AUC_AuctionConstants.IsNPSPInstalled) {
+			try {
+				list<SObject> listPayments = new list<SObject>();
+				string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+					' from npe01__OppPayment__c where npe01__Opportunity__c in :listOppToUpdate ';
+				listPayments = database.query(strSoql);
+				if (listPayments.size() > 0) {
+					for (SObject payment : listPayments) {
+						payment.put('npe01__Payment_Method__c', strPaymentMethod);
+						if (strPaymentMethod == 'Check') {
+							payment.put('npe01__Check_Reference_Number__c', strCheckNumber);
+						}
+					}
+					update listPayments;
+				}
+			} catch (Exception e) {
+				// no cleanup needed.
+			}
+		}
+	}
 		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {

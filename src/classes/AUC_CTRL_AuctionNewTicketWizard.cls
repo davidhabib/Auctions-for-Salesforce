@@ -17,7 +17,15 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		// create a new opp, or load existing opp if passed in
 		String strOppId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('oppId'));	
 		if (strOppId != null && strOppId != '') {
-			opp = Database.Query('select ' + strOppFields +	' from Opportunity where Id=\'' + strOppId + '\'');
+			opp = Database.Query('select ' + strOppFields +	' from Opportunity where Id = :strOppId');
+			
+			// put payment info in our temp fields
+			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+				strPaymentMethod = string.valueOf(opp.get(AUC_AuctionConstants.strOppPaymentMethodField));
+			}
+			if (AUC_AuctionConstants.strOppCheckNumberField != null) {
+				strCheckNumber = string.valueOf(opp.get(AUC_AuctionConstants.strOppCheckNumberField));
+			}					
 					
 			// handle a non-existant contact role.
 			list<OpportunityContactRole> listCR = new list<OpportunityContactRole>();
@@ -85,6 +93,12 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 				// make sure Number Of Tickets field is included.
 				if (!strOppFields.contains(' Number_of_Tickets__c,')) strOppFields += ', Number_of_Tickets__c';
 
+				if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+					if (!strOppFields.contains(AUC_AuctionConstants.strOppPaymentMethodField)) strOppFields += ', ' + AUC_AuctionConstants.strOppPaymentMethodField; 
+				}
+				if (AUC_AuctionConstants.strOppCheckNumberField != null) {
+					if (!strOppFields.contains(AUC_AuctionConstants.strOppCheckNumberField)) strOppFields += ', ' + AUC_AuctionConstants.strOppCheckNumberField; 
+				}					
 			}
 			return strOppFields;
 		}
@@ -160,15 +174,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
     	}
     } 	
 
-	// callback when the user changes the current auction in the dropdown.
-	public PageReference ChangeAuction() {
-		// clear out all state that is specific to the auction
-		auctionMaintenance.auctionId = auctionId;
-		opp.CampaignId = auctionMaintenance.campaignIdAuctionTickets;
-		strSaveResults = null;
-		return null;
-	}  
-
 	// status string for reporting the results of saving.
     public String strSaveResults { get; set; }    
 	
@@ -231,6 +236,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
 	        	}
 			}
+			
+			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+				opp.put(AUC_AuctionConstants.strOppPaymentMethodField, strPaymentMethod);
+			}
+			if (AUC_AuctionConstants.strOppCheckNumberField != null && strPaymentMethod == 'Check') {
+				opp.put(AUC_AuctionConstants.strOppCheckNumberField, strCheckNumber);
+			}					
 			        	
 			// save the ticket opp			        					        		
         	if (opp.Id == null) {
@@ -241,6 +253,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	} else {
         		update opp;
         	}
+        	
+			// if using NPSP Payments, update payment info.
+			AUC_AuctionMaintenance.UpdateNPSPPayments(new list<Opportunity> { opp }, strPaymentMethod, strCheckNumber);        	
 			
 			// if creating a new contact role, then also put the contact on the Tickets campaign.
 			if (contactRole.Id == null) {
@@ -330,6 +345,83 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		}
 	}
 	
+	//==================== Support for Payment Processing ======================================
+	
+	// public property on whether to display the credit card panel
+	public boolean fShowPanelCreditCard { get; set; }
+	
+	// public method to show the credit card panel
+	public PageReference ShowPanelCreditCard() {
+		fShowPanelCreditCard = true;
+		strPaymentMethod = 'Credit Card';
+		return null;
+	}
+
+	public string strPaymentMethod { get; set; }
+	public string strCheckNumber { get; set; }
+	
+	// public method called by the page when the Payment Method changes
+	public PageReference ChangePaymentMethod() {
+		// new value will be in strPaymentMethod
+		fShowPanelCreditCard = false;
+		return null;
+	}		
+
+	// public property to get the commandButton URL
+	// for the Charge Credit Card button.	
+	public string strCreditCardChargeURL {
+		get {
+			//if (strCreditCardChargeURL == null && contactRole.contactId != null) {
+			// always recompute, because we don't have callback when contactRole.contactId or opp.Amount changes.
+			{ 
+				string str = AUC_AuctionConstants.StrCreditCardChargeURLFormula();
+				if (str != null) {
+					// {0} = contactId
+					// {1} = auctionId
+					// {2} = amount		
+					// {3} = sessionId
+					// {4} = partner server url
+					// {5} = organizationId
+					list<string> listFormat = new list<string>();
+					listFormat.add(contactRole.contactId);
+					listFormat.add(auctionId);
+					listFormat.add(string.valueOf(opp.Amount));
+					listFormat.add(UserInfo.getSessionId());
+					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+					listFormat.add(strServerURL);					
+					listFormat.add(UserInfo.getOrganizationId());					
+					str = string.format(str, listFormat);			
+				}
+				strCreditCardChargeURL = str;
+			}
+			return strCreditCardChargeURL;
+		}
+		private set;
+	}
+
+	// public property for the Window.Open() parameters
+	// for the virtual terminal window.
+	public string strPaymentProcessorWindowParameters {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
+		}
+	}
+	
+	// public property for whether to display the payment
+	// processor's virtual terminal on our page, or in a new browser window.
+	public boolean fShowPaymentProcessorOnPage {
+		get {
+			return AUC_AuctionConstants.fShowPaymentProcessorOnPage;
+		}
+	}	
+
+	// public property for the IFRAME Height parameter
+	// for the virtual terminal window if displaying on our page.
+	public string strPaymentProcessorPageHeight {
+		get {
+			return AUC_AuctionConstants.StrPaymentProcessorPageHeight();
+		}
+	}	
 
 	//==================== TEST METHOD(s) ======================================
 	public static testmethod void CodeCoverageTests() {
@@ -361,7 +453,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		
 		//instantiate the controller for this opp
 		AUC_CTRL_AuctionNewTicketWizard ctrl = new AUC_CTRL_AuctionNewTicketWizard();
-		ctrl.ChangeAuction();
 		ctrl.contactRole.ContactId = contact.id;
 		System.AssertEquals(campaign.Id, ctrl.opp.CampaignId);
 		System.AssertEquals(System.Today(), ctrl.opp.CloseDate);
@@ -370,6 +461,16 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		ctrl.OnChange_NumberOfTickets();
 		System.AssertEquals(4, ctrl.listCmpMbrAttendees.size());
 		System.AssertEquals(contact.Id, ctrl.listCmpMbrAttendees[0].ContactId);
+		ctrl.ChangePaymentMethod();
+		ctrl.ShowPanelCreditCard();
+		system.assertEquals(true, ctrl.fShowPanelCreditCard);
+		system.assertEquals('Credit Card', ctrl.strPaymentMethod);
+		system.assertEquals(null, ctrl.strCheckNumber);
+		system.assertEquals(null, ctrl.strCreditCardChargeURL);
+		system.assertNotEquals(null, ctrl.strPaymentProcessorWindowParameters);
+		system.assertEquals(false, ctrl.fShowPaymentProcessorOnPage);
+		system.assertNotEquals(null, ctrl.strPaymentProcessorPageHeight);
+		
 		ctrl.Save();
 		System.Assert(ctrl.opp.id != null);
 		System.AssertEquals('The ticket purchase has been saved.  1 contacts have been added to the auction attendee campaign.', ctrl.strSaveResults);
@@ -383,8 +484,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		
 		//instantiate the controller for this opp
 		ctrl = new AUC_CTRL_AuctionNewTicketWizard();
-		ctrl.ChangeAuction();
-		//ctrl.contactRole.ContactId = contact.id;
 		System.AssertEquals(contact.Id, ctrl.contactRole.ContactId);
 		System.AssertEquals(campaign.Id, ctrl.opp.CampaignId);
 		System.AssertEquals(System.Today(), ctrl.opp.CloseDate);

@@ -493,23 +493,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		update listOppToUpdate;
 		
 		// if using NPSP Payments, update payment info.
-		try {
-			list<SObject> listPayments = new list<SObject>();
-			string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
-				' from npe01__OppPayment__c where npe01__Opportunity__c in :listOppToUpdate ';
-			listPayments = database.query(strSoql);
-			if (listPayments.size() > 0) {
-				for (SObject payment : listPayments) {
-					payment.put('npe01__Payment_Method__c', strPaymentMethod);
-					if (strPaymentMethod == 'Check') {
-						payment.put('npe01__Check_Reference_Number__c', strCheckNumber);
-					}
-				}
-				update listPayments;
-			}
-		} catch (Exception e) {
-			// no cleanup needed.
-		}
+		AUC_AuctionMaintenance.UpdateNPSPPayments(listOppToUpdate, strPaymentMethod, strCheckNumber);
 		
 		// force the totals to recalc
 		//RecalcTotalAmountToPay(listReceipts);
