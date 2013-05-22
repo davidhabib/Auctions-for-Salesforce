@@ -500,7 +500,7 @@
 								return; 
 							} else { 
 								ChangePaymentMethod();
-								window.open('{!URLENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
+								window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
 								return;
 							}	
 						}		
@@ -534,7 +534,7 @@
 								<span style="vertical-align: middle;" >Loading Payment Processor...</span>
 							  </p>
 							</div>	       				
-		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!URLENCODE(strCreditCardChargeURL)}" />
+		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardChargeURL)}" />
 		       				<script>
 		       					j$('.clsLoadingPP').fadeIn();
 		       					j$('#iframePP').load(function(){   

@@ -181,15 +181,15 @@
 						// assume they are charging the card outside of Salesforce.
 						ChangePaymentMethod();
 						return;
-					} else if ({!opp.Amount} == 0) {
-						alert('Please fill in the Ticket Amount, before opening the payment processor.');
+					} else if ('{!opp.Amount}' == '') {
+						alert('Please fill in the Ticket Amount, before opening the credit card processor.');
 						return;
 					} else if ({!fShowPaymentProcessorOnPage}) { 
 						ShowPanelCreditCard();
 						return; 
 					} else { 
 						ChangePaymentMethod();
-						window.open('{!URLENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
+						window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
 						return;
 					}	
 				}		
@@ -215,7 +215,7 @@
 			</apex:pageBlockSection>
 
 			<apex:outputPanel id="panelCreditCard" rendered="{!fShowPanelCreditCard}" >
-   				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!URLENCODE(strCreditCardChargeURL)}" />
+   				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardChargeURL)}" />
 			</apex:outputPanel>						
 		</apex:outputPanel>						
             
