@@ -119,14 +119,20 @@
 						<img src="/img/arrowDown.gif" />Hide
 					</a>
 				</div>
-				<p style="padding-left:30px">Fill in the fields for the Ticket purchase, followed by the Attendees paid for by this ticket.</p>
+				<p style="padding-left:30px">Fill in the information for the Ticket purchase, followed by the Attendees paid for by this ticket.</p>
 				<ul>
 				<li>For ticket purchases by an individual, fill in the <b>Contact</b> field.&nbsp;&nbsp;For ticket purchases by an {!$ObjectType.Account.Label}, fill in the <b>{!$ObjectType.Account.Label}</b> field.</li>
-				<li>The <b>Per Ticket Non-Deductible Amount</b> field is pre-filled with the amount specified in the Auction.  You can change it if needed, if you have different ticket levels.</li>
-				<li>When you change the <b>Number of Tickets</b> field the page will refresh the Attendees grid.</li>
+				<li>The <b>Per Ticket Non-Deductible Amount</b> field is pre-filled with the amount specified in the Auction.  Change it if the Auction has different ticket non-deductible amounts.</li>
+				<li>Changing the <b>Number of Tickets</b> field will refresh the Attendees grid.</li>
 				<li>You can leave <b>Bid Number</b> empty for now, and later use the <b>Assign Bid Number</b> button on the Tickets tab.</li>
-				<li>You can add additional Ticket fields to the page using the Opportunity Field Set <b>AuctionNewTicketWizardFS</b>.</li>
-				<li>You can add additional fields to the Attendees grid using the Campaign Member Field Set <b>AuctionNewTicketWizardFS</b>.</li>
+				<li>When using the Credit Card processor to charge for the Ticket, you must still click the <b>Save</b> or <b>Save &amp; Close</b> button to save the Ticket and Attendee information.</li>
+				</ul>
+				<p style="padding-left:30px">Customizations</p>
+				<ul>
+				<li>Add additional Ticket fields to the page using the Opportunity Field Set <b>AuctionNewTicketWizardFS</b>.</li>
+				<li>Add additional fields to the Attendees grid using the Campaign Member Field Set <b>AuctionNewTicketWizardFS</b>.</li>
+				<li>Specify what fields to save the <b>Payment Method</b> and <b>Check Number</b> in by setting several Custom Settings.  See the <b>Installation &amp; Configuration Guide</b> for details.</li>
+				<li>Integrate a Credit Card processor on this page by setting several Custom Settings.  See the <b>Installation &amp; Configuration Guide</b> for details.</li>
 				</ul>
 	  		</div>
             
