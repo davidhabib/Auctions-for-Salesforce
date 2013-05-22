@@ -1060,7 +1060,7 @@
     <fieldSets>
         <fullName>AuctionReceiptsFS</fullName>
         <availableFields>
-            <field>Auction_Deductible_Amount__c</field>
+            <field>Auction_Donated_Item_Name__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1069,14 +1069,6 @@
         </availableFields>
         <availableFields>
             <field>Auction_Item_Name__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Auction_Donated_Item_Name__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Auction_Non_Deductible_Amount__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1335,11 +1327,7 @@
         <fullName>Auction_Deductible_Amount__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <formula>IF ( 
-OR ( NOT( $RecordType.Name = &quot;Purchase&quot; ), NOT ( $RecordType.Name = &quot;TBD&quot; ) ) ,
-IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductible_Amount__c , 0),
-0
-)</formula>
+        <formula>IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductible_Amount__c , 0)</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
         <label>Auction Deductible Amount</label>
         <precision>18</precision>
@@ -1666,6 +1654,8 @@ IF(Amount &gt; Auction_Non_Deductible_Amount__c , Amount - Auction_Non_Deductibl
         <columns>OPPORTUNITY.NAME</columns>
         <columns>OPPORTUNITY.RECORDTYPE</columns>
         <columns>OPPORTUNITY.AMOUNT</columns>
+        <columns>Auction_Deductible_Amount__c</columns>
+        <columns>Auction_Non_Deductible_Amount__c</columns>
         <columns>ACCOUNT.NAME</columns>
         <columns>OPPORTUNITY.STAGE_NAME</columns>
         <filterScope>Everything</filterScope>
