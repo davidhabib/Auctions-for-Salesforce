@@ -928,7 +928,7 @@
         </displayedFields>
         <displayedFields>
             <field>Amount</field>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
             <field>StageName</field>

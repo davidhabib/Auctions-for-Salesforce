@@ -7,6 +7,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css" type="text/css" />
+<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
 <style>	
 	/* this styling adds the vertical scrollbar to our autocomplete fields */
@@ -63,89 +64,6 @@
 		position: relative;
 	}	
 
-    .Error { 
-    	color: red; 
-    	font-weight: strong;
-    }
-    
-    .clsLoading {
-		display: none;
-		z-index: 99;
-		position: fixed;
-		top: 40%;
-		left: 30%;
-		background: lightyellow;
-		width: 400px;
-		height: 40px;		
-	}   
-	 
-    .clsLoadingPP {
-		display: none;
-		z-index: 99;
-		position: fixed;
-		top: 60%;
-		left: 30%;
-		background: lightyellow;
-		width: 400px;
-		height: 40px;	
-		
-		border: 1px solid #CACACA;
-		color: #666;
-		font-size: 95%;
-		padding: 4px;			
-	}   
-
-	.cssTabHelpLink {
-		cursor: pointer;
-		border-style: solid;
-		border-radius: 4px;
-		border-width: 1px;
-		border-color: #DEEFF5;
-		width: 110px;
-		height: 20px; 
-		color: black;
-		vertical-align: middle;
-		text-align: center;
-		background-color: #FCFFFE;
-		margin-top: 10px;
-		margin-left: 10px;
-		margin-bottom: 10px;
-		padding-top: 4px;	
-	}
-	
-	.cssTabHelpLink .helpLink {
-		text-decoration: none;
-		color: black;
-		font-size: 105%;
-		vertical-align: bottom;
-	}
-
-	.hideHelpLink {
-		cursor: pointer;
-		color: black;
-	}
-	
-	.hideHelpLink .helpLink {
-		color: grey;
-		text-decoration: none;
-	}
-	
-	.cssHelpText {
-		background-color: mintcream;
-		border-style: solid;
-		border-width: 1px;
-		border-color: lightBlue;
-		border-radius: 10px;
-		padding-top: 5px;	
-		padding-bottom: 10px;
-		padding-left: 10px;
-		padding-right: 10px;	
-		margin-top: 10px;
-		margin-bottom: 10px;
-		margin-right: 10px;
-		margin-left: 10px;
-	}
-	
 </style>
 
 <script type="text/javascript">
@@ -342,8 +260,8 @@
    	<apex:sectionHeader title="Auction Receipts" />      
     <apex:form >   		    
         <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
-       		<apex:actionStatus id="statusLoad" onstart="j$('.loading').fadeIn();" onstop="j$('.loading').fadeOut();" />
-			<div class="loading clsLoading"  >
+       		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
+			<div class="cssLoading" id="divLoading" >
 			  <p style="vertical-align: middle;" >
 				<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
 				<span style="vertical-align: middle;" >Loading...</span>

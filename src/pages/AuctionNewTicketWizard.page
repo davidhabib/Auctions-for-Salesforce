@@ -4,6 +4,7 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionNewTicketWizard"  title="New Auction Ticket Wizard" tabStyle="Auction_Tickets__tab" >
+<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
  
  	<script>
  	
@@ -23,78 +24,11 @@
  	
 <style>
       
-    .Error { 
-    	color: red; 
-    	font-weight: strong;
-    }
-
 	.apexp .editPage .bPageBlock .detailList .list tr td {
 		padding: 1px 5px 1px 5px; 
 		border-bottom: 1px solid #D4DADC;
 	}
-	
-    .clsLoading {
-		display: none;
-		z-index: 99;
-		position: fixed;
-		top: 45%;
-		left: 30%;
-		background: lightyellow;
-		width: 400px;
-		height: 40px;		
-	}   
-		 
-		.cssTabHelpLink {
-			cursor: pointer;
-			border-style: solid;
-			border-radius: 4px;
-			border-width: 1px;
-			border-color: #DEEFF5;
-			width: 110px;
-			height: 20px; 
-			color: black;
-			vertical-align: middle;
-			text-align: center;
-			background-color: #FCFFFE;
-			margin-top: 10px;
-			margin-left: 10px;
-			margin-bottom: 10px;
-			padding-top: 4px;	
-		}
-		
-		.cssTabHelpLink .helpLink {
-			text-decoration: none;
-			color: black;
-			font-size: 105%;
-			vertical-align: bottom;
-		}
-
-		.hideHelpLink {
-			cursor: pointer;
-			color: black;
-		}
-		
-		.hideHelpLink .helpLink {
-			color: grey;
-			text-decoration: none;
-		}
-		
-		.cssHelpText {
-			background-color: mintcream;
-			border-style: solid;
-			border-width: 1px;
-			border-color: lightBlue;
-			border-radius: 10px;
-			padding-top: 5px;	
-			padding-bottom: 10px;
-			padding-left: 10px;
-			padding-right: 10px;	
-			margin-top: 10px;
-			margin-bottom: 10px;
-			margin-right: 10px;
-			margin-left: 10px;
-		}
-		
+			 		
 </style>
  
    	<apex:sectionHeader title="Auction Tickets" />      
@@ -162,7 +96,7 @@
             </apex:pageBlockSection>
             
    			<apex:actionStatus id="statusLoad" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
-			<div class="loading clsLoading" id="divLoading" style="display:none" >
+			<div class="cssLoading" id="divLoading" >
 			  <p style="vertical-align: middle;" >
 				<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
 				<span class="loadingText" style="vertical-align: middle;" >Processing...</span>
