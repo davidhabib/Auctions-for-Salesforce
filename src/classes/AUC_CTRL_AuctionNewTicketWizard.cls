@@ -313,7 +313,10 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			strSaveResults += '  ' + String.valueOf(listCmpMbrCreate.size()) + ' contacts have been added to the auction attendee campaign.';
 			if (listCmpMbrUpdate.size() > 0) {
 				strSaveResults += '  ' + String.valueOf(listCmpMbrUpdate.size()) + ' contacts have been updated in the auction attendee campaign.'; 
-			}			
+			}	
+			
+			// assume they already charged the card, and we don't want the page refresh to reload the payment terminal.
+			fShowPanelCreditCard = false;					
 			return null;	
 			        
         } catch (Exception e) {
@@ -322,6 +325,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
             else
             	strSaveResults = 'The ticket purchase has been saved, but errors were encountered trying to save the attendees.  ';
             ApexPages.addMessages(e);            
+
+			// assume they already charged the card, and we don't want the page refresh to reload the payment terminal.
+			fShowPanelCreditCard = false;
             return null;
         }              
 	}
