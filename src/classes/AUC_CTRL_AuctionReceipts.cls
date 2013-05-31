@@ -6,9 +6,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	// constructor
 	public AUC_CTRL_AuctionReceipts() {
 		
-		// resolve UI defects with jQueryUI in IE10 by forcing IE into Standards mode
-		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=10');		
-				
+		// force IE into Standards Mode
+		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
+		 		
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
 		
@@ -384,8 +384,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 							list<string> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
 							if (listStr.size() > 1) {
 								Contact con = ocr.contact;
-								string strRelatedObj = listStr[0].replace('__r', '__c');
-								Sobject hh = con.getSobject(strRelatedObj);
+								Sobject hh = con.getSobject(listStr[0]);
 								string strHousehold;
 								if (hh != null) strHousehold = (string)hh.get(listStr[1]);
 								if (strHousehold != null) r.strContactName = strHousehold;
@@ -395,8 +394,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 							list<string> listStr = AUC_AuctionConstants.strContactHouseholdGreetingField.split('\\.', 0);
 							if (listStr.size() > 1) {
 								Contact con = ocr.contact;
-								string strRelatedObj = listStr[0].replace('__r', '__c');
-								Sobject hh = con.getSobject(strRelatedObj);
+								Sobject hh = con.getSobject(listStr[0]);
 								string strHousehold;
 								if (hh != null) strHousehold = (string)hh.get(listStr[1]);
 								if (strHousehold != null) r.strContactFirstName = strHousehold;
