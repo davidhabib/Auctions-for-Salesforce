@@ -216,8 +216,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				list<string> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
 				if (listStr.size() > 1) {
 					Contact con = cm.contact;
-					string strRelatedObj = listStr[0].replace('__r', '__c');
-					Sobject hh = con.getSobject(strRelatedObj);
+					Sobject hh = con.getSobject(listStr[0]);
 					if (hh != null) strHousehold = (string)hh.get(listStr[1]);
 				}
 			}
