@@ -27,7 +27,7 @@
         <name>Description__c</name>
     </fields>
     <fields>
-        <help><!-- Automatically calculated fair market value based on the value of the opportunity and the number of item. --></help>
+        <help><!-- Automatically calculated fair market value based on the value of the opportunity and the number of items. --></help>
         <label><!-- Estimated FMV --></label>
         <name>Estimated_FMV__c</name>
     </fields>

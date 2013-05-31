@@ -93,7 +93,7 @@
         <externalId>false</externalId>
         <formula>(Opportunity__r.Amount / Opportunity__r.Number_of_Items__c ) * Quantity__c</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-        <inlineHelpText>Automatically calculated fair market value based on the value of the opportunity and the number of item.</inlineHelpText>
+        <inlineHelpText>Automatically calculated fair market value based on the value of the opportunity and the number of items.</inlineHelpText>
         <label>Estimated FMV</label>
         <precision>18</precision>
         <required>false</required>
