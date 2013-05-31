@@ -5,10 +5,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	// constructor for the class 
 	public AUC_CTRL_AuctionCheckIn() {
-		
-		// resolve UI defects with jQueryUI in IE10 by forcing IE into Standards mode
-		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=10');		
-		
+
+		// force IE into Standards Mode
+		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
+		 		
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
@@ -644,6 +644,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	// clear out guest, keep captain, and refresh the page.
 	public PageReference NextGuest() {
 		contactIdAttendee = null;
+		// force IE into Standards Mode
+		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 		return null;
 	}
 
