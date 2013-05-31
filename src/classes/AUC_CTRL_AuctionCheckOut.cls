@@ -6,9 +6,9 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// constructor
 	public AUC_CTRL_AuctionCheckOut() {
 		
-		// resolve UI defects with jQueryUI in IE10 by forcing IE into Standards mode
-		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=10');		
-				
+		// force IE into Standards Mode
+		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
+		 		
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
 		
@@ -23,7 +23,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		// handle the no auction case
 		if (auctionId == null) {
 			strSaveResults = 'You must first create an Auction before using this page.';
-		}				
+		}		
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -509,6 +509,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// clear out guest, and refresh the page.
 	public PageReference NextGuest() {
 		contactIdPurchaser = null;
+		// force IE into Standards Mode
+		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');		 		
 		return null;
 	}
 		
@@ -604,10 +606,20 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 	}
 
+	// the following two properties are set in the constructor by passed in page parameters,
+	// so that this page can get the correct sessionId of the 'front-end' server that
+	// Conga merge requires to use Salesforce reports as a data source!
+	// Unfortunately, we still couldn't get the correct Session from parameters
+	// to a Check Out web tab, so I have removed this functionality.
+	// private string strApiSessionId { get; set; }
+	// private string strApiPartnerServerURL { get; set; }
+
 	// public property to get the commandButton URL
 	// for the View button, to invoke the receipts page  
 	public string strOpenReceiptURL {
 		get {
+		
+		/*******
 			string str = AUC_AuctionConstants.StrCheckOutReceiptsURLFormula();
 			if (str != null) {
 				// {0} = contactId
@@ -616,21 +628,34 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				// {3} = sessionId
 				// {4} = partner server url
 				// {5} = organizationId
+				
+				// NOTE that Conga wants 15 character ID's not 18.
+				
 				list<string> listFormat = new list<string>();
-				listFormat.add(contactIdPurchaser);
-				listFormat.add(auctionId);
+				string strID = contactIdPurchaser;
+				listFormat.add(strID.left(15));
+				strID = auctionId;
+				listFormat.add(strID.left(15));
 				if (listReceipts.size() > 0) {
 					listFormat.add(string.valueOf(listReceipts[0].decTotalAmountToPay));
 				} else {
 					listFormat.add('0');
 				}
-				listFormat.add(UserInfo.getSessionId());
-				string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
-				listFormat.add(strServerURL);					
+				// get the correct session Id that works with Conga.
+				//listFormat.add(EncodingUtil.urlEncode(UserInfo.getSessionId(),'UTF-8'));
+				listFormat.add(EncodingUtil.urlEncode(strApiSessionId,'UTF-8'));
+
+				// use the partner server URL that works with Conga.				
+				//string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+				listFormat.add(EncodingUtil.urlEncode(strApiPartnerServerURL,'UTF-8'));					
+				
+				// Conga won't use this, but in case a future use case comes up.
 				listFormat.add(UserInfo.getOrganizationId());					
 				str = string.format(str, listFormat);	
 				return str;		
-			} else {			
+			} else {	
+		*********/
+			{		
 				return '/apex/GW_Auctions__AuctionReceipts' +
 		        	'?RenderFormat=pdf' +
 		        	'&auctionId=' + auctionId +
