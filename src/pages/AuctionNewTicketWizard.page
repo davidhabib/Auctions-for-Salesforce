@@ -4,9 +4,11 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionNewTicketWizard"  title="New Auction Ticket Wizard" tabStyle="Auction_Tickets__tab" >
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
  
- 	<script>
+	<script type="text/javascript">
+	    var j$ = jQuery.noConflict();
  	
 		// function to populate Table Name/Number fields when the first one is filled in.
 		function OnChangeTxtTableNameNumber(txt) {
@@ -28,6 +30,10 @@
 		padding: 1px 5px 1px 5px; 
 		border-bottom: 1px solid #D4DADC;
 	}
+			 		
+    .cssLoadingPP {
+		top: 60%;
+	}   
 			 		
 </style>
  
@@ -155,7 +161,19 @@
 			</apex:pageBlockSection>
 
 			<apex:outputPanel id="panelCreditCard" rendered="{!fShowPanelCreditCard}" >
+				<div class="cssLoading cssLoadingPP"  >
+				  <p style="vertical-align: middle; text-align:center;" >
+					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+					<span style="vertical-align: middle;" >Loading Payment Processor...</span>
+				  </p>
+				</div>	       				
    				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardChargeURL)}" />
+   				<script>
+   					j$('.cssLoadingPP').fadeIn();
+   					j$('#iframePP').load(function(){   
+   						j$('.cssLoadingPP').fadeOut();
+   					});
+   				</script>
 			</apex:outputPanel>						
 		</apex:outputPanel>						
             
