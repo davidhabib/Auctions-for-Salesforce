@@ -155,13 +155,14 @@ public with sharing class AUC_AuctionConstants {
 	}
 		
 	// read the custom setting and return the string for the Auction Receipts URL formula for the CheckOut page.
-	public static string StrCheckOutReceiptsURLFormula() {
-		list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-		if (settings.size() > 0) {
-			return settings[0].Check_Out_Receipts_URL__c;
-		} else {
+	// I was unable to get this working with Conga, so it is not used.
+	public static string StrCheckOutReceiptsURLFormula() {	
+		//list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+		//if (settings.size() > 0) {
+		//	return settings[0].Check_Out_Receipts_URL__c;
+		//} else {
 			return null;
-		}
+		//}
 	}
 		
 	// read the custom setting and return the string for the window.open() parameters
@@ -267,7 +268,7 @@ public with sharing class AUC_AuctionConstants {
 				strContactHouseholdGreetingField = settings[0].Contact_Household_Greeting_Field__c;
 			}
 			if (strContactHouseholdGreetingField == null && IsNPSPHHInstalled) {
-				strContactHouseholdGreetingField = 'npo02__Household__r.Contact_Household_Greeting_Field__c';	
+				strContactHouseholdGreetingField = 'npo02__Household__r.npo02__Informal_Greeting__c';	
 			}
 			return strContactHouseholdGreetingField;			
 		}
@@ -305,8 +306,9 @@ public with sharing class AUC_AuctionConstants {
 						string strModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
 						if (strModel == 'One-to-One')
 							isOneToOne = true;			
+					} else {
+						isOneToOne = false;
 					}
-					isOneToOne = false;
 				} else {
 					isOneToOne = false;
 				}
