@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionReceipts" title="Auction Receipts"  tabStyle="Auction_Receipts__tab" renderAs="{!RenderFormat}" showHeader="true">
+<apex:page docType="html-5.0" controller="AUC_CTRL_AuctionReceipts" title="Auction Receipts"  tabStyle="Auction_Receipts__tab" renderAs="{!RenderFormat}" showHeader="true">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css" type="text/css" />
@@ -367,9 +367,9 @@
 		    		</apex:outputText>
 		    	</p>
 		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
-				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
+				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
 				</p><p/>
 			
 			 	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
@@ -477,9 +477,9 @@
 		    		</apex:outputText>
 		    	</p>
 		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
-				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
+				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
 				</p><p/>
 			 	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
