@@ -69,14 +69,16 @@
     </fields>
     <fields>
         <fullName>Check_Out_Receipts_URL__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <inlineHelpText>A custom URL to override the default Auction Receipts button on the Check Out page.  This allows you to use Conga Composer for the report.  Supports parameter substitution; see documentation.</inlineHelpText>
-        <label>Check Out Receipts URL Formula</label>
+        <inlineHelpText>unused.</inlineHelpText>
+        <label>Unused3</label>
         <required>false</required>
         <type>TextArea</type>
     </fields>
     <fields>
         <fullName>Contact_Household_Field__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The developer name of a lookup field to households on Contacts.  If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__c.  If using Accounts for householding, specify AccountId.</inlineHelpText>
         <label>Contact Household Field</label>
@@ -87,6 +89,7 @@
     </fields>
     <fields>
         <fullName>Contact_Household_Greeting_Field__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The developer path name to the informal greeting field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.npo02__Informal_Greeting__c.  Used by the Auction Receipts page.</inlineHelpText>
         <label>Contact Household Greeting Field</label>
@@ -97,6 +100,7 @@
     </fields>
     <fields>
         <fullName>Contact_Household_Name_Field__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The developer path name to the name field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.Name. If using Accounts for householding, specify Account.Name.</inlineHelpText>
         <label>Contact Household Name Field</label>
@@ -132,6 +136,7 @@
     <fields>
         <fullName>Donated_Item_Converter_Batch_Size__c</fullName>
         <defaultValue>25</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The batch size of new Auction Item rows to display in the Donated Item Converter page  at a time.</inlineHelpText>
         <label>Donated Item Converter Batch Size</label>
@@ -180,6 +185,7 @@
     </fields>
     <fields>
         <fullName>Opportunity_Check_Number_Field__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The full developer name of a Check Number field on Opportunity, that the Check Out page and New Ticket Wizard should save the Check Number into. If using the Non Profit Starter Pack and Payments, this data will automatically be saved in the Payment.</inlineHelpText>
         <label>Opportunity Check Number Field</label>
@@ -214,6 +220,7 @@
     </fields>
     <fields>
         <fullName>Opportunity_Payment_Method_Field__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The full developer name of a Payment Method field on Opportunity, that the Check Out page and New Ticket Wizard should save the Payment Method into.  If using the Non Profit Starter Pack and Payments, this data will automatically be saved in Payment.</inlineHelpText>
         <label>Opportunity Payment Method Field</label>
@@ -287,6 +294,7 @@
     <fields>
         <fullName>Set_Account_On_New_Opportunities__c</fullName>
         <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>If set, then Auctions will set the Account field on newly created Auction related Opportunities (Donated Items, Tickets, and Purchases).  If you are using the Non Profit Starter Pack and the 1-to-1 Account model, Auctions will automatically do this.</inlineHelpText>
         <label>Set Account On New Opportunities</label>

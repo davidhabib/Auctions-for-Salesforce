@@ -39,8 +39,8 @@
         <name>Campaign_Status_Default__c</name>
     </fields>
     <fields>
-        <help><!-- A custom URL to override the default Auction Receipts button on the Check Out page.  This allows you to use Conga Composer for the report.  Supports parameter substitution; see documentation. --></help>
-        <label><!-- Check Out Receipts URL Formula --></label>
+        <help><!-- unused. --></help>
+        <label><!-- Unused3 --></label>
         <name>Check_Out_Receipts_URL__c</name>
     </fields>
     <fields>
