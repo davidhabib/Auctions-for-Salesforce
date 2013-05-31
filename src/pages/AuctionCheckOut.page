@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionCheckOut"  title="Auction Check Out" tabStyle="Check_Out__tab" >
+<apex:page docType="html-5.0" controller="AUC_CTRL_AuctionCheckOut"  title="Auction Check Out" tabStyle="Check_Out__tab" >
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
@@ -531,7 +531,7 @@
 						</apex:outputPanel>							
 						</apex:pageBlockSectionItem>							
 					</apex:pageBlockSection>	
-				</apex:outputPanel>				
+				</apex:outputPanel>		 		
 			</td>
 			</tr>
 			</table> 
