@@ -415,6 +415,10 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Auction_Donated_Item_Restrictions__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -533,10 +537,6 @@
         </availableFields>
         <availableFields>
             <field>Type</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Auction_Non_Deductible_Amount__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -967,6 +967,10 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Bid_Number__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -1093,6 +1097,10 @@
         </availableFields>
         <availableFields>
             <field>Number_Used__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Bid_Number__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1349,6 +1357,7 @@
     </fields>
     <fields>
         <fullName>Auction_Donated_Item_Restrictions__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Any restrictions on the donated item, like when it is not available.  This will get copied over to the Auction Item when it is created.</inlineHelpText>
         <label>Auction Donated Item Restrictions</label>
@@ -1395,6 +1404,7 @@
     </fields>
     <fields>
         <fullName>Bid_Number__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The purchaser&apos;s Bid Number at the time the purchase was recorded in the Purchases tab.</inlineHelpText>
         <label>Bid Number</label>
