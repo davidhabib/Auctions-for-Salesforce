@@ -251,6 +251,10 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Allow_Multiple_Purchases__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>FMV_Rollup__c</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -312,6 +316,7 @@
     <fields>
         <fullName>Allow_Multiple_Purchases__c</fullName>
         <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Check if you want the Auction Purchases page to allow this item to be purchased multiple times.</inlineHelpText>
         <label>Allow Multiple Purchases</label>
