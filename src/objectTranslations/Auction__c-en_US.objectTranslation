@@ -13,7 +13,7 @@
         <name>Auction_Date__c</name>
     </fields>
     <fields>
-        <help><!-- The amount that is non-deductible from an auction ticket, due to being provided food and/or services. --></help>
+        <help><!-- The default amount that is non-deductible from an auction ticket, due to being provided food and/or services.  The New Ticket Wizard allows you to override this value if you have different ticket values used. --></help>
         <label><!-- Ticket Non-Deductible Amount --></label>
         <name>Ticket_Non_Deductible_Amount__c</name>
     </fields>

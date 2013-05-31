@@ -52,7 +52,7 @@
         <fullName>Ticket_Non_Deductible_Amount__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <inlineHelpText>The amount that is non-deductible from an auction ticket, due to being provided food and/or services.</inlineHelpText>
+        <inlineHelpText>The default amount that is non-deductible from an auction ticket, due to being provided food and/or services.  The New Ticket Wizard allows you to override this value if you have different ticket values used.</inlineHelpText>
         <label>Ticket Non-Deductible Amount</label>
         <precision>8</precision>
         <required>false</required>
