@@ -196,7 +196,7 @@
     </fields>
     <fields>
         <fullName>Opportunity_Gift_Donor_Role__c</fullName>
-        <defaultValue>&quot;Individual Donor&quot;</defaultValue>
+        <defaultValue>&quot;Donor&quot;</defaultValue>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The OpportunityContactRole to use for donations by individuals.</inlineHelpText>
