@@ -8,13 +8,13 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     	get {
             if(setCon == null) {
 
-            	string strSoql = pageController.getStrSoql(); 
+            	string strSoql = pageController.getStrSoql();
             	
 				// start out sorting on the main name field.
             	if (SortItemField == null || SortItemField == '') {
 					SortItemField = pageController.strNameField;
 					SortItemAsc = true;  
-					strAlphaFilter = '%';          		
+					strAlphaFilter = '%';          		 
             	}
 
             	if (SortItemField != null) {
@@ -78,7 +78,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
 			auctionId = strAuctionId;	
-		} else if (validateId(strCookieAuctionId) != null) {
+		} else if (validateId(strCookieAuctionId) != null && isValidAuctionId(strCookieAuctionId)) {
 			auctionId = strCookieAuctionId;
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
 			auctionId = listSOAuctions[1].getValue();
@@ -147,7 +147,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}		
 		set {
 			if (strCookieAuctionId != value) {
-				Cookie	cId = new cookie('strCookieAuctionId', value, null, -1, false);
+				Cookie	cId = new cookie('strCookieAuctionId', value, null, -1, false); 
 	        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 	        	strCookieAuctionId = value;
 			}			
@@ -162,6 +162,14 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     		return id;
     	}
     	return null;
+	}
+		
+	// make sure the Auction still exists
+	private boolean isValidAuctionId(String auctionId) {
+		if (auctionId == null) return null;
+		list<Auction__c> listAuc = new list<Auction__c>();
+		listAuc = [select Id from Auction__c where Id = :auctionId];
+		return listAuc.size() > 0;
 	}
 		
 	// wrapper class to hold a Donated Item and a checkbox
