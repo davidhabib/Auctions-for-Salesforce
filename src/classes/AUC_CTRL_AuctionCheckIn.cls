@@ -23,7 +23,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			auctionId = strAuctionId;
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
 			auctionId = listSOAuctions[1].getValue();
-		}	
+		}
 		auctionMaintenance.auctionId = auctionId;		
 		
 		// handle the no auction case
@@ -201,14 +201,28 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			idCaptain = value;			
 			if (idCaptain == '') idCaptain = null;
 				
-			// set the current attendee's captain and table if they are new and not yet saved.  
-			if (attendeeEdit != null && attendeeEdit.con != null && attendeeEdit.con.Id == null) { 
+			// set the current attendee's captain and table if their CM has is new.  
+			if (attendeeEdit != null && attendeeEdit.cm != null && attendeeEdit.cm.Id == null) { 
             	attendeeEdit.cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);	            	
 	            if (cmCaptain != null) {
 	            	attendeeEdit.cm.Table_Name_Number__c = cmCaptain.Table_Name_Number__c;
 	            }
+	            // see if there is an available ticket for this guest
+	            // and use its Paid status.
+	            attendeeEdit.cm.Paid__c = PaidTicketAvailable();
 			}										 
 		}
+	}
+	
+	// private utility to check if the current Captain has a free ticket available
+	// and whether it has been paid for.
+	private boolean PaidTicketAvailable() {	
+        integer iLast = listAttendees.size() - 1;
+        if (iLast >= 0 && listAttendees[iLast].cm.contactId == null) {
+        	return listAttendees[iLast].cm.Paid__c;
+        } else {
+        	return false;
+        }		
 	}
 	
 	// differentiates whether our table captain is a Contact or an Account
@@ -253,6 +267,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		get {
 			if (listOppCaptain == null) {
 				listOppCaptain = new list<Opportunity>();
+				
+				if (auctionId == null) return listOppCaptain;
 					
 				// if we have a table captain, look for their ticket first.
 				if (idCaptain != null) {
@@ -358,7 +374,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     				for (Opportunity opp : listOppCaptain) {
     					if (opp.Id != null) {
 	    					setTicketOppId.add(opp.Id);
-				    		numTickets += opp.Number_Of_Tickets__c;	
+				    		numTickets += opp.Number_Of_Tickets__c == null ? 0 : opp.Number_Of_Tickets__c;	
 				    		mapTicketOppIdAttendeesLeft.put(opp.Id, opp.Number_Of_Tickets__c);
     					}			    				    		
     				}
@@ -402,7 +418,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					}
 					
 					// create new CampaignMembers for any additional attendees on this ticket  					
-		    		//if (numTickets == null || numTickets == 0) numTickets = 1;
 		    		CampaignMember cmCaptain = mapContactIdCM.get(idCaptain);
 		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
@@ -468,7 +483,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
                 	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
                 	cm.contactId = contactIdAttendee;
-                	cm.Paid__c = (listOppCaptain[0].amount != null);
+                	cm.Paid__c = PaidTicketAvailable();
                 	if (cmCaptain != null) {
                 		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
                 	}
@@ -555,31 +570,33 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			} else {
 				update attendeeEdit.con;
 			}
-      	
+      		// don't update contactIdAttendee, or it will clear attendeeEdit (and its CM)
+      		
+      		
       		// 2. create/update optional Ticket
       		if (fAddTicketPurchase) {        	
 
 	        	if (oppTicketAttendee.Id == null) {
 
 		        	// create the opp for the ticket purchase        	
-					Contact contact = [select Name, AccountId from Contact where Id=:contactIdAttendee];	
-					oppTicketAttendee.Name = auctionMaintenance.StrOppTicketName(null, contactIdAttendee);					   
+					oppTicketAttendee.Name = auctionMaintenance.StrOppTicketName(null, attendeeEdit.con.Id);					   
 					oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * 
 						oppTicketAttendee.Number_Of_Tickets__c;      	
 		        	
 		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 					// if so, we need to set the Opp's Account to make the rollups work.
 					if (AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
+						Contact contact = [select Name, AccountId from Contact where Id=:attendeeEdit.con.Id];	
 						oppTicketAttendee.AccountId = contact.AccountId;
 					}
 					        	
 	        		insert oppTicketAttendee;
 					
 					// only create contact role if client's code didn't do it!
-					if (AUC_AuctionConstants.fCreateOppContactRoles(oppTicketAttendee.Id, contactIdAttendee)) {				
+					if (AUC_AuctionConstants.fCreateOppContactRoles(oppTicketAttendee.Id, attendeeEdit.con.Id)) {				
 		        		OpportunityContactRole ocr = new OpportunityContactRole();
 						ocr.OpportunityId = oppTicketAttendee.Id;
-						ocr.contactId = contactIdAttendee;
+						ocr.contactId = attendeeEdit.con.Id;
 			        	ocr.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
 						ocr.IsPrimary = true;
 						insert ocr;
@@ -604,7 +621,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				for (Opportunity opp : listOppCaptain) {
 					if (mapTicketOppIdAttendeesLeft.get(opp.Id) > 0) {
 						attendeeEdit.cm.Auction_Ticket_OppId__c = opp.Id;
-						attendeeEdit.cm.Paid__c = opp.Amount != null;
+						attendeeEdit.cm.Paid__c = (attendeeEdit.cm.Paid__c || opp.Amount != null);
 						mapTicketOppIdAttendeesLeft = null; // so it will refresh
 						break;
 					}
