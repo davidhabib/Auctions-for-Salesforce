@@ -45,11 +45,7 @@
     <fieldSets>
         <fullName>AuctionDonatedItemConverterFS</fullName>
         <availableFields>
-            <field>OwnerId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>CreatedDate</field>
+            <field>Allow_Multiple_Purchases__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -57,11 +53,11 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>SystemModstamp</field>
+            <field>CreatedById</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>LastModifiedDate</field>
+            <field>CreatedDate</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -77,15 +73,11 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>FMV_Rollup__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Fair_Market_Value__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>LastModifiedById</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>IsDeleted</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -93,19 +85,27 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>IsDeleted</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LastModifiedById</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LastModifiedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OwnerId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>SystemModstamp</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Treat_Purchase_as_Gift__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>FMV_Rollup__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Allow_Multiple_Purchases__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>CreatedById</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>The set of fields to display for all new Auction Items in the Donated Item Converter wizard.</description>
@@ -146,27 +146,19 @@
     <fieldSets>
         <fullName>AuctionItemsTabFS</fullName>
         <availableFields>
-            <field>Restrictions__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OwnerId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>LastModifiedDate</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>LastModifiedById</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>IsDeleted</field>
+            <field>Allow_Multiple_Purchases__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Auction__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>CreatedById</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>CreatedDate</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -186,11 +178,39 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>FMV_Rollup__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Guaranteed_Bid__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Id</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>IsDeleted</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LastModifiedById</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LastModifiedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Minimum_Bid__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OwnerId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Restrictions__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -199,26 +219,6 @@
         </availableFields>
         <availableFields>
             <field>Treat_Purchase_as_Gift__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>FMV_Rollup__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Allow_Multiple_Purchases__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>CreatedById</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>CreatedDate</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Id</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>the set of fields to display on the Auction Items tab.</description>
@@ -247,11 +247,15 @@
     <fieldSets>
         <fullName>AuctionNewDonatedItemWizardFS</fullName>
         <availableFields>
-            <field>FMV_Override__c</field>
+            <field>Allow_Multiple_Purchases__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Allow_Multiple_Purchases__c</field>
+            <field>Display_Board__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>FMV_Override__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -259,15 +263,11 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Treat_Purchase_as_Gift__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>Fair_Market_Value__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Display_Board__c</field>
+            <field>Treat_Purchase_as_Gift__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>Controls the Auction Item fields displayed in the lower portion of the New Donated Item Wizard.</description>

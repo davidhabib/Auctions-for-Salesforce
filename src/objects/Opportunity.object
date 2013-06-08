@@ -1,5 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>AddInfluence</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <content>AuctionEditOpportunity</content>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Visualforce</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
     <businessProcesses>
         <fullName>Auctions</fullName>
         <description>the sales process to use for all Auction Donated Items, Sponsors, Purchases, etc.</description>
@@ -81,22 +115,6 @@
     <fieldSets>
         <fullName>AuctionCheckInFS</fullName>
         <availableFields>
-            <field>Procurred_By__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>SystemModstamp</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>RecordTypeId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Type</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -196,6 +214,22 @@
             <field>Probability</field>
             <isRequired>false</isRequired>
         </availableFields>
+        <availableFields>
+            <field>Procurred_By__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>SystemModstamp</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Type</field>
+            <isRequired>false</isRequired>
+        </availableFields>
         <description>to specify additional fields to show up in the New Ticket section of the Check In page.</description>
         <displayedFields>
             <field>Amount</field>
@@ -214,11 +248,15 @@
     <fieldSets>
         <fullName>AuctionCheckOutFS</fullName>
         <availableFields>
+            <field>AccountId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Auction_Deductible_Amount__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
+            <field>Auction_Donated_Item_Name__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -227,34 +265,6 @@
         </availableFields>
         <availableFields>
             <field>Auction_Non_Deductible_Amount__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Delivery_Status__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Available__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_of_Items__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_of_Tickets__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Procurred_By__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Used__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -271,6 +281,10 @@
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Delivery_Status__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -346,6 +360,22 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Number_Available__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_Used__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_of_Items__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_of_Tickets__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>OwnerId</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -355,6 +385,10 @@
         </availableFields>
         <availableFields>
             <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Procurred_By__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -370,7 +404,7 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Auction_Donated_Item_Name__c</field>
+            <field>Type</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>to specify additional fields to show up in the Opportunities list of the Check Out page.</description>
@@ -379,47 +413,15 @@
     <fieldSets>
         <fullName>AuctionDonatedItemsTabFS</fullName>
         <availableFields>
+            <field>AccountId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Auction_Deductible_Amount__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>CreatedDate</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>StageName</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>RecordTypeId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Probability</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OwnerId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Delivery_Status__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Procurred_By__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Used__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>Auction_Donated_Item_Restrictions__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -435,7 +437,11 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
+            <field>CreatedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Delivery_Status__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -466,6 +472,34 @@
             <field>NextStep</field>
             <isRequired>false</isRequired>
         </availableFields>
+        <availableFields>
+            <field>Number_Used__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OwnerId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Procurred_By__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>StageName</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Type</field>
+            <isRequired>false</isRequired>
+        </availableFields>
         <description>The set of fields on the Donated Items tab.</description>
         <displayedFields>
             <field>Auction_Donated_Item_Name__c</field>
@@ -493,50 +527,6 @@
         <fullName>AuctionNewDonatedItemWizardFS</fullName>
         <availableFields>
             <field>Auction_Item_Name__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>SystemModstamp</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>RecordTypeId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Probability</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Pricebook2Id</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OwnerId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>NextStep</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Name</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>LeadSource</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>LastModifiedDate</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>LastModifiedById</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Type</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -589,6 +579,50 @@
         </availableFields>
         <availableFields>
             <field>LastActivityDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LastModifiedById</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LastModifiedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>LeadSource</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Name</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>NextStep</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OwnerId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Pricebook2Id</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>SystemModstamp</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Type</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>controls additional Opportunity fields to be displayed on the Auction New Donated Item wizard.</description>
@@ -641,11 +675,19 @@
     <fieldSets>
         <fullName>AuctionNewPurchaseWizardFS</fullName>
         <availableFields>
+            <field>AccountId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Amount</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Auction_Deductible_Amount__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
+            <field>Auction_Donated_Item_Name__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -658,38 +700,6 @@
         </availableFields>
         <availableFields>
             <field>Auction_Non_Deductible_Amount__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Delivery_Status__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Available__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_of_Items__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_of_Tickets__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Procurred_By__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Used__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>AccountId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Amount</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -706,6 +716,10 @@
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Delivery_Status__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -777,6 +791,22 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Number_Available__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_Used__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_of_Items__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_of_Tickets__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>OwnerId</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -786,6 +816,10 @@
         </availableFields>
         <availableFields>
             <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Procurred_By__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -805,7 +839,7 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Auction_Donated_Item_Name__c</field>
+            <field>Type</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>the set of fields to display in the New Purchase wizard.</description>
@@ -814,39 +848,15 @@
     <fieldSets>
         <fullName>AuctionNewTicketWizardFS</fullName>
         <availableFields>
-            <field>Delivery_Status__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>IsDeleted</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>TotalOpportunityQuantity</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>SystemModstamp</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>RecordTypeId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Probability</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Pricebook2Id</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>CreatedById</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Delivery_Status__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -878,7 +888,7 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
+            <field>IsDeleted</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -911,6 +921,30 @@
         </availableFields>
         <availableFields>
             <field>OwnerId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Pricebook2Id</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>SystemModstamp</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>TotalOpportunityQuantity</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Type</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>to specify the Opportunity fields to display on the top half of the New Ticket Wizard.</description>
@@ -943,23 +977,7 @@
     <fieldSets>
         <fullName>AuctionPurchasesTabFS</fullName>
         <availableFields>
-            <field>IsClosed</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>SystemModstamp</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>StageName</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>RecordTypeId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Probability</field>
+            <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -968,10 +986,6 @@
         </availableFields>
         <availableFields>
             <field>Bid_Number__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1003,7 +1017,7 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
+            <field>IsClosed</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1038,6 +1052,26 @@
             <field>OwnerId</field>
             <isRequired>false</isRequired>
         </availableFields>
+        <availableFields>
+            <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>StageName</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>SystemModstamp</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Type</field>
+            <isRequired>false</isRequired>
+        </availableFields>
         <description>The set of fields to display on the Purchases tab.</description>
         <displayedFields>
             <field>Name</field>
@@ -1064,11 +1098,15 @@
     <fieldSets>
         <fullName>AuctionReceiptsFS</fullName>
         <availableFields>
-            <field>Auction_Donated_Item_Name__c</field>
+            <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
+            <field>Amount</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Auction_Donated_Item_Name__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1076,39 +1114,7 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Delivery_Status__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Available__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_of_Items__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_of_Tickets__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Procurred_By__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Number_Used__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>Bid_Number__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>AccountId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Amount</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1125,6 +1131,10 @@
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Delivery_Status__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1196,6 +1206,22 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Number_Available__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_Used__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_of_Items__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Number_of_Tickets__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>OwnerId</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -1205,6 +1231,10 @@
         </availableFields>
         <availableFields>
             <field>Probability</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Procurred_By__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1223,6 +1253,10 @@
             <field>TotalOpportunityQuantity</field>
             <isRequired>false</isRequired>
         </availableFields>
+        <availableFields>
+            <field>Type</field>
+            <isRequired>false</isRequired>
+        </availableFields>
         <description>the set of additional opportunity fields to add to the table of purchases on the Auctions Reciepts pdf.</description>
         <displayedFields>
             <field>Auction_Item_Purchased__c</field>
@@ -1233,27 +1267,15 @@
     <fieldSets>
         <fullName>AuctionTicketsTabFS</fullName>
         <availableFields>
+            <field>AccountId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>Auction_Deductible_Amount__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Type</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>Auction_Non_Deductible_Amount__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>StageName</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>RecordTypeId</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>AccountId</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -1316,6 +1338,18 @@
             <field>Probability</field>
             <isRequired>false</isRequired>
         </availableFields>
+        <availableFields>
+            <field>RecordTypeId</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>StageName</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Type</field>
+            <isRequired>false</isRequired>
+        </availableFields>
         <description>The set of fields to include on the Tickets tab.</description>
         <displayedFields>
             <field>Name</field>
@@ -1331,6 +1365,10 @@
         </displayedFields>
         <label>AuctionTicketsTabFS</label>
     </fieldSets>
+    <fields>
+        <fullName>AccountId</fullName>
+        <type>Lookup</type>
+    </fields>
     <fields>
         <fullName>Auction_Deductible_Amount__c</fullName>
         <deprecated>false</deprecated>
@@ -1414,6 +1452,10 @@
         <trackFeedHistory>false</trackFeedHistory>
         <type>Number</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CampaignId</fullName>
+        <type>Lookup</type>
     </fields>
     <fields>
         <fullName>Delivery_Status__c</fullName>
@@ -1514,6 +1556,10 @@
         <trackFeedHistory>false</trackFeedHistory>
         <type>Number</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>OwnerId</fullName>
+        <type>Lookup</type>
     </fields>
     <fields>
         <fullName>Procurred_By__c</fullName>

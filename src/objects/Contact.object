@@ -1,16 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>AddToCampaign</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EnableCustomerPortal</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EnablePartnerPortalUser</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>EnableSelfService</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Merge</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>NewContact</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>RequestUpdate</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ViewCustomerPortal</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ViewPartnerPortalUser</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>ViewSelfService</actionName>
+        <type>Default</type>
+    </actionOverrides>
     <enableFeeds>true</enableFeeds>
     <fieldSets>
         <fullName>AuctionsCheckInFS</fullName>
-        <availableFields>
-            <field>Languages__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Title</field>
-            <isRequired>false</isRequired>
-        </availableFields>
         <availableFields>
             <field>AccountId</field>
             <isRequired>false</isRequired>
@@ -32,34 +88,6 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
-            <field>Level__c</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Salutation</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>Phone</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OtherStreet</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OtherState</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OtherPostalCode</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
-            <field>OtherPhone</field>
-            <isRequired>false</isRequired>
-        </availableFields>
-        <availableFields>
             <field>Fax</field>
             <isRequired>false</isRequired>
         </availableFields>
@@ -76,7 +104,15 @@
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
+            <field>Languages__c</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
             <field>LeadSource</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Level__c</field>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
@@ -93,6 +129,34 @@
         </availableFields>
         <availableFields>
             <field>OtherCountry</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OtherPhone</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OtherPostalCode</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OtherState</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>OtherStreet</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Phone</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Salutation</field>
+            <isRequired>false</isRequired>
+        </availableFields>
+        <availableFields>
+            <field>Title</field>
             <isRequired>false</isRequired>
         </availableFields>
         <description>Controls the contact fields displayed in the Auctions Check In page.</description>
@@ -126,6 +190,10 @@
         </displayedFields>
         <label>AuctionsCheckInFS</label>
     </fieldSets>
+    <fields>
+        <fullName>AccountId</fullName>
+        <type>Lookup</type>
+    </fields>
     <fields>
         <fullName>Languages__c</fullName>
         <deprecated>false</deprecated>
@@ -186,6 +254,14 @@
         </picklist>
         <trackFeedHistory>false</trackFeedHistory>
         <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>OwnerId</fullName>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>ReportsToId</fullName>
+        <type>Lookup</type>
     </fields>
     <listViews>
         <fullName>AllContacts</fullName>
