@@ -293,7 +293,7 @@ public with sharing class AUC_AuctionConstants {
 
 	//From the Non Profit Starter Pack.
 	//method to tell which model we're currently in for Accounts     
-	private static boolean fCheckedForOneToOne = false;
+	private static boolean fCheckedForOneToOne = false; 
     private static boolean isOneToOne { 
     	get {
 			// Kevin Bromer says: The npe01__Account_Processor__c field in the npe01__Contacts_And_Orgs_Settings__c 
@@ -304,8 +304,7 @@ public with sharing class AUC_AuctionConstants {
 					list<SObject> listSObj = database.query(strSoql);
 					if (listSObj != null && listSObj.size() > 0) {
 						string strModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
-						if (strModel == 'One-to-One')
-							isOneToOne = true;			
+						isOneToOne = (strModel == 'One-to-One');	
 					} else {
 						isOneToOne = false;
 					}
