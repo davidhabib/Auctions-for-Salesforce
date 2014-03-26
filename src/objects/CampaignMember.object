@@ -1,123 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-    <actionOverrides>
-        <actionName>Clone</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>ConvertLead</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>Create_Opportunity</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>Delete</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>Edit</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
-        <actionName>View</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <enableFeeds>false</enableFeeds>
     <fieldSets>
         <fullName>AuctionNewTicketWizardFS</fullName>
         <availableFields>
             <field>Auction_Ticket_OppId__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CampaignId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Checked_In__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FirstRespondedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>HasResponded</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Id</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>IsDeleted</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LeadId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Note__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>RecordTypeId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>SystemModstamp</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <description>The set of Campaign Member fields to display on the attendees section of the New Ticket Wizard.</description>
         <displayedFields>
             <field>ContactId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Status</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Bid_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Meal_Preference__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Paid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Is_Table_Captain__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Table_Captain__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Table_Name_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <label>AuctionNewTicketWizardFS</label>
@@ -126,95 +124,118 @@
         <fullName>AuctionsCheckInCMFS</fullName>
         <availableFields>
             <field>Auction_Ticket_OppId__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CampaignId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Checked_In__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>ContactId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FirstRespondedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>HasResponded</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Id</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>IsDeleted</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Is_Table_Captain__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LeadId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Note__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>RecordTypeId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Status</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>SystemModstamp</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <description>This field set controls which campaign member fields to display on the Auctions Check In page, in the attendee edit form.</description>
         <displayedFields>
             <field>Table_Captain__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Table_Name_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Bid_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Meal_Preference__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Paid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <label>AuctionsCheckInCMFS</label>
@@ -223,55 +244,68 @@
         <fullName>AuctionsCheckInGuestsCMFS</fullName>
         <availableFields>
             <field>Auction_Ticket_OppId__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CampaignId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>ContactId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Id</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Is_Table_Captain__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Note__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>RecordTypeId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Table_Captain__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <description>The set of fields to display in the Guests data table shown on the right hand side of the Check In page.</description>
         <displayedFields>
             <field>Status</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Bid_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Table_Name_Number__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Meal_Preference__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Paid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <label>AuctionsCheckInGuestsCMFS</label>
@@ -302,10 +336,6 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>CampaignId</fullName>
-        <type>Lookup</type>
-    </fields>
-    <fields>
         <fullName>Checked_In__c</fullName>
         <defaultValue>false</defaultValue>
         <deprecated>false</deprecated>
@@ -315,10 +345,6 @@
         <type>Checkbox</type>
     </fields>
     <fields>
-        <fullName>ContactId</fullName>
-        <type>Lookup</type>
-    </fields>
-    <fields>
         <fullName>Is_Table_Captain__c</fullName>
         <defaultValue>false</defaultValue>
         <deprecated>false</deprecated>
@@ -326,37 +352,6 @@
         <inlineHelpText>Is this attendee an Auction table captain?</inlineHelpText>
         <label>Is Table Captain</label>
         <type>Checkbox</type>
-    </fields>
-    <fields>
-        <fullName>LeadId</fullName>
-        <type>Lookup</type>
-    </fields>
-    <fields>
-        <fullName>LeadSource</fullName>
-        <picklist>
-            <picklistValues>
-                <fullName>Web</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Phone Inquiry</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Partner Referral</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Purchased List</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Other</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
-        <type>Picklist</type>
     </fields>
     <fields>
         <fullName>Meal_Preference__c</fullName>
@@ -404,76 +399,6 @@
         <type>Checkbox</type>
     </fields>
     <fields>
-        <fullName>Salutation</fullName>
-        <picklist>
-            <picklistValues>
-                <fullName>Mr.</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Ms.</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Mrs.</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Dr.</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Prof.</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
-        <type>Picklist</type>
-    </fields>
-    <fields>
-        <fullName>Status</fullName>
-        <picklist>
-            <picklistValues>
-                <fullName>Checked In</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Donated</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Invited</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Planned</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Received</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Responded</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>RSVP No</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>RSVP Yes</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Sent</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>true</sorted>
-        </picklist>
-        <type>Picklist</type>
-    </fields>
-    <fields>
         <fullName>Table_Captain__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
         <deprecated>false</deprecated>
@@ -497,31 +422,6 @@
         <type>Text</type>
         <unique>false</unique>
     </fields>
-    <recordTypes>
-        <fullName>Campaign_Member</fullName>
-        <active>true</active>
-        <description>the default campaign member record type</description>
-        <label>Campaign Member</label>
-        <picklistValues>
-            <picklist>Meal_Preference__c</picklist>
-            <values>
-                <fullName>Beef</fullName>
-                <default>false</default>
-            </values>
-            <values>
-                <fullName>Fish</fullName>
-                <default>false</default>
-            </values>
-            <values>
-                <fullName>Poultry</fullName>
-                <default>false</default>
-            </values>
-            <values>
-                <fullName>Vegetarian</fullName>
-                <default>false</default>
-            </values>
-        </picklistValues>
-    </recordTypes>
     <recordTypes>
         <fullName>GW_Auction_Attendee</fullName>
         <active>true</active>
