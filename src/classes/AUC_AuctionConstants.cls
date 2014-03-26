@@ -58,7 +58,7 @@ public with sharing class AUC_AuctionConstants {
 	public static string OPP_STAGE_WON_NOT_THANKED_STAGE {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 'Closed Won - Not Thanked';
+			if (settings.size() == 0) return 'Closed Won';
 			return settings[0].Opportunity_Stage_Won_Not_Thanked__c;
 		}
 	}
@@ -225,8 +225,8 @@ public with sharing class AUC_AuctionConstants {
 				fSetAccount = settings[0].Set_Account_On_New_Opportunities__c;
 			}
 			
-			// even if the setting is off, still do this for NPSP 1:1 model
-			return (fSetAccount || AUC_AuctionConstants.isOneToOne); 
+			// even if the setting is off, still do this for NPSP 1:1 and HH Account model
+			return (fSetAccount || isNPSPOneToOneAccountModel || isNPSPHouseholdAccountModel); 
 		}
 	}
 	
@@ -237,8 +237,10 @@ public with sharing class AUC_AuctionConstants {
 			if (settings.size() > 0) {
 				strContactHouseholdField = settings[0].Contact_Household_Field__c;
 			}
-			if (strContactHouseholdField == null && IsNPSPHHInstalled) {
+			if (strContactHouseholdField == null && useNPSPHouseholdObject) {
 				strContactHouseholdField = 'npo02__Household__c';	
+			} else if (strContactHouseholdField == null && isNPSPHouseholdAccountModel) {
+				strContactHouseholdField = 'AccountId';
 			}
 			return strContactHouseholdField;			
 		}
@@ -252,8 +254,10 @@ public with sharing class AUC_AuctionConstants {
 			if (settings.size() > 0) {
 				strContactHouseholdNameField = settings[0].Contact_Household_Name_Field__c;
 			}
-			if (strContactHouseholdNameField == null && IsNPSPHHInstalled) {
+			if (strContactHouseholdNameField == null && useNPSPHouseholdObject) {
 				strContactHouseholdNameField = 'npo02__Household__r.Name';	
+			} else if (strContactHouseholdNameField == null && isNPSPHouseholdAccountModel) {
+				strContactHouseholdNameField = 'Account.Name';
 			}
 			return strContactHouseholdNameField;			
 		}
@@ -267,8 +271,10 @@ public with sharing class AUC_AuctionConstants {
 			if (settings.size() > 0) {
 				strContactHouseholdGreetingField = settings[0].Contact_Household_Greeting_Field__c;
 			}
-			if (strContactHouseholdGreetingField == null && IsNPSPHHInstalled) {
+			if (strContactHouseholdGreetingField == null && useNPSPHouseholdObject) {
 				strContactHouseholdGreetingField = 'npo02__Household__r.npo02__Informal_Greeting__c';	
+			} else if (strContactHouseholdGreetingField == null && isNPSPHouseholdAccountModel) {
+				strContactHouseholdGreetingField = 'Account.npo02__Informal_Greeting__c';
 			}
 			return strContactHouseholdGreetingField;			
 		}
@@ -288,32 +294,44 @@ public with sharing class AUC_AuctionConstants {
 
 
 	//From the Non Profit Starter Pack.
-	//One-to-One value for system processor field 	
-	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One'; 
+	//Account Model values 	
+	private static String ONE_TO_ONE_PROCESSOR = 'One-to-One';
+	private static String BUCKET_PROCESSOR = 'Individual';
+	private static String HH_ACCOUNT_PROCESSOR = 'Household Account'; 
 
 	//From the Non Profit Starter Pack.
-	//method to tell which model we're currently in for Accounts     
-	private static boolean fCheckedForOneToOne = false; 
-    private static boolean isOneToOne { 
-    	get {
-			// Kevin Bromer says: The npe01__Account_Processor__c field in the npe01__Contacts_And_Orgs_Settings__c 
-			// setting will either be “One-to-One” or “Individual”  
-			if (!fCheckedForOneToOne) { 
+	//method to tell which Account Model we're currently in for Accounts     
+	private static boolean fCheckedNPSPAccountModel = false; 
+	private static string strNPSPAccountModel {
+		get {
+			if (!fCheckedNPSPAccountModel) { 
+				strNPSPAccountModel = null;
 				if (IsNPSPInstalled) {
 					string strSoql = 'Select Id, Name, npe01__Account_Processor__c From npe01__Contacts_And_Orgs_Settings__c';
 					list<SObject> listSObj = database.query(strSoql);
 					if (listSObj != null && listSObj.size() > 0) {
-						string strModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
-						isOneToOne = (strModel == 'One-to-One');	
-					} else {
-						isOneToOne = false;
+						strNPSPAccountModel = string.valueOf(listSObj[0].get('npe01__Account_Processor__c'));
 					}
-				} else {
-					isOneToOne = false;
 				}
-			fCheckedForOneToOne = true;
+			fCheckedNPSPAccountModel = true;
 			}
-			return isOneToOne;
+			return strNPSPAccountModel;
+	    }
+    	set;
+	}
+	
+    private static boolean isNPSPOneToOneAccountModel { 
+    	get {
+    		isNPSPOneToOneAccountModel = (strNPSPAccountModel == ONE_TO_ONE_PROCESSOR);
+			return isNPSPOneToOneAccountModel;
+	    }
+    	set;
+    } 	
+
+    private static boolean isNPSPHouseholdAccountModel { 
+    	get {
+    		isNPSPHouseholdAccountModel = (strNPSPAccountModel == HH_ACCOUNT_PROCESSOR);
+			return isNPSPHouseholdAccountModel;
 	    }
     	set;
     } 	
@@ -368,7 +386,7 @@ public with sharing class AUC_AuctionConstants {
 	// Given this description, the fix is if Auctions detects 1:1 model, don't set a contact role, but set the account.  
 	// If not a 1:1 model, go ahead and create the contact role.
     // public static boolean fCreateOppContactRoles() { 
-	//    	return !isOneToOne();    	
+	//    	return !isNPSPOneToOneAccountModel();    	
     // }
 	// At some point, I found this rule not good enough for all environments (Common Ground?  newer NPSP?  other?)
 	// and so we just check for an OCR after the opp is saved, and if we don't find it, tell Auctions to create one.
@@ -377,21 +395,21 @@ public with sharing class AUC_AuctionConstants {
     	OpportunityContactRole[] listOCR = [select Id from OpportunityContactRole where contactId=:contactId and OpportunityId=:oppId and IsPrimary=true]; 
     	return (listOCR.size() == 0);    	
     }
-    
-	// public property to tell Auctions whether NPSP Householding package is installed.
+
+	// private property to tell Auctions whether NPSP Householding package is installed and Household Object to be used.
 	private static boolean fCheckedForNPSPHH = false;
-	public static boolean IsNPSPHHInstalled {
+	private static boolean useNPSPHouseholdObject {
 		get {
 			if (!fCheckedForNPSPHH) {
 				Schema.SObjectType token = Schema.getGlobalDescribe().get('npo02__Household__c');
-				IsNPSPHHInstalled = (token != null);
+				useNPSPHouseholdObject = (token != null) && !isNPSPHouseholdAccountModel;
 				fCheckedForNPSPHH = true;
 			}
-			return IsNPSPHHInstalled;
+			return useNPSPHouseholdObject;
 		}
 		set;
 	}
-    
+
     // method accepts the ID of any object type and returns the full name, including prefix of the sObject
 	//type to which it belongs.
     public static Schema.SObjectType getObjectTypeFromId(ID sobjId) {
@@ -427,7 +445,8 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.OPP_STAGE_PLEDGED != null);
 		System.Assert(AUC_AuctionConstants.CAMPAIGN_Status_Default != null);
 		System.Assert(AUC_AuctionConstants.CROWS_PURCHASE_GRID != null);
-		System.Assert(AUC_AuctionConstants.isOneToOne == false || AUC_AuctionConstants.isOneToOne == true);
+		System.Assert(AUC_AuctionConstants.isNPSPOneToOneAccountModel == false || AUC_AuctionConstants.isNPSPOneToOneAccountModel == true);
+		System.Assert(AUC_AuctionConstants.isNPSPHouseholdAccountModel == false || AUC_AuctionConstants.isNPSPHouseholdAccountModel == true);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsIntro() != null);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsFooter() != null);
 		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
