@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <block>
+        <blockInfo>
+            <blockId>B0</blockId>
+            <joinTable>Auction_Item__c</joinTable>
+        </blockInfo>
+        <columns>
+            <field>Auction_Item__c.Auction_Item_Pieces__r$Opportunity__c.Name</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Auction_Item_Pieces__r$Opportunity__c.Auction_Donated_Item_Name__c</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Auction_Item_Pieces__r$Quantity__c</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Auction_Item_Pieces__r$Actual_FMV__c</field>
+        </columns>
+        <format>Summary</format>
+        <name>Auction Items and their Donated block 1</name>
+        <params>
+            <name>co</name>
+            <value>1</value>
+        </params>
+        <reportType>Auction_Items_and_their_Donated_Items__c</reportType>
+        <scope>organization</scope>
+        <timeFrameFilter>
+            <dateColumn>Auction_Item__c$Auction__c.Auction_Date__c</dateColumn>
+            <interval>INTERVAL_PREVCURY</interval>
+        </timeFrameFilter>
+    </block>
+    <block>
+        <blockInfo>
+            <blockId>B1</blockId>
+            <joinTable>Auction_Item__c</joinTable>
+        </blockInfo>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r$Amount</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r$Auction_Non_Deductible_Amount__c</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r$Auction_Deductible_Amount__c</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r$Auction_Item_Name__c</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r.OpportunityContactRoles$Name</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r$Name</field>
+        </columns>
+        <columns>
+            <field>Auction_Item__c.Opportunities__r$StageName</field>
+        </columns>
+        <format>Summary</format>
+        <name>Auction Items and their Purchase block 2</name>
+        <params>
+            <name>co</name>
+            <value>1</value>
+        </params>
+        <reportType>Auction_Items_and_their_Purchases__c</reportType>
+        <scope>organization</scope>
+        <timeFrameFilter>
+            <dateColumn>Auction_Item__c$Auction__c.Auction_Date__c</dateColumn>
+            <interval>INTERVAL_PREVCURY</interval>
+        </timeFrameFilter>
+    </block>
+    <blockInfo>
+        <blockId xsi:nil="true"/>
+        <joinTable>Auction_Item__c</joinTable>
+    </blockInfo>
+    <description>a join report showing all the donated items and purchases for each Auction Item for the current and previous year.</description>
+    <format>MultiBlock</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Auction_Item__c$Auction__c.Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Auction_Item__c$Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Auction_Item__c$Auction_Item_Name__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Auction Items - Donations &amp; Purchases</name>
+    <reportType>Auction_Items_and_their_Donated_Items__c</reportType>
+    <showDetails>true</showDetails>
+</Report>

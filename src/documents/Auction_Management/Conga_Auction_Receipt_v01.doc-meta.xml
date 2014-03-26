@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>a sample Word mailmerge document for use with Conga Composer to do Auction Receipts.</description>
+    <internalUseOnly>false</internalUseOnly>
+    <name>Conga Auction Receipt v01</name>
+    <public>false</public>
+</Document>
