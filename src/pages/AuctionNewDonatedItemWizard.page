@@ -49,6 +49,13 @@
 			return elems;
 		}
 	</script>
+	
+	<style>
+		.cssTextArea {
+			height: 7em;
+			width: 14em;		
+		}
+	</style>
     
 	<apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />    
     <apex:form >
@@ -87,7 +94,9 @@
 
             	<!-- additional Opportunity fields use a fieldset -->
 				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
-   					<apex:inputField value="{!opp[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
+   					<apex:inputField value="{!opp[f]}" 
+   						styleClass="{!IF(f.Type == 'textarea', 'cssTextArea', '')}"    					
+   						required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
 	  			</apex:repeat>                    	
             </apex:pageBlockSection>
             <apex:pageBlockSection title="Create An Auction Item" columns="1">
@@ -116,6 +125,7 @@
             	<!-- Auction Item fields use a fieldset -->
 				<apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
    					<apex:inputField value="{!auctionItem[f]}" rendered="{!fCreateAuctionItem}" 
+   						styleClass="{!IF(f.Type == 'textarea', 'cssTextArea', '')}" 
    						required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
 	  			</apex:repeat>                    	
             </apex:pageBlockSection>

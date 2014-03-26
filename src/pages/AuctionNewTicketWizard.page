@@ -34,6 +34,11 @@
     .cssLoadingPP {
 		top: 60%;
 	}   
+
+	.cssTextArea {
+		height: 7em;
+		width: 14em;		
+	}
 			 		
 </style>
  
@@ -83,7 +88,9 @@
             
             	<!-- additional Opportunity fields use a fieldset -->
 				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewTicketWizardFS}" var="f" >
-   					<apex:inputField value="{!opp[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
+   					<apex:inputField value="{!opp[f]}" 
+   						styleClass="{!IF(f.Type == 'textarea', 'cssTextArea', '')}"    					
+	   					required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
 	  			</apex:repeat>                    	
                 
                 <!-- special case Number of Tickets, so we can update the attendees panel. -->
