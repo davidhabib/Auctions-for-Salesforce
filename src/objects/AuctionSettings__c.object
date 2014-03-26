@@ -11,6 +11,7 @@
         <externalId>false</externalId>
         <inlineHelpText>Whether to disable the trigger that enforces unique Bid Numbers for each attendee per Auction.      NOTE: It is recommended that only one member of a Household should be given a Bid Number, and that this setting remain unchecked.</inlineHelpText>
         <label>Allow Duplicate Bid Numbers</label>
+        <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
@@ -22,6 +23,7 @@
         <inlineHelpText>HTML Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters.</inlineHelpText>
         <label>Auction Receipts Footer 1</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -32,6 +34,7 @@
         <inlineHelpText>HTML Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters.</inlineHelpText>
         <label>Auction Receipts Footer 2</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -43,6 +46,7 @@
         <inlineHelpText>Introductory HTML text on the Auction Receipts report.   Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters.</inlineHelpText>
         <label>Auction Receipts Intro 1</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -53,6 +57,7 @@
         <inlineHelpText>Introductory HTML text on the Auction Receipts report. Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters.</inlineHelpText>
         <label>Auction Receipts Intro 2</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -64,6 +69,7 @@
         <label>Campaign Status Default</label>
         <length>100</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -74,6 +80,7 @@
         <inlineHelpText>unused.</inlineHelpText>
         <label>Unused3</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -84,6 +91,7 @@
         <label>Contact Household Field</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -95,6 +103,7 @@
         <label>Contact Household Greeting Field</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -106,6 +115,7 @@
         <label>Contact Household Name Field</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -118,6 +128,7 @@
         <label>Credit Card Charge URL Formula</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -130,6 +141,7 @@
         <label>Credit Card Validate URL Formula</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -143,6 +155,7 @@
         <precision>3</precision>
         <required>false</required>
         <scale>0</scale>
+        <trackTrending>false</trackTrending>
         <type>Number</type>
         <unique>false</unique>
     </fields>
@@ -154,6 +167,7 @@
         <label>Unused2</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -167,6 +181,7 @@
         <precision>3</precision>
         <required>true</required>
         <scale>0</scale>
+        <trackTrending>false</trackTrending>
         <type>Number</type>
         <unique>false</unique>
     </fields>
@@ -180,6 +195,7 @@
         <precision>4</precision>
         <required>false</required>
         <scale>0</scale>
+        <trackTrending>false</trackTrending>
         <type>Number</type>
         <unique>false</unique>
     </fields>
@@ -191,6 +207,7 @@
         <label>Opportunity Check Number Field</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -203,6 +220,7 @@
         <label>Opportunity Gift Donor Role</label>
         <length>100</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -215,6 +233,7 @@
         <label>Opportunity Gift Org Donor Role</label>
         <length>100</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -226,6 +245,7 @@
         <label>Opportunity Payment Method Field</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -238,6 +258,7 @@
         <label>Opportunity Record Type Gift</label>
         <length>50</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -250,6 +271,7 @@
         <label>Opportunity Stage Pledged</label>
         <length>50</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -262,6 +284,7 @@
         <label>Opportunity Stage Won Not Thanked</label>
         <length>50</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -275,6 +298,7 @@
         <label>Payment Processor Page Height</label>
         <length>50</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -288,6 +312,7 @@
         <label>Payment Processor Window Parameters</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -298,6 +323,7 @@
         <externalId>false</externalId>
         <inlineHelpText>If set, then Auctions will set the Account field on newly created Auction related Opportunities (Donated Items, Tickets, and Purchases).  If you are using the Non Profit Starter Pack and the 1-to-1 Account model, Auctions will automatically do this.</inlineHelpText>
         <label>Set Account On New Opportunities</label>
+        <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
@@ -308,6 +334,7 @@
         <externalId>false</externalId>
         <inlineHelpText>If checked, the payment processor&apos;s terminal will be shown within the Auction page.  If not checked, the terminal will display in a new browser window or tab.  Used by the Check In page, Check Out page, and the New Ticket Wizard page.</inlineHelpText>
         <label>Show Payment Processor On Page</label>
+        <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
@@ -318,6 +345,7 @@
         <label>Unused1</label>
         <length>255</length>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>

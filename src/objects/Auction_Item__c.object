@@ -5,6 +5,10 @@
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
         <actionName>Clone</actionName>
         <type>Default</type>
     </actionOverrides>
@@ -17,11 +21,19 @@
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
         <actionName>List</actionName>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
         <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
@@ -34,6 +46,7 @@
         <actionName>View</actionName>
         <type>Default</type>
     </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <deprecated>false</deprecated>
     <description>A purchaseable item at an auction, such as a weekend getaway, a food basket, a certificate for free exercise classes.</description>
@@ -46,99 +59,123 @@
         <fullName>AuctionDonatedItemConverterFS</fullName>
         <availableFields>
             <field>Allow_Multiple_Purchases__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Auction__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Display_Board__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Donor_Recognition__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FMV_Override__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FMV_Rollup__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Fair_Market_Value__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Id</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>IsDeleted</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>OwnerId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>SystemModstamp</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Treat_Purchase_as_Gift__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <description>The set of fields to display for all new Auction Items in the Donated Item Converter wizard.</description>
         <displayedFields>
             <field>Name</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Auction_Item_Name__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Category__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Auction_Group__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Minimum_Bid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Guaranteed_Bid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Restrictions__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Description__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <label>AuctionDonatedItemConverterFS</label>
@@ -147,99 +184,123 @@
         <fullName>AuctionItemsTabFS</fullName>
         <availableFields>
             <field>Allow_Multiple_Purchases__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Auction__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>CreatedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Description__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Display_Board__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Donor_Recognition__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FMV_Override__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FMV_Rollup__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Guaranteed_Bid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Id</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>IsDeleted</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedById</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>LastModifiedDate</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Minimum_Bid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>OwnerId</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Restrictions__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>SystemModstamp</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Treat_Purchase_as_Gift__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <description>the set of fields to display on the Auction Items tab.</description>
         <displayedFields>
             <field>Auction_Item_Name__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Name</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Fair_Market_Value__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Category__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Auction_Group__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <label>AuctionItemsTabFS</label>
@@ -248,67 +309,83 @@
         <fullName>AuctionNewDonatedItemWizardFS</fullName>
         <availableFields>
             <field>Allow_Multiple_Purchases__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Display_Board__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FMV_Override__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>FMV_Rollup__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Fair_Market_Value__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <availableFields>
             <field>Treat_Purchase_as_Gift__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </availableFields>
         <description>Controls the Auction Item fields displayed in the lower portion of the New Donated Item Wizard.</description>
         <displayedFields>
             <field>Auction__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Category__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Name</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Auction_Group__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Auction_Item_Name__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>true</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Minimum_Bid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Restrictions__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Guaranteed_Bid__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Description__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <displayedFields>
             <field>Donor_Recognition__c</field>
+            <isFieldManaged>false</isFieldManaged>
             <isRequired>false</isRequired>
         </displayedFields>
         <label>AuctionNewDonatedItemWizardFS</label>
@@ -320,6 +397,7 @@
         <externalId>false</externalId>
         <inlineHelpText>Check if you want the Auction Purchases page to allow this item to be purchased multiple times.</inlineHelpText>
         <label>Allow Multiple Purchases</label>
+        <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
@@ -347,6 +425,7 @@
             </picklistValues>
             <sorted>false</sorted>
         </picklist>
+        <trackTrending>false</trackTrending>
         <type>Picklist</type>
     </fields>
     <fields>
@@ -357,6 +436,7 @@
         <label>Auction Item Name</label>
         <length>100</length>
         <required>true</required>
+        <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
     </fields>
@@ -371,6 +451,7 @@
         <relationshipLabel>Auction Items</relationshipLabel>
         <relationshipName>Auction_Items</relationshipName>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>Lookup</type>
     </fields>
     <fields>
@@ -401,6 +482,7 @@
             </picklistValues>
             <sorted>false</sorted>
         </picklist>
+        <trackTrending>false</trackTrending>
         <type>Picklist</type>
     </fields>
     <fields>
@@ -410,6 +492,7 @@
         <inlineHelpText>The full description of the item to use in the marketing of the item (booklet, placards, etc.)</inlineHelpText>
         <label>Description</label>
         <length>32000</length>
+        <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
         <visibleLines>5</visibleLines>
     </fields>
@@ -434,6 +517,7 @@
             </picklistValues>
             <sorted>false</sorted>
         </picklist>
+        <trackTrending>false</trackTrending>
         <type>Picklist</type>
     </fields>
     <fields>
@@ -443,6 +527,7 @@
         <inlineHelpText>The donors that you want to recognize for this auction item in the marketing of this item.</inlineHelpText>
         <label>Donor Recognition</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -454,6 +539,7 @@
         <precision>18</precision>
         <required>false</required>
         <scale>0</scale>
+        <trackTrending>false</trackTrending>
         <type>Currency</type>
     </fields>
     <fields>
@@ -465,6 +551,7 @@
         <summarizedField>Auction_Item_Piece__c.Actual_FMV__c</summarizedField>
         <summaryForeignKey>Auction_Item_Piece__c.Auction_Item__c</summaryForeignKey>
         <summaryOperation>sum</summaryOperation>
+        <trackTrending>false</trackTrending>
         <type>Summary</type>
     </fields>
     <fields>
@@ -478,6 +565,7 @@
         <precision>18</precision>
         <required>false</required>
         <scale>2</scale>
+        <trackTrending>false</trackTrending>
         <type>Currency</type>
     </fields>
     <fields>
@@ -489,6 +577,7 @@
         <precision>6</precision>
         <required>false</required>
         <scale>0</scale>
+        <trackTrending>false</trackTrending>
         <type>Currency</type>
     </fields>
     <fields>
@@ -500,6 +589,7 @@
         <precision>6</precision>
         <required>false</required>
         <scale>0</scale>
+        <trackTrending>false</trackTrending>
         <type>Currency</type>
     </fields>
     <fields>
@@ -509,6 +599,7 @@
         <inlineHelpText>Any restrictions on the donated item, like when it is not available.</inlineHelpText>
         <label>Restrictions</label>
         <required>false</required>
+        <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
     <fields>
@@ -518,6 +609,7 @@
         <externalId>false</externalId>
         <inlineHelpText>If checked, create any purchase opportunity as record type &quot;Gift&quot;, not &quot;Auction Item Purchase&quot;.</inlineHelpText>
         <label>Treat Purchase as Gift</label>
+        <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <label>Auction Item</label>
