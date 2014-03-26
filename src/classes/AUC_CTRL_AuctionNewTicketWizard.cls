@@ -429,6 +429,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			return AUC_AuctionConstants.StrPaymentProcessorPageHeight();
 		}
 	}	
+	
+	// property to tell whether there is no place to store the Payment Method 
+	public boolean isPaymentSettingsMissing {
+		get {
+			return AUC_AuctionConstants.isPaymentSettingsMissing;
+		}
+	}
 
 	//==================== TEST METHOD(s) ======================================
 	public static testmethod void CodeCoverageTests() {

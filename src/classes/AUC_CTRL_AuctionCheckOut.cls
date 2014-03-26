@@ -676,6 +676,14 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		return null;
 	}
 
+	// property to tell whether there is no place to store the Payment Method 
+	public boolean isPaymentSettingsMissing {
+		get {
+			return AUC_AuctionConstants.isPaymentSettingsMissing;
+		}
+	}
+
+
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
     	// create needed data

@@ -36,7 +36,7 @@
 	}   
 
 	.cssTextArea {
-		height: 7em;
+		height: 5em;
 		width: 14em;		
 	}
 			 		
@@ -151,7 +151,9 @@
 	    	<apex:actionFunction action="{!ShowPanelCreditCard}" name="ShowPanelCreditCard" status="statusLoad" 
 	    		rerender="panelPayment" />			    		
 	    				    	   
-            <apex:pageBlockSection title="Payment Method" rendered="true" >	
+            <apex:pageBlockSection title="Payment Method" rendered="true" >
+            	<apex:pageMessage severity="warning" strength="1" rendered="{!isPaymentSettingsMissing}"
+            		summary="Your Auction Settings are not filled out to specify where to store the Payment Method." />
 				<apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value);" >
 					<apex:selectOption itemValue="Cash" itemLabel="Cash" />
 					<apex:selectOption itemValue="Check" itemLabel="Check" />

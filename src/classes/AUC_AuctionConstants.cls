@@ -320,6 +320,37 @@ public with sharing class AUC_AuctionConstants {
     	set;
 	}
 	
+	//method to tell whether NPSP Payments are enabled     
+	private static boolean fCheckedNPSPPayments = false; 
+	private static boolean isNPSPPaymentsEnabled {
+		get {
+			if (!fCheckedNPSPPayments) { 
+				isNPSPPaymentsEnabled = false;
+				if (IsNPSPInstalled) {
+					string strSoql = 'Select Id, Name, npe01__Payments_Enabled__c From npe01__Contacts_And_Orgs_Settings__c';
+					list<SObject> listSObj = database.query(strSoql);
+					if (listSObj != null && listSObj.size() > 0) {
+						isNPSPPaymentsEnabled = boolean.valueOf(listSObj[0].get('npe01__Payments_Enabled__c'));
+					}
+				}
+			fCheckedNPSPPayments = true;
+			}
+			return isNPSPPaymentsEnabled;
+	    }
+    	set;
+	}
+
+	// property to tell whether there is no place to store the Payment Method (for NewTicketWizard and CheckOut pages)
+	public static boolean isPaymentSettingsMissing {
+		get {
+			return 
+				AUC_AuctionConstants.strOppPaymentMethodField == null &&
+				AUC_AuctionConstants.strOppCheckNumberField	== null &&
+				AUC_AuctionConstants.isNPSPPaymentsEnabled == false &&
+				AUC_AuctionConstants.StrCreditCardChargeURLFormula() == null;	
+		}
+	}
+
     private static boolean isNPSPOneToOneAccountModel { 
     	get {
     		isNPSPOneToOneAccountModel = (strNPSPAccountModel == ONE_TO_ONE_PROCESSOR);

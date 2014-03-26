@@ -482,7 +482,9 @@
 			    		rerender="panelButtons,panelStatus" 
 			    		oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');"  />			    		
 			    				    	   
-		            <apex:pageBlockSection title="2.  Payment Method" rendered="{!fHasReceipts}" >	
+		            <apex:pageBlockSection title="2.  Payment Method" rendered="{!fHasReceipts}" >
+		            	<apex:pageMessage severity="warning" strength="1" rendered="{!isPaymentSettingsMissing}"
+		            		summary="Your Auction Settings are not filled out to specify where to store the Payment Method." />		            	
 						<apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value);" >
 							<apex:selectOption itemValue="Cash" itemLabel="Cash" />
 							<apex:selectOption itemValue="Check" itemLabel="Check" />
