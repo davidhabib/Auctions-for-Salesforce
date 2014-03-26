@@ -372,7 +372,7 @@
 				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
 				</p><p/>
 			
-			 	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
+			 	<p><apex:outputText value="{!'Dear ' + receipt.strContactFirstName}" />,<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
 					<tr><td>
