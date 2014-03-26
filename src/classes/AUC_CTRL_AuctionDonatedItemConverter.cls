@@ -31,7 +31,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 		public NewAuctionItem(Auction_Item__c aiT, Opportunity donatedItemT) {
 			ai = aiT;
 			donatedItem = donatedItemT;
-			isChecked = true;
+			isChecked = false;
 			quantity = integer.valueOf(donatedItemT.Number_Available__c);
 			if (donatedItemT.Amount == null || donatedItemT.Number_of_Items__c == null) {
 				FMV = 0;

@@ -25,6 +25,20 @@
 		}
 				 	    	    
     </style>
+    
+    <script>
+    
+		// function to check/uncheck convert fields when the header one is checked/unchecked
+		function OnChangeCbxConvert(cbx) {
+			var rg = document.getElementsByTagName('input');
+			var i = 0; 
+			for (i = 0; i < rg.length; i++) {
+				if (rg[i].id.indexOf('cbxConvert') > -1) {
+					rg[i].checked = cbx.checked;
+				}
+			}
+ 		}
+    </script>
 	
 	<apex:sectionHeader title="Donated Item Converter" />  
 	<apex:form >
@@ -71,8 +85,11 @@
 				</div>        				            					            
        							
 		        <apex:pageBlockTable value="{!listNewAuctionItem}" var="nai" >
-		        	<apex:column > 
-		        		<apex:inputCheckbox value="{!nai.isChecked}" />
+		        	<apex:column >
+		        		<apex:facet name="header">
+							<apex:inputCheckbox required="false" id="cbxCheckAll" onchange="OnChangeCbxConvert(this);" />
+						</apex:facet>	        			 
+		        		<apex:inputCheckbox value="{!nai.isChecked}" id="cbxConvert" />
 					</apex:column>
 					
 					<apex:column >
