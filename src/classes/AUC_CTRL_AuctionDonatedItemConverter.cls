@@ -221,6 +221,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 		system.assertEquals(null, ctrl.strConvertResult);
 		system.assert(ctrl.listNewAuctionItem != null);
 		system.assertEquals(1, ctrl.listNewAuctionItem.size());
+		ctrl.listNewAuctionItem[0].isChecked = true;
 		system.assertEquals(null, ctrl.Convert());
 		system.assert(ctrl.strConvertResult.contains('1 Auction Items were created.'));
 				
