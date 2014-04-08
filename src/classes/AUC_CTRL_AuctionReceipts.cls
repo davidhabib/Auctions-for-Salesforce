@@ -337,6 +337,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			if (AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
 				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdGreetingField + ', ';
 			}
+			if (AUC_AuctionConstants.isNPSPHouseholdAccountModel) {
+				strSoql += ' contact.account.npe01__SYSTEM_AccountType__c, ';
+			}
 			strSoql += AUC_AuctionMaintenance.StrEscape(strOppFields) +
 				' from OpportunityContactRole ' +
 				' where IsPrimary=true and contactId in :listContactId and ' +
@@ -383,9 +386,17 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 						if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
 							list<string> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
 							if (listStr.size() > 1) {
-								Contact con = ocr.contact;
+								Contact con = ocr.contact;								
 								Sobject hh = con.getSobject(listStr[0]);
 								string strHousehold;
+
+								// avoid non-household accounts with household account model
+								if (listStr[0] == 'Account' && 
+									AUC_AuctionConstants.isNPSPHouseholdAccountModel &&
+									hh.get('npe01__SYSTEM_AccountType__c') != 'Household Account') {
+									hh = null;
+								}
+								
 								if (hh != null) strHousehold = (string)hh.get(listStr[1]);
 								if (strHousehold != null) r.strContactName = strHousehold;
 							}
@@ -396,6 +407,14 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 								Contact con = ocr.contact;
 								Sobject hh = con.getSobject(listStr[0]);
 								string strHousehold;
+
+								// avoid non-household accounts with household account model
+								if (listStr[0] == 'Account' && 
+									AUC_AuctionConstants.isNPSPHouseholdAccountModel &&
+									hh.get('npe01__SYSTEM_AccountType__c') != 'Household Account') {
+									hh = null;
+								}
+
 								if (hh != null) strHousehold = (string)hh.get(listStr[1]);
 								if (strHousehold != null) r.strContactFirstName = strHousehold;
 							}

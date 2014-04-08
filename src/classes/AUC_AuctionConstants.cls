@@ -359,7 +359,7 @@ public with sharing class AUC_AuctionConstants {
     	set;
     } 	
 
-    private static boolean isNPSPHouseholdAccountModel { 
+    public static boolean isNPSPHouseholdAccountModel { 
     	get {
     		isNPSPHouseholdAccountModel = (strNPSPAccountModel == HH_ACCOUNT_PROCESSOR);
 			return isNPSPHouseholdAccountModel;
