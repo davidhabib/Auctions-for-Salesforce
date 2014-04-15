@@ -127,6 +127,32 @@
         <name>Restrictions__c</name>
     </fields>
     <fields>
+        <label><!-- C&amp;P SKU --></label>
+        <name>SKU__c</name>
+    </fields>
+    <fields>
+        <label><!-- C&amp;P Show Tax Deductible --></label>
+        <name>Show_Tax_Deductible__c</name>
+        <picklistValues>
+            <masterLabel>Yes: Bid-FMV</masterLabel>
+            <translation><!-- Yes: Bid-FMV --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Yes: Manual</masterLabel>
+            <translation><!-- Yes: Manual --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <help><!-- Donations greater than or equal to Token Value are 100% tax deductible. --></help>
+        <label><!-- C&amp;P Token Value --></label>
+        <name>Token_Value__c</name>
+    </fields>
+    <fields>
+        <help><!-- Total Tax Deductible is mandatory only if Show Tax Deductible is Yes: Manual --></help>
+        <label><!-- C&amp;P Total Tax Deductible --></label>
+        <name>Total_Tax_Deductible__c</name>
+    </fields>
+    <fields>
         <help><!-- If checked, create any purchase opportunity as record type &quot;Gift&quot;, not &quot;Auction Item Purchase&quot;. --></help>
         <label><!-- Treat Purchase as Gift --></label>
         <name>Treat_Purchase_as_Gift__c</name>

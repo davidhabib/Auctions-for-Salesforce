@@ -46,7 +46,6 @@
     </actionOverrides>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <deprecated>false</deprecated>
     <description>The master object which is the parent of all campaigns and auction items, that represent the entire auction.</description>
     <enableActivities>true</enableActivities>
     <enableEnhancedLookup>true</enableEnhancedLookup>
@@ -55,7 +54,6 @@
     <enableReports>true</enableReports>
     <fields>
         <fullName>Auction_Date__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Auction Date</label>
         <required>false</required>
@@ -64,7 +62,6 @@
     </fields>
     <fields>
         <fullName>Ticket_Non_Deductible_Amount__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The default amount that is non-deductible from an auction ticket, due to being provided food and/or services.  The New Ticket Wizard allows you to override this value if you have different ticket values used.</inlineHelpText>
         <label>Ticket Non-Deductible Amount</label>

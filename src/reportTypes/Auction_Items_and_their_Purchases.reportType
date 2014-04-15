@@ -570,16 +570,6 @@
             <field>Title</field>
             <table>Auction_Item__c.Opportunities__r.OpportunityContactRoles</table>
         </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Languages__c</field>
-            <table>Auction_Item__c.Opportunities__r.OpportunityContactRoles</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Level__c</field>
-            <table>Auction_Item__c.Opportunities__r.OpportunityContactRoles</table>
-        </columns>
         <masterLabel>Contact Roles</masterLabel>
     </sections>
 </ReportType>

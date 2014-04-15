@@ -45,6 +45,10 @@
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <name>Auction Items, Full Info</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
     <reportType>CustomEntity$Auction_Item__c@Auction_Item__c.Auction__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>

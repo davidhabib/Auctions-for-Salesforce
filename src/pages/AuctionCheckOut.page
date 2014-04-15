@@ -4,539 +4,1273 @@
  -->
 
 <apex:page docType="html-5.0" controller="AUC_CTRL_AuctionCheckOut"  title="Auction Check Out" tabStyle="Check_Out__tab" >
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css" type="text/css" />
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
-	
-<style>	 
-	
-	/* this styling adds the vertical scrollbar to our autocomplete fields */
-	.ui-autocomplete-input {
-		margin: 2px 0px 0 2px;
-		padding: 1px;		
-		display: inline-block;
-		vertical-align: middle !important;
-	}     
-	.ui-autocomplete {
-		max-height: 200px;
-		overflow-y: auto; 
-		/* prevent horizontal scrollbar */
-		overflow-x: hidden;
-		/* add padding to account for vertical scrollbar */
-		padding-right: 20px;
-		font-size: 12px; 
-		font-family: Arial, Helvetica, sans-serif;
-	}
-	
-	/* these styles are for the combobox dropdown button */
-	.ui-button {
-		margin-left: 0px;
-		
-		height: 21px;
-	}
-	.ui-icon {
-		height: 1em;
-	}
-	.ui-button-icon-only .ui-button-text { padding: 0; } 
-	
-	.ui-widget-content { 
-		background: white;
-	}
+<style>  
+    
+    /* this styling adds the vertical scrollbar to our autocomplete fields */
+    .ui-autocomplete-input {
+        margin: 2px 0px 0 2px;
+        padding: 1px;       
+        display: inline-block;
+        vertical-align: middle !important;
+    }     
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto; 
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+        /* add padding to account for vertical scrollbar */
+        padding-right: 20px;
+        font-size: 12px; 
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    
+    /* these styles are for the combobox dropdown button */
+    .ui-button {
+        margin-left: 0px;
+        
+        height: 21px;
+    }
+    .ui-icon {
+        height: 1em;
+    }
+    .ui-button-icon-only .ui-button-text { padding: 0; } 
+    
+    .ui-widget-content { 
+        background: white;
+    }
 
-	.clsWaitRight { 
-		background: url("//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/base/images/ui-anim_basic_16x16.gif") right center no-repeat; 
-	}
-	
-	.clsCombo {	
-			
-	}
-	
-	.clsBtnAll {
-		top: 2px;
-		position:relative;
-	}
-			
-	.panelSearch {
-	}
-	.panelSearch .detailList .labelCol label {
-		display:block;
-		width: 150px;
-	}
+    .clsWaitRight { 
+        background: url("//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/base/images/ui-anim_basic_16x16.gif") right center no-repeat; 
+    }
+    
+    .clsCombo { 
+            
+    }
+    
+    .clsBtnAll {
+        top: 2px;
+        position:relative;
+    }
+            
+    .panelSearch {
+    }
+    .panelSearch .detailList .labelCol label {
+        display:block;
+        width: 150px;
+    }
 
-	.panelEdit {
-	}
-	.panelEdit .detailList .labelCol label {
-		display:inline-block;
-		width: 150px;
-	}
+    .panelEdit {
+    }
+    .panelEdit .detailList .labelCol label {
+        display:inline-block;
+        width: 150px;
+    }
 
-	td.sideLeft {
-		width: 30%;
-		min-width: 400px;
-	}
+    td.sideLeft {
+        width: 30%;
+        min-width: 400px;
+    }
 
-	.panelSearch .detailList .data2Col {
-		position: relative;
-	}
+    .panelSearch .detailList .data2Col {
+        position: relative;
+    }
 
-	.panelEdit .detailList .data2Col {
-		position: relative;
-	}	
+    .panelEdit .detailList .data2Col {
+        position: relative;
+    }   
 
     .cssLoadingPP {
-		top: 60%;
-	}   
+        top: 60%;
+    }   
 
-	.clsDTEven {
-		background: white;
-	}
-	
-	.clsDTOdd {
-		background: AliceBlue;
-	}
-	
-	.clsDTHeader  {
-		background: #C0D0E5;
-	}
-	
-	.bPageBlock .detailList th {
-		vertical-align: middle;
-	}
+    .clsDTEven {
+        background: white;
+    }
+    
+    .clsDTOdd {
+        background: AliceBlue;
+    }
+    
+    .clsDTHeader  {
+        background: #C0D0E5;
+    }
+    
+    .bPageBlock .detailList th {
+        vertical-align: middle;
+    }
 
-	.bPageBlock .detailList td {
-		vertical-align: middle;
-	}
+    .bPageBlock .detailList td {
+        vertical-align: middle;
+    }
 
-	.bPageBlock .list .clsDTFooter  {
-		background: WhiteSmoke;
-	}
-	
+    .bPageBlock .list .clsDTFooter  {
+        background: WhiteSmoke;
+    }
+    .summary label {
+        font-size:11px;
+    }
+    .marginleft div {
+        margin-left:10%;
+    }
+    .marginleft  .pbSubsection .labelCol{
+        width:50%;
+        vertical-align:middle;
+    }
+    body .bPageBlock .pbBody .labelCol {
+        vertical-align:middle;
+    }
+
+.black_overlay{
+           display: none;
+           position: absolute;
+           top: 0%;
+           left: 0%;
+           width: 100%;
+           height: 100%;
+           background-color: black;
+           z-index:1001;
+           -moz-opacity: 0.8;
+           opacity:.40;
+           filter: alpha(opacity=80);
+      }
+   
 </style>
  
 <script type="text/javascript">
     var j$ = jQuery.noConflict();
- 	
+    
     var listPurchasers = null; // our cached list of purchasers (contactId, name, bidNum) for the current Auction.
     var auctionId = "{!JSENCODE(auctionId)}"; // the current Auction.
- 	
-	/*******************************************************************************************************
-	* this function is called when the page loads
-	********************************************************************************************************/
-	j$(document).ready(function() {
-		myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');
-	});	
-	
-	/*******************************************************************************************************
-	* the work horse to do all jQueryUI initialization (specifically setting up the autocompletes).
-	********************************************************************************************************/
-	function myInitializeJQueryUI(strNamePurchaser) {
-	
-		// eat the enter button, to prevent it from canceling or submitting the form.
-		j$(document).keydown(function(event) {
-			if (event.which == 13) {
-		    	event.preventDefault();
-		    	event.stopPropagation();
-		    	return false; // does preventDefault and stopPropagation
-		  	}  
-		});	
-		
-		/****
-		// wanted to prevent window from closing, but had trouble getting fOppsToUpdate
-		// correctly loaded in a consistent fashion.  so I am punting on this.
-		j$(window).bind('beforeunload', function() {
-			if ({!fOppsToUpdate}) {
-				return 'The Purchase Opportunities should be updated first.';
-			} else {
-				return;
-			}
-		});
-		****/
-		
-		/*******************************************************************************************************
-   	 	* setup the Purchasers autocomplete textbox
-		*******************************************************************************************************/
-		j$(".clsComboPurchasers").autocomplete({
-			minLength: 3, // start search at 3 since bid numbers are usually 3 digits.
-			delay: 500,
+    
+    /*******************************************************************************************************
+    * this function is called when the page loads
+    ********************************************************************************************************/
+    j$(document).ready(function() {
+        myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');
+    }); 
+    
+    /*******************************************************************************************************
+    * the work horse to do all jQueryUI initialization (specifically setting up the autocompletes).
+    ********************************************************************************************************/
+    function myInitializeJQueryUI(strNamePurchaser) {
+    
+        // eat the enter button, to prevent it from canceling or submitting the form.
+        j$(document).keydown(function(event) {
+            if (event.which == 13) {
+                event.preventDefault();
+                event.stopPropagation();
+                return false; // does preventDefault and stopPropagation
+            }  
+        }); 
+        
+        /****
+        // wanted to prevent window from closing, but had trouble getting fOppsToUpdate
+        // correctly loaded in a consistent fashion.  so I am punting on this.
+        j$(window).bind('beforeunload', function() {
+            if ({!fOppsToUpdate}) {
+                return 'The Purchase Opportunities should be updated first.';
+            } else {
+                return;
+            }
+        });
+        ****/
+        
+        /*******************************************************************************************************
+        * setup the Purchasers autocomplete textbox
+        *******************************************************************************************************/
+        j$(".clsComboPurchasers").autocomplete({
+            minLength: 3, // start search at 3 since bid numbers are usually 3 digits.
+            delay: 500,
 
-		   	// focus called when the user hilights an item by arrowing or mousing over the list 
-		   	// we needed to override and stop this, otherwise the Id was displayed in the textbox.
-		   	focus: function(event, ui) { 
-		   		return false;
-		   	},
-	   	})
-		.data("autocomplete")._renderItem = function(ul, item) {
-			return j$( "<li></li>" )
-				.data("item.autocomplete", item)
-				.append( '<a><b>' + item.label + '</b>' +
-					'&nbsp;&nbsp;&nbsp;<i>' + strNull(item.bidderNumber) + '</i></a>' )
-				.appendTo( ul );
-		};	   	
+            // focus called when the user hilights an item by arrowing or mousing over the list 
+            // we needed to override and stop this, otherwise the Id was displayed in the textbox.
+            focus: function(event, ui) { 
+                return false;
+            },
+        })
+        .data("autocomplete")._renderItem = function(ul, item) {
+            return j$( "<li></li>" )
+                .data("item.autocomplete", item)
+                .append( '<a><b>' + item.label + '</b>' +
+                    '&nbsp;&nbsp;&nbsp;<i>' + strNull(item.bidderNumber) + '</i></a>' )
+                .appendTo( ul );
+        };      
 
-		/*******************************************************************************************************
-		* specify the specific fill function for Purchasers
-		* gets all ticket holders and buyers, and filters in the browser, since the list will be small enough.
-		*******************************************************************************************************/
-		j$("#txtPurchasers").autocomplete("option", "source",
-			function(request, response) {		
-				// Gets all ticket holders, and filters in the browser, since the list will be small enough.
-				// this also allows us to search by bid number which we add to the label.
-				if (listPurchasers != null) {
-					fillAndMatchPurchasersCombo(listPurchasers, request, response);
-				} else 
-					{			
-	       			j$('#txtPurchasers').addClass('clsWaitRight');	        			
-					GW_Auctions.AUC_CTRL_AuctionCheckOut.getListPurchasers(auctionId, '', function(result, event) {
-						j$('#txtPurchasers').removeClass('clsWaitRight');	        								
-		        		if (event.type == 'exception') {
-		        			alert(event.message);
-		        		} else {
-		        			if (result != null) {
-		        				listPurchasers = result;
-								fillAndMatchPurchasersCombo(listPurchasers, request, response);
-			        		}
-		        		}
-			   		}, {escape:true});		   		
-		   		}
-		   	}
-		);	
-		
-		/*******************************************************************************************************
-		* given the list of Purchasers, what is being searched for, and the response object,
-		* fill in the response with the combo's items that match.
-		*******************************************************************************************************/
-		function fillAndMatchPurchasersCombo(listP, request, response) {
-			var strSearch = j$.trim(request.term.toLowerCase());	
-			if (strSearch == '--all--') strSearch = '';	
- 			var isMatch = false;
-     		response(j$.map(listP, function(item) {
-     			var strLower = item.strName.toLowerCase(); 
-     			var strBN = item.strBidderNumber;  
-     			if (strBN == null || strBN == '') strBN = 'no bid number';		
-     			
-   				if (strLower.indexOf(strSearch) >= 0 || strBN.indexOf(strSearch) >= 0) {
+        /*******************************************************************************************************
+        * specify the specific fill function for Purchasers
+        * gets all ticket holders and buyers, and filters in the browser, since the list will be small enough.
+        *******************************************************************************************************/
+        j$("#txtPurchasers").autocomplete("option", "source",
+            function(request, response) {       
+                // Gets all ticket holders, and filters in the browser, since the list will be small enough.
+                // this also allows us to search by bid number which we add to the label.
+                if (listPurchasers != null) {
+                    fillAndMatchPurchasersCombo(listPurchasers, request, response);
+                } else 
+                    {           
+                    j$('#txtPurchasers').addClass('clsWaitRight');                      
+                   AUC_CTRL_AuctionCheckOut.getListPurchasers(auctionId, '', function(result, event) {
+                        j$('#txtPurchasers').removeClass('clsWaitRight');                                           
+                        if (event.type == 'exception') {
+                            alert(event.message);
+                        } else {
+                            if (result != null) {
+                                listPurchasers = result;
+                                fillAndMatchPurchasersCombo(listPurchasers, request, response);
+                            }
+                        }
+                    }, {escape:true});              
+                }
+            }
+        );  
+        
+        /*******************************************************************************************************
+        * given the list of Purchasers, what is being searched for, and the response object,
+        * fill in the response with the combo's items that match.
+        *******************************************************************************************************/
+        function fillAndMatchPurchasersCombo(listP, request, response) {
+            var strSearch = j$.trim(request.term.toLowerCase());    
+            if (strSearch == '--all--') strSearch = ''; 
+            var isMatch = false;
+            response(j$.map(listP, function(item) {
+                var strLower = item.strName.toLowerCase(); 
+                var strBN = item.strBidderNumber;  
+                if (strBN == null || strBN == '') strBN = 'no bid number';      
+                
+                if (strLower.indexOf(strSearch) >= 0 || strBN.indexOf(strSearch) >= 0) {
 
-/*** no longer do the automatch, which wasn't as appropriate when entering bid numbers.     			
-	   				// if we find the exact match, get its formal text and id.
-	   				// ideally, we'd select it, but I couldn't figure out how!
-	   				if (strLower == strSearch || strBN == strSearch) {
-	   					j$("#txtPurchasers").val(item.strName).data('Id', item.contactId);
-	   					isMatch = true;
-	   				}	   				
-***/   				
-   					return {label: item.strName, value: item.contactId, bidderNumber: item.strBidderNumber };
-   				}
-   			}));
-   			
-   			// if we don't find a match for a real search, clear the cached value.
-			if (!isMatch ) {
-     			j$("#txtPurchasers").data('Id', null);
-			}	        														   
-   			
-		}
+                /*** no longer do the automatch, which wasn't as appropriate when entering bid numbers.                 
+                    // if we find the exact match, get its formal text and id.
+                    // ideally, we'd select it, but I couldn't figure out how!
+                    if (strLower == strSearch || strBN == strSearch) {
+                        j$("#txtPurchasers").val(item.strName).data('Id', item.contactId);
+                        isMatch = true;
+                    }                   
+                ***/                
+                    return {label: item.strName, value: item.contactId, bidderNumber: item.strBidderNumber };
+                }
+            }));
+            
+            // if we don't find a match for a real search, clear the cached value.
+            if (!isMatch ) {
+                j$("#txtPurchasers").data('Id', null);
+            }                                                                      
+            
+        }
 
-		/*******************************************************************************************************
-		* specify the select event for Purchasers, so it can cause the opportunities panel to refresh.
-		*******************************************************************************************************/
-		j$('#txtPurchasers').autocomplete("option", "select",
-			function(event, ui) {
-				j$(this).val(ui.item.label + ' - ' + ui.item.bidderNumber).data('Id', ui.item.value);
-	   			// call the controller to update the Purchasers panel.
-	   			ChangePurchaserLookup(ui.item.value);			   		
-		   		return false;		   		 
-		   	}
-		);
+        /*******************************************************************************************************
+        * specify the select event for Purchasers, so it can cause the opportunities panel to refresh.
+        *******************************************************************************************************/
+        j$('#txtPurchasers').autocomplete("option", "select",
+            function(event, ui) {
+                j$(this).val(ui.item.label + ' - ' + ui.item.bidderNumber).data('Id', ui.item.value);
+                // call the controller to update the Purchasers panel.
+                ChangePurchaserLookup(ui.item.value);                   
+                return false;                
+            }
+        );
 
-		/*******************************************************************************************************
-		* specify the Change event for Purchasers, so it can update the controller to refresh the opps panel. 
-		* Change called when the field is blurred (loses focus), if the value has changed;
-		* ui.item refers to the selected item, if one was selected from the autocomplete menu.
-		*******************************************************************************************************/
-		j$('#txtPurchasers').autocomplete("option", "change",
-			function(event, ui) {
-				// if ui.item is provided, we already dealt with it in the select event.
-				if (ui.item != null) return false;	
-				
-				var Id = j$(this).data('Id');
-				if (Id == null && j$(this).val() != null) {
-					// did the user give enough time for the search to run?
-					// better go the search route!
-					SearchPurchaserLookup(j$(this).val());
-					return false;				
-				}
-				ChangePurchaserLookup(Id);
-				return false;				
-		   	}
-		);
-			
-		/*******************************************************************************************************
-		* setup the button for showing all items		
-		*******************************************************************************************************/
-		j$(".clsBtnAll" )
-			.attr( "tabIndex", -1 )
-			.attr( "title", "Show All Items" )
-			.button({
-				icons: {
-					primary: "ui-icon-triangle-1-s"
-				},
-				text: false
-			})
-			.removeClass( "ui-corner-all" )
-			.addClass( "ui-corner-right ui-button-icon" )
-			.click(function() {
-				// find our input textbox to our left
-				var input = j$(this).prev('input');
-				if (input.autocomplete( "option", "source" ) == null) return;
-				// close if already visible
-				if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
-					input.autocomplete( "close" );
-					return;
-				}
-	
-				// work around a bug (likely same cause as #5265)
-				j$( this ).blur();
-	
-				// pass empty as value to search for all
-				input.autocomplete( "search", "--all--" );
-				input.focus();
-			});	
-		
-	
+        /*******************************************************************************************************
+        * specify the Change event for Purchasers, so it can update the controller to refresh the opps panel. 
+        * Change called when the field is blurred (loses focus), if the value has changed;
+        * ui.item refers to the selected item, if one was selected from the autocomplete menu.
+        *******************************************************************************************************/
+        j$('#txtPurchasers').autocomplete("option", "change",
+            function(event, ui) {
+                // if ui.item is provided, we already dealt with it in the select event.
+                if (ui.item != null) return false;  
+                
+                var Id = j$(this).data('Id');
+                if (Id == null && j$(this).val() != null) {
+                    // did the user give enough time for the search to run?
+                    // better go the search route!
+                    SearchPurchaserLookup(j$(this).val());
+                    return false;               
+                }
+                ChangePurchaserLookup(Id);
+                return false;               
+            }
+        );
+            
+        /*******************************************************************************************************
+        * setup the button for showing all items        
+        *******************************************************************************************************/
+        j$(".clsBtnAll" )
+            .attr( "tabIndex", -1 )
+            .attr( "title", "Show All Items" )
+            .button({
+                icons: {
+                    primary: "ui-icon-triangle-1-s"
+                },
+                text: false
+            })
+            .removeClass( "ui-corner-all" )
+            .addClass( "ui-corner-right ui-button-icon" )
+            .click(function() {
+                // find our input textbox to our left
+                var input = j$(this).prev('input');
+                if (input.autocomplete( "option", "source" ) == null) return;
+                // close if already visible
+                if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
+                    input.autocomplete( "close" );
+                    return;
+                }
+    
+                // work around a bug (likely same cause as #5265)
+                j$( this ).blur();
+    
+                // pass empty as value to search for all
+                input.autocomplete( "search", "--all--" );
+                input.focus();
+            }); 
+        
+    
 
-	    // set Purchaser name
-	    j$('#txtPurchasers').val(strNamePurchaser);	
-	    	    
-	} // end of myInitializeJQueryUI
-	
-	
-	/*******************************************************************************************************
-	* utility to deal with strings that might be null.
-	*******************************************************************************************************/
-	function strNull(str) {
-		return (str == null ? '' : str);
-	}
-		
-	/*******************************************************************************************************
-	* prompt the user if the opportunities have not been updated
-	*******************************************************************************************************/
-	function areOppsUpdated(needToUpdate) {
-		if (needToUpdate) {
-			return (window.confirm('The Purchase Opportunities should be updated first.  Do you want to still continue?'));
-		}
-		return true;
-	}
+        // set Purchaser name
+        j$('#txtPurchasers').val(strNamePurchaser); 
+                
+    } // end of myInitializeJQueryUI
+    
+    
+    /*******************************************************************************************************
+    * utility to deal with strings that might be null.
+    *******************************************************************************************************/
+    function strNull(str) {
+        return (str == null ? '' : str);
+    }
+        
+    /*******************************************************************************************************
+    * prompt the user if the opportunities have not been updated
+    *******************************************************************************************************/
+    function areOppsUpdated(needToUpdate) {
+        if (needToUpdate) {
+            return (window.confirm('The Purchase Opportunities should be updated first.  Do you want to still continue?'));
+        }
+        return true;
+    }
 </script>
- 	
-   	<apex:sectionHeader title="Auction Check Out" />      
-    <apex:form >   		    
+<script type="text/javascript">
+    /********C&P Code Start************/ 
+    function imposeMaxLength(Event, Object, MaxLen){
+              var e = window.event ? event.keyCode : Event.which;
+              if((e==32) || (e==13) || (e > 47)){
+                  if(MaxLen && (Object.value.length > MaxLen-1)){
+                        Object.value = Object.value.substr(0,MaxLen);  
+                        if(window.event){
+                             window.event.returnValue=null;
+                        }else{
+                            return false;
+                        }
+                   } 
+              }
+         } 
+        /*********Credit Card Entry Mode as CardReader**********/
+            function focuscard(){
+                var cardoption= jQuery.trim(jQuery(".cardoption").val());
+                var cardreader= jQuery.trim(jQuery(".cardreader").val());
+                if(cardoption == 'CardReader') { 
+                    jQuery(".cardreaderrow").show();
+                    jQuery(".cardreader").focus(); 
+                    jQuery(".cvv").hide();
+                    jQuery(".cvvlabel").hide();
+                }else {
+                    jQuery(".cvv").show();
+                    jQuery(".cvvlabel").show();
+                    jQuery(".cardreaderrow").hide();
+                }
+            }
+            function cardReaderTexChange() { 
+                var carddata = jQuery(".cardreader").val();
+                var c=carddata.match(/\?/g);
+                if (c.length == 2){ 
+                    parseCardReader2(carddata.toString()); 
+                }
+            } 
+            function parseCardReader2(carddata) { 
+            
+                var cardnum = carddata.substr(2,16).replace('^','');;
+                var name = carddata.match("/^(.*?)^");
+                
+                var start_pos = carddata.indexOf('^') + 1;
+                var end_pos = carddata.indexOf('^',start_pos);
+                var text_to_get = carddata.substring(start_pos,end_pos).replace('/',' ');
+                
+                var delimitersplit = carddata.split('^');
+                
+                var expireyear = delimitersplit[2].substr(0,2);
+                var expiremonth = delimitersplit[2].substr(2,2);
+                jQuery('.creditcardname').val(text_to_get.replace('/',' '));
+                var cardnames =text_to_get.split(' ');
+                var cardtemp=cardnum.substr(-4);
+                
+                if(cardnum.length==16){
+                    jQuery('.dummycardnumber').val('************'+cardtemp);
+                }
+                if(cardnum.length==15){
+                    jQuery('.dummycardnumber').val('***********'+cardtemp);
+                }
+                jQuery('.creditcardnumber').val(cardnum);
+                jQuery('.expiremonth').val(expiremonth);
+                jQuery('.expireyear').val(expireyear);
+                jQuery(".cardreader").hide();
+                jQuery(".cardlabel").hide();
+                jQuery(".creditcardnumber").hide();
+                jQuery(".dummycardnumber").show();
+            }
+          
+        /**********Payment Method Validations***********/
+            function paymentprocess() {
+                var condition=0;
+                var acc=jQuery.trim(jQuery(".acc").val());
+                var creditcardname=jQuery.trim(jQuery(".creditcardname").val());
+                var creditcardnumber=jQuery.trim(jQuery(".creditcardnumber").val());
+                var cardoption= jQuery.trim(jQuery(".cardoption").val());
+                var cardreader= jQuery.trim(jQuery(".cardreader").val());
+                var creditexpiremonth=jQuery.trim(jQuery(".expiremonth").val());
+                var cvv=jQuery.trim(jQuery(".cvv").val());
+                var reg_creditname=/^([a-zA-Z0-9\.\,\#\&\-\ ])+$/;
+                var routingnumber=jQuery.trim(jQuery(".routingnumber").val());
+                var checknumber=jQuery.trim(jQuery(".checknumber").val());
+                var accountnumber=jQuery.trim(jQuery(".accountnumber").val());
+                var repeataccountnumber=jQuery.trim(jQuery(".repeataccountnumber").val());
+                var checkname=jQuery.trim(jQuery(".checkname").val());
+                var customname= jQuery.trim(jQuery(".customname").val()); 
+                var customnumber= jQuery.trim(jQuery(".customnumber").val());
+                var purchaseordernumber=jQuery.trim(jQuery(".purchaseordernumber").val());
+                var reg_cardname=/^([a-zA-Z0-9\.\,\#\-\'\ ])+$/; 
+                var reg_cardtype =/^(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})+$/;
+                var reg_number=/^([0-9])+$/; 
+                var reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; // remove ; and _ adding &
+                    var emaildata=jQuery.trim(jQuery(".internalemaillist").val());
+                     if(emaildata!=''){
+                          var emailsdata=jQuery.trim(jQuery(".internalemaillist").val()).split(';'); 
+                                 for(var i=0;i<emailsdata.length;i++){
+                                       if(!reg_email.test(emailsdata[i]) && emailsdata[i] != '' ){
+                                            condition =1;
+                                            alert("Please Enter the Valid Email ids");
+                                            jQuery(".internalemaillist").focus();
+                                            return false;
+                                       }
+                                 }
+                     } 
+                var ra=0;
+                var cr=0;
+                var pt;
+                jQuery(".paymenttype input:radio").each(function(){
+                    cr=1;        
+                    if(jQuery(this).is(':checked')==true){
+                        ra=1;
+                        pt = jQuery(this).val();
+                    }
+                })
+                var displaypayment=displayPaymentProcessor(pt,'true');
+                if(displaypayment==false){
+                    condition=1;
+                    return false;
+                }
+                var rowvalue=jQuery(".rowvalues").val(); 
+                var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+                
+                for(var i=0;i<rowvalue;i++){
+                    var showtax=jQuery.trim(jQuery(".showtax"+i).val());
+                    var taxdeduct=jQuery.trim(jQuery(".taxdeduct"+i).val()); 
+                    var paynow=jQuery(".paynow"+i).is(":checked"); 
+                    var tokenvalue=jQuery.trim(jQuery(".tokenvalue"+i).val());
+                    var sku=jQuery.trim(jQuery(".sku"+i).val());
+                    var amount=jQuery.trim(jQuery(".amount"+i).val());
+                    var fmv=jQuery.trim(jQuery(".fmv"+i).val());
+                   
+                    if(paynow==true){
+                        if(showtax=='Yes: Manual'){
+                            /**********Tax deductible Validations ************/
+                                if(taxdeduct==''){
+                                    condition=1;
+                                    alert("Tax deductible should not be empty for Manual Tax..Please check at Auction Items");
+                                    return false;
+                                }else if(taxdeduct!=''){
+                                  if(isNaN(taxdeduct)){
+                                    condition=1;
+                                    alert("Tax deductible should be numerics only..Please check at Auction Items");
+                                    return false;
+                                }
+                              }  
+                                
+                        }
+                        /**********SKU Validations ************/
+                            if(sku!='' && !reg_sku.test(sku)){
+                                condition=1;
+                                alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in SKU..Please check at Auction Items");
+                                return false;
+                            }  
+                        /**********Amount Validations ************/
+                            if(amount==""){
+                                condition = 1;
+                                alert("Amount Should not be empty..Please check at Purchases");
+                                return false;
+                            }else  if(amount!=''){  
+                                if(isNaN(amount)){
+                                    condition=1;
+                                    alert("Please Enter a Number or Decimal value in Amount..Please check at Purchases ");
+                                    return false;
+                                } else if(parseInt(amount)<0 ||parseInt(amount)<0.0) {
+                                    condition=1;
+                                    alert("Amount Must be positive values only..Please check at Purchases");
+                                    return false;
+                                }else if(amount.length >11){
+                                    condition=1;
+                                    alert("Max length of Amount exceeded..Please check at Purchases");
+                                    return false;
+                                }
+                             }  
+                        /**********Tokenvalue deductible Validations ************/
+                            if(tokenvalue!=''  && isNaN(tokenvalue)){
+                                condition=1;
+                                alert("Token Value Must contain numerics only");
+                                return false;
+                            }
+                            else if(parseInt(tokenvalue)<0 ||parseInt(tokenvalue)<0.0) {
+                                    condition=1;
+                                    alert("C&P Token value must be positive values only..Please check at Purchases");
+                                    return false;
+                                }
+                            if(tokenvalue!='' && typeof jQuery(".tokenvalue"+i).val()!='undefined' && fmv!='' && typeof jQuery(".fmv"+i).val()!='undefined'){
+                                if(parseFloat(tokenvalue) < parseFloat(fmv)){
+                                    condition=1;
+                                    alert("Token Value should not be less than FMV..Please check at auction items");
+                                    return false;
+                                }
+                            }
+                    }
+                }   
+                /**********Account Number Validations ************/          
+                    if(acc==''){
+                        condition=1;
+                        alert("Please Select C&P Account Number to process Payments");
+                        jQuery(".acc").focus();
+                        return false;
+                    }
+                    if(pt==''){
+                        condition = 1;
+                        alert("Please choose one payment Method");
+                        return false;
+                    }  
+                /**********Creditcard Section************/ 
+                    if(pt=='CreditCard'){
+                        if(cardoption == 'CardReader' && cardreader == ''){
+                            condition=1;
+                            alert("Please swipe your card");
+                            return false;
+                        }
+                        if(!reg_cardtype.test(creditcardnumber)){
+                            condition = 1;
+                            alert("Invalid Credit Card Number");
+                            jQuery(".creditcardnumber").focus();
+                            return false;
+                        }
+                        if(creditcardname=="" || creditcardname==null){
+                            condition = 1;
+                            alert("Name on Card Must be defined");
+                            jQuery(".creditcardname").focus();
+                            return false;
+                        }
+                        if(creditcardname!="" && !reg_creditname.test(creditcardname)){
+                            condition = 1;
+                            alert("Please enter the only Alphanumeric . and space for  Name on Card");
+                            jQuery(".creditcardname").focus();
+                            return false;
+                        }
+                        if(creditexpiremonth=="--Select--" || creditexpiremonth==null){
+                            condition = 1;
+                            alert("Expiration Date must be defined");
+                            jQuery(".expiremonth").focus();
+                            return false;
+                        }
+                        if(creditcardnumber=="" || creditcardnumber==null){
+                            condition = 1;
+                            alert("Credit Card Number Must be defined");
+                            jQuery(".creditcardnumber").focus();
+                            return false;
+                        }
+                        if(creditcardnumber!='' && cardoption == 'Manual' && isNaN(creditcardnumber)){
+                            condition = 1;
+                            alert("Credit Card Number Must be numerics only");
+                            jQuery(".creditcardnumber").focus();
+                            return false;
+                        }
+                        if(isNaN(cvv)){
+                            condition = 1;
+                            alert("Please Enter numbers only in Card Verification (CVV)");
+                            jQuery(".cvv").focus();
+                            return false;
+                        }
+                    }
+                /**********eCheck Section************/ 
+                    if(pt=='Check'){
+                        if(routingnumber=="" || routingnumber==null){
+                            condition = 1;
+                            alert("Routing Number Must be defined");
+                            jQuery(".routingnumber").focus();
+                            return false;
+                        }else if(routingnumber!="" ) {
+                            if(!reg_number.test(routingnumber)){
+                                condition = 1;
+                                alert("Routing Number Must contain numerics only");
+                                jQuery(".routingnumber").focus();
+                                return false;
+                            } else if(routingnumber.length<9) {
+                                condition = 1;
+                                alert("Routing Number Must contain 9 digits");
+                                jQuery(".routingnumber").focus();
+                                return false;
+                            }
+                        }
+                        if(checknumber=="" || checknumber==null){
+                            condition = 1;
+                            alert("Check Number Must be defined");
+                            jQuery(".checknumber").focus();
+                            return false;
+                        }else if(checknumber!="" && !reg_number.test(checknumber)){
+                            condition = 1;
+                            alert("Check Number Must contain numerics only");
+                            jQuery(".checknumber").focus();
+                            return false;
+                        }
+                        if(accountnumber=="" || accountnumber==null){
+                            condition = 1;
+                            alert("Account Number Must be defined");
+                            jQuery(".accountnumber").focus();
+                            return false;
+                        }else if(accountnumber!="" && !reg_number.test(accountnumber)){
+                            condition = 1;
+                            alert("Account Number Must contain numerics only");
+                            jQuery(".accountnumber").focus();
+                            return false;
+                        }
+                        if(repeataccountnumber=="" || repeataccountnumber==null){
+                            condition = 1;
+                            alert("Repeat Account Number Must be defined");
+                            jQuery(".repeataccountnumber").focus();
+                            return false;
+                        }else if(repeataccountnumber!="" && !reg_number.test(repeataccountnumber)){
+                            condition = 1;
+                            alert("Repeat Account Number Must contain numerics only");
+                            jQuery(".repeataccountnumber").focus();
+                            return false;
+                        }
+                         if(repeataccountnumber!=accountnumber)
+                            {
+                                condition = 1;
+                                alert("Account Numbers Does not Match");
+                                jQuery(".repeataccountnumber").focus();
+                                return false;
+                            }
+                        if(checkname=="" || checkname==null){
+                            condition = 1;
+                            alert("Name on Account Must be defined");
+                            jQuery(".checkname").focus();
+                            return false;
+                        }else if(checkname!="" &&!reg_cardname.test(checkname)){
+                            condition = 1;
+                            alert("Please Enter valid data in Name on Account");
+                            jQuery(".checkname").focus();
+                            return false;
+                        }
+                    }
+                /**********PurchaseOrder Section************/ 
+                    if(pt =='PurchaseOrder'){
+                        if(purchaseordernumber!= "" && !reg_number.test(purchaseordernumber)){
+                            condition = 1;
+                            alert("Purchase Order Number must contain numerics only");
+                            jQuery(".purchaseordernumber").focus();
+                            return false;
+                        }
+                    }
+                /**********CustomPaymentType Section************/ 
+                    if(pt=='CustomPaymentType'){
+                        if(customname=="" || customname==null){
+                            condition = 1;
+                            alert("Custom Payment Name must be defined");
+                            jQuery(".customname").focus();
+                            return false;
+                        }else if(customname!="" &&!reg_cardname.test(customname)){
+                            condition = 1;
+                            alert("Please Enter valid data in Custom Payment Name");
+                            jQuery(".customname").focus();
+                            return false;
+                        }else if(customname!="" && customname.length >50){
+                            condition = 1;
+                            alert("Custom Payment Name should not exceed 50 Characters");
+                            jQuery(".customname").focus();
+                            return false;
+                        }
+                        if(customnumber != "" &&  customnumber.length >50){
+                            condition = 1;
+                            alert("Reference Number should not exceed 50 Characters");
+                            jQuery(".customnumber").focus();
+                            return false;
+                        }
+                        if(customnumber!= "" && !reg_number.test(customnumber)){
+                            condition = 1;
+                            alert("Reference Number must contain numerics only");
+                            jQuery(".customnumber").focus();
+                            return false;
+                        }
+                    }
+                if(condition == 0){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+    
+    /********C&P Code End*************/       
+</script>
+    
+    <apex:sectionHeader title="Auction Check Out" />      
+    <apex:form >            
         <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
-	       		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
-				<div class="cssLoading" id="divLoading" >
-				  <p style="vertical-align: middle;" >
-					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-					<span style="vertical-align: middle;" >Loading...</span>
-				  </p>
-				</div>  
-			<table cellpadding="0">
-			<tr>
-			<td class="sideLeft" style="vertical-align:top;">			
-				<apex:outputPanel id="panelSearch" styleClass="panelSearch" >				            
-		            <apex:pageBlockSection columns="1"  >
-			    		<apex:pageBlockSectionItem >
-			    			<apex:outputLabel value="Auction" for="lbxAuctions" />
-					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
-					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
-					    			oncomplete="auctionId='{!JSENCODE(auctionId)}'; listPurchasers=null; myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />			    			
-					    		<apex:selectOptions value="{!listSOAuctions}" />
-					    	</apex:selectList>	
-						</apex:pageBlockSectionItem>
-		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
-				       		<apex:outputLabel value="Guest<br/>(name or bid number)" escape="false" />
-			                <apex:outputPanel >
-							   	<input type="text" id="txtPurchasers" class="clsCombo clsComboPurchasers ui-autocomplete-input" /> 
-							   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
-							    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
-							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
-							        <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
-							    </apex:actionFunction>
-							    <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
-					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
-							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
-							        <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
-							    </apex:actionFunction>
-			                </apex:outputPanel>
-		                </apex:pageBlockSectionItem>		
-					</apex:pageBlockSection>
-				</apex:outputPanel>
-			</td>
-			<td style="veritcal-align:middle" >				
-				<apex:outputPanel id="panelStatus" >				            
-		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" rendered="{!strStatus != null}" />  
-		            <apex:messages styleClass="Error" />
-				</apex:outputPanel>				   				   				            					           
-			</td>            
-			</tr>
-			<tr>
-			<td class="sideLeft" style="vertical-align:top;" colspan="2" >
-				<apex:outputPanel id="panelPurchases" >
-		            <apex:pageBlockSection columns="1"  >
-				    	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
-							<apex:pageBlockTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" 
+                <apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
+                <div class="cssLoading" id="divLoading" >
+                  <p style="vertical-align: middle;" >
+                    <img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+                    <span style="vertical-align: middle;" >Loading...</span>
+                  </p>
+                </div>  
+                <apex:actionStatus id="statusLoad1" onstart="j$('#fade').fadeIn();" onstop="j$('#fade').fadeOut();" />
+                <div id="fade" class="black_overlay">
+              <p style="vertical-align: middle;" >
+                    <img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+                    <span  style="vertical-align: middle;" >Loading...</span>
+                </p>
+              </div>
+            <table cellpadding="0">
+            <tr>
+            <td class="sideLeft" style="vertical-align:top;">           
+                <apex:outputPanel id="panelSearch" styleClass="panelSearch" >                           
+                    <apex:pageBlockSection columns="1"  >
+                        <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Auction" for="lbxAuctions" />
+                            <apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
+                                <apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
+                                    rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
+                                    oncomplete="auctionId='{!JSENCODE(auctionId)}'; listPurchasers=null; myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />                         
+                                <apex:selectOptions value="{!listSOAuctions}" />
+                            </apex:selectList>  
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
+                            <apex:outputLabel value="Guest<br/>(name or bid number)" escape="false" />
+                            <apex:outputPanel >
+                                <input type="text" id="txtPurchasers" class="clsCombo clsComboPurchasers ui-autocomplete-input" /> 
+                                <button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
+                                <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
+                                    rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
+                                    oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');"  >
+                                    <apex:param name="param1" assignTo="{!contactIdPurchaser}" value="" />
+                                </apex:actionFunction>
+                                <apex:actionFunction action="{!SearchPurchaserLookup}" name="SearchPurchaserLookup" status="statusLoad" 
+                                    rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
+                                    oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
+                                    <apex:param name="param1" assignTo="{!searchPurchaser}" value="" />
+                                </apex:actionFunction>
+                            </apex:outputPanel>
+                        </apex:pageBlockSectionItem>        
+                    </apex:pageBlockSection>
+                </apex:outputPanel>
+            </td>
+            <td style="veritcal-align:middle" >             
+                <apex:outputPanel id="panelStatus" > 
+                    <apex:pageMessage escape="false" summary="{!(strStatus)}" severity="info" strength="2"  rendered="{!(strStatus)!=null}" />  
+                    <apex:messages styleClass="Error" />
+                </apex:outputPanel>                                                                                        
+            </td>            
+            </tr>
+            <tr>
+            <td class="sideLeft" style="vertical-align:top;" colspan="2" >
+                <apex:outputPanel id="panelPurchases" >
+                    <apex:pageBlockSection columns="1" >
+                        <apex:repeat var="receipt" value="{!listReceipts}">  
+                                 <apex:variable value="0" var="rowNum" /> 
+                            <apex:pageBlockTable value="{!receipt.listOppAuctionPurchases}" var="oppAP" id="tblAP" 
 
-								footerClass="clsDTFooter"	
-								rules="rows" >
-		
-								<apex:column >
-								</apex:column>
-		
-								<apex:column > 
-							        <apex:facet name="header">{!$ObjectType.Opportunity.Label}</apex:facet>
-									<apex:outputLink value="/{!oppAP.opp.Id}" >{!oppAP.opp.Name}</apex:outputLink>
-								</apex:column>
-								
-								<apex:column > 
-							        <apex:facet name="header">{!$ObjectType.Auction_Item__c.Label}</apex:facet>
-									<apex:outputText value="{!IF(oppAP.opp.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.opp.Auction_Item_Name__c, oppAP.opp.Description))}"/>
-								</apex:column>
-		
-								<apex:column >
-							        <apex:facet name="header">{!$ObjectType.Opportunity.Fields.Amount.Label}</apex:facet>
-									<apex:outputText value="{0,Number,$#,###.##}" >
-										<apex:param value="{!oppAP.opp.Amount}" />
-									</apex:outputText>
-									<apex:facet name="footer">				
-										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="font-weight:bold;">
-											<apex:param value="{!receipt.decTotalAmountPaid}"/> 
-										</apex:outputText>								
-									</apex:facet>
-								</apex:column>
-		
-								<apex:column >
-									<apex:facet name="header" >1. Pay Now</apex:facet>
-									<apex:inputCheckbox value="{!oppAP.IsPayNow}" rendered="{!oppAP.opp.IsClosed == false}" required="false" immediate="false" onchange="ChangePayNow('{!oppAP.opp.Id}');" />
-									<apex:outputText value="paid" rendered="{!oppAP.opp.IsClosed}" style="font-style:italic;" />
-									<Apex:facet name="footer">				
-										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="text-align:center; font-weight:bold;">
-											<apex:param value="{!receipt.decTotalAmountToPay}"/> 
-										</apex:outputText>								
-									</apex:facet>
-								</apex:column>	
-								 
-				            	<!-- additional Opportunity fields use a fieldset -->
-								<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionCheckOutFS}" var="f" >
-									<apex:column >
-										<apex:facet name="header">{!$ObjectType.Opportunity.Fields[f].Label}</apex:facet>
-				   						<apex:outputField value="{!oppAP.opp[f]}" /> 
-									</apex:column>				   						
-					  			</apex:repeat>                    	
-																
-							</apex:pageBlockTable>
-						</apex:repeat>
-					</apex:pageBlockSection>
+                                footerClass="clsDTFooter"   
+                                rules="rows" >
+        
+                                <apex:column >
+                                </apex:column>
+        
+                                <apex:column > 
+                                    <apex:facet name="header">{!$ObjectType.Opportunity.Label}</apex:facet>
+                                    <apex:outputLink value="/{!oppAP.opp.Id}" >{!oppAP.opp.Name}</apex:outputLink>
+                                </apex:column>
+                                
+                                <apex:column > 
+                                    <apex:facet name="header">{!$ObjectType.Auction_Item__c.Label}</apex:facet>
+                                    <apex:outputText value="{!IF(oppAP.opp.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.opp.Auction_Item_Name__c, oppAP.opp.Description))}"/>
+                                </apex:column>
+        
+                                <apex:column >
+                                    <apex:facet name="header">{!$ObjectType.Opportunity.Fields.Amount.Label}</apex:facet>
+                                    <apex:outputText value="{0,Number,$#,###.##}" >
+                                        <apex:param value="{!oppAP.opp.Amount}" />
+                                    </apex:outputText>
+                                    <apex:facet name="footer">              
+                                        <apex:outputText value="{0,Number,$#,###.##}" escape="false" style="font-weight:bold;">
+                                            <apex:param value="{!receipt.decTotalAmountPaid}"/> 
+                                        </apex:outputText>                              
+                                    </apex:facet>
+                                </apex:column>        
+                                <apex:column > 
+                                    <apex:facet name="header" >1. Pay Now</apex:facet>
+                                    <!-- <apex:inputCheckbox value="{!oppAP.IsPayNow}" rendered="{!oppAP.opp.IsClosed == false}" required="false" immediate="false" onchange="ChangePayNow('{!oppAP.opp.Id}');" styleClass="paynow{!rowNum}"/>
+                                     <apex:outputText value="paid" rendered="{!oppAP.opp.IsClosed }" style="font-style:italic;" />-->
+                                    <apex:inputCheckbox value="{!oppAP.IsPayNow}" rendered="{!if((oppAP.opp.IsClosed == false && paaspackage==false ) || ( paaspackage==true && (oppAP.opp.IsClosed == false || (oppAP.opp.IsClosed != false && transactionresult[oppAP.opp.id]==false &&ordernumberexist[oppAP.opp.id]==true))),true,false)}" required="false" immediate="false" onchange="ChangePayNow('{!oppAP.opp.Id}');" styleClass="paynow{!rowNum}"/> 
+                                    <apex:outputText value="paid" rendered="{!if((oppAP.opp.IsClosed && paaspackage==false)||(oppAP.opp.IsClosed && paaspackage==true &&(ordernumberexist[oppAP.opp.id]==false || (ordernumberexist[oppAP.opp.id]==true && transactionresult[oppAP.opp.id]==true))),true,false)}" style="font-style:italic;" />
+                                  <Apex:facet name="footer">              
+                                        <apex:outputText value="{0,Number,$#,###.##}"  escape="false" style="text-align:center; font-weight:bold;">
+                                            <apex:param value="{!receipt.decTotalAmountToPay}"/> 
+                                        </apex:outputText>                              
+                                    </apex:facet>
+                                    </apex:column>
+                                    <apex:column >
+                                    <!-- **************For getting Opportunity Field Values(Not Displayed)************** -->
+                                    <apex:inputfield value="{!oppAP.opp.Auction_Item_Purchased__r.Total_Tax_Deductible__c}" styleclass="taxdeduct{!rowNum}" style="display:none" rendered="{!paaspackage}"/>
+                                    <apex:inputtext value="{!oppAP.opp.Auction_Item_Purchased__r.Show_Tax_Deductible__c}" styleclass="showtax{!rowNum}" style="display:none" rendered="{!paaspackage}"/>
+                                     <apex:inputtext value="{!oppAP.opp.Auction_Item_Purchased__r.SKU__c}" styleclass="sku{!rowNum}" style="display:none" rendered="{!paaspackage}"/>
+                                    <apex:inputfield value="{!oppAP.opp.Auction_Item_Purchased__r.Token_Value__c}" styleclass="tokenvalue{!rowNum}"  rendered="{!paaspackage}" style="display:none"/>
+                                    <apex:inputfield value="{!oppAP.opp.Amount}" styleclass="amount{!rowNum}" style="display:none" rendered="{!paaspackage}"/>
+                                    <apex:inputtext value="{!oppAP.opp.Auction_Item_Purchased__r.Fair_Market_Value__c}" styleclass="fmv{!rowNum}"  rendered="{!paaspackage}" style="display:none"/>
+                               
+                                </apex:column> 
+                              
+                                
+                                 
+                                <!-- additional Opportunity fields use a fieldset -->
+                                <apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionCheckOutFS}" var="f" >
+                                    <apex:column >
+                                        <apex:facet name="header">{!$ObjectType.Opportunity.Fields[f].Label}</apex:facet>
+                                        <apex:outputField value="{!oppAP.opp[f]}" /> 
+                                    </apex:column>                                      
+                                </apex:repeat>                      
+                               <apex:column >
+                            <apex:variable var="rowNum" value="{!value(rowNum)+1}"/>
+                             </apex:column>                                 
+                            </apex:pageBlockTable>
+                            <input type="hidden" value="{!rowNum}" class="rowvalues" name="rowvalues"/>
+                        </apex:repeat>
+                         
+                    </apex:pageBlockSection>
 
-		    		<apex:actionFunction action="{!ChangePayNow}" name="ChangePayNow" status="statusLoad" 
-		    			rerender="panelPurchases,panelButtons,panelStatus" 
-		    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
-		    			 <apex:param name="param1" assignTo="{!oppIdChecked}" value="" />
-		    		</apex:actionFunction>					
-				</apex:outputPanel> 
-			      
-			    <apex:outputPanel id="panelButtons" >  
-
-					<script>			    		
-						/*******************************************************************************************************
-						* utility to invoke the credit card payment processor
-						* NOTE: had to locate this within the outputPanel that gets refreshed, to get the current URL formula.
-						*******************************************************************************************************/
-						function displayPaymentProcessor(strPaymentMethod) {
-							if (strPaymentMethod == 'Check') {
-								ChangePaymentMethod();
-								return;
-							} else if (strPaymentMethod == 'Cash') {
-								ChangePaymentMethod();
-								return;
-							}
-							else if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
-								// assume they are charging the card outside of Salesforce.
-								ChangePaymentMethod();
-								return;
-							} else if ({!decTotalAmountToPay} == 0) {
-								alert('Please check which items you want to pay for, before opening the payment processor.');
-								return;
-							} else if ({!fShowPaymentProcessorOnPage}) { 
-								ShowPanelCreditCard();
-								return; 
-							} else { 
-								ChangePaymentMethod();
-								window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
-								return;
-							}	
-						}		
-					</script>		    		
-
-			    	<apex:actionFunction action="{!ShowPanelCreditCard}" name="ShowPanelCreditCard" status="statusLoad" 
-			    		rerender="panelButtons,panelStatus" 
-			    		oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');"  />			    		
-			    				    	   
-		            <apex:pageBlockSection title="2.  Payment Method" rendered="{!fHasReceipts}" >
-		            	<apex:pageMessage severity="warning" strength="1" rendered="{!isPaymentSettingsMissing}"
-		            		summary="Your Auction Settings are not filled out to specify where to store the Payment Method." />		            	
-						<apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value);" >
-							<apex:selectOption itemValue="Cash" itemLabel="Cash" />
-							<apex:selectOption itemValue="Check" itemLabel="Check" />
-							<apex:selectOption itemValue="Credit Card" itemLabel="Credit Card" />
-						</apex:selectRadio>	
-			    		<apex:actionFunction action="{!ChangePaymentMethod}" name="ChangePaymentMethod" status="statusLoad"  
-			    			rerender="panelButtons,panelStatus" 
-			    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
-			    		</apex:actionFunction>																	
-					
-						<apex:outputPanel id="panelCheck" rendered="{!strPaymentMethod == 'Check'}" >
-								<apex:outputLabel value="Check Number" style="font-weight:bold;" />&nbsp;&nbsp;&nbsp;&nbsp;
-								<apex:inputText value="{!strCheckNumber}" />
-						</apex:outputPanel>					
-					</apex:pageBlockSection>
-
-					<apex:outputPanel id="panelCreditCard" rendered="{!fShowPanelCreditCard}" >
-							<div class="cssLoading cssLoadingPP"  >
-							  <p style="vertical-align: middle; text-align:center;" >
-								<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-								<span style="vertical-align: middle;" >Loading Payment Processor...</span>
-							  </p>
-							</div>	       				
-		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardChargeURL)}" />
-		       				<script>
-		       					j$('.cssLoadingPP').fadeIn();
-		       					j$('#iframePP').load(function(){   
-		       						j$('.cssLoadingPP').fadeOut();
-		       					});
-		       				</script>
-					</apex:outputPanel>						
-					<p/>
-					
-					<apex:pageBlockSection title="3.  Complete Processing" collapsible="false" rendered="{!fHasReceipts}" >
-				    	<apex:commandButton value="Update Opportunities" action="{!UpdateCheckedOpps}" status="statusLoad"  
-			    			rerender="panelButtons,panelStatus,panelPurchases" 
-			    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
-					</apex:pageBlockSection>					
-	
-					<apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!fHasReceipts}" >
-						<apex:pageBlockSectionItem >
-						<apex:outputPanel >
-							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
-							<apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
-							<apex:commandButton value="Close" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!Close}" immediate="true" />
-						</apex:outputPanel>							
-						</apex:pageBlockSectionItem>							
-					</apex:pageBlockSection>	
-				</apex:outputPanel>		 		
-			</td>
-			</tr>
-			</table> 
+                    <apex:actionFunction action="{!ChangePayNow}" name="ChangePayNow" status="statusLoad" 
+                        rerender="panelPurchases,panelButtons,panelStatus" 
+                        oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
+                         <apex:param name="param1" assignTo="{!oppIdChecked}" value="" />
+                    </apex:actionFunction>                  
+                </apex:outputPanel> 
+                  
+                <apex:outputPanel id="panelButtons" >  
+                    <script>                        
+                        /*******************************************************************************************************
+                        * utility to invoke the credit card payment processor
+                        * NOTE: had to locate this within the outputPanel that gets refreshed, to get the current URL formula.
+                        *******************************************************************************************************/
+                        function displayPaymentProcessor(strPaymentMethod,paaspackage) {
+                              
+                          if(paaspackage=='false') {
+                            if (strPaymentMethod == 'Check') {
+                                ChangePaymentMethod();
+                                return;
+                            } else if (strPaymentMethod == 'Cash') {
+                                ChangePaymentMethod();
+                                return;
+                            }
+                            else if ('{!JSENCODE(strCreditCardChargeURL)}' == '') {
+                                // assume they are charging the card outside of Salesforce.
+                                ChangePaymentMethod();
+                                return;
+                            } else if ({!decTotalAmountToPay} == 0) {
+                           
+                                alert('Please check which items you want to pay for, before opening the payment processor.');
+                                return;
+                            } else if ({!fShowPaymentProcessorOnPage}) { 
+                                ShowPanelCreditCard();
+                                return; 
+                            } else { 
+                                ChangePaymentMethod();                                
+                                window.open('{!JSENCODE(strCreditCardChargeURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
+                                return;
+                            } 
+                           } 
+                           /************C&P Code Start( for checking the Checkbox)**********/ 
+                           if(paaspackage=='true'){
+                              if ({!decTotalAmountToPay} == 0) {
+                              alert('Please check which items you want to pay for, before opening the payment processor.');
+                              return false;
+                              }else{
+                              ChangePaymentMethod();
+                              }
+                           }
+                                
+                        } 
+                        </script>  
+                    <apex:actionFunction action="{!ShowPanelCreditCard}" name="ShowPanelCreditCard" status="statusLoad" 
+                        rerender="panelButtons,panelStatus" 
+                        oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');"  />                     
+                                           
+                   <apex:pageBlockSection title="2.  Payment Method" rendered="{!if(paaspackage==false && fHasReceipts,true,false)}" columns="1" >
+                       <apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value,'{!paaspackage}');" >
+                            <apex:selectOption itemValue="Cash" itemLabel="Cash" />
+                            <apex:selectOption itemValue="Check" itemLabel="Check" />
+                            <apex:selectOption itemValue="Credit Card" itemLabel="Credit Card" />
+                        </apex:selectRadio> 
+                        <apex:actionFunction action="{!ChangePaymentMethod}" name="ChangePaymentMethod" status="statusLoad"  
+                            rerender="panelButtons,panelStatus" 
+                            oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
+                        </apex:actionFunction>  
+                        <apex:outputPanel id="panelCheck" rendered="{!strPaymentMethod == 'Check'}" >
+                                <apex:outputLabel value="Check Number" style="font-weight:bold;" />&nbsp;&nbsp;&nbsp;&nbsp;
+                                <apex:inputText value="{!strCheckNumber}" />
+                        </apex:outputPanel>
+                   </apex:pageBlockSection>
+                   
+                   
+                    <!-- *************** C&P Code Start************** -->
+                  
+                    <apex:pageBlockSection title="2.  Payment Method" rendered="{!if((cnpaccount.size!=0 && paaspackage==true && fHasReceipts && hideform)||(tryagain),true,false)}" columns="1"  >
+                       <!-- ***************Send Receipt section************* -->
+                                <apex:pageBlockSectionItem >
+                                         <apex:outputLabel value="Send Receipt"/>
+                                          <apex:inputCheckbox value="{!xmlReceipt.SendReceipt}"  >
+                                          </apex:inputCheckbox>
+                                   </apex:pageBlockSectionItem>
+                                <apex:pageBlockSection columns="1" >
+ 
+                                    <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Organization Information" />
+                                           <apex:inputTextarea value="{!xmlReceipt.OrganizationInformation}" styleClass="organizationinfo" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                                    </apex:pageBlockSectionItem>
+                                     
+                                    <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Thank you Message"/>
+                                           <apex:inputTextarea value="{!xmlReceipt.ThankYouMessage}" styleClass="thankyou" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 500);" onkeyup="return imposeMaxLength(event, this, 500);"/>
+                                   </apex:pageBlockSectionItem>
+                                     
+                                   <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Terms & Conditions (the following HTML tags are allowed: <P></P><BR /><OL></OL><LI></LI><UL></UL>)"/>
+                                           <apex:inputTextarea value="{!xmlReceipt.TermsCondition}" styleClass="TermsCondition" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                                   </apex:pageBlockSectionItem>
+                                     
+                                    <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Internal Notification (type email addresses separated by semicolon max=1000 chars)" onkeypress="return imposeMaxLength(event, this, 1000);" onkeyup="return imposeMaxLength(event, this, 1000);"></apex:outputLabel>
+                                           <apex:inputTextarea value="{!xmlReceipt.EmailNotificationList}" styleClass="internalemaillist" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                                    </apex:pageBlockSectionItem>
+                             </apex:pageblockSection> 
+                       <!-- *************** Account number based on cnp settings************** -->
+                        <apex:pageBlockSectionItem >
+                              <apex:outputLabel value="C&P Account Number"></apex:outputLabel>                             
+                              <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                    <apex:selectList value="{!XmlAuthentication.AccountID}" size="1" styleClass="acc"  > 
+                                      <apex:actionSupport event="onchange" action="{!AccountChange}" rerender="refer,paymentdetails" />
+                                      <Apex:selectOptions value="{!CnPAccount}"></Apex:selectOptions>
+                                    </apex:selectList>
+                              </apex:outputpanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:outputpanel id="refer">
+                          <!-- *************** Payment Types Based On Cnp Settings************** -->
+                            <apex:selectRadio value="{!strPaymentMethod}" style="font-weight:bold;" onclick="displayPaymentProcessor(this.value,'{!paaspackage}');" styleClass="paymenttype" >
+                                 <apex:selectOption itemValue="CreditCard" itemLabel="Credit Card" rendered="{!creditcardpayment}"/>
+                                 <apex:selectOption itemValue="Check" itemLabel="eCheck" rendered="{!echeckpayment}" /><apex:selectOption itemValue="ReferenceTransaction" itemLabel="Reference Transaction" rendered="{!if((contactIdPurchaser!=null && ReferenceTrans.size>0) ,true,false)}"/>
+                                 <apex:selectOption itemValue="PurchaseOrder" itemLabel="Purchase Order" rendered="{!popayment}" />
+                                 <apex:selectOption itemValue="CustomPaymentType" itemLabel="Custom Payment Type" rendered="{!custompayment}" />
+                            </apex:selectRadio> 
+                        </apex:outputpanel>
+                        <apex:actionFunction action="{!ChangePaymentMethod}" name="ChangePaymentMethod" status="statusLoad"  
+                            rerender="panelButtons,panelStatus" 
+                            oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >
+                        </apex:actionFunction>                                                                  
+                        <apex:outputpanel id="paymentdetails">
+                            <apex:outputpanel rendered="{!paymentform}" >
+                              <!-- *************** Credit Card Section************** -->
+                                <apex:outputPanel rendered="{!if(strPaymentMethod=='CreditCard',true,false)}" >
+                                   <table>
+                                    <tr>
+                                       <td class="labelCol">
+                                          <apex:outputLabel value="Entry Mode" />
+                                       </td>
+                                       <td>
+                                             <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                               <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                 <apex:selectList size="1" value="{!selecttype}" styleClass="cardoption" onchange="focuscard();" >
+                                                      <apex:selectOption itemLabel="Manual" itemValue="Manual"></apex:selectOption>
+                                                      <apex:selectOption itemLabel="Card Reader" itemValue="CardReader"></apex:selectOption>
+                                                 </apex:selectList>
+                                             </apex:outputPanel>
+                                        </td>
+                                   </tr>
+                                   <tr class="cardreaderrow" style="display:none;">                               
+                                        <td class="labelCol">
+                                           <apex:outputLabel value="Place the mouse pointer here & swipe the credit card." styleClass="cardlabel" />
+                                         </td>
+                                          <td>
+                                             <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                             <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                               <apex:inputSecret value="{!xmlpaymentMethod.TrackData}" styleClass="cardreader" onchange="cardReaderTexChange();" />
+                                             </apex:outputPanel>
+                                          </td>
+                                      </tr> 
+                                      <tr>
+                                        <td class="labelCol"><apex:outputLabel value="Name on Card" ></apex:outputLabel></td>
+                                        <td>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                               <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                               <apex:inputText value="{!xmlpaymentMethod.NameOnCard}" styleClass="creditcardname" id="name" maxlength="50"/>
+                                            </apex:outputpanel>
+                                        </td>
+                                        <td class="labelCol"><apex:outputLabel value="Expiration Date"></apex:outputLabel></td>
+                                        <td>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                <apex:selectList size="1" value="{!xmlpaymentMethod.ExpirationMonth}" styleClass="expiremonth"><apex:selectOptions value="{!xmlstring.ExpireMonth}" id="ExpirationMonth"></apex:selectOptions></apex:selectList>&nbsp;&nbsp;
+                                                <apex:selectList size="1" value="{!xmlpaymentMethod.ExpirationYear}" styleClass="expireyear"><apex:selectOptions value="{!xmlstring.ExpireYear}" id="ExpirationYear"></apex:selectOptions></apex:selectList>
+                                            </apex:outputpanel>
+                                        </td>
+                                      </tr>
+                                      <tr>  
+                                        <td class="labelCol"><apex:outputLabel value="Credit Card Number"></apex:outputLabel></td>
+                                        <td>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                <apex:inputText value="{!xmlpaymentMethod.CardNumber}"  id="CardNo" styleClass="creditcardnumber" style="display:block" />
+                                                <input type="text" class="dummycardnumber" style="display:none"/>
+                                            </apex:outputpanel>
+                                        </td>
+                                        <td class="labelCol"><apex:outputLabel value="Card Verification (CVV)" styleclass="cvvlabel"></apex:outputLabel></td>
+                                        <td>
+                                            <apex:inputText value="{!xmlpaymentMethod.Cvv2}" size="6" maxlength="4" styleClass="cvv"/>
+                                        </td>
+                                     </tr>
+                                  </table>
+                                </apex:outputpanel>
+                                  <!-- *************** ReferenceTransaction Section************** -->
+                                    <apex:outputPanel rendered="{!if((strPaymentMethod=='ReferenceTransaction' && ReferenceTrans.size>0) ,true,false)}">
+                                       <table>
+                                          <tr>
+                                            <td class="labelCol"> <apex:outputLabel value="Previous Payment" /> </td>
+                                            <td> <apex:selectList value="{!ReferencePayment}"  rendered="{!IF(ReferenceTrans.size>0,true,false)}"  size="1">
+                                               <apex:selectOptions value="{!ReferenceTrans}"/>
+                                               </apex:selectList>
+                                            </td>
+                                            <td class="labelCol"> <apex:outputLabel value="There is no Previous Credit Card/eCheck Payments for this Contact" rendered="{!IF( ReferenceTrans.size<=0,true,false)}" ></apex:outputLabel></td>
+                                          </tr>
+                                       </table>
+                                   </apex:outputPanel>
+                                  <!-- *************** eCheck Section************** -->
+                               <apex:outputPanel rendered="{!if(strPaymentMethod='Check',true,false)}" >
+                                     <table class="detailList">
+                                        <tr>
+                                          <td class="labelCol"><apex:outputLabel value="Routing Number" style="" ></apex:outputLabel></td>
+                                          <td>
+                                                <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                      <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                      <apex:inputText value="{!xmlpaymentMethod.RoutingNumber}" styleClass="routingnumber" maxlength="9"/>
+                                                 </apex:outputpanel>
+                                           </td>
+                                           <td class="labelCol"><apex:outputLabel value="Check Number" style=""></apex:outputLabel></td>
+                                           <td>
+                                                <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                    <apex:inputText value="{!xmlpaymentMethod.CheckNumber}" styleClass="checknumber" maxlength="10"/>
+                                                </apex:outputpanel>
+                                           </td>
+                                        </tr>
+                                        <tr>
+                                          <td class="labelCol"><apex:outputLabel value="Account Number" style=""></apex:outputLabel></td>
+                                          <td>
+                                               <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                  <apex:inputText value="{!xmlpaymentMethod.AccountNumber}" styleClass="accountnumber" maxlength="17"/>
+                                               </apex:outputpanel>
+                                           </td>
+                                           <td class="labelCol"><apex:outputLabel value="Retype Account Number" style="" ></apex:outputLabel></td>
+                                           <td>
+                                               <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                  <apex:inputText value="{!xmlpaymentMethod.AccountNumber}" styleClass="repeataccountnumber" maxlength="17"/>
+                                               </apex:outputpanel>
+                                           </td>
+                                        </tr>
+                                        <tr>
+                                          <td class="labelCol"><apex:outputLabel value="Account Type" style=""></apex:outputLabel></td>
+                                          <td>
+                                             <apex:selectList size="1" value="{!xmlpaymentMethod.AccountType}"><apex:selectOptions value="{!xmlstring.AccountTypes}"></apex:selectOptions></apex:selectList>
+                                          </td>
+                                          <td class="labelCol"><apex:outputLabel value="Check Type" style=""></apex:outputLabel></td>
+                                          <td>
+                                            <apex:selectList size="1" value="{!xmlpaymentMethod.CheckType}"><apex:selectOptions value="{!xmlstring.CheckTypes}"></apex:selectOptions></apex:selectList>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="labelCol"><apex:outputLabel value="Name on Account" style=""></apex:outputLabel></td>
+                                            <td>
+                                               <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                  <apex:inputText value="{!xmlpaymentMethod.NameOnAccount}" styleClass="checkname"/>
+                                               </apex:outputpanel>
+                                            </td>
+                                           <td class="labelCol"><apex:outputLabel value="Type of ID" style=""></apex:outputLabel></td>
+                                           <td>
+                                             <apex:selectList size="1" value="{!xmlpaymentMethod.IdType}"><apex:selectOptions value="{!xmlstring.IdTypes}"></apex:selectOptions></apex:selectList>
+                                          </td>
+                                        </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                  <!-- *************** Purchase Order Section************** -->
+                                <apex:outputPanel rendered="{!if(strPaymentMethod=='PurchaseOrder',true,false)}">
+                                    <table class="detailList">
+                                       <tr>
+                                           <td class="labelCol"><apex:outputLabel value="Purchase Order Number" style=""></apex:outputLabel></td>
+                                           <td>
+                                               <apex:inputText value="{!xmlpaymentMethod.PurchaseOrderNumber}" styleClass="purchaseordernumber" maxlength="50"/>
+                                           </td>
+                                       </tr>
+                                    </table>
+                                </apex:outputPanel>
+                                  <!-- *************** Custom PaymentType Section************** -->
+                                <apex:outputPanel rendered="{!if(strPaymentMethod=='CustomPaymentType',true,false)}" >
+                                    <table class="detailList">
+                                        <tr>
+                                           <td class="labelCol"><apex:outputLabel value="Name" style=""></apex:outputLabel></td>
+                                           <td>
+                                                <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/> 
+                                                    <apex:outputPanel rendered="{!if(cusValue.size == 0,true,false) }">
+                                                        <apex:inputText value="{!xmlpaymentMethod.CustomPaymentName}" styleClass="customname" maxlength="50"/>
+                                                    </apex:outputpanel>  
+                                                    <apex:outputPanel rendered="{!if(cusValue.size >0,true,false) }">
+                                                       <apex:selectlist value="{!xmlpaymentMethod.CustomPaymentName}" size="1" styleClass="customname">
+                                                           <apex:selectoptions value="{!cusValue}"></apex:selectoptions>
+                                                       </apex:selectlist>
+                                                    </apex:outputPanel> 
+                                                </apex:outputpanel>
+                                           </td>
+                                        </tr> 
+                                        <tr>
+                                          <td class="labelCol"><apex:outputLabel value="Reference Number" style=""></apex:outputLabel></td>
+                                          <td><apex:inputText value="{!xmlpaymentMethod.CustomPaymentNumber}" styleClass="customnumber"  maxlength="50"/></td>
+                                        </tr>
+                                    </table>
+                               </apex:outputPanel>
+                               <apex:outputpanel rendered="{!if(strPaymentMethod!='',true,false)}">                      
+                                    <apex:commandButton value="Process Payment" action="{!Process}" status="statusLoad1"  rerender="panelButtons,panelStatus,panelPurchases"  onclick="if(!paymentprocess()){return false;}"  oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >  
+                                    </apex:commandbutton> 
+                               </apex:outputpanel> 
+                            </apex:outputpanel>
+                        </apex:outputpanel>
+                    </apex:pageBlockSection>
+                     
+              <!-- ***************If Account Number with status Active not exist in Cnp Settings Display the following Message************* -->
+                <apex:pageMessage severity="INFO" rendered="{!if(((paaspackage==true && cnpaccount.size==0)&&((fHasReceipts && hideform)|| tryagain)),true,false)}"  >
+                
+                            <span style="font-weight:normal;">Before using the CheckOut Payment Method, the Click &amp; Pledge platform has to be connected to your Salesforce instance.  The native Virtual Terminal in Salesforce also has to know what Click &amp; Pledge account it needs to use to post payments to.  To establish connection between the systems please  follow the steps listed below:</span><br />
+                            <br />
+                            <strong> Enable Salesforce Connection:</strong> <br />
+                            <ol>
+                                    <li>  Login to the Click &amp;  Pledge portal (<a href="https://portal.clickandpledge.com" style="color:#0000FF;" target="_blank">https://portal.clickandpledge.com</a>) </li>
+                                    <li>   Click on Account Info</li>
+                                    <li>   Click on 3rd Party tab</li>
+                                    <li>   Click on Salesforce sub-tab</li>
+                                    <li>   Add the requested information and “Verify &amp; Update” to save</li>
+                            
+                            </ol>
+                            <br />
+                            <strong> Set up C&amp;P Account info in C&amp;P Settings tab:</strong> <br />
+                            <ol>
+                                    <li>  In Click &amp; Pledge portal click on Account Info</li>
+                                    <li>  Click on Your Profile > API Information</li>
+                                    <li>  Copy the Account ID &amp; API Account GUID</li>
+                                    <li>  In Salesforce click on C&amp;P Settings tab</li>
+                                    <li> Click on C&amp;P Account</li>
+                                    <li>  Enter an identification name for C&amp;P Account Name.  This is for internal use only</li>
+                                    <li>  Add C&amp;P Account Number from Step 3</li>
+                                    <li>  Add C&amp;P Account GUID from Step 3</li>
+                                    <li>  Set C&amp;P Account Status to Active</li>
+                                    <li>  Click on Add/Update to save</li>
+                                    <li>  Repeat steps 1- 10 for all C&amp;P Accounts. </li>
+                            </ol>
+                            <br />
+                
+                </apex:pageMessage>
+    
+                      <!-- ***************Error Message based on Xmlfile ************** -->
+                  <apex:outputPanel rendered="{!if((xmlstring.TransactionResultCode!=0 && hideform == false),true,false)}" >
+                    <apex:pageBlockSection title="Processing Result">
+                      <b>Error Code</b>&nbsp;&nbsp;<apex:outputtext value="{!xmlstring.TransactionResultCode}"></apex:outputText>
+                      <b>Transaction Result</b>&nbsp;&nbsp;<apex:outputText value="{!xmlstring.ErrorData}"></apex:outputText>
+                      &nbsp;&nbsp; <apex:outputText value="{!xmlstring.additionalInfo}"></apex:outputText>
+                    </apex:pageBlockSection>
+                    <apex:commandButton value="Try Again" reRender="panelButtons" rendered="{!if((xmlstring.TransactionResultCode!=0 && paymentform=false && hideform == false),true,false)}"  status="statusLoad" action="{!Retry}"/>
+                   </apex:outputPanel>
+                   <!-- ***************Success Message based on Xmlfile ************** -->
+                  <apex:outputpanel rendered="{!if((xmlstring.TransactionResultCode=0 && hideform == false),true,false)}" >
+                    <apex:pageBlockSection title="Processing Result" columns="2">
+                       <b>Transaction Result</b> &nbsp;&nbsp;  <apex:outputText value="{!xmlstring.ErrorData}"></apex:outputText>
+                       <b>Order Number</b>&nbsp;&nbsp;  <apex:outputText value="{!xmlstring.TransactionNumber}"></apex:outputText>
+                       <b>Vault GUID</b> &nbsp;&nbsp;  <apex:outputText value="{!xmlstring.vaultguid}"></apex:outputText>
+                       <b>Gateway Transaction Number</b>&nbsp;&nbsp;  <apex:outputText value="{!xmlstring.gatewaytransactionnumber}"></apex:outputText>
+                    </apex:pageBlockSection>
+                  </apex:outputPanel>
+                  <!--  *************C&P Code End******************** -->
+                  <apex:outputPanel id="panelCreditCard" rendered="{!fShowPanelCreditCard}" >
+                            <div class="cssLoading cssLoadingPP"  >
+                              <p style="vertical-align: middle; text-align:center;" >
+                                <img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+                                <span style="vertical-align: middle;" >Loading Payment Processor...</span>
+                              </p>
+                            </div>                      
+                           <iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardChargeURL)}" />
+                            <script>
+                                j$('.cssLoadingPP').fadeIn();
+                                j$('#iframePP').load(function(){   
+                                    j$('.cssLoadingPP').fadeOut();
+                                });
+                            </script>
+                    </apex:outputPanel>                     
+                    <p/>
+                    
+                    <apex:pageBlockSection title="3.  Complete Processing" collapsible="false" rendered="{!if((paaspackage == false && fHasReceipts),true,false)}" >
+                        <apex:commandButton value="Update Opportunities" action="{!UpdateCheckedOpps}" status="statusLoad"  
+                            rerender="panelButtons,panelStatus,panelPurchases" 
+                            oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
+                    </apex:pageBlockSection>                    
+    
+                    <apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!if((paaspackage == false && fHasReceipts),true,false)}"  >
+                        <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;  
+                            <apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;                                                                                             
+                            <apex:commandButton value="Close" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!Close}" immediate="true" />
+                        </apex:outputPanel>                         
+                        </apex:pageBlockSectionItem>                            
+                    </apex:pageBlockSection> 
+                    <apex:pageBlockSection title="3.  Continue" collapsible="false" rendered="{!if((paaspackage == true && fHasReceipts),true,false)}"  >
+                        <apex:pageBlockSectionItem >
+                        <apex:outputPanel >
+                            <apex:commandButton value="View Receipt"  onclick="window.open('{!JSENCODE(strOpenReceiptURL)}');"/>&nbsp;&nbsp;  
+                            <apex:commandButton value="Next Guest"  action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;                                                                                             
+                            <apex:commandButton value="Close"  action="{!Close}" immediate="true" />
+                        </apex:outputPanel>                         
+                        </apex:pageBlockSectionItem>                            
+                    </apex:pageBlockSection> 
+                </apex:outputPanel>             
+            </td>
+            </tr>
+            </table> 
+           
         </apex:pageBlock>       
     </apex:form>
+
 </apex:page>

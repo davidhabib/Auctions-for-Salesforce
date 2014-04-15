@@ -77,6 +77,22 @@
                 <behavior>Edit</behavior>
                 <field>Restrictions__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Show_Tax_Deductible__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Total_Tax_Deductible__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Token_Value__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>SKU__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>
@@ -110,31 +126,26 @@
         <style>CustomLinks</style>
     </layoutSections>
     <relatedLists>
-        <fields>Opportunity.Auction_Donated_Item_Name__c</fields>
-        <fields>Description__c</fields>
+        <fields>NAME</fields>
         <fields>Quantity__c</fields>
-        <fields>Actual_FMV__c</fields>
-        <fields>Opportunity.NAME</fields>
         <relatedList>Auction_Item_Piece__c.Auction_Item__c</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>OPPORTUNITY.NAME</fields>
-        <fields>Auction_Item_Name__c</fields>
-        <fields>OPPORTUNITY.AMOUNT</fields>
-        <fields>Auction_Non_Deductible_Amount__c</fields>
-        <fields>OPPORTUNITY.STAGE_NAME</fields>
+        <fields>ACCOUNT.NAME</fields>
+        <fields>OPPORTUNITY.CLOSE_DATE</fields>
         <relatedList>Opportunity.Auction_Item_Purchased__c</relatedList>
     </relatedLists>
     <relatedLists>
         <relatedList>RelatedNoteList</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
-    <showHighlightsPanel>true</showHighlightsPanel>
-    <showInteractionLogPanel>true</showInteractionLogPanel>
+    <showHighlightsPanel>false</showHighlightsPanel>
+    <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00hA000000MIySN</masterLabel>
+        <masterLabel>00hi0000002fMFb</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>

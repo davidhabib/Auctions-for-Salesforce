@@ -45,6 +45,10 @@
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <name>Auction Opportunities, by Contact</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
     <reportType>Campaigns_Opps_and_Contact_Roles__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>

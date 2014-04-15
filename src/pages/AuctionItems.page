@@ -3,11 +3,14 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 <apex:page controller="AUC_CTRL_AuctionItems" title="Auction Items"  tabStyle="Auction_Items__tab">
-	<apex:form >
-	   	<apex:sectionHeader title="Auction Items" />  
-		<div style="text-align:center;">
-			<apex:commandButton action="{!DonatedItemConverter}" value="Donated Item Converter" immediate="true" />
-		</div>	   	    
-		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
-	</apex:form>		
+        <apex:form >
+                <apex:sectionHeader title="Auction Items" />  
+                <div style="text-align:center;">
+                        <apex:commandButton action="{!DonatedItemConverter}" value="Donated Item Converter" immediate="true" />&nbsp;&nbsp;&nbsp;
+                        <!--****C&P Code Start*****-->
+                        <apex:commandButton value="Download Auction Items file" action="{!downloadFile}" rendered="{!if(paaspackage==true,true,false)}" />
+                        <!--****C&P Code End*******-->
+                </div>                
+                <c:SoqlListView pageController="{!this}" ></c:SoqlListView>
+        </apex:form>              
 </apex:page>

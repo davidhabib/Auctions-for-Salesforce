@@ -318,11 +318,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>Languages__c</field>
-            <table>Opportunity.OpportunityContactRoles</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>LastActivityDate</field>
             <table>Opportunity.OpportunityContactRoles</table>
         </columns>
@@ -354,11 +349,6 @@
         <columns>
             <checkedByDefault>false</checkedByDefault>
             <field>LeadSource</field>
-            <table>Opportunity.OpportunityContactRoles</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Level__c</field>
             <table>Opportunity.OpportunityContactRoles</table>
         </columns>
         <columns>

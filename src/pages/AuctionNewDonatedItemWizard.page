@@ -4,130 +4,218 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionNewDonatedItemWizard"  title="New Auction Donated Item Wizard" tabStyle="Auction_Donated_Items__tab" >
+
+<!-- *****************C&P Code Start********************* -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<!-- *****************C&P Code End********************* -->
+
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
-	<script>
-	
-		// function to hide/show the Save button.
-		function DisplaySaveBtn(fShow) {
-			var btns = GetElementsByPartialId('btnSave');
-			var i;
-			for (i = 0; i < btns.length; i++) {
-				if (fShow) {
-					ShowElement(btns[i]);
-				} else {				
-					HideElement(btns[i]);
-				}
-			}
-		}
-				
-		// helper function to show an element
-		function ShowElement(element){
-		    element.style.visibility = 'visible';
-		    element.style.display = 'inline';
-		}
-		
-		// helper function to hide an element
-		function HideElement(element){
-		    element.style.visibility = 'hidden';
-		    element.style.display = 'none';
-		}
-		
-  		// helper function to find all controls whose id contains the subid
-		function GetElementsByPartialId(subid) {
-			var form;
-			var i, j;
-			var elems=new Array();
-			for (i = 0; i < document.forms.length; i++) {
-				form = document.forms[i];
-				for (j = 0; j < form.elements.length; j++) {
-					if (form.elements[j].id.indexOf(subid) > -1) {
-						elems.push(form.elements[j]);
-					}
-				}				
-			}
-			return elems;
-		}
-	</script>
-	
-	<style>
-		.cssTextArea {
-			height: 7em;
-			width: 14em;		
-		}
-	</style>
+    <script>
     
-	<apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />    
+        // function to hide/show the Save button.
+        function DisplaySaveBtn(fShow) {
+            var btns = GetElementsByPartialId('btnSave');
+            var i;
+            for (i = 0; i < btns.length; i++) {
+                if (fShow) {
+                    ShowElement(btns[i]);
+                } else {                
+                    HideElement(btns[i]);
+                }
+            }
+        }
+                
+        // helper function to show an element
+        function ShowElement(element){
+            element.style.visibility = 'visible';
+            element.style.display = 'inline';
+        }
+        
+        // helper function to hide an element
+        function HideElement(element){
+            element.style.visibility = 'hidden';
+            element.style.display = 'none';
+        }
+        
+        // helper function to find all controls whose id contains the subid
+        function GetElementsByPartialId(subid) {
+            var form;
+            var i, j;
+            var elems=new Array();
+            for (i = 0; i < document.forms.length; i++) {
+                form = document.forms[i];
+                for (j = 0; j < form.elements.length; j++) {
+                    if (form.elements[j].id.indexOf(subid) > -1) {
+                        elems.push(form.elements[j]);
+                    }
+                }               
+            }
+            return elems;
+        }
+               
+     /************C&P Code start************/
+     
+     /********Validations on Auctionitem object fields**********/
+        function paasvalidations() {
+            var paaspackage=jQuery.trim(jQuery(".paaspackage").val());
+            var showtax=jQuery.trim(jQuery(".showtax").val());
+            var totaltax=jQuery.trim(jQuery(".totaltax").val());
+            var tokenvalue=jQuery.trim(jQuery(".tokenvalue").val());
+            var sku=jQuery.trim(jQuery(".sku").val());
+            var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+            var amount=jQuery.trim(jQuery(".Amount").val());
+            amount=amount.replace(',','');
+            var condition=0;
+          if(paaspackage=='true'){
+                    /**********Validations On Tax*************/
+                    if(showtax=='Yes: Manual'){
+                         if(totaltax==''){
+                             condition=1;
+                             alert("Please enter C&P Total Tax Deductible");
+                             jQuery(".totaltax").focus();
+                             return false;
+                         }
+                         if(totaltax!='' && isNaN(totaltax)){
+                             condition=1;
+                             alert("Please enter Number only in C&P Total Tax Deductible");
+                             jQuery(".totaltax").focus();
+                             return false;
+                         }
+                         if(totaltax!='' && parseInt(totaltax)< 0){
+                             condition=1;
+                             alert("C&P Total Tax Deductible should be Positive values only");
+                             jQuery(".totaltax").focus();
+                             return false;
+                         }
+                     }
+                     
+                     /**********Validations On Tokenvalue*************/
+                     if(tokenvalue!=null && tokenvalue!='' && parseInt(tokenvalue)<0){
+                         condition=1;
+                         alert("C&P Token Value should be Positive values only");
+                         jQuery(".tokenvalue").focus();
+                         return false;
+                     }
+                     if(tokenvalue!=null && tokenvalue!='' && isNaN(tokenvalue)){
+                         condition=1;
+                         alert("Please enter Number only in C&P Token Value");
+                         jQuery(".tokenvalue").focus();
+                         return false;
+                     }
+                     if(amount!='' && tokenvalue!=''){
+                         if(parseFloat(amount) > parseFloat(tokenvalue)){
+                             condition=1;
+                             alert("C&P Token Value should not be less than FMV(Amount)");
+                             jQuery(".tokenvalue").focus();
+                             return false;
+                         }
+                     }
+                     
+                     /**********Validations On Sku*************/
+                     if(sku!=null && sku!='' && !reg_sku.test(sku)){
+                         condition=1;
+                         alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in C&P SKU ");
+                         jQuery(".sku").focus();
+                         return false;
+                     }
+              }
+             if(condition==0){
+                  return true;
+              }else{
+                  return false;
+              }
+        }
+       /************C&P Code End************/
+    </script>
+    
+    <apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />    
     <apex:form >
-    	<apex:pageBlock title="Donated Item Edit" mode="edit" id="pbMain" >
+        <apex:pageBlock title="Donated Item Edit" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
-                <apex:commandButton action="{!Save}" value="Save" immediate="false" id="btnSave" />
+                <apex:commandButton value="Save" action="{!Save}" id="btnSave" onclick="if(!paasvalidations()){return false;}"/>
                 <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true" />
             </apex:pageBlockButtons>   
 
- 			<div class="cssTabHelpLink" id="linkHelp">
-	  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
-					<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
-				</a>
-			</div>
-	   		<div id="divHelp" class="cssHelpText" style="display:none" >
-	       		<div class="hideHelpLink">	       			
-					<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
-						<img src="/img/arrowDown.gif" />Hide
-					</a>
-				</div>
-				<p style="padding-left:30px">Enter the Donated Item's information below.</p>
-				<ul>
-				<li>The <b>Amount</b> should be the Donated Item's Fair Market Value.</li>
-				<li>If this Donated Item will be auctioned off as is, you can click <b>Create Auction Item</b> to create its Auction Item.</li>
-				<li>You can also create an Auction Item for the Donated Item later, using the <b>Donated Item Converter</b> button on the Donated Items tab.</li>
-				<li>Add additional fields to the Donated Item section using the Opportunity Field Set <b>AuctionNewDonatedItemWizardFS</b>.</li>
-				<li>Add additional fields to the Auction Item section using the Auction Item Field Set <b>AuctionNewDonatedItemWizardFS</b>.</li>
-				</ul>
-	  		</div>
+            <div class="cssTabHelpLink" id="linkHelp">
+                <a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+                    <img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+                </a>
+            </div>
+            <div id="divHelp" class="cssHelpText" style="display:none" >
+                <div class="hideHelpLink">                  
+                    <a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+                        <img src="/img/arrowDown.gif" />Hide
+                    </a>
+                </div>
+                <p style="padding-left:30px">Enter the Donated Item's information below.</p>
+                <ul>
+                <li>The <b>Amount</b> should be the Donated Item's Fair Market Value.</li>
+                <li>If this Donated Item will be auctioned off as is, you can click <b>Create Auction Item</b> to create its Auction Item.</li>
+                <li>You can also create an Auction Item for the Donated Item later, using the <b>Donated Item Converter</b> button on the Donated Items tab.</li>
+                <li>Add additional fields to the Donated Item section using the Opportunity Field Set <b>AuctionNewDonatedItemWizardFS</b>.</li>
+                <li>Add additional fields to the Auction Item section using the Auction Item Field Set <b>AuctionNewDonatedItemWizardFS</b>.</li>
+                </ul>
+            </div>
 
             <apex:pageMessage summary="{!strSaveResults}" severity="info" strength="2" rendered="{!strSaveResults!=null}" >  
-            	<apex:messages styleClass="Error" />                                             
+                <apex:messages styleClass="Error" />                                             
             </apex:pageMessage>
             <apex:pageBlockSection title="Donated Item Information" columns="2">
                 <apex:inputField value="{!contactRole.ContactId}" required="true" />
 
-            	<!-- additional Opportunity fields use a fieldset -->
-				<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
-   					<apex:inputField value="{!opp[f]}" 
-   						styleClass="{!IF(f.Type == 'textarea', 'cssTextArea', '')}"    					
-   						required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
-	  			</apex:repeat>                    	
+                <!-- additional Opportunity fields use a fieldset -->
+                 <apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
+                    <apex:inputField value="{!opp[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', false)}" styleClass="{!f}" />
+                </apex:repeat>
             </apex:pageBlockSection>
             <apex:pageBlockSection title="Create An Auction Item" columns="1">
-            	<br/>
-            	<p style="font-weight:bold">In order for Auction Donated Items to be available for purchase, they must be associated with an Auction Item.&nbsp;&nbsp;
-            	Would you like to create a single Auction Item for this donation right now?</p>
-            	<br/>
-            	<apex:pageBlockSectionItem >
-	            	<apex:outputLabel value="Create Auction Item" for="cbxCreateAuctionItem" />
-    	        	<apex:inputCheckbox value="{!fCreateAuctionItem}" id="cbxCreateAuctionItem" >
-    	        		<apex:actionSupport immediate="false" event="onclick" action="{!ToggleCreateAuctionItem}" rerender="pbsAuctionItem, pbMain, panelDebugging" status="statusLoading" />
-    	        	</apex:inputCheckbox>  
-    	        </apex:pageBlockSectionItem> 
+                <br/>
+                <p style="font-weight:bold">In order for Auction Donated Items to be available for purchase, they must be associated with an Auction Item.&nbsp;&nbsp;
+                Would you like to create a single Auction Item for this donation right now?</p>
+                <br/>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Create Auction Item" for="cbxCreateAuctionItem" />
+                    <apex:inputCheckbox value="{!fCreateAuctionItem}" id="cbxCreateAuctionItem" >
+                        <apex:actionSupport immediate="false" event="onclick" action="{!ToggleCreateAuctionItem}" rerender="pbsAuctionItem, pbMain, panelDebugging" status="statusLoading" />
+                    </apex:inputCheckbox>  
+                </apex:pageBlockSectionItem> 
             </apex:pageBlockSection>
             <!-- while the AuctionItem form is loading, hide the Save button, so they can't save too soon! -->
-			<apex:actionStatus id="statusLoading" onstart="DisplaySaveBtn(false); document.getElementById('divLoading').style.display='inline';" 
-				onstop="DisplaySaveBtn(true); document.getElementById('divLoading').style.display='none';" />			
-			<div class="cssLoading" id="divLoading" >
-			  <p style="vertical-align: middle;" >
-				<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-				<span class="loadingText" style="vertical-align: middle;" >Processing...</span>
-			  </p>
-			</div>        				            					            
-			    	
+            <apex:actionStatus id="statusLoading" onstart="DisplaySaveBtn(false); document.getElementById('divLoading').style.display='inline';" 
+                onstop="DisplaySaveBtn(true); document.getElementById('divLoading').style.display='none';" />           
+            <div class="cssLoading" id="divLoading" >
+              <p style="vertical-align: middle;" >
+                <img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+                <span class="loadingText" style="vertical-align: middle;" >Processing...</span>
+              </p>
+            </div>                                                                  
+                    
             <apex:pageBlockSection id="pbsAuctionItem">
-            	<!-- Auction Item fields use a fieldset -->
-				<apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
-   					<apex:inputField value="{!auctionItem[f]}" rendered="{!fCreateAuctionItem}" 
-   						styleClass="{!IF(f.Type == 'textarea', 'cssTextArea', '')}" 
-   						required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
-	  			</apex:repeat>                    	
+                <!-- Auction Item fields use a fieldset -->
+                <apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionNewDonatedItemWizardFS}" var="f" >
+                    <apex:inputField value="{!auctionItem[f]}" rendered="{!fCreateAuctionItem}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" />
+                </apex:repeat>                
+            
+                           <!-- *******C&P Code Start ******* -->
+                             <!--**********Display Following Fields only Paas Exists*************-->
+                               <!--**********Show Tax Deductible Section*************-->
+                     <apex:inputfield value="{!auctionItem.Show_Tax_Deductible__c}" styleclass="showtax" rendered="{!fCreateAuctionItem && Paaspackage==true}">
+                          <apex:actionsupport event="onchange" rerender="pbsAuctionItem"  />
+                     </apex:inputfield>
+                 
+                                <!--**********C&P Token Value Section*************-->
+                    <apex:inputfield value="{!auctionItem.Token_Value__c}" styleclass="tokenvalue" rendered="{!fCreateAuctionItem && Paaspackage==true}"/>
+                                
+                                <!--**********If Tax Deductible=YES:MANUAL Then dispaly Total Tax Deductible Section*************-->
+                    <apex:inputfield value="{!auctionItem.Total_Tax_Deductible__c}" styleclass="totaltax" rendered="{!fCreateAuctionItem && Paaspackage==true&& auctionItem.Show_Tax_Deductible__c=='Yes: Manual'}"/>
+                    <apex:inputtext style="display:none" rendered="{!fCreateAuctionItem && Paaspackage==true && auctionItem.Show_Tax_Deductible__c!='Yes: Manual'}"/>
+                    
+                                <!--**********C&P SKU Deductible Section*************-->
+                   <apex:inputfield value="{!auctionItem.SKU__c}" styleclass="sku" rendered="{!fCreateAuctionItem && Paaspackage==true}"/>
+                   
+                   <apex:inputtext value="{!Paaspackage}" style="display:none" styleclass="paaspackage"/>
+                          <!-- *******C&P Code End ******** -->      
             </apex:pageBlockSection>
         </apex:pageBlock>
     </apex:form>
