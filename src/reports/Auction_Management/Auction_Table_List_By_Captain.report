@@ -50,6 +50,10 @@
         <name>scopeid</name>
         <value></value>
     </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
     <reportType>CampaignWithCampaignMembers</reportType>
     <scope>orgActive</scope>
     <showDetails>true</showDetails>

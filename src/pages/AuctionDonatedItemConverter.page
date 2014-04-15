@@ -4,123 +4,213 @@
 -->
 
 <apex:page controller="AUC_CTRL_AuctionDonatedItemConverter" title="Donated Item Converter"  >
+<!--****************** C&P Code Start****************** -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<!--****************** C&P Code End****************** -->
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
-	<style>
+    <style>
 
-		.cssTextArea {
-			height: 15px;	// force textarea fields to still be a single line.
-		}
-		
-		.cssCurrency {
-			width: 40px;
-		}
-		
-		.cssShortText {
-			width: 60px;
-		}
-		
-		.cssLongText {
-			width: 180px;
-		}
-				 	    	    
+        .cssTextArea {
+            height: 15px;   // force textarea fields to still be a single line.
+        }
+        
+        .cssCurrency {
+            width: 40px;
+        }
+        
+        .cssShortText {
+            width: 60px;
+        }
+        
+        .cssLongText {
+            width: 180px;
+        }
+                                
     </style>
+   <script type="text/javascript">
+     /************C&P Code start************/
+     /********Validations on Auctionitem object fields**********/
+     
+      function paasvalidations() {
+            var paaspackage=jQuery.trim(jQuery(".paaspackage").val());
+            var condition=0;
+            var rowvalue=jQuery(".rowvalues").val();
+             for(var i=0;i<rowvalue;i++){
+                       var checkact=jQuery(".checkact"+i).is(":checked");
+                        var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+                        var amount=jQuery.trim(jQuery(".FMV"+i).val());
+                        amount=amount.replace(',','');
+                        var sku=jQuery.trim(jQuery(".sku"+i).val());
+                        var tokenvalue=jQuery.trim(jQuery(".tokenvalue"+i).val());
+                        var showtax=jQuery.trim(jQuery(".showtax"+i).val());
+                        var totaltax=jQuery.trim(jQuery(".totaltax"+i).val());
+             if(paaspackage=='true'){
+                if(checkact==true){ 
+                    /**********Validations On Sku*************/
+                     if(sku!=null && sku!='' && !reg_sku.test(sku)){
+                         condition=1;
+                         alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in C&P SKU ");
+                         jQuery(".sku"+i).focus();
+                         return false;
+                     }
+                     /**********Validations On Tokenvalue*************/
+                     if(tokenvalue!=null && tokenvalue!='' && parseInt(tokenvalue)<0){
+                         condition=1;
+                         alert("C&P Token Value should be Positive values only");
+                         jQuery(".tokenvalue"+i).focus();
+                         return false;
+                     }
+                     if(tokenvalue!=null && tokenvalue!='' && isNaN(tokenvalue)){
+                         condition=1;
+                         alert("Please enter Number only in C&P Token Value");
+                         jQuery(".tokenvalue"+i).focus();
+                         return false;
+                     }
+                     if(amount!='' && tokenvalue!=''){
+                         if(parseFloat(amount) > parseFloat(tokenvalue)){
+                             condition=1;
+                             alert("C&P Token Value should not be less than FMV(Amount)");
+                             jQuery(".tokenvalue"+i).focus();
+                             return false;
+                         }
+                     }
+                    /**********Validations On Tax*************/
+                    if(showtax=='Yes: Manual'){
+                         if(totaltax==''){
+                             condition=1;
+                             alert("Please enter C&P Total Tax Deductible");
+                             jQuery(".totaltax"+i).focus();
+                             return false;
+                         }
+                         if(totaltax!='' && isNaN(totaltax)){
+                             condition=1;
+                             alert("Please enter Number only in C&P Total Tax Deductible");
+                             jQuery(".totaltax"+i).focus();
+                             return false;
+                         }
+                         if(totaltax!='' && parseInt(totaltax)< 0){
+                             condition=1;
+                             alert("C&P Total Tax Deductible should be Positive values only");
+                             jQuery(".totaltax"+i).focus();
+                             return false;
+                         }
+                      }
+                    
+                  }   
+              }
+              
+            }
+             if(condition==0){
+                  return true;
+              }else{
+                  return false;
+              }
+        }
+        /************C&P Code End************/
+</script>
+ 
     
-    <script>
-    
-		// function to check/uncheck convert fields when the header one is checked/unchecked
-		function OnChangeCbxConvert(cbx) {
-			var rg = document.getElementsByTagName('input');
-			var i = 0; 
-			for (i = 0; i < rg.length; i++) {
-				if (rg[i].id.indexOf('cbxConvert') > -1) {
-					rg[i].checked = cbx.checked;
-				}
-			}
- 		}
-    </script>
-	
-	<apex:sectionHeader title="Donated Item Converter" />  
-	<apex:form >
-		<apex:pageBlock title="Create Auction Items from Available Donated Items" mode="edit" id="pbMain" >
+    <apex:sectionHeader title="Donated Item Converter" />  
+    <apex:form >
+        <apex:pageBlock title="Create Auction Items from Available Donated Items" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
-                <apex:commandButton action="{!Convert}" value="Create" rerender="pbMain" status="statusLoading" />
+                <apex:commandButton action="{!Convert}" value="Create" rerender="pbMain" status="statusLoading" onclick="if(!paasvalidations()){return false;}"/>
                 <apex:commandButton action="{!Cancel}" value="{!IF(ISNULL(strConvertResult), 'Cancel', 'Close')}" immediate="true"/>
             </apex:pageBlockButtons>      
             <apex:pageMessage summary="{!strConvertResult}" severity="info" strength="2" rendered="{!strConvertResult!=null}" />  
             <apex:messages styleClass="Error" />
-            	
- 			<div class="cssTabHelpLink" id="linkHelp">
-	  			<a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
-					<img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
-				</a>
-			</div>
-	   		<div id="divHelp" class="cssHelpText" style="display:none" >
-	       		<div class="hideHelpLink">	       			
-					<a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
-						<img src="/img/arrowDown.gif" />Hide
-					</a>
-				</div>
-				<p style="padding-left:30px">Below are the new Auction Items that will be created for Donated Items whose <b>Number Available</b> field was greater than 0.</p>
-				<ul>
-				<li>Uncheck the Auction Items you do not want created. </li>
-				<li>Make sure to fill in the appropriate fields for the new Auction Items before saving.</li>
-				<li>The <b>Auction Item ID</b> field is pre-filled with suggested unique values, but you can change them to your own ID scheme.</li>
-				<li>The <b>Fair Market Value</b> field shows the value of all of the remaining Donated Items, which is pre-filled in the <b>Quantity</b> field.</li>
-				<li>If there are more Donated Items available, the next set to be processed will be displayed after choosing Create.</li>
-				<li>You can set the number of new Auction Items to process at a time by using the custom setting <b>Donated Item Converter Batch Size</b></li>
-				<li>You can add additional Auction Item fields to the grid using the Auction Item Field Set <b>AuctionDonatedItemConverterFS</b></li>
-				</ul>
-	  		</div> 
-            	
-            	
-			<apex:pageBlockSection columns="1" >
-					
-       			<apex:actionStatus id="statusLoading" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />       			
-				<div class="cssLoading" id="divLoading" >
-				  <p style="vertical-align: middle;" >
-					<img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
-					<span class="loadingText" style="vertical-align: middle;" >Processing...</span>
-				  </p>
-				</div>        				            					            
-       							
-		        <apex:pageBlockTable value="{!listNewAuctionItem}" var="nai" >
-		        	<apex:column >
-		        		<apex:facet name="header">
-							<apex:inputCheckbox required="false" id="cbxCheckAll" onchange="OnChangeCbxConvert(this);" />
-						</apex:facet>	        			 
-		        		<apex:inputCheckbox value="{!nai.isChecked}" id="cbxConvert" />
-					</apex:column>
-					
-					<apex:column >
-   						<apex:facet name="header"><div style="white-space:normal;">Fair Market Value</div></apex:facet>
-						<apex:outputText value="{0, number, $#,###}">
-							<apex:param value="{!nai.FMV}" />
-						</apex:outputText>
-					</apex:column>					
-							        				        
-		        	<apex:column > 
-   						<apex:facet name="header"><div style="white-space:normal;">Quantity</div></apex:facet>
-		        		<apex:inputText value="{!nai.quantity}" styleClass="cssShortText" />
-					</apex:column>
-
-	            	<!-- Auction Item fields use a fieldset -->
-					<apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionDonatedItemConverterFS}" var="f" >
-	   					<apex:column >
-	   						<apex:facet name="header"><div style="white-space:normal;">{!f.Label}</div></apex:facet>
-	   						<apex:inputField required="false" value="{!nai.ai[f]}" 
-	   							styleClass="{!CASE(f.Type,
-	   								'textarea', 'cssTextArea', 
-	   								'currency', 'cssCurrency',
-	   								'') + ' ' + CASE(f.Label,
-	   								'Auction Item ID', 'cssShortText',
-	   								'Auction Item Name', 'cssLongText',
-	   								'') }"/>
-	   					</apex:column>
-		  			</apex:repeat>                    			        
-		        </apex:pageBlockTable> 
-	        </apex:pageBlockSection>
+                
+            <div class="cssTabHelpLink" id="linkHelp">
+                <a class="helpLink" onclick="document.getElementById('linkHelp').style.display='none'; document.getElementById('divHelp').style.display='block';">
+                    <img src="/img/arrowRight.gif" />Show Help&nbsp;<img src="/s.gif" alt="" class="helpIcon" title=""/>
+                </a>
+            </div>
+            <div id="divHelp" class="cssHelpText" style="display:none" >
+                <div class="hideHelpLink">                  
+                    <a class="helpLink" onclick="document.getElementById('divHelp').style.display='none';document.getElementById('linkHelp').style.display='block';">
+                        <img src="/img/arrowDown.gif" />Hide
+                    </a>
+                </div>
+                <p style="padding-left:30px">Below are the new Auction Items that will be created for Donated Items whose <b>Number Available</b> field was greater than 0.</p>
+                <ul>
+                <li>Uncheck the Auction Items you do not want created. </li>
+                <li>Make sure to fill in the appropriate fields for the new Auction Items before saving.</li>
+                <li>The <b>Auction Item ID</b> field is pre-filled with suggested unique values, but you can change them to your own ID scheme.</li>
+                <li>The <b>Fair Market Value</b> field shows the value of all of the remaining Donated Items, which is pre-filled in the <b>Quantity</b> field.</li>
+                <li>If there are more Donated Items available, the next set to be processed will be displayed after choosing Create.</li>
+                <li>You can set the number of new Auction Items to process at a time by using the custom setting <b>Donated Item Converter Batch Size</b></li>
+                <li>You can add additional Auction Item fields to the grid using the Auction Item Field Set <b>AuctionDonatedItemConverterFS</b></li>
+                </ul>
+            </div> 
+                
+                
+            <apex:pageBlockSection columns="1" id="taxtotal">
+                    
+                <apex:actionStatus id="statusLoading" onstart="document.getElementById('divLoading').style.display='inline';" onstop="document.getElementById('divLoading').style.display='none';" />                   
+                <div class="cssLoading" id="divLoading" >
+                  <p style="vertical-align: middle;" >
+                    <img src="/img/loading.gif" alt="Processing..." width="16" height="16" title="Processing..." style="vertical-align: middle;"/>
+                    <span class="loadingText" style="vertical-align: middle;" >Processing...</span>
+                  </p>
+                </div>                                                                  
+                 <apex:variable value="0" var="rowNum" />            
+                <apex:pageBlockTable value="{!listNewAuctionItem}" var="nai"  >
+                    <apex:column > 
+                        <apex:inputCheckbox value="{!nai.isChecked}"  styleClass="checkact{!rowNum}"/>
+                    </apex:column>
+                    
+                    <apex:column >
+                        <apex:facet name="header"><div style="white-space:normal;">Fair Market Value</div></apex:facet>
+                        <apex:outputText value="{0, number, $#,###}">
+                            <apex:param value="{!nai.FMV}"  />
+                        </apex:outputText>
+                           <apex:inputtext value="{!nai.FMV}" styleclass="FMV{!rowNum}" style="display:none" />
+                    </apex:column>                  
+                                                            
+                    <apex:column > 
+                        <apex:facet name="header"><div style="white-space:normal;">Quantity</div></apex:facet>
+                        <apex:inputText value="{!nai.quantity}" styleClass="cssShortText" />
+                    </apex:column>
+                    <!-- Auction Item fields use a fieldset -->
+                    <apex:repeat value="{!$ObjectType.Auction_Item__c.FieldSets.AuctionDonatedItemConverterFS}" var="f" >
+                        <apex:column >
+                            <apex:facet name="header"><div style="white-space:normal;">{!f.Label}</div></apex:facet>
+                            <apex:inputField required="false" value="{!nai.ai[f]}" 
+                                styleClass="{!CASE(f.Type,
+                                    'textarea', 'cssTextArea', 
+                                    'currency', 'cssCurrency',
+                                    '') + ' ' + CASE(f.Label,
+                                    'Auction Item ID', 'cssShortText',
+                                    'Auction Item Name', 'cssLongText',
+                                    '') }"/>
+                        </apex:column>
+                   </apex:repeat> 
+                               <!--******************C&P Code Start*********** -->
+                               <apex:column rendered="{!Paaspackage}" >
+                                     <apex:facet name="header"><div style="white-space:normal;">C&amp;P SKU</div></apex:facet>
+                                     <apex:inputfield value="{!nai.ai.SKU__c}" styleclass="sku{!rowNum}"/ >
+                               </apex:column>
+                               <apex:column rendered="{!Paaspackage}">
+                                     <apex:facet name="header"><div style="white-space:normal;">C&amp;P Token Value</div></apex:facet>
+                                     <apex:inputfield value="{!nai.ai.Token_Value__c}" styleclass="tokenvalue{!rowNum}"/ >
+                               </apex:column> 
+                               <apex:column rendered="{!Paaspackage}">
+                                   <apex:facet name="header"><div style="white-space:normal;">C&amp;P Show Tax Deductible</div></apex:facet>
+                                   <apex:inputfield value="{!nai.ai.Show_Tax_Deductible__c}" styleclass="showtax{!rowNum}" >
+                                      <apex:actionsupport event="onchange" rerender="taxtotal"  />
+                                   </apex:inputfield>
+                               </apex:column>
+                               <apex:column headerValue="C&P Total Tax Deductible" rendered="{!paaspackage}" > 
+                                   <apex:inputfield value="{!nai.ai.Total_Tax_Deductible__c}" styleclass="totaltax{!rowNum}" rendered="{!if(nai.ai.Show_Tax_Deductible__c=='Yes: Manual',true,false)}" />
+                                   <apex:variable var="rowNum" value="{!value(rowNum)+1}"/>
+                                </apex:column> 
+                </apex:pageBlockTable>
+                 <apex:inputtext value="{!Paaspackage}"  style="display:none" styleclass="paaspackage"/>
+                 <input type="hidden" value="{!rowNum}" class="rowvalues" name="rowvalues"/>
+                 <!--******************C&P Code End*********** -->
+            </apex:pageBlockSection>
         </apex:pageBlock>              
-	</apex:form>              
+    </apex:form>              
 
 </apex:page>

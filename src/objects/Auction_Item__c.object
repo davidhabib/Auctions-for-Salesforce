@@ -48,7 +48,6 @@
     </actionOverrides>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <deprecated>false</deprecated>
     <description>A purchaseable item at an auction, such as a weekend getaway, a food basket, a certificate for free exercise classes.</description>
     <enableActivities>false</enableActivities>
     <enableEnhancedLookup>true</enableEnhancedLookup>
@@ -393,7 +392,6 @@
     <fields>
         <fullName>Allow_Multiple_Purchases__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Check if you want the Auction Purchases page to allow this item to be purchased multiple times.</inlineHelpText>
         <label>Allow Multiple Purchases</label>
@@ -402,7 +400,6 @@
     </fields>
     <fields>
         <fullName>Auction_Group__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The auction group this auction item is offered in.</inlineHelpText>
         <label>Auction Group</label>
@@ -430,7 +427,6 @@
     </fields>
     <fields>
         <fullName>Auction_Item_Name__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The short name for the auction item.</inlineHelpText>
         <label>Auction Item Name</label>
@@ -443,7 +439,6 @@
     <fields>
         <fullName>Auction__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The auction this item is for.</inlineHelpText>
         <label>Auction</label>
@@ -456,7 +451,6 @@
     </fields>
     <fields>
         <fullName>Category__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Category</label>
         <picklist>
@@ -487,7 +481,6 @@
     </fields>
     <fields>
         <fullName>Description__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The full description of the item to use in the marketing of the item (booklet, placards, etc.)</inlineHelpText>
         <label>Description</label>
@@ -498,7 +491,6 @@
     </fields>
     <fields>
         <fullName>Display_Board__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Does this auction item require a display board to be created for it?</inlineHelpText>
         <label>Display Board</label>
@@ -522,7 +514,6 @@
     </fields>
     <fields>
         <fullName>Donor_Recognition__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The donors that you want to recognize for this auction item in the marketing of this item.</inlineHelpText>
         <label>Donor Recognition</label>
@@ -532,7 +523,6 @@
     </fields>
     <fields>
         <fullName>FMV_Override__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>If empty, the sum of the Actual FMV&apos;s of all pieces will be used.</inlineHelpText>
         <label>FMV Override</label>
@@ -544,7 +534,6 @@
     </fields>
     <fields>
         <fullName>FMV_Rollup__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The FMV of all of the pieces added together</inlineHelpText>
         <label>FMV Rollup</label>
@@ -556,7 +545,6 @@
     </fields>
     <fields>
         <fullName>Fair_Market_Value__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <formula>IF(FMV_Override__c &gt; 0, FMV_Override__c, FMV_Rollup__c)</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
@@ -570,7 +558,6 @@
     </fields>
     <fields>
         <fullName>Guaranteed_Bid__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The amount that guarantees the bidder this auction item.</inlineHelpText>
         <label>Guaranteed Bid</label>
@@ -582,7 +569,6 @@
     </fields>
     <fields>
         <fullName>Minimum_Bid__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The minimum bid to accept for this auction item.</inlineHelpText>
         <label>Minimum Bid</label>
@@ -594,7 +580,6 @@
     </fields>
     <fields>
         <fullName>Restrictions__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Any restrictions on the donated item, like when it is not available.</inlineHelpText>
         <label>Restrictions</label>
@@ -603,9 +588,59 @@
         <type>TextArea</type>
     </fields>
     <fields>
+        <fullName>SKU__c</fullName>
+        <externalId>false</externalId>
+        <label>C&amp;P SKU</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Show_Tax_Deductible__c</fullName>
+        <externalId>false</externalId>
+        <label>C&amp;P Show Tax Deductible</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Yes: Bid-FMV</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Yes: Manual</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Token_Value__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Donations greater than or equal to Token Value are 100% tax deductible.</inlineHelpText>
+        <label>C&amp;P Token Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Total_Tax_Deductible__c</fullName>
+        <externalId>false</externalId>
+        <inlineHelpText>Total Tax Deductible is mandatory only if Show Tax Deductible is Yes: Manual</inlineHelpText>
+        <label>C&amp;P Total Tax Deductible</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Treat_Purchase_as_Gift__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>If checked, create any purchase opportunity as record type &quot;Gift&quot;, not &quot;Auction Item Purchase&quot;.</inlineHelpText>
         <label>Treat Purchase as Gift</label>

@@ -7,7 +7,6 @@
     <fields>
         <fullName>Allow_Duplicate_Bid_Numbers__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Whether to disable the trigger that enforces unique Bid Numbers for each attendee per Auction.      NOTE: It is recommended that only one member of a Household should be given a Bid Number, and that this setting remain unchecked.</inlineHelpText>
         <label>Allow Duplicate Bid Numbers</label>
@@ -17,7 +16,6 @@
     <fields>
         <fullName>Auction_Receipts_Footer_1__c</fullName>
         <defaultValue>&quot;&lt;b&gt;Thank you!&lt;/b&gt;&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <description>HTML Text to display below the table of Auction purchases.</description>
         <externalId>false</externalId>
         <inlineHelpText>HTML Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters.</inlineHelpText>
@@ -28,7 +26,6 @@
     </fields>
     <fields>
         <fullName>Auction_Receipts_Footer_2__c</fullName>
-        <deprecated>false</deprecated>
         <description>HTML Text to display below the table of Auction purchases.</description>
         <externalId>false</externalId>
         <inlineHelpText>HTML Text to display below the table of purchases on the Auction Receipts report. Auction Receipts Footer 1 and Auction Receipts Footer 2 give you a combined length of 510 characters.</inlineHelpText>
@@ -40,7 +37,6 @@
     <fields>
         <fullName>Auction_Receipts_Intro_1__c</fullName>
         <defaultValue>&quot;&lt;b&gt;Thank you&lt;/b&gt; for attending our auction!&amp;nbsp;&amp;nbsp;Here is an itemized list of the items you purchased, and their potential tax deduction.&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <description>Introductory HTML text on the Auction Receipts report.</description>
         <externalId>false</externalId>
         <inlineHelpText>Introductory HTML text on the Auction Receipts report.   Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters.</inlineHelpText>
@@ -51,7 +47,6 @@
     </fields>
     <fields>
         <fullName>Auction_Receipts_Intro_2__c</fullName>
-        <deprecated>false</deprecated>
         <description>Introductory HTML text on the Auction Receipts report.</description>
         <externalId>false</externalId>
         <inlineHelpText>Introductory HTML text on the Auction Receipts report. Auction Receipts Intro 1 and Auction Receipts Intro 2 give you a combined length of 510 characters.</inlineHelpText>
@@ -63,7 +58,6 @@
     <fields>
         <fullName>Campaign_Status_Default__c</fullName>
         <defaultValue>&quot;In Progress&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The Campaign Status value to set for the Auction&apos;s auto-created campaigns.</inlineHelpText>
         <label>Campaign Status Default</label>
@@ -74,18 +68,7 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Check_Out_Receipts_URL__c</fullName>
-        <deprecated>false</deprecated>
-        <externalId>false</externalId>
-        <inlineHelpText>unused.</inlineHelpText>
-        <label>Unused3</label>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>TextArea</type>
-    </fields>
-    <fields>
         <fullName>Contact_Household_Field__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The developer name of a lookup field to households on Contacts.  If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__c.  If using Accounts for householding, specify AccountId.</inlineHelpText>
         <label>Contact Household Field</label>
@@ -97,7 +80,6 @@
     </fields>
     <fields>
         <fullName>Contact_Household_Greeting_Field__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The developer path name to the informal greeting field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.npo02__Informal_Greeting__c.  Used by the Auction Receipts page.</inlineHelpText>
         <label>Contact Household Greeting Field</label>
@@ -109,7 +91,6 @@
     </fields>
     <fields>
         <fullName>Contact_Household_Name_Field__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The developer path name to the name field on households from Contact. If using the Non Profit Starter Pack, Auctions will automatically use npo02__Household__r.Name. If using Accounts for householding, specify Account.Name.</inlineHelpText>
         <label>Contact Household Name Field</label>
@@ -121,7 +102,6 @@
     </fields>
     <fields>
         <fullName>CreditCardChargeURLFormula__c</fullName>
-        <deprecated>false</deprecated>
         <description>A URL that invokes the virtual terminal of a credit card processor to charge their credit card. The guest&apos;s contactId will be substituted into the URL wherever you have {0}. The amount to charge will be substituted wherever you have {1}.  See the Installation &amp; Configuration Guide for IATS and Click &amp; Pledge examples.</description>
         <externalId>false</externalId>
         <inlineHelpText>A URL that invokes the virtual terminal of a credit card processor to charge their credit card.  See the Installation &amp; Configuration Guide for IATS and Click &amp; Pledge examples.</inlineHelpText>
@@ -134,7 +114,6 @@
     </fields>
     <fields>
         <fullName>CreditCardValidateURLFormula__c</fullName>
-        <deprecated>false</deprecated>
         <description>A URL that invokes the virtual terminal of a credit card processor to capture and validate their credit card info.  See the Installation &amp; Configuration Guide for IATS and Click &amp; Pledge examples.</description>
         <externalId>false</externalId>
         <inlineHelpText>A URL that invokes the virtual terminal of a credit card processor to capture and validate their credit card info.  See the Installation &amp; Configuration Guide for IATS and Click &amp; Pledge examples.</inlineHelpText>
@@ -146,9 +125,16 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Custom_Payment_Type__c</fullName>
+        <externalId>false</externalId>
+        <label>Custom Payment Type</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>TextArea</type>
+    </fields>
+    <fields>
         <fullName>Donated_Item_Converter_Batch_Size__c</fullName>
         <defaultValue>25</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The batch size of new Auction Item rows to display in the Donated Item Converter page  at a time.</inlineHelpText>
         <label>Donated Item Converter Batch Size</label>
@@ -160,21 +146,8 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Donated_Item_Opportunity_Stages__c</fullName>
-        <deprecated>false</deprecated>
-        <externalId>false</externalId>
-        <inlineHelpText>no longer used.</inlineHelpText>
-        <label>Unused2</label>
-        <length>255</length>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
         <fullName>Number_of_Purchase_Grid_Rows__c</fullName>
         <defaultValue>15</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The number of empty rows to display in the New Auction Purchases Wizard.</inlineHelpText>
         <label>Number of Purchase Grid Rows</label>
@@ -188,7 +161,6 @@
     <fields>
         <fullName>Number_of_Records_Per_Page__c</fullName>
         <defaultValue>25</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Specifies how many records to display per page on the Auction related tabs.</inlineHelpText>
         <label>Number of Records Per Page</label>
@@ -201,7 +173,6 @@
     </fields>
     <fields>
         <fullName>Opportunity_Check_Number_Field__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The full developer name of a Check Number field on Opportunity, that the Check Out page and New Ticket Wizard should save the Check Number into. If using the Non Profit Starter Pack and Payments, this data will automatically be saved in the Payment.</inlineHelpText>
         <label>Opportunity Check Number Field</label>
@@ -214,7 +185,6 @@
     <fields>
         <fullName>Opportunity_Gift_Donor_Role__c</fullName>
         <defaultValue>&quot;Donor&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The OpportunityContactRole to use for donations by individuals.</inlineHelpText>
         <label>Opportunity Gift Donor Role</label>
@@ -227,7 +197,6 @@
     <fields>
         <fullName>Opportunity_Gift_Org_Donor_Role__c</fullName>
         <defaultValue>&quot;Organizational Donor&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The OpportunityContactRole to use for donations from Organizations.</inlineHelpText>
         <label>Opportunity Gift Org Donor Role</label>
@@ -239,7 +208,6 @@
     </fields>
     <fields>
         <fullName>Opportunity_Payment_Method_Field__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The full developer name of a Payment Method field on Opportunity, that the Check Out page and New Ticket Wizard should save the Payment Method into.  If using the Non Profit Starter Pack and Payments, this data will automatically be saved in Payment.</inlineHelpText>
         <label>Opportunity Payment Method Field</label>
@@ -252,7 +220,6 @@
     <fields>
         <fullName>Opportunity_Record_Type_Gift__c</fullName>
         <defaultValue>&quot;GW Auction Purchased Item&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The Opportunity record type to use for straight cash gifts/donations.</inlineHelpText>
         <label>Opportunity Record Type Gift</label>
@@ -265,7 +232,6 @@
     <fields>
         <fullName>Opportunity_Stage_Pledged__c</fullName>
         <defaultValue>&quot;Pledged&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The opportunity status for auction purchases that are pledged, but not yet paid.</inlineHelpText>
         <label>Opportunity Stage Pledged</label>
@@ -278,7 +244,6 @@
     <fields>
         <fullName>Opportunity_Stage_Won_Not_Thanked__c</fullName>
         <defaultValue>&quot;Closed Won - Not Thanked&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>How to mark the status of opportunities that are paid, but haven&apos;t yet had a thank you sent.</inlineHelpText>
         <label>Opportunity Stage Won Not Thanked</label>
@@ -291,7 +256,6 @@
     <fields>
         <fullName>Payment_Processor_Page_Height__c</fullName>
         <defaultValue>&quot;250px&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <description>If &quot;Show Payment Processor On Page&quot; is checked, this field will be used for the height of the area to display the payment processor&apos;s terminal.  It should be a number followed by either px or % to represent pixels or percentage of total page height.  Used by the Check In page,  Check Out page and the New Ticket Wizard page.</description>
         <externalId>false</externalId>
         <inlineHelpText>If &quot;Show Payment Processor On Page&quot; is checked, this field will be used for the height of the area to display the payment processor&apos;s terminal.  It should be a number followed by either px or % to represent pixels or percentage of total page height.</inlineHelpText>
@@ -305,7 +269,6 @@
     <fields>
         <fullName>Payment_Processor_Window_Parameters__c</fullName>
         <defaultValue>&quot;menubar=0,status=0,toolbar=0,width=700,height=700&quot;</defaultValue>
-        <deprecated>false</deprecated>
         <description>Used by the Check In page, Check Out page, and the New Ticket Wizard page.</description>
         <externalId>false</externalId>
         <inlineHelpText>If &quot;Show Payment Processor On Page&quot; is not checked, we use this string of comma separated parameter values to the javascript window.open() method, that is used when displaying the Payment Processor Virtual Terminal in the Check In ahd Check Out pages.</inlineHelpText>
@@ -319,7 +282,6 @@
     <fields>
         <fullName>Set_Account_On_New_Opportunities__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>If set, then Auctions will set the Account field on newly created Auction related Opportunities (Donated Items, Tickets, and Purchases).  If you are using the Non Profit Starter Pack and the 1-to-1 Account model, Auctions will automatically do this.</inlineHelpText>
         <label>Set Account On New Opportunities</label>
@@ -329,25 +291,12 @@
     <fields>
         <fullName>Show_Payment_Processor_On_Page__c</fullName>
         <defaultValue>false</defaultValue>
-        <deprecated>false</deprecated>
         <description>If checked, the payment processor&apos;s terminal will be shown within the Auction page.  If not checked, the terminal will display in a new browser window or tab.  Used by the Check In page, Check Out page, and the New Ticket Wizard page.</description>
         <externalId>false</externalId>
         <inlineHelpText>If checked, the payment processor&apos;s terminal will be shown within the Auction page.  If not checked, the terminal will display in a new browser window or tab.  Used by the Check In page, Check Out page, and the New Ticket Wizard page.</inlineHelpText>
         <label>Show Payment Processor On Page</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
-    </fields>
-    <fields>
-        <fullName>Ticket_Opportunity_Stages__c</fullName>
-        <deprecated>false</deprecated>
-        <externalId>false</externalId>
-        <inlineHelpText>no longer used.</inlineHelpText>
-        <label>Unused1</label>
-        <length>255</length>
-        <required>false</required>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
     </fields>
     <label>AuctionSettings</label>
 </CustomObject>

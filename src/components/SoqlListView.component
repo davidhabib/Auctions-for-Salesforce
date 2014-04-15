@@ -104,8 +104,8 @@
 				<apex:repeat value="{!pageController.listStrFields}" var="f" >  
 					<apex:column >
 						<apex:facet name="header"> 
-							<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c', 
-								$ObjectType.GW_Auctions__Auction_Item__c.Fields[f].Label,
+							<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='Auction_Item__c', 
+								$ObjectType.Auction_Item__c.Fields[f].Label,
 								$ObjectType.Opportunity.Fields[f].Label)}" >
 								<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!f}" />
 								<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol" 

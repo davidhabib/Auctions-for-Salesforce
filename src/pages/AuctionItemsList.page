@@ -1,0 +1,30 @@
+<apex:page cache="true" controller="AUC_CTRL_AuctionItems"  title="Auction Items" showHeader="false" tabStyle="Auction_Items__tab" contentType="application/vnd.ms-excel#AuctionItemslist.xls" readOnly="true">
+     <apex:pageBlock Title="Auction Items">
+         <apex:pageBlockTable value="{!Auc_Items}" var="items">
+                <apex:column value="{!items.Name}"/>
+                <apex:column value="{!items.Auction__c}"/>
+                <apex:column value="{!items.Auction_Item_Name__c}"/>
+                <apex:column value="{!items.Category__c}"/>
+                <apex:column value="{!items.Auction_Group__c}"/>
+                <apex:column value="{!items.Minimum_Bid__c}"/>
+                <apex:column value="{!items.Guaranteed_Bid__c}"/>
+                <apex:column value="{!items.Fair_Market_Value__c}"/>
+                <apex:column value="{!items.FMV_Override__c}"/>
+                <apex:column value="{!items.FMV_Rollup__c}"/>
+                <apex:column value="{!items.Show_Tax_Deductible__c}"/>
+                <apex:column value="{!items.Total_Tax_Deductible__c}"/>
+                <apex:column value="{!items.Token_Value__c}"/>
+                <apex:column value="{!items.SKU__c}"/>
+                <apex:column HeaderValue="Treat Purchase as Gift">
+                   <apex:outputtext value="{!items.Treat_Purchase_as_Gift__c}"/>
+                </apex:column>
+                <apex:column HeaderValue="Allow Multiple Purchases">
+                  <apex:outputtext value="{!items.Allow_Multiple_Purchases__c}"/>
+                </apex:column>
+                <apex:column value="{!items.Display_Board__c}"/>
+                <apex:column value="{!items.Description__c}"/>
+                <apex:column value="{!items.Donor_Recognition__c}"/>
+                <apex:column value="{!items.Restrictions__c}"/>
+         </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

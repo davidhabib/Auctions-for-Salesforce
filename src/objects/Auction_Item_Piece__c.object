@@ -48,7 +48,6 @@
     </actionOverrides>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <deprecated>false</deprecated>
     <description>It&apos;s the junction table to map Donated Items to Auction Items.</description>
     <enableActivities>false</enableActivities>
     <enableEnhancedLookup>false</enableEnhancedLookup>
@@ -57,7 +56,6 @@
     <enableReports>true</enableReports>
     <fields>
         <fullName>Actual_FMV__c</fullName>
-        <deprecated>false</deprecated>
         <description>workflow rule sets this automatically from the calculated field Estimated FMV.  This is so the master object, Auction Item, can have a Rollup Summary field on Actual FMV.  (Salesforce didn&apos;t allow the Rollup Summary field on Estimated FMV, because it uses a cross object formula).</description>
         <externalId>false</externalId>
         <inlineHelpText>The actual Fair Market Value to use.</inlineHelpText>
@@ -70,7 +68,6 @@
     </fields>
     <fields>
         <fullName>Auction_Donated_Item_Name__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <formula>Opportunity__r.Auction_Donated_Item_Name__c</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
@@ -82,7 +79,6 @@
     </fields>
     <fields>
         <fullName>Auction_Item__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Auction Item</label>
         <referenceTo>Auction_Item__c</referenceTo>
@@ -96,7 +92,6 @@
     </fields>
     <fields>
         <fullName>Description__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Description</label>
         <length>255</length>
@@ -107,7 +102,6 @@
     </fields>
     <fields>
         <fullName>Estimated_FMV__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <formula>(Opportunity__r.Amount / Opportunity__r.Number_of_Items__c ) * Quantity__c</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
@@ -121,7 +115,6 @@
     </fields>
     <fields>
         <fullName>Opportunity__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Opportunity</label>
         <referenceTo>Opportunity</referenceTo>
@@ -135,7 +128,6 @@
     </fields>
     <fields>
         <fullName>Quantity__c</fullName>
-        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>how many of these pieces are included</inlineHelpText>
         <label>Quantity</label>
