@@ -374,7 +374,8 @@
 				</apex:outputPanel>
 			</td>
 			<td style="veritcal-align:middle" >				
-				<apex:outputPanel id="panelStatus" >				            
+				<apex:outputPanel id="panelStatus" >	
+					<apex:pageMessages />			            
 		            <apex:pageMessage summary="{!strStatus}" severity="info" strength="2" escape="false" rendered="{!strStatus != null}" />  
 		            <apex:messages styleClass="Error" />
 				</apex:outputPanel>				   				   				            					           

@@ -462,48 +462,53 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// the paid StageName, and to update Payment Method and potentially Check Number on
 	// either custom fields (specified in AuctionSettigns), or on the Payment Object of the NPSP.
 	public PageReference UpdateCheckedOpps() {
-		strSaveResults = null;
-		
-		if (CountCheckOpps(listReceipts) == 0) {
-			strSaveResults = 'You must Check off which Opportunities to update.';
-			return null;
-		}
-		
-		fShowPanelCreditCard = false;
-		
-		list<Opportunity> listOppToUpdate = new list<Opportunity>();
-
-		for (Receipt r : listReceipts) {
-			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
-				if (po.IsPayNow) {
-					po.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
-					listOppToUpdate.add(po.opp);
-					po.IsPayNow = false;
-					if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
-						po.opp.put(AUC_AuctionConstants.strOppPaymentMethodField, strPaymentMethod);
+		try {
+			strSaveResults = null;
+			
+			if (CountCheckOpps(listReceipts) == 0) {
+				strSaveResults = 'You must Check off which Opportunities to update.';
+				return null;
+			}
+			
+			fShowPanelCreditCard = false;
+			
+			list<Opportunity> listOppToUpdate = new list<Opportunity>();
+	
+			for (Receipt r : listReceipts) {
+				for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
+					if (po.IsPayNow) {
+						po.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+						listOppToUpdate.add(po.opp);
+						po.IsPayNow = false;
+						if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+							po.opp.put(AUC_AuctionConstants.strOppPaymentMethodField, strPaymentMethod);
+						}
+						if (AUC_AuctionConstants.strOppCheckNumberField != null && strPaymentMethod == 'Check') {
+							po.opp.put(AUC_AuctionConstants.strOppCheckNumberField, strCheckNumber);
+						}					
 					}
-					if (AUC_AuctionConstants.strOppCheckNumberField != null && strPaymentMethod == 'Check') {
-						po.opp.put(AUC_AuctionConstants.strOppCheckNumberField, strCheckNumber);
-					}					
 				}
 			}
-		}
-		
-		// save the new stages
-		update listOppToUpdate;
-		
-		// if using NPSP Payments, update payment info.
-		AUC_AuctionMaintenance.UpdateNPSPPayments(listOppToUpdate, strPaymentMethod, strCheckNumber);
-		
-		// force the totals to recalc
-		//RecalcTotalAmountToPay(listReceipts);
-		// now force full reload to get all Opp fields updated
-		listReceipts = null;	
-		
-		// clear our flag
-		fOppsToUpdate = false;
-		return null;
-	}
+			
+			// save the new stages
+			update listOppToUpdate;
+			
+			// if using NPSP Payments, update payment info.
+			AUC_AuctionMaintenance.UpdateNPSPPayments(listOppToUpdate, strPaymentMethod, strCheckNumber);
+			
+			// force the totals to recalc
+			//RecalcTotalAmountToPay(listReceipts);
+			// now force full reload to get all Opp fields updated
+			listReceipts = null;	
+			
+			// clear our flag
+			fOppsToUpdate = false;
+			return null;
+	    } catch (Exception e) {
+	        ApexPages.addMessages(e);            
+	        return null;
+	    } 
+   	}
 
 	// public method for the Next Guest button.  
 	// clear out guest, and refresh the page.

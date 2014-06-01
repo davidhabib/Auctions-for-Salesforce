@@ -28,11 +28,14 @@ public with sharing class AUC_AuctionConstants {
 	public static final string OPP_NAME_SUFFIX_AuctionPurchasedItem  = ' Auction Purchased Item';
 	public static final string OPP_NAME_SUFFIX_AuctionGift  = ' Auction Gift';
 	
+	private class MyException extends Exception {}
+
 	// the Opportunity Record Type to use for gifts/donations.
 	public static string RECORDTYPE_OPP_AuctionGift { 
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return AUC_AuctionConstants.RECORDTYPE_OPP_AuctionPurchasedItem;
+			if (settings.size() == 0 || settings[0].Opportunity_Record_Type_Gift__c == null) 
+				return AUC_AuctionConstants.RECORDTYPE_OPP_AuctionPurchasedItem;
 			return settings[0].Opportunity_Record_Type_Gift__c;
 		}
 	}
@@ -41,7 +44,8 @@ public with sharing class AUC_AuctionConstants {
 	public static string OPP_GIFT_DONOR_ROLE {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 'Individual Donor';
+			if (settings.size() == 0 || settings[0].Opportunity_Gift_Donor_Role__c == null) 
+				return 'Individual Donor';
 			return settings[0].Opportunity_Gift_Donor_Role__c;
 		}
 	}
@@ -49,7 +53,8 @@ public with sharing class AUC_AuctionConstants {
 	public static string OPP_ORG_GIFT_DONOR_ROLE {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 'Organizational Donor';
+			if (settings.size() == 0 || settings[0].Opportunity_Gift_Org_Donor_Role__c == null) 
+				return 'Organizational Donor';
 			return settings[0].Opportunity_Gift_Org_Donor_Role__c;
 		}
 	}
@@ -57,25 +62,51 @@ public with sharing class AUC_AuctionConstants {
 	// The Opportunity Stage to set for new auction item purchases.
 	public static string OPP_STAGE_WON_NOT_THANKED_STAGE {
 		get {
-			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 'Closed Won';
-			return settings[0].Opportunity_Stage_Won_Not_Thanked__c;
+			if (OPP_STAGE_WON_NOT_THANKED_STAGE == null) {
+				string strStage = 'Closed Won';
+				list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+				if (settings.size() > 0 && settings[0].Opportunity_Stage_Won_Not_Thanked__c != null) {
+					strStage = settings[0].Opportunity_Stage_Won_Not_Thanked__c;
+					// verify it is a valid stage					
+					list<OpportunityStage> listSt = [Select MasterLabel, IsWon, IsClosed, IsActive From OpportunityStage 
+						where MasterLabel = :strStage and IsWon = true and isClosed = true and isActive = true];
+					if (listSt.size() == 0) {
+						throw (new MyException('The Auction Setting for Opportunity Stage Won Not Thanked, ' 
+							+ strStage + ', is not a valid Won, Closed, and Active Opportunity Stage.  Please see the Auctions Installation & Configuration Guide.'));						
+					}
+				}
+				OPP_STAGE_WON_NOT_THANKED_STAGE = strStage; 					
+			}
+			return OPP_STAGE_WON_NOT_THANKED_STAGE;
 		}
 	}
 	
 	public static string OPP_STAGE_PLEDGED {
 		get {
-			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 'Pledged';
-			return settings[0].Opportunity_Stage_Pledged__c;
-		}
+			if (OPP_STAGE_PLEDGED == null) {
+				string strStage = 'Pledged';
+				list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
+				if (settings.size() > 0 && settings[0].Opportunity_Stage_Pledged__c != null) 
+					strStage = settings[0].Opportunity_Stage_Pledged__c;
+					// verify it is a valid stage					
+					list<OpportunityStage> listSt = [Select MasterLabel, IsWon, IsClosed, IsActive From OpportunityStage 
+						where MasterLabel = :strStage and isActive = true];
+					if (listSt.size() == 0) {
+						throw (new MyException('The Auction Setting for Opportunity Stage Pledged, ' 
+							+ strStage + ', is not a valid Active Opportunity Stage.  Please see the Auctions Installation & Configuration Guide.'));						
+					}
+				OPP_STAGE_PLEDGED = strStage; 
+				}
+			return OPP_STAGE_PLEDGED;
+		}					
 	}
 
 	// The default Status to set for the Auction's auto-created Campaigns.
 	public static string CAMPAIGN_Status_Default {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 'In Progress';
+			if (settings.size() == 0 || settings[0].Campaign_Status_Default__c == null) 
+				return 'In Progress';
 			return settings[0].Campaign_Status_Default__c;
 		}
 	}
@@ -84,7 +115,8 @@ public with sharing class AUC_AuctionConstants {
 	public static integer CROWS_PURCHASE_GRID {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 15;
+			if (settings.size() == 0 || settings[0].Number_of_Purchase_Grid_Rows__c == null) 
+				return 15;
 			double db = settings[0].Number_of_Purchase_Grid_Rows__c;
 			return db.intValue();
 		}
@@ -94,9 +126,10 @@ public with sharing class AUC_AuctionConstants {
 	public static integer cRecordsPerPage {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 25;
+			if (settings.size() == 0 || settings[0].Number_of_Records_Per_Page__c == null) 
+				return 25;
 			double db = settings[0].Number_of_Records_Per_Page__c;
-			if (db == 0 || db == null) return 25;
+			if (db == 0) return 25;
 			return db.intValue();
 		}
 	}
@@ -105,7 +138,8 @@ public with sharing class AUC_AuctionConstants {
 	public static boolean fAllowDuplicateBidNumbers {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return false;
+			if (settings.size() == 0 || settings[0].Allow_Duplicate_Bid_Numbers__c == null) 
+				return false;
 			return settings[0].Allow_Duplicate_Bid_Numbers__c;
 		}
 	}
@@ -191,7 +225,8 @@ public with sharing class AUC_AuctionConstants {
 	public static boolean fShowPaymentProcessorOnPage {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return false;
+			if (settings.size() == 0 || settings[0].Show_Payment_Processor_On_Page__c == null) 
+				return false;
 			return settings[0].Show_Payment_Processor_On_Page__c;
 		}
 	}
@@ -285,9 +320,10 @@ public with sharing class AUC_AuctionConstants {
 	public static integer cDonatedItemConverterBatchSize {
 		get {
 			list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-			if (settings.size() == 0) return 25;
+			if (settings.size() == 0 || settings[0].Donated_Item_Converter_Batch_Size__c == null) 
+				return 25;
 			double db = settings[0].Donated_Item_Converter_Batch_Size__c;
-			if (db == 0 || db == null) return 25;
+			if (db == 0) return 25;
 			return db.intValue();
 		}
 	}

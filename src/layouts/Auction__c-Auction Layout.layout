@@ -61,6 +61,7 @@
         <fields>CAMPAIGN.NAME</fields>
         <fields>CAMPAIGN.STATUS</fields>
         <fields>CAMPAIGN.START_DATE</fields>
+        <fields>CAMPAIGN.NUM_CONTACTS</fields>
         <fields>CAMPAIGN.RECORDTYPE</fields>
         <fields>Auction_Campaign_Type__c</fields>
         <relatedList>Campaign.Auction__c</relatedList>
