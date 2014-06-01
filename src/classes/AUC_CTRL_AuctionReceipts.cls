@@ -108,6 +108,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		auctionMaintenance.auctionId = auctionId;
 		listReceipts = null;
 		listReceipts2 = null;
+		listReceipts3 = null;
+		listLR = null;
 		contactIdPurchaser = null;
 		return null;
 	}
@@ -122,6 +124,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				strNamePurchaser = null;
 				listReceipts = null;
 				listReceipts2 = null;
+				listReceipts3 = null;
+				listLR = null;
 			}
 			contactIdPurchaser = value;
 			if (contactIdPurchaser == '') contactIdPurchaser = null;
@@ -184,12 +188,16 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	public PageReference ChangeIncludeTicketPurchases() {
 		listReceipts = null;
 		listReceipts2 = null;
+		listReceipts3 = null;
+		listLR = null;
 		return null;
 	}
 
 	public PageReference ChangeIncludeAllGuests() {
 		listReceipts = null;
 		listReceipts2 = null;
+		listReceipts3 = null;
+		listLR = null;
 		contactIdPurchaser = null;
 		strNamePurchaser = null;
 		searchPurchaser = null;
@@ -240,6 +248,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			// create the lists of which contacts to include
 			list<ID> listContactId = new list<ID>();
 			list<ID> listContactId2 = new list<ID>();
+			list<ID> listContactId3 = new list<ID>();
 			integer cOverLimit = 0;
 			strErrorMessage = null;
 			
@@ -254,7 +263,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 						listContactId.add(p.contactId);
 					else if (cPurchaser <= 2000)
 						listContactId2.add(p.contactId);
-					else // after 2000, we ignore them!
+					else if (cPurchaser <= 3000)
+						listContactId3.add(p.contactId);
+					else // after 3000, we ignore them!
 						cOverLimit++;
 				}
 			}
@@ -262,8 +273,10 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			// call the real worker.
 			listReceipts = listReceiptsForlistContactId(listContactId);
 			listReceipts2 = listReceiptsForlistContactId(listContactId2);
+			listReceipts3 = listReceiptsForlistContactId(listContactId3);
 			if (cOverLimit > 0) {
-				strErrorMessage = 'Receipts were printed for ' + string.valueOf(listReceipts.size() + listReceipts2.size()) +
+				strErrorMessage = 'Receipts were printed for ' + 
+					string.valueOf(listReceipts.size() + listReceipts2.size() + ListReceipts3.size()) +
 					' guests.  Auction Receipts has hit its limit, and the last potential ' + string.valueOf(cOverLimit) +
 					' receipts were not included.';
 			}
@@ -279,29 +292,30 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		get {
 			// we fill listReceipts2 at the same time we fill listReceipts1.
 			return listReceipts2;
-			
-			/*
-			if (listReceipts2 != null) return listReceipts2;
-			
-			//if (listSOPurchasers2 == null) return null;
-			
-			// create the list of which contacts to include
-			list<ID> listContactId = new list<ID>();
-			if (contactIdPurchaser == null) {
-				for (SelectOption so : listSOPurchasers2) {
-					if (so.getValue() != '') {
-						listContactId.add(so.getValue());
-					}
-				}
-			}
-			
-			// call the real worker.
-			listReceipts2 = listReceiptsForlistContactId(listContactId);
-			return listReceipts2;
-			*/
-		}	
+		}		
+		private set;		
+	}
 	
-		set;		
+	// to handle large auctions, the third list of Receipt objects to display
+	public list<Receipt> listReceipts3 {
+		get {
+			// we fill listReceipts3 at the same time we fill listReceipts1.
+			return listReceipts3;
+		}		
+		private set;		
+	}
+
+	public list<list<Receipt>> listLR {
+		get {
+			if (listLR == null) {
+				listLR = new list<list<Receipt>>();
+				listLR.add(listReceipts);
+				listLR.add(listReceipts2);
+				listLR.add(listReceipts3);
+			}
+			return listLR;
+		}
+		private set;
 	}
 			
 	// this is the core of the work.  Getting a list of Receipts for contacts who made purchases.
@@ -647,6 +661,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		System.AssertEquals(bigNum+1, ctrl.listReceipts.size());
 		system.assert(ctrl.listReceipts2 != null);
 		system.assert(ctrl.listReceipts2.size() == 0);
+		system.assert(ctrl.listReceipts3 != null);
+		system.assert(ctrl.listReceipts3.size() == 0);
 		
 		system.assertEquals(null, ctrl.strNamePurchaser);
 		system.assertEquals(null, ctrl.searchPurchaser);

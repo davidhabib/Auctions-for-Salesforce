@@ -357,8 +357,9 @@
 	<!-- ========================================================== PDF RENDERING STARTS HERE ================================================ -->	
 	<apex:outputPanel id="panelReportPDF" rendered="{!RenderFormat=='pdf'}" >  
 		<div  style="font-size:.9em;" >	
-        <apex:pageMessage summary="There are no purchases for the specified people." severity="info" strength="2" rendered="{!NOT(HasReceipts)}" />  
-    	<apex:repeat var="receipt" value="{!listReceipts}">   	    	
+        <apex:pageMessage summary="There are no purchases for the specified people." severity="info" strength="2" rendered="{!NOT(HasReceipts)}" />
+        <apex:repeat var="listR" value="{!listLR}">  
+    	<apex:repeat var="receipt" value="{!listR}">   	    	
 		<div style="page-break-after:{!IF(contactIdPurchaser=='', 'always', 'none')};">
 	    	<apex:outputPanel id="panelReceipt" >		
 		    	<h2 style="text-align:center"><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
@@ -464,102 +465,10 @@
 	    	</apex:outputPanel>
 		</div><!-- this forces the page break in the PDF. -->
 	</apex:repeat>
+	</apex:repeat>
 	</div>
 	</apex:outputPanel>
 	
-	<apex:outputPanel id="panelReportPDF2" rendered="{!RenderFormat=='pdf'}" >  	
-    	<apex:repeat var="receipt" value="{!listReceipts2}">   	    	
-		<div style="page-break-after:{!IF(contactIdPurchaser=='', 'always', 'none')};">
-	    	<apex:outputPanel id="panelReceipt2" >		
-		    	<h2 style="text-align:center"><apex:outputText value="{!receipt.strPageTitle}" /></h2> 
-		    	<p style="text-align:center"><apex:outputText value="{0,date,MMMM d, yyyy}" >
-		    			<apex:param value="{!receipt.dtAuction}" />
-		    		</apex:outputText>
-		    	</p>
-		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
-				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
-				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
-				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
-				</p><p/>
-			 	<p>Dear&nbsp;<apex:outputText value="{!receipt.strContactFirstName}" />,<br/><br/>
-		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
-				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
-					<tr><td>
-
-					<h3>Your Purchases</h3> 
-					<table cellspacing="2px" >
-						<tr style="vertical-align:bottom;text-align:left; font-weight:bold; ">
-							<td>Item</td>
-							<td style="width:80px;" >Amount</td>
-							<td>Fair Market<br/>Value</td>
-			            	<!-- additional Opportunity fields use a fieldset -->
-							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
-								<td>{!f.Label}</td>					
-							</apex:repeat>
-						</tr>
-						<tr>
-							<td colspan="30">
-								<hr/>
-							</td>
-						</tr>
-
-						<apex:repeat value="{!receipt.listOppAuctionPurchases}" var="oppAP" >
-						<tr>
-							<td>
-								<apex:outputText value="{!IF(oppAP.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.Auction_Item_Name__c, oppAP.Description))}"/>
-								&nbsp;&nbsp;&nbsp;
-							</td>
-							<td>
-								<apex:outputText value="{0,Number,$#,###.##}" >
-									<apex:param value="{!oppAP.Amount}" />
-								</apex:outputText>
-							</td>
-							<td>
-								<apex:outputText value="{0,Number,$#,###.##}" >
-									<apex:param value="{!oppAP.Auction_Non_Deductible_Amount__c}"/>
-								</apex:outputText>
-							</td>
-			            	<!-- additional Opportunity fields use a fieldset -->
-							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
-								<td>
-					   				<apex:outputField value="{!oppAP[f]}" />					   				
-								</td>
-				  			</apex:repeat>                    																				
-						</tr>
-						</apex:repeat>
-						
-						<tr>
-							<td colspan="30">
-								<hr/>
-							</td>
-						</tr>
-
-						<tr style="vertical-align:bottom;text-align:left; font-weight:bold;">
-							<td>Totals</td>
-							<td>
-								<apex:outputText value="{0,Number,$#,###.##}" >
-									<apex:param value="{!receipt.decTotalAmountPaid}"/> 
-								</apex:outputText>							
-							</td>
-							<td>
-								<apex:outputText value="{0,Number,$#,###.##}" >
-									<apex:param value="{!receipt.decTotalFMV}"/> 
-								</apex:outputText>								
-							</td>
-			            	<!-- additional Opportunity fields use a fieldset -->
-							<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionReceiptsFS}" var="f" >
-								<td></td>					
-							</apex:repeat>						
-						</tr>
-					</table>
-
-					</td></tr>
-					<tr><td><p><apex:outputText value="{!strAuctionReceiptsFooter}" escape="false" /></p></td></tr>
-				</table>									   	
-	    	</apex:outputPanel>
-		</div><!-- this forces the page break in the PDF. -->
-	</apex:repeat>
     <apex:pageMessage summary="{!strErrorMessage}" severity="info" strength="2" rendered="{!strErrorMessage!=null}" />  
-	</apex:outputPanel>	
 		
 </apex:page>
