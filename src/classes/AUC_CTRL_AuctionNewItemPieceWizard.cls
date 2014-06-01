@@ -12,6 +12,7 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 	private ApexPages.StandardController stdController;
+	private string strQueryParams;
 	
 	//constructor
 	public AUC_CTRL_AuctionNewItemPieceWizard (ApexPages.StandardController controller) {
@@ -19,6 +20,11 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 		//get record from standard controller
 		stdController = controller;
         this.aip = (Auction_Item_Piece__c)controller.getRecord();
+        
+        // Keep track of any inbound query string parameters so they can be passed along when creating a new record  
+        List<string> pageUrl = ApexPages.currentPage().getUrl().split('\\?');  
+        if (pageUrl.size() > 1)
+        	strQueryParams = pageUrl[1];          
         
         // we are getting called from either an Auction Item, or a Donated Item.
         // figure out which one, and then derive the auctionId.
@@ -78,6 +84,14 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 		return stdController.Save();
 	}		
 	
+	public PageReference SaveAndNew() {
+		if (Save() != null) {
+			// there is no action method on the standard controller for New, so we must hack this.
+			Apexpages.currentPage().setRedirect(true);
+            return new PageReference('/' + aip.getSObjectType().getDescribe().getKeyPrefix() + '/e?' + strQueryParams);					
+		}
+		return null;
+	}
 	
 	//==================== TEST METHOD(s) ======================================	
 	static testmethod void TestCodeCoverage() {
