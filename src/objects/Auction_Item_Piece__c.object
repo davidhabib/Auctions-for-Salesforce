@@ -51,10 +51,13 @@
     <deprecated>false</deprecated>
     <description>It&apos;s the junction table to map Donated Items to Auction Items.</description>
     <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
     <enableEnhancedLookup>false</enableEnhancedLookup>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>Actual_FMV__c</fullName>
         <deprecated>false</deprecated>

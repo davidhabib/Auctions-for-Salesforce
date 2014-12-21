@@ -51,10 +51,13 @@
     <deprecated>false</deprecated>
     <description>A purchaseable item at an auction, such as a weekend getaway, a food basket, a certificate for free exercise classes.</description>
     <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
     <enableEnhancedLookup>true</enableEnhancedLookup>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
     <fieldSets>
         <fullName>AuctionDonatedItemConverterFS</fullName>
         <availableFields>
