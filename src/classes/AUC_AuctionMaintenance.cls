@@ -169,7 +169,13 @@ public with sharing class AUC_AuctionMaintenance {
 		list<string> listStrFields = new list<string>();
 		Schema.SObjectType targetType = Schema.getGlobalDescribe().get(strObject);
 		Schema.DescribeSObjectResult d = targetType.getDescribe(); 
-		Schema.FieldSet fs = d.fieldSets.getMap().get(strFS);		
+		Schema.FieldSet fs = d.fieldSets.getMap().get(strFS);
+		
+		// to protect against the fieldset not existing.
+		// found a case of this where the user had their own object called Auction_Item__c
+		// which didn't have our field set and we would dereference fs and hit an error.
+		if (fs == null)
+			return listStrFields;		
 
 		for(Schema.FieldSetMember f : fs.getFields()) {
 			if (f.getFieldPath().contains('.')) {
