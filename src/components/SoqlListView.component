@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:component controller="AUC_CTRL_SoqlListView" allowDml="true" access="global" >
+<apex:component controller="AUC_CTRL_SoqlListView" allowDml="true" >
 
     <style>
         .PagerUI { font-size: 8pt; }
@@ -30,9 +30,9 @@
     </script>
 
 	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
-		description="the controller of the page" access="global" />
+		description="the controller of the page" />
 	<apex:attribute name="fShowCheckboxes" type="boolean" assignTo="{!fShowCheckboxes}" required="false"
-		description="whether to have the list provide a checkbox for each item" access="global" />
+		description="whether to have the list provide a checkbox for each item" />
 
 	<apex:pageMessages /> 
 
