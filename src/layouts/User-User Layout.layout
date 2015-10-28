@@ -14,8 +14,19 @@
         <detailHeading>false</detailHeading>
         <editHeading>false</editHeading>
         <layoutColumns/>
+        <layoutColumns/>
+        <layoutColumns/>
         <style>CustomLinks</style>
     </layoutSections>
+    <relatedObjects>UserRoleId</relatedObjects>
+    <relatedObjects>ProfileId</relatedObjects>
+    <relatedObjects>DelegatedApproverId</relatedObjects>
+    <relatedObjects>ManagerId</relatedObjects>
+    <relatedObjects>ContactId</relatedObjects>
+    <relatedObjects>AccountId</relatedObjects>
+    <relatedObjects>CallCenterId</relatedObjects>
+    <relatedObjects>ProfilePhotoId</relatedObjects>
+    <relatedObjects>WorkspaceId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>true</showHighlightsPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
