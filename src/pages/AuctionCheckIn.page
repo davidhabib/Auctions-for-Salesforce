@@ -246,7 +246,7 @@
 				if (ui.item != null) return false;	
 							
 				var Id = j$(this).data('Id');
-				if (Id == null && j$(this).val() != null) {
+				if (Id == null && j$(this).val() != null && j$(this).val() != '') {
 					// did the user give enough time for the search to run?
 					// better go the search route!
 					SearchAttendeeLookup(j$(this).val());
