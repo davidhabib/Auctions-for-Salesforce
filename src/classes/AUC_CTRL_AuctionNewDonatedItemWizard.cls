@@ -84,6 +84,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 			opp.Name = strDonor + ' ' + string.valueof(AUC_AuctionMaintenance.YearOfAuctionId(auctionMaintenance.auctionId)) + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionDonatedItem;
 			// can't assume opp is new, in case of later error, and then a resave.
 			if (opp.id == null) {
+				AUC_AuctionMaintenance.didUpdateOppWithNPSPOCRData(opp, contactRole.ContactId);
 				insert opp;
 				
 				// create the contactRole for the donor
@@ -203,6 +204,13 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		ctrl.auctionItem.Auction_Item_Name__c = 'my test auction item';
 		
 		ctrl.Save();
+		
+		list<Opportunity> listOpp = [select Id, Name, Amount from Opportunity];
+		system.assertEquals(1, listOpp.size());
+		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
+		system.assertEquals(1,listOCR.size());
+		system.assertEquals(contact.Id, listOCR[0].ContactId);
+		
 		ctrl.Cancel();
 		
 		// verify the auctionItem got correctly created!

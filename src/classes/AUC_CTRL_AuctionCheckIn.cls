@@ -590,6 +590,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 						oppTicketAttendee.AccountId = contact.AccountId;
 					}
 					        	
+					AUC_AuctionMaintenance.didUpdateOppWithNPSPOCRData(oppTicketAttendee, attendeeEdit.con.Id);
 	        		insert oppTicketAttendee;
 					
 					// only create contact role if client's code didn't do it!
@@ -953,6 +954,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		ctrl.oppTicketAttendee.StageName = 'Won Closed';
 		ctrl.SaveAttendeeInfo();
 		system.assert(ctrl.strSaveResults != null);
+		
+		// verify the ticket opp and ocr
+		list<Opportunity> listOpp = [select Id, Name, Amount from Opportunity];
+		system.assertEquals(1, listOpp.size());
+		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
+		system.assertEquals(1,listOCR.size());
+		system.assertEquals(contact.Id, listOCR[0].ContactId);
+		
+		// verify the campaignmember
 		list<CampaignMember> listCM = [select contactId, campaignId, Auction_Ticket_OppId__c, Table_Captain__c from CampaignMember 
 			where contactId = :contact.Id and campaignId = :ctrl.auctionMaintenance.campaignIdAuctionAttendees];
 		system.assertEquals(1, listCM.size());	

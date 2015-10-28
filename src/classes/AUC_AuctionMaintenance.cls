@@ -232,6 +232,28 @@ public with sharing class AUC_AuctionMaintenance {
 			}
 		}
 	}
+	
+	// for NPSP installations, set the appropriate field on the Opportunity
+	// to create the correct OCR for the contact.  We previously did this after
+	// the opp was saved, but changes in NPSP 3.0 cause NPSP to create a primary OCR
+	// for the account's primary contact, if the special OCR fields are not filled in.
+	// note that even though this returns true if it set the field, i found that this
+	// wasn't enough in NPSP 2.0, and so recommend the Auctions' code still look for
+	// the OCR's after the opp insert.
+	public static boolean didUpdateOppWithNPSPOCRData(Opportunity opp, Id contactId) {
+		try {
+			if (!AUC_AuctionConstants.IsNPSPInstalled)
+				return false;
+			if (AUC_AuctionConstants.isNPSPHouseholdAccountModel) {	// cheap way to detect 3.0
+				opp.put('npsp__Primary_Contact__c', contactId);
+			} else {
+				opp.put('npe01__Contact_Id_for_Role__c', contactId); // assume npsp 2.0 field (though didn't seem to work!)
+			}
+			return true;
+		} catch (exception ex) {
+			return false;
+		}		
+	} 
 		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {
@@ -262,5 +284,12 @@ public with sharing class AUC_AuctionMaintenance {
 		System.Assert(am.campaignIdAuctionDonors != null);
 		System.Assert(am.campaignIdAuctionTickets != null);	
 		System.AssertEquals(25, AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auction.Id));
+		
+		// test out that if NPSP is installed, we can update the special fields for the Opp's OCR.
+		Opportunity opp = new Opportunity();
+		Contact con = new Contact(lastname='test');
+		insert con;
+		system.assertNotEquals(null, con.Id);
+		system.assertEquals(AUC_AuctionConstants.IsNPSPInstalled, didUpdateOppWithNPSPOCRData(opp, con.Id));
 	}	
 }

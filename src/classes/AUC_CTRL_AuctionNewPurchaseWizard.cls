@@ -245,7 +245,8 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 	                apo.opp.Auction_Non_Deductible_Amount__c = item.Fair_Market_Value__c;
 	                apo.opp.Description = (item.Description__c != null ? item.Description__c : '') + 
 	                	(item.Restrictions__c != null ? '\nRestrictions: ' + item.Restrictions__c : '');
-					apo.opp.Bid_Number__c = mapContactIdtoBidNumber.get(apo.contactId);	                	
+					apo.opp.Bid_Number__c = mapContactIdtoBidNumber.get(apo.contactId);
+					AUC_AuctionMaintenance.didUpdateOppWithNPSPOCRData(apo.opp, apo.contactId);	                	
 	                listOppsToCreate.add(apo.opp);
   
   	                OpportunityContactRole cr = new OpportunityContactRole();
@@ -254,7 +255,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 	                cr.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
 	                cr.IsPrimary = true;
 	                listCRToCreate.add(cr);
-	                
+  	                	                
 	                // Note that purchasers are already on the Attendee campaign, since we require their bid number.
 	                // thus there is no reason to try to add them to the campaign.
 	                	
@@ -471,6 +472,11 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		system.Assert(auctionpurchases.size() > 0);
 		system.AssertEquals(99, auctionpurchases[0].Amount);
 		system.AssertEquals('Test Auction item', auctionpurchases[0].Auction_Item_Name__c); 
+		
+		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
+		system.assertEquals(1,listOCR.size());
+		system.assertEquals(contact.Id, listOCR[0].ContactId);
+		
 		controller.Cancel();  
 		
 		

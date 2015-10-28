@@ -245,8 +245,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 				opp.put(AUC_AuctionConstants.strOppCheckNumberField, strCheckNumber);
 			}					
 			        	
-			// save the ticket opp			        					        		
+			// save the ticket opp	
         	if (opp.Id == null) {
+        		AUC_AuctionMaintenance.didUpdateOppWithNPSPOCRData(opp, contactRole.ContactId);
         		insert opp;
 				contactRole.OpportunityId = opp.Id;
 	        	contactRole.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
@@ -488,6 +489,11 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		ctrl.Save();
 		System.Assert(ctrl.opp.id != null);
 		System.AssertEquals('The ticket purchase has been saved.  1 contacts have been added to the auction attendee campaign.', ctrl.strSaveResults);
+		list<Opportunity> listOpp = [select Id, Name, Amount from Opportunity];
+		system.assertEquals(1, listOpp.size());
+		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
+		system.assertEquals(1,listOCR.size());
+		system.assertEquals(contact.Id, listOCR[0].ContactId);
 
 		// now test editing an existing ticket opp
 		//point to our VF page
