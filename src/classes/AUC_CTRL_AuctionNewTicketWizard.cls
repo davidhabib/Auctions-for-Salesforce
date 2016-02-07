@@ -25,8 +25,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			}
 			if (AUC_AuctionConstants.strOppCheckNumberField != null) {
 				strCheckNumber = string.valueOf(opp.get(AUC_AuctionConstants.strOppCheckNumberField));
-			}					
-					
+			}
+			
 			// handle a non-existant contact role.
 			list<OpportunityContactRole> listCR = new list<OpportunityContactRole>();
 			listCR = [select contactId, OpportunityId, Role, IsPrimary from OpportunityContactRole
@@ -46,6 +46,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 				auctionId = cmp.Auction__c;
 				auctionMaintenance.auctionId = auctionId;				
 			}
+			
+			// set the per ticket deductible FMV
+			if (opp.Number_Of_Tickets__c != null && opp.Auction_Non_Deductible_Amount__c != null)
+				decTicketFMV = opp.Auction_Non_Deductible_Amount__c / opp.Number_Of_Tickets__c;
+			else
+				decTicketFMV = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId);
+
 		} else {
 			opp = new Opportunity(RecordTypeId=AUC_auctionMaintenance.recordtypeIdAuctionTicket);
 			opp.CloseDate = system.Today();
@@ -60,9 +67,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			}	
 			auctionMaintenance.auctionId = auctionId;
 			opp.CampaignId = auctionMaintenance.campaignIdAuctionTickets;				
+			decTicketFMV = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId);
 		}
 		
-		decTicketFMV = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId);
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -93,6 +100,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 				// make sure Number Of Tickets field is included.
 				if (!strOppFields.contains(' Number_of_Tickets__c,')) strOppFields += ', Number_of_Tickets__c';
+
+				// make sure Non Deductible Amount field is included.
+				if (!strOppFields.contains(' Auction_Non_Deductible_Amount__c,')) strOppFields += ', Auction_Non_Deductible_Amount__c';
 
 				if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
 					if (!strOppFields.contains(AUC_AuctionConstants.strOppPaymentMethodField)) strOppFields += ', ' + AUC_AuctionConstants.strOppPaymentMethodField; 
