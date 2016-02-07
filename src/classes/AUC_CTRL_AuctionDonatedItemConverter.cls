@@ -36,7 +36,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 			if (donatedItemT.Amount == null || donatedItemT.Number_of_Items__c == null) {
 				FMV = 0;
 			} else { 
-			FMV = (donatedItemT.Amount / donatedItemT.Number_of_Items__c) * quantity;
+				FMV = (donatedItemT.Amount / donatedItemT.Number_of_Items__c) * quantity;
 			}
 		}
 	}
@@ -134,7 +134,10 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
                 			': Quantity cannot be more than the number available (' + nai.donatedItem.Number_Available__c + ').'));						
 					}
 					aip.Quantity__c = nai.quantity;
-					aip.Actual_FMV__c = (nai.donatedItem.Amount / nai.donatedItem.Number_Of_Items__c) * aip.Quantity__c;
+					if (nai.donatedItem.Amount == null || nai.donatedItem.Number_Of_Items__c == null)
+						aip.Actual_FMV__c = 0;
+					else
+						aip.Actual_FMV__c = (nai.donatedItem.Amount / nai.donatedItem.Number_Of_Items__c) * aip.Quantity__c;
 					listAIP.add(aip);
 				}
 			}
