@@ -370,7 +370,7 @@
 		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
 				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
-				<apex:outputText value="{! 'bid number: ' + receipt.strBidNumber}" /><br/>
+				<apex:outputText value="{! 'Bid number: ' + receipt.strBidNumber}" /><br/>
 				</p><p/>
 			
 			 	<p><apex:outputText value="{!'Dear ' + receipt.strContactFirstName}" />,<br/><br/>
