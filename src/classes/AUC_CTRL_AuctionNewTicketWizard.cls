@@ -22,9 +22,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			// put payment info in our temp fields
 			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
 				strPaymentMethod = string.valueOf(opp.get(AUC_AuctionConstants.strOppPaymentMethodField));
+			} else {
+				strPaymentMethod = AUC_AuctionMaintenance.strPaymentMethodOrCheckFromNPSPPayments(opp.Id, false);
 			}
 			if (AUC_AuctionConstants.strOppCheckNumberField != null) {
 				strCheckNumber = string.valueOf(opp.get(AUC_AuctionConstants.strOppCheckNumberField));
+			} else {
+				strCheckNumber = AUC_AuctionMaintenance.strPaymentMethodOrCheckFromNPSPPayments(opp.Id, true);
 			}
 			
 			// handle a non-existant contact role.

@@ -233,6 +233,26 @@ public with sharing class AUC_AuctionMaintenance {
 		}
 	}
 	
+	// returns the Payment Method or Check Number for the specified OppId, if that Opp has NPSP Payments.
+	private static list<SObject> listPayments;
+	public static string strPaymentMethodOrCheckFromNPSPPayments(ID oppId, boolean isCheck) {
+		if (AUC_AuctionConstants.IsNPSPInstalled) {
+			if (listPayments == null || listPayments.size() == 0 || listPayments[0].get('npe01__Opportunity__c') != oppId) {
+				string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+					' from npe01__OppPayment__c where npe01__Opportunity__c = :oppId ';
+				listPayments = database.query(strSoql);
+			}
+			if (listPayments.size() > 0) {
+				for (SObject payment : listPayments) {
+					string strVal = string.valueOf(payment.get(isCheck ? 'npe01__Check_Reference_Number__c' : 'npe01__Payment_Method__c'));
+					if (strVal != null)
+						return strVal;
+				}
+			}
+		}
+		return null;
+	}
+	
 	// for NPSP installations, set the appropriate field on the Opportunity
 	// to create the correct OCR for the contact.  We previously did this after
 	// the opp was saved, but changes in NPSP 3.0 cause NPSP to create a primary OCR
