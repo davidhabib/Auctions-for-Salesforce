@@ -206,47 +206,14 @@
         <name>FieldSet</name>
     </types>
     <types>
-        <members>Account-Account %28Marketing%29 Layout</members>
-        <members>Account-Account %28Sales%29 Layout</members>
-        <members>Account-Account %28Support%29 Layout</members>
-        <members>Account-Account Layout</members>
-        <members>Asset-Asset Layout</members>
         <members>Auction_Item_Piece__c-Auction Item Piece Layout</members>
         <members>Auction_Item__c-Auction Item Layout</members>
         <members>Auction__c-Auction Layout</members>
         <members>Campaign-Auction Campaign Layout</members>
-        <members>Campaign-Campaign Layout</members>
         <members>CampaignMember-Auction Attendee Page Layout</members>
-        <members>CampaignMember-Campaign Member Page Layout</members>
-        <members>Case-Case %28Marketing%29 Layout</members>
-        <members>Case-Case %28Sales%29 Layout</members>
-        <members>Case-Case %28Support%29 Layout</members>
-        <members>Case-Case Layout</members>
-        <members>Contact-Contact %28Marketing%29 Layout</members>
-        <members>Contact-Contact %28Sales%29 Layout</members>
-        <members>Contact-Contact %28Support%29 Layout</members>
-        <members>Contact-Contact Layout</members>
-        <members>ContentVersion-General</members>
-        <members>Contract-Contract Layout</members>
-        <members>Event-Event Layout</members>
-        <members>Idea-Idea Layout</members>
-        <members>Lead-Lead %28Marketing%29 Layout</members>
-        <members>Lead-Lead %28Sales%29 Layout</members>
-        <members>Lead-Lead %28Support%29 Layout</members>
-        <members>Lead-Lead Layout</members>
         <members>Opportunity-Auction Donated Item Layout</members>
         <members>Opportunity-Auction Purchased Item Layout</members>
         <members>Opportunity-Auction Ticket Layout</members>
-        <members>Opportunity-Opportunity %28Marketing%29 Layout</members>
-        <members>Opportunity-Opportunity %28Sales%29 Layout</members>
-        <members>Opportunity-Opportunity %28Support%29 Layout</members>
-        <members>Opportunity-Opportunity Layout</members>
-        <members>OpportunityLineItem-Opportunity Product Layout</members>
-        <members>Pricebook2-Price Book Layout</members>
-        <members>Product2-Product Layout</members>
-        <members>Solution-Solution Layout</members>
-        <members>Task-Task Layout</members>
-        <members>User-User Layout</members>
         <name>Layout</name>
     </types>
     <types>
