@@ -382,8 +382,7 @@ public with sharing class AUC_AuctionConstants {
 			return 
 				AUC_AuctionConstants.strOppPaymentMethodField == null &&
 				AUC_AuctionConstants.strOppCheckNumberField	== null &&
-				AUC_AuctionConstants.isNPSPPaymentsEnabled == false &&
-				AUC_AuctionConstants.StrCreditCardChargeURLFormula() == null;	
+				AUC_AuctionConstants.isNPSPPaymentsEnabled == false;	
 		}
 	}
 
