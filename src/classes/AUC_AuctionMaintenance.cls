@@ -238,7 +238,7 @@ public with sharing class AUC_AuctionMaintenance {
 	public static string strPaymentMethodOrCheckFromNPSPPayments(ID oppId, boolean isCheck) {
 		if (AUC_AuctionConstants.IsNPSPInstalled) {
 			if (listPayments == null || listPayments.size() == 0 || listPayments[0].get('npe01__Opportunity__c') != oppId) {
-				string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+				string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c, npe01__Opportunity__c  ' +
 					' from npe01__OppPayment__c where npe01__Opportunity__c = :oppId ';
 				listPayments = database.query(strSoql);
 			}
