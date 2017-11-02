@@ -52,7 +52,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			}
 			
 			// set the per ticket deductible FMV
-			if (opp.Number_Of_Tickets__c != null && opp.Auction_Non_Deductible_Amount__c != null)
+			if (opp.Number_Of_Tickets__c != null && opp.Number_Of_Tickets__c > 0 && opp.Auction_Non_Deductible_Amount__c != null)
 				decTicketFMV = opp.Auction_Non_Deductible_Amount__c / opp.Number_Of_Tickets__c;
 			else
 				decTicketFMV = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId);
