@@ -43,6 +43,7 @@
     <filter>
         <criteriaItems>
             <column>Opportunity$Campaign.Auction__c.Id</column>
+            <isUnlocked>false</isUnlocked>
             <operator>notEqual</operator>
             <value></value>
         </criteriaItems>

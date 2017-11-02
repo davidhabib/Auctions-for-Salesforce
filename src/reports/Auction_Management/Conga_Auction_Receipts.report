@@ -49,11 +49,13 @@
     <filter>
         <criteriaItems>
             <column>Opportunity$Campaign.Auction__c.Id</column>
+            <isUnlocked>false</isUnlocked>
             <operator>notEqual</operator>
             <value></value>
         </criteriaItems>
         <criteriaItems>
             <column>Opportunity$RecordType</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Opportunity.GW_Auction_Purchased_Item,Opportunity.GW_Auction_Ticket</value>
         </criteriaItems>

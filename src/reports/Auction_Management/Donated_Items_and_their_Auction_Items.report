@@ -34,6 +34,7 @@
     <filter>
         <criteriaItems>
             <column>Opportunity$RecordType</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Opportunity.GW_Auction_Donated_Item</value>
         </criteriaItems>

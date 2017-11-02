@@ -21,10 +21,6 @@
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>
-        <actionName>Follow</actionName>
-        <type>Default</type>
-    </actionOverrides>
-    <actionOverrides>
         <actionName>List</actionName>
         <type>Default</type>
     </actionOverrides>
@@ -46,16 +42,19 @@
         <actionName>View</actionName>
         <type>Default</type>
     </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <deprecated>false</deprecated>
     <description>A purchaseable item at an auction, such as a weekend getaway, a food basket, a certificate for free exercise classes.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
+    <enableChangeDataCapture>false</enableChangeDataCapture>
     <enableEnhancedLookup>true</enableEnhancedLookup>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fieldSets>
@@ -409,27 +408,34 @@
         <externalId>false</externalId>
         <inlineHelpText>The auction group this auction item is offered in.</inlineHelpText>
         <label>Auction Group</label>
-        <picklist>
-            <picklistValues>
-                <fullName>Live round 1</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Live round 2</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Silent round 1</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Silent round 2</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Live round 1</fullName>
+                    <default>false</default>
+                    <label>Live round 1</label>
+                </value>
+                <value>
+                    <fullName>Live round 2</fullName>
+                    <default>false</default>
+                    <label>Live round 2</label>
+                </value>
+                <value>
+                    <fullName>Silent round 1</fullName>
+                    <default>false</default>
+                    <label>Silent round 1</label>
+                </value>
+                <value>
+                    <fullName>Silent round 2</fullName>
+                    <default>false</default>
+                    <label>Silent round 2</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>Auction_Item_Name__c</fullName>
@@ -462,31 +468,39 @@
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Category</label>
-        <picklist>
-            <picklistValues>
-                <fullName>Children</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Excursions</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Food and Beverage</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Home and Garden</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Sporting</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Children</fullName>
+                    <default>false</default>
+                    <label>Children</label>
+                </value>
+                <value>
+                    <fullName>Excursions</fullName>
+                    <default>false</default>
+                    <label>Excursions</label>
+                </value>
+                <value>
+                    <fullName>Food and Beverage</fullName>
+                    <default>false</default>
+                    <label>Food and Beverage</label>
+                </value>
+                <value>
+                    <fullName>Home and Garden</fullName>
+                    <default>false</default>
+                    <label>Home and Garden</label>
+                </value>
+                <value>
+                    <fullName>Sporting</fullName>
+                    <default>false</default>
+                    <label>Sporting</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>Description__c</fullName>
@@ -505,23 +519,29 @@
         <externalId>false</externalId>
         <inlineHelpText>Does this auction item require a display board to be created for it?</inlineHelpText>
         <label>Display Board</label>
-        <picklist>
-            <picklistValues>
-                <fullName>n/a</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Required</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Completed</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
+        <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>n/a</fullName>
+                    <default>false</default>
+                    <label>n/a</label>
+                </value>
+                <value>
+                    <fullName>Required</fullName>
+                    <default>false</default>
+                    <label>Required</label>
+                </value>
+                <value>
+                    <fullName>Completed</fullName>
+                    <default>false</default>
+                    <label>Completed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>Donor_Recognition__c</fullName>
@@ -647,4 +667,5 @@
         <searchResultsAdditionalFields>Auction_Group__c</searchResultsAdditionalFields>
     </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
 </CustomObject>

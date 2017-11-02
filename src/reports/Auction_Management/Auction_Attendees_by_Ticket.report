@@ -25,6 +25,7 @@
     <filter>
         <criteriaItems>
             <column>CampaignMember.Auction_Ticket_OppId__c</column>
+            <isUnlocked>false</isUnlocked>
             <operator>notEqual</operator>
             <value></value>
         </criteriaItems>

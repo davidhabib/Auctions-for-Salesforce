@@ -5,26 +5,33 @@
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Auction Campaign Type</label>
-        <picklist>
-            <picklistValues>
-                <fullName>Auction Attendees</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Auction Tickets</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Auction Sponsors</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Auction Item Donors</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
+        <required>false</required>
         <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Auction Attendees</fullName>
+                    <default>false</default>
+                    <label>Auction Attendees</label>
+                </value>
+                <value>
+                    <fullName>Auction Tickets</fullName>
+                    <default>false</default>
+                    <label>Auction Tickets</label>
+                </value>
+                <value>
+                    <fullName>Auction Sponsors</fullName>
+                    <default>false</default>
+                    <label>Auction Sponsors</label>
+                </value>
+                <value>
+                    <fullName>Auction Item Donors</fullName>
+                    <default>false</default>
+                    <label>Auction Item Donors</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>Auction__c</fullName>

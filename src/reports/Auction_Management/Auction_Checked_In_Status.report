@@ -31,11 +31,13 @@
     <filter>
         <criteriaItems>
             <column>Campaign.Auction_Campaign_Type__c</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Auction Attendees</value>
         </criteriaItems>
         <criteriaItems>
             <column>MEMBER_STATUS</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Checked In,RSVP Yes</value>
         </criteriaItems>

@@ -359,26 +359,33 @@
         <description>The list of meal choices can be changed for each auction.</description>
         <externalId>false</externalId>
         <label>Meal Preference</label>
-        <picklist>
-            <picklistValues>
-                <fullName>Beef</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Poultry</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Fish</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Vegetarian</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
+        <required>false</required>
         <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Beef</fullName>
+                    <default>false</default>
+                    <label>Beef</label>
+                </value>
+                <value>
+                    <fullName>Poultry</fullName>
+                    <default>false</default>
+                    <label>Poultry</label>
+                </value>
+                <value>
+                    <fullName>Fish</fullName>
+                    <default>false</default>
+                    <label>Fish</label>
+                </value>
+                <value>
+                    <fullName>Vegetarian</fullName>
+                    <default>false</default>
+                    <label>Vegetarian</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>Note__c</fullName>

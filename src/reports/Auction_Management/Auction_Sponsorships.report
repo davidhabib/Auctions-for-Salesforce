@@ -62,6 +62,7 @@
     <filter>
         <criteriaItems>
             <column>Campaign.Auction_Campaign_Type__c</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Auction Sponsors</value>
         </criteriaItems>

@@ -1536,24 +1536,30 @@
         <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Delivery Status</label>
-        <picklist>
-            <picklistValues>
-                <fullName>Will be sent</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Need to pick up</fullName>
-                <default>false</default>
-            </picklistValues>
-            <picklistValues>
-                <fullName>Here</fullName>
-                <default>false</default>
-            </picklistValues>
-            <sorted>false</sorted>
-        </picklist>
+        <required>false</required>
         <trackFeedHistory>false</trackFeedHistory>
         <trackTrending>false</trackTrending>
         <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Will be sent</fullName>
+                    <default>false</default>
+                    <label>Will be sent</label>
+                </value>
+                <value>
+                    <fullName>Need to pick up</fullName>
+                    <default>false</default>
+                    <label>Need to pick up</label>
+                </value>
+                <value>
+                    <fullName>Here</fullName>
+                    <default>false</default>
+                    <label>Here</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>Number_Available__c</fullName>

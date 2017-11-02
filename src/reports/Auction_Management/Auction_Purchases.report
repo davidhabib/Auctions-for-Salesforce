@@ -31,6 +31,7 @@
     <filter>
         <criteriaItems>
             <column>RECORDTYPE</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Opportunity.GW_Auction_Purchased_Item</value>
         </criteriaItems>

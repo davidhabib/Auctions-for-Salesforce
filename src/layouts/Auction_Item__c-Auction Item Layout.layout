@@ -114,6 +114,7 @@
         <fields>Description__c</fields>
         <fields>Quantity__c</fields>
         <fields>Actual_FMV__c</fields>
+        <fields>Opportunity.Auction_Donated_Item_Restrictions__c</fields>
         <fields>Opportunity.NAME</fields>
         <relatedList>Auction_Item_Piece__c.Auction_Item__c</relatedList>
     </relatedLists>

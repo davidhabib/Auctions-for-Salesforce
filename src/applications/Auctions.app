@@ -2,6 +2,7 @@
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <defaultLandingTab>Auction__c</defaultLandingTab>
     <description>Auction Management application by DJH Consulting</description>
+    <formFactors>Large</formFactors>
     <label>Auctions</label>
     <logo>Auction_Management/Auctions_Logo.gif</logo>
     <tab>standard-Contact</tab>

@@ -38,11 +38,13 @@
     <filter>
         <criteriaItems>
             <column>RECORDTYPE</column>
+            <isUnlocked>false</isUnlocked>
             <operator>equals</operator>
             <value>Opportunity.GW_Auction_Donated_Item</value>
         </criteriaItems>
         <criteriaItems>
             <column>Opportunity.Number_Available__c</column>
+            <isUnlocked>false</isUnlocked>
             <operator>greaterThan</operator>
             <value>0</value>
         </criteriaItems>
