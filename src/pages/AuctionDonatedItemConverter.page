@@ -8,11 +8,11 @@
 
 	<style>
 		.cssTextArea {
-			height: 1em;	// force textarea fields to still be a single line.
+			height: 1em;	/* force textarea fields to still be a single line. */
 		}
 		
 		.cssCurrency {
-			width: 40px;
+			width: 6em;
 		}
 		
 		.cssShortText {

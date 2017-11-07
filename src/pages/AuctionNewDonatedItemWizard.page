@@ -57,8 +57,8 @@
 		}
 	</style>
     
-	<apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />    
-    <apex:form >
+	<apex:sectionHeader title="Donated Item Edit" subtitle="New Donated Item"  />
+    <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
     	<apex:pageBlock title="Donated Item Edit" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save" immediate="false" id="btnSave" />

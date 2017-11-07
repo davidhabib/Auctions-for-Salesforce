@@ -4,14 +4,15 @@
 	.ToFixProblemThatFirstStyleNotworking {
 	}
 
-	/* to keep our textboxes from being too wide in LEX */
+	/* to keep our textboxes from being too wide, and correct height in LEX */
 	@media (min-width: 30em) {
 		.slds-scope input[type="text"] {
-			min-width:1rem
+			min-width: 1rem;
+			min-height: 1.875rem;
 		}
 	}
 
-	/* to keep our picklists from being too wide in LEX */
+	/* to keep our picklists from being too wide, and match textbox size in LEX */
 	@media (min-width: 30em) {
 		.slds-scope select,.slds-scope select[size='0'],.slds-scope select[size='1'] {
 			min-width: 1rem;
@@ -19,11 +20,12 @@
 		}
 	}
 
-	/* to keep our textareas from being too wide in LEX */
+	/* to keep our textareas from being too wide, and match textbox padding in LEX  */
 	@media (min-width: 30em) {
 		.slds-scope textarea {
 			min-width:1rem;
 			min-height: 1.875rem;
+			padding: .25rem 1rem 0 .75rem;
 		}
 	}
 
@@ -32,6 +34,11 @@
 		body .data2Col td,.slds-scope .data2Col td {
 			vertical-align: middle;
 		}
+	}
+
+	/* to fix incorrect padding on lookup fields in LEX */
+	.slds-scope * + .lookupInput {
+		margin-left: 0;
 	}
 
 	.cssTabHelpLink {

@@ -6,8 +6,8 @@
 <apex:page controller="AUC_CTRL_AuctionAutoBidNumbers" title="Auction Bid Numbers" lightningStylesheets="true" >
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
         	
-	<apex:sectionHeader title="Auction Bid Numbers" />   
-	<apex:form >
+	<apex:sectionHeader title="Auction Bid Numbers" />
+    <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 		<apex:pageBlock title="Assign Auction Bid Numbers" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!AutoBidNumbersSet}" value="Assign" rerender="pbMain" status="statusLoading" />
