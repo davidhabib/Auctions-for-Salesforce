@@ -104,9 +104,12 @@
 					</apex:column>
 
 					<apex:column headerValue="Action" >
-						<apex:commandLink action="{!EditItem}" value="Edit">
-							<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.sobj.id}" />
-						</apex:commandLink>&nbsp;|&nbsp;
+						<apex:outputLink rendered="{!NOT(pageController.fEditNameField)}" value="{!URLFOR($Action[pageController.strObjectType].Edit, item.sobj.id)}">Edit</apex:outputLink>
+						<!-- we don't want to assume they set the edit override on Opportunity, so for Tickets tab, use the EditItem action vs. the standard edit Action -->
+                        <apex:commandLink rendered="{!pageController.fEditNameField}" action="{!EditItem}" value="Edit">
+                            <apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.sobj.id}" />
+                        </apex:commandLink>
+                        <apex:outputText value=" | " />
 						<apex:commandLink action="{!DeleteItem}" value="Del" onclick="if (confirm('Are you sure?')==false) { return false;}" >
 							<apex:param assignTo="{!idDeleteItem}" name="idDeleteItem" value="{!item.sobj.id}" />
 						</apex:commandLink>
