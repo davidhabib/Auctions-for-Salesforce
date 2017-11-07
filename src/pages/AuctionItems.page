@@ -2,7 +2,7 @@
 // Written by David Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
-<apex:page controller="AUC_CTRL_AuctionItems" title="Auction Items"  tabStyle="Auction_Items__tab">
+<apex:page controller="AUC_CTRL_AuctionItems" title="Auction Items" tabStyle="Auction_Items__tab" lightningStylesheets="true">
 	<apex:form >
 	   	<apex:sectionHeader title="Auction Items" />  
 		<div style="text-align:center;">

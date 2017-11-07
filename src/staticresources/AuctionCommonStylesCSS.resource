@@ -4,6 +4,36 @@
 	.ToFixProblemThatFirstStyleNotworking {
 	}
 
+	/* to keep our textboxes from being too wide in LEX */
+	@media (min-width: 30em) {
+		.slds-scope input[type="text"] {
+			min-width:1rem
+		}
+	}
+
+	/* to keep our picklists from being too wide in LEX */
+	@media (min-width: 30em) {
+		.slds-scope select,.slds-scope select[size='0'],.slds-scope select[size='1'] {
+			min-width: 1rem;
+			height: 1.875rem;
+		}
+	}
+
+	/* to keep our textareas from being too wide in LEX */
+	@media (min-width: 30em) {
+		.slds-scope textarea {
+			min-width:1rem;
+			min-height: 1.875rem;
+		}
+	}
+
+	/* to get our checkboxes and static text centered in LEX */
+	@media (min-width: 48em) {
+		body .data2Col td,.slds-scope .data2Col td {
+			vertical-align: middle;
+		}
+	}
+
 	.cssTabHelpLink {
 		cursor: pointer;
 		border-style: solid;
@@ -11,7 +41,7 @@
 		border-width: 1px;
 		border-color: #DEEFF5;
 		width: 110px;
-		height: 20px; 
+		height: 2em;
 		color: black;
 		vertical-align: middle;
 		text-align: center;

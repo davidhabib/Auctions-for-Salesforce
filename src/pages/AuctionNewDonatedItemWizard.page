@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionNewDonatedItemWizard"  title="New Auction Donated Item Wizard" tabStyle="Auction_Donated_Items__tab" >
+<apex:page controller="AUC_CTRL_AuctionNewDonatedItemWizard" title="New Auction Donated Item Wizard" tabStyle="Auction_Donated_Items__tab" lightningStylesheets="true" >
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
 	<script>

@@ -3,36 +3,38 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 -->
  
-<apex:page >
+<apex:page lightningStylesheets="true">
 <style>
     body .mydiv { 
         font-size: 16px;
         line-height: 20px;
+		margin-left: 50px;
+		margin-right: 50px;
     }
 </style>
 	<div align="center">
     	<p><img class="aligncenter size-full wp-image-290" alt="Auctions Logo 14" src="https://djhconsulting.files.wordpress.com/2013/02/auctions-logo-03.gif"   /></p>
 	</div>
-	<div margin="100px" class="mydiv" >
-	<p>Welcome to <b>Auctions for Salesforce</b>, the AppExchange application that lets you manage your organization's Auction event all within Salesforce!</p>
-	<p>Auctions for Salesforce is developed by David Habib, and offered free to the non profit community.&nbsp;&nbsp; 
-	While direct technical support is not available, a large investment in time has been made to fully document and provide online help for the application at the 
-	<a target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/">Auctions for Salesforce website</a>.</p>
-	<p>All installation and configuration issues are fully covered in the 
-	<a target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-documentation/" >Auctions for Salesforce Installation and Configuration Guide</a> 
-	and frequently asked questions are in the <a title="Auctions for Salesforce FAQ" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-faq/">FAQ</a>.
-	</p>
-	<p>Please review the many resources on the website to find	answers to your questions.&nbsp;&nbsp;If you still you have a question not addressed there, you should visit 
-	the <a target="_new" href="https://powerofus.force.com/_ui/core/chatter/groups/GroupProfilePage?g=0F980000000Cjk2" >Auctions for Salesforce App Group</a> on the 
-	Salesforce Foundation’s Power of Us Hub.
-	</p>
-	<ul>
-		<li><a title="Auctions for Salesforce Features" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-features/">Features</a></li>
-		<li><a title="Auctions for Salesforce Documentation" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-documentation/">Documentation</a></li>
-		<li><a title="Auctions for Salesforce Release Notes" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-release-notes/">Release Notes</a></li>
-		<li><a title="Auctions for Salesforce FAQ" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-faq/">FAQ</a></li>
-		<li><a title="Auctions for Salesforce Videos" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-videos/">Videos</a></li>
-		<li><a title="Auctions for Salesforce Support" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-support/">Support</a></li>
-	</ul>
+	<div class="mydiv" >
+		<p>Welcome to <b>Auctions for Salesforce</b>, the AppExchange application that lets you manage your organization's Auction event all within Salesforce!</p>
+		<p>Auctions for Salesforce is developed by David Habib, and offered free to the non profit community.&nbsp;&nbsp;
+		While direct technical support is not available, a large investment in time has been made to fully document and provide online help for the application at the
+		<a target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/">Auctions for Salesforce website</a>.</p>
+		<p>All installation and configuration issues are fully covered in the
+		<a target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-documentation/" >Auctions for Salesforce Installation and Configuration Guide</a>
+		and frequently asked questions are in the <a title="Auctions for Salesforce FAQ" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-faq/">FAQ</a>.
+		</p>
+		<p>Please review the many resources on the website to find	answers to your questions.&nbsp;&nbsp;If you still you have a question not addressed there, you should visit
+		the <a target="_new" href="https://powerofus.force.com/_ui/core/chatter/groups/GroupProfilePage?g=0F980000000Cjk2" >Auctions for Salesforce App Group</a> on the
+		Salesforce Foundation’s Power of Us Hub.
+		</p>
+		<ul>
+			<li><a title="Auctions for Salesforce Features" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-features/">Features</a></li>
+			<li><a title="Auctions for Salesforce Documentation" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-documentation/">Documentation</a></li>
+			<li><a title="Auctions for Salesforce Release Notes" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-release-notes/">Release Notes</a></li>
+			<li><a title="Auctions for Salesforce FAQ" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-faq/">FAQ</a></li>
+			<li><a title="Auctions for Salesforce Videos" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-videos/">Videos</a></li>
+			<li><a title="Auctions for Salesforce Support" target="_new" href="http://djhconsulting.com/Auctions-for-salesforce/Auctions-for-salesforce-support/">Support</a></li>
+		</ul>
 	</div>
 </apex:page>

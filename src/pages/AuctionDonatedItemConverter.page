@@ -3,13 +3,12 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 -->
 
-<apex:page controller="AUC_CTRL_AuctionDonatedItemConverter" title="Donated Item Converter"  >
+<apex:page controller="AUC_CTRL_AuctionDonatedItemConverter" title="Donated Item Converter" lightningStylesheets="true">
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
 	<style>
-
 		.cssTextArea {
-			height: 15px;	// force textarea fields to still be a single line.
+			height: 1em;	// force textarea fields to still be a single line.
 		}
 		
 		.cssCurrency {
@@ -18,6 +17,7 @@
 		
 		.cssShortText {
 			width: 60px;
+            min-width: 1em;
 		}
 		
 		.cssLongText {
@@ -41,7 +41,7 @@
     </script>
 	
 	<apex:sectionHeader title="Donated Item Converter" />  
-	<apex:form >
+	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 		<apex:pageBlock title="Create Auction Items from Available Donated Items" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Convert}" value="Create" rerender="pbMain" status="statusLoading" />

@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 -->
 
-<apex:page controller="AUC_CTRL_AuctionAutoBidNumbers" title="Auction Bid Numbers"  >
+<apex:page controller="AUC_CTRL_AuctionAutoBidNumbers" title="Auction Bid Numbers" lightningStylesheets="true" >
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
         	
 	<apex:sectionHeader title="Auction Bid Numbers" />   

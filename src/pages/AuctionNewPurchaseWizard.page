@@ -3,8 +3,25 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionNewPurchaseWizard" title="Auction Purchases" tabStyle="Auction_Purchases__tab">
+<apex:page controller="AUC_CTRL_AuctionNewPurchaseWizard" title="Auction Purchases" tabStyle="Auction_Purchases__tab" lightningStylesheets="true">
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+
+    <style>
+		/* replaces datatable CellPadding which isn't supported in html5 */
+        th, td {
+            padding: 3px;
+        }
+
+		/* to style our dropdown button reasonably in both classic and LEX */
+        input[type="button"].dropdownBtn {
+            height: 1.25rem;
+			width: 1.25rem;
+			padding-left: 0;
+			padding-right: 0;
+			-webkit-appearance: none;
+        }
+    </style>
+
 	<script>
 	
 		// eat the enter button, to prevent it from canceling or submitting the form.
@@ -240,8 +257,8 @@
  
 	</script>
 
-   	<apex:sectionHeader title="Auction Purchases" />      
-    <apex:form >
+   	<apex:sectionHeader title="Auction Purchases" />
+    <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 
 		<apex:outputPanel id="panelPurchases"  >
             <apex:pageMessage summary="{!strSaveResults}" severity="error" strength="2" rendered="{!auctionId==null}" />
@@ -294,19 +311,19 @@
 		    		<apex:selectOptions value="{!listSOLookupAuctionItems2}" />
 		    	</apex:selectList>
 
-				<apex:dataTable value="{!AuctionPurchasedItems}" var="apo" rules="rows"  cellpadding="3">					
+				<apex:dataTable value="{!AuctionPurchasedItems}" var="apo" rules="rows">
 					<apex:column >
 						<apex:facet name="header">Bid Number</apex:facet>
 						<apex:inputHidden value="{!apo.contactId}" id="txtHiddenContactId" required="false" />
 						<apex:inputText value="{!apo.strBidderNumberAndName}" required="false" id="txtBidderNumber" onchange="OnChangeTxtBidderNumber(this);" />
-						<input type="button" value="˅" onclick="OnClickBtnBidNumberPicker(this);" style="height:20px;width:20px;padding-left:0;padding-right:0;" />
+						<input type="button" value="▼" onclick="OnClickBtnBidNumberPicker(this);" class="dropdownBtn"/>
 						<div id="divBidNumberPicker" style="display:inline" ><br/></div>
 					</apex:column> 
 					<apex:column >
 						<apex:facet name="header">Auction Item ID</apex:facet>
 						<apex:inputHidden value="{!apo.opp.Auction_Item_Purchased__c}" id="txtHiddenAuctionItemId" required="false" />
 						<apex:inputText value="{!apo.strAuctionItemIDAndName}" required="false" id="txtAuctionItem" onchange="OnChangeTxtAuctionItem(this);" />											
-						<input type="button" value="˅" onclick="OnClickBtnAuctionItemPicker(this);" style="height:20px;width:20px;padding-left:0;padding-right:0;" />
+						<input type="button" value="▼" onclick="OnClickBtnAuctionItemPicker(this);" class="dropdownBtn" />
 						<div id="divAuctionItemPicker" style="display:inline" ><br/></div>						
 					</apex:column>					
 					<apex:column >					
@@ -324,9 +341,9 @@
 					
 	            	<!-- additional Opportunity fields use a fieldset -->
 					<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewPurchaseWizardFS}" var="f" >
-						<apex:column width="80px">
+						<apex:column>
 							<apex:facet name="header">{!f.Label}</apex:facet>					
-		   					<apex:inputField value="{!apo.opp[f]}" required="false" style="width:80px" />
+		   					<apex:inputField value="{!apo.opp[f]}" required="false"/>
 		   				</apex:column>
 		  			</apex:repeat>                    	
 					

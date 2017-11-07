@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page standardController="Auction_Item_Piece__c" extensions="AUC_CTRL_AuctionNewItemPieceWizard" title="New Auction Item Piece" tabStyle="Auction_Item_Piece__c" >
+<apex:page standardController="Auction_Item_Piece__c" extensions="AUC_CTRL_AuctionNewItemPieceWizard" title="New Auction Item Piece" tabStyle="Auction_Item_Piece__c" lightningStylesheets="true">
 	<apex:sectionHeader title="Item Piece Edit" subtitle="New Item Piece" />	
 	<apex:form >	 
     	<apex:outputPanel id="panelDebugging" rendered="false">

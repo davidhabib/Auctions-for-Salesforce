@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionNewTicketWizard"  title="New Auction Ticket Wizard" tabStyle="Auction_Tickets__tab" >
+<apex:page controller="AUC_CTRL_AuctionNewTicketWizard" title="New Auction Ticket Wizard" tabStyle="Auction_Tickets__tab" lightningStylesheets="true">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
  
@@ -25,12 +25,7 @@
  	</script>
  	
 <style>
-      
-	.apexp .editPage .bPageBlock .detailList .list tr td {
-		padding: 1px 5px 1px 5px; 
-		border-bottom: 1px solid #D4DADC;
-	}
-			 		
+
     .cssLoadingPP {
 		top: 60%;
 	}   
@@ -43,7 +38,7 @@
 </style>
  
    	<apex:sectionHeader title="Auction Tickets" />      
-    <apex:form > 	    
+    <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
         <apex:pageBlock title="{!IF(opp.Id!=null,'Edit','New') + ' Auction Ticket'}" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>
@@ -202,13 +197,13 @@
 					<apex:repeat value="{!$ObjectType.CampaignMember.FieldSets.AuctionNewTicketWizardFS}" var="f" >	
 						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label != f.Label && 
 								$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label != f.Label}"
-								width="80px" style="text-align:center;" >
+								style="text-align:center;" >
 							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
-	   						<apex:inputField value="{!cmpmbr[f]}" required="false"  style="width:80px" />
+	   						<apex:inputField value="{!cmpmbr[f]}" required="false"  />
 						</apex:column>					
 						<!--  special case Status to use custom setting of values in picklist -->
 						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Status.Label == f.Label}" 
-							width="80px" style="text-align:center;" >
+							style="text-align:center;" >
 							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
 						   	<apex:selectList value="{!cmpmbr.Status}" size="1" required="false"  >
 						   		<apex:selectOptions value="{!listSOStatuses}" />
@@ -216,10 +211,10 @@
 						</apex:column>											
 						<!--  special case Table Name/Number to do auto copying of name/number to empty fields -->						
 						<apex:column rendered="{!$ObjectType.CampaignMember.Fields.Table_Name_Number__c.Label == f.Label}" 
-							width="80px" style="text-align:center;" >					
+							style="text-align:center;" >
 							<apex:facet name="header"><div style="text-align:center;">{!f.Label}</div></apex:facet>
 							<apex:inputField id="txtTableNameNumber" value="{!cmpmbr.Table_Name_Number__c}" required="false" 
-								onchange="OnChangeTxtTableNameNumber(this);"  style="width:80px" />
+								onchange="OnChangeTxtTableNameNumber(this);" />
 						</apex:column>										
 		  			</apex:repeat>        	            	 
 				</apex:pageBlockTable>	        

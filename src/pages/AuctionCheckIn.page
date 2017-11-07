@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 -->
 
-<apex:page docType="html-5.0" controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In"  tabStyle="Check_In__tab" >
+<apex:page docType="html-5.0" controller="AUC_CTRL_AuctionCheckIn"  title="Auction Check In"  tabStyle="Check_In__tab" lightningStylesheets="true">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
@@ -54,10 +54,14 @@
 			
 	}
 	
-	.clsBtnAll {
-		top: 2px;
-		position:relative;
-	}
+    .clsBtnAll {
+        top: 2px;
+        position:relative;
+        background: ButtonFace;
+        height: 1.5em;
+		margin: 2px;
+    }
+
 	
 	.clsDTEven {
 		background: white;
@@ -368,8 +372,7 @@
 				},
 				text: false
 			})
-			.removeClass( "ui-corner-all" )
-			.addClass( "ui-corner-right ui-button-icon" )
+			.addClass( "ui-button-icon" )
 			.click(function() {
 				// find our input textbox to our left
 				var input = j$(this).prev('input');
@@ -435,7 +438,7 @@
  	
 
    	<apex:sectionHeader title="Auction Check In" />
-    <apex:form >   	
+    <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
         <apex:pageBlock mode="edit" title="Search by Guest or Captain" >
 	       		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
 				<div class="cssLoading" id="divLoading" >
@@ -476,8 +479,9 @@
 		                </apex:pageBlockSectionItem>		
 		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
 				       		<apex:outputLabel value="Table Captain<br/>(or organization)" escape="false" />
-		                	<apex:outputPanel id="panelCaptains" >
-							   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" /><button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>            
+		                	<apex:outputPanel id="panelCaptains" style="display:flex;">
+							   	<input type="text" id="txtCaptains" class="clsCombo clsComboCaptains ui-autocomplete-input" />
+								<button id="btnCaptainsAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-button-icon" type="button" >&nbsp;</button>
 							    <apex:actionFunction action="{!ChangeCaptainLookup}" name="ChangeCaptainLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
 							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" >

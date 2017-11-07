@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page docType="html-5.0" controller="AUC_CTRL_AuctionCheckOut"  title="Auction Check Out" tabStyle="Check_Out__tab" >
+<apex:page docType="html-5.0" controller="AUC_CTRL_AuctionCheckOut"  title="Auction Check Out" tabStyle="Check_Out__tab" lightningStylesheets="true">
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
@@ -33,7 +33,6 @@
 	/* these styles are for the combobox dropdown button */
 	.ui-button {
 		margin-left: 0px;
-		
 		height: 21px;
 	}
 	.ui-icon {
@@ -52,11 +51,14 @@
 	.clsCombo {	
 			
 	}
-	
-	.clsBtnAll {
-		top: 2px;
-		position:relative;
-	}
+
+    .clsBtnAll {
+        top: 2px;
+        position:relative;
+        background: ButtonFace;
+        height: 1.5em;
+        margin: 2px;
+    }
 			
 	.panelSearch {
 	}
@@ -87,16 +89,16 @@
 
     .cssLoadingPP {
 		top: 60%;
-	}   
+	}
 
 	.clsDTEven {
 		background: white;
 	}
-	
+
 	.clsDTOdd {
 		background: AliceBlue;
 	}
-	
+
 	.clsDTHeader  {
 		background: #C0D0E5;
 	}
@@ -110,9 +112,9 @@
 	}
 
 	.bPageBlock .list .clsDTFooter  {
-		background: WhiteSmoke;
+		background: white;
 	}
-	
+
 </style>
  
 <script type="text/javascript">
@@ -283,8 +285,7 @@
 				},
 				text: false
 			})
-			.removeClass( "ui-corner-all" )
-			.addClass( "ui-corner-right ui-button-icon" )
+			.addClass( "ui-button-icon" )
 			.click(function() {
 				// find our input textbox to our left
 				var input = j$(this).prev('input');
@@ -329,8 +330,8 @@
 	}
 </script>
  	
-   	<apex:sectionHeader title="Auction Check Out" />      
-    <apex:form >   		    
+   	<apex:sectionHeader title="Auction Check Out" />
+    <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
         <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
 	       		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
 				<div class="cssLoading" id="divLoading" >
@@ -355,9 +356,9 @@
 						</apex:pageBlockSectionItem>
 		                <apex:pageBlockSectionItem labelStyle="vertical-align:middle;" dataStyle="vertical-align:middle;">
 				       		<apex:outputLabel value="Guest<br/>(name or bid number)" escape="false" />
-			                <apex:outputPanel >
+			                <apex:outputPanel style="display:flex;">
 							   	<input type="text" id="txtPurchasers" class="clsCombo clsComboPurchasers ui-autocomplete-input" /> 
-							   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" type="button" >&nbsp;</button>           
+							   	<button id="btnAll" class="clsBtnAll ui-button ui-widget ui-state-default ui-button-icon-only ui-button-icon" type="button" >&nbsp;</button>
 							    <apex:actionFunction action="{!ChangePurchaserLookup}" name="ChangePurchaserLookup" status="statusLoad" 
 					    			rerender="panelSearch,panelEdit,panelPurchases,panelStatus,panelButtons" 
 							    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" >

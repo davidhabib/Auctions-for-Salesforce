@@ -3,7 +3,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page controller="AUC_CTRL_AuctionPurchases" title="Auction Purchases"  tabStyle="Auction_Purchases__tab">
+<apex:page controller="AUC_CTRL_AuctionPurchases" title="Auction Purchases" tabStyle="Auction_Purchases__tab" lightningStylesheets="true">
 	<apex:form >
 	   	<apex:sectionHeader title="Auction Purchases" />      
 		<c:SoqlListView pageController="{!this}" ></c:SoqlListView>
