@@ -404,6 +404,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 					// {3} = sessionId
 					// {4} = partner server url
 					// {5} = organizationId
+					// {6} = comma separated list of OppId's
 					list<string> listFormat = new list<string>();
 					listFormat.add(contactRole.contactId);
 					listFormat.add(auctionId);
@@ -411,7 +412,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 					listFormat.add(UserInfo.getSessionId());
 					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
 					listFormat.add(strServerURL);					
-					listFormat.add(UserInfo.getOrganizationId());					
+					listFormat.add(UserInfo.getOrganizationId());
+					listFormat.add(opp.Id);
 					str = string.format(str, listFormat);			
 				}
 				strCreditCardChargeURL = str;

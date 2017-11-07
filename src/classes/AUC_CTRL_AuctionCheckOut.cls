@@ -214,7 +214,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	* @param strFilter the substring to filter by 
 	* @return list<Purchaser>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
-   @RemoteAction global static list<Purchaser> getListPurchasers(string auctionId, string strFilter) {
+    @RemoteAction global static list<Purchaser> getListPurchasers(string auctionId, string strFilter) {
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
@@ -566,6 +566,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 					// {3} = sessionId
 					// {4} = partner server url
 					// {5} = organizationId
+					// {6} = comma separated list of OppId's
 					list<string> listFormat = new list<string>();
 					listFormat.add(contactIdPurchaser);
 					listFormat.add(auctionId);
@@ -577,7 +578,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 					listFormat.add(UserInfo.getSessionId());
 					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
 					listFormat.add(strServerURL);					
-					listFormat.add(UserInfo.getOrganizationId());					
+					listFormat.add(UserInfo.getOrganizationId());
+                    listFormat.add(string.join(getOppIdsToPay(), ','));
 					str = string.format(str, listFormat);			
 				}
 				strCreditCardChargeURL = str;
@@ -586,6 +588,20 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 		private set;
 	}
+
+    // returns a list of OppId's for those Opportunities marked to be paid
+    private List<Id> getOppIdsToPay() {
+        List<Id> listId = new List<Id>();
+
+        for (Receipt r : listReceipts) {
+            for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
+                if (po.IsPayNow) {
+                    listId.add(po.opp.Id);
+                }
+            }
+        }
+        return listId;
+    }
 		
 	// public property for the Window.Open() parameters
 	// for the virtual terminal window.
