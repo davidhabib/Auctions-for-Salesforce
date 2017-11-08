@@ -87,14 +87,12 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 				AUC_AuctionMaintenance.didUpdateOppWithNPSPOCRData(opp, contactRole.ContactId);
 				insert opp;
 				
-				// create the contactRole for the donor
-				if (AUC_AuctionConstants.fCreateOppContactRoles(opp.Id, contactRole.ContactId)) {
-					contactRole.OpportunityId = opp.Id;
-					contactRole.Role = strDonorRole;
-					contactRole.IsPrimary = true;
-					insert contactRole;
-				}
-				
+				// create/update the contactRole for the donor
+				contactRole.OpportunityId = opp.Id;
+				contactRole.Role = strDonorRole;
+				contactRole.IsPrimary = true;
+				AUC_AuctionMaintenance.saveOppContactRole(contactRole);
+
 				// add the donor to the campaign
 				// handle that they might already be on the campaign!
 				try {
@@ -128,16 +126,17 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	        return p;
         
         } catch (Exception e) {
+			// note that we intentionally did not use savepoint/rollback here, to avoid having
+			// to recreate opp and auctionItem (since we can't clear their Id's to null).
         	if (opp.Id == null)
             	strSaveResults = 'Error encountered while trying to save the auction donated item.  ';
             else
             	strSaveResults = 'The auction donated item has been saved, but errors were encountered trying to save the related auction item.  ';
-            // strSaveResults += e.getMessage();
-            ApexPages.addMessages(e);            
+            ApexPages.addMessages(e);
             return null;
         }	   
 	}
-	
+
 
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {

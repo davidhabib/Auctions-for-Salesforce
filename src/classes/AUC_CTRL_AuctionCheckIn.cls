@@ -594,14 +594,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	        		insert oppTicketAttendee;
 					
 					// only create contact role if client's code didn't do it!
-					if (AUC_AuctionConstants.fCreateOppContactRoles(oppTicketAttendee.Id, attendeeEdit.con.Id)) {				
-		        		OpportunityContactRole ocr = new OpportunityContactRole();
-						ocr.OpportunityId = oppTicketAttendee.Id;
-						ocr.contactId = attendeeEdit.con.Id;
-			        	ocr.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
-						ocr.IsPrimary = true;
-						insert ocr;
-					}
+					OpportunityContactRole ocr = new OpportunityContactRole();
+					ocr.OpportunityId = oppTicketAttendee.Id;
+					ocr.contactId = attendeeEdit.con.Id;
+					ocr.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
+					ocr.IsPrimary = true;
+					AUC_AuctionMaintenance.saveOppContactRole(ocr);
 	        	} else {
 	        		update oppTicketAttendee;
 	        	}

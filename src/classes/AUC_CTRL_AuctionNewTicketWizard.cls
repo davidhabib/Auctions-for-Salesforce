@@ -265,7 +265,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         		insert opp;
 				contactRole.OpportunityId = opp.Id;
 	        	contactRole.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
-				contactRole.IsPrimary = true;				
+				contactRole.IsPrimary = true;
         	} else {
         		update opp;
         	}
@@ -275,9 +275,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			
 			// if creating a new contact role, then also put the contact on the Tickets campaign.
 			if (contactRole.Id == null) {
-				if (AUC_AuctionConstants.fCreateOppContactRoles(opp.Id, contactRole.ContactId)) {				
-					insert contactRole;
-				}
+				AUC_AuctionMaintenance.saveOppContactRole(contactRole);
 				// add them to the Tickets campaign.
 				if (contactRole.ContactId != null) {
 					CampaignMember cm = new CampaignMember();

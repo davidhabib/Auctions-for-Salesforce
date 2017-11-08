@@ -131,7 +131,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				strAutoBidNumberResult = 'The specified Auction was invalid or did not have an Auction Attendees Campaign.  No bid numbers were changed.';
 			}
         } catch (Exception e) {
-        	// undo our intial delete of all bid numbers
+        	// undo our initial delete of all bid numbers
         	Database.rollback(sp);
         	
         	// copy back bid numbers

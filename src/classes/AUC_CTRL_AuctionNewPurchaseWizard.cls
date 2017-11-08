@@ -264,35 +264,11 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
             }
         	if (listOppsToCreate.size() > 0) {
         		insert listOppstoCreate;
-        		
-        		if (listCRToCreate.size() > 0) {
-        			// because NPSP may have already created contact roles, depending on account model, and whether a given contact
-        			// has a 1:1 account or a company account, we will check each Opp, to see if it needs a contact role or not.
-        			list<OpportunityContactRole> listCR = new list<OpportunityContactRole>();
-        			
-        			// we used to do this with individual calls to fCreateOppContactRoles, but that is inefficient.
-        			// query for all the contact roles in one soql
-        			set<ID> setOppId = new set<ID>();
-        			for (Opportunity opp : listOppstoCreate) {
-        				setOppId.add(opp.Id);
-        			}
-			    	list<OpportunityContactRole> listCRExisting = [select Id, OpportunityId from OpportunityContactRole where IsPrimary=true and OpportunityId in :setOppId]; 
-        			setOppId.clear();
-        			for (OpportunityContactRole cr : listCRExisting) {
-        				setOppId.add(cr.OpportunityId);
-        			}
-        			
-	        		// now fixup the opp ids in the contact roles
-	        		for (integer i = 0; i < cOpps; i++) {
-	        			listCRTOCreate[i].OpportunityId = listOppsToCreate[i].Id;
-	        			// see if anyone (NPSP) already created the ContactRole
-	        			//if (AUC_AuctionConstants.fCreateOppContactRoles(listCRTOCreate[i].OpportunityId, listCRTOCreate[i].ContactId)) {
-	        			if (!setOppId.contains(listCRTOCreate[i].OpportunityId)) {
-	        				listCR.add(listCRToCreate[i]);
-	        			}	        		
-	        		}	
-	        		insert listCR;
-        		}
+				// set OppId's
+				for (Integer i = 0; i < listOppsToCreate.size(); i++) {
+					listCRToCreate[i].OpportunityId = listOppsToCreate[i].Id;
+				}
+				AUC_AuctionMaintenance.saveOppContactRoles(listCRToCreate);
         	}
         	strSaveResults = 'Successfully saved ' + cOpps + ' auction purchase(s).';      
             listAuctionPurchasedItems.clear();  
@@ -451,7 +427,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		listAPO[0].strAuctionItemIDAndName = strAIName + ': ' + auctionitem.Auction_Item_Name__c;
 		listAPO[0].opp.Auction_Item_Purchased__c = auctionitem.Id;
 		listAPO[0].strAmount = '99';
-		listAPO[0].IsPayNow = false;
+		listAPO[0].IsPayNow = true;
 		listAPO[0].opp.CloseDate = date.valueof('2049-12-31');
 		//listAPO[1].strBidderNumberAndName = '456: invalid number';
 		//listAPO[1].strAuctionItemIDAndName = 'not there';

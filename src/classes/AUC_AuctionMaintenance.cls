@@ -275,6 +275,48 @@ public with sharing class AUC_AuctionMaintenance {
 		}		
 	}
 
+	// because NPSP may have already created contact roles, depending on account model, and whether a given contact
+	// has a 1:1 account or a company account, we will check each Opp, to see if it needs a contact role or not,
+	// as well as ensure its Role is correct.
+	public static void saveOppContactRole(OpportunityContactRole ocr) {
+		saveOppContactRoles(new List<OpportunityContactRole> {ocr});
+	}
+
+	public static void saveOppContactRoles(List<OpportunityContactRole> ListOCR) {
+		if (listOCR.size() > 0) {
+			List<OpportunityContactRole> listOCRUpsert = new List<OpportunityContactRole>();
+
+			Set<Id> setOppId = new Set<Id>();
+			for (OpportunityContactRole ocr : listOCR) {
+				setOppId.add(ocr.OpportunityId);
+			}
+			List<OpportunityContactRole> listOCRExisting = [SELECT Id, Role, ContactId, OpportunityId
+				FROM OpportunityContactRole WHERE IsPrimary = true AND OpportunityId in :setOppId];
+
+			// put all our OCR's on a map key'ed by OppId|ContactId
+			Map<String, OpportunityContactRole> mapKeyToOCR = new Map<String, OpportunityContactRole>();
+			for (OpportunityContactRole ocr : listOCRExisting) {
+				mapKeyToOCR.put(ocr.OpportunityId + '|' + ocr.ContactId, ocr);
+			}
+
+			// now fixup the Roles in the ocr's
+			for (integer i = 0; i < listOCR.size(); i++) {
+				OpportunityContactRole ocr = listOCR[i];
+				OpportunityContactRole ocrExisting = mapKeyToOCR.get(ocr.OpportunityId + '|' + ocr.ContactId);
+				if (ocrExisting != null) {
+					if (ocrExisting.Role != ocr.Role) {
+						ocrExisting.Role = ocr.Role;
+						listOCRUpsert.add(ocrExisting);
+					}
+				} else {
+					listOCRUpsert.add(ocr);
+				}
+			}
+
+			upsert listOCRUpsert;
+		}
+	}
+
 	// Sets the Opportunity StageName, Probability, and ForecastCategoryName to the Closed Won Not Thanked
 	// stage specified in Settings.
 	public static void setOpportunityStageClosed(Opportunity opp) {
@@ -304,7 +346,8 @@ public with sharing class AUC_AuctionMaintenance {
 		System.AssertEquals(system.today().year(), AUC_AuctionMaintenance.YearOfAuctionId(auction.Id));
 		System.AssertEquals(system.today(), AUC_AuctionMaintenance.DateOfAuctionId(auction.Id));
 		System.AssertEquals('Test Auction', AUC_AuctionMaintenance.NameOfAuctionId(auction.Id));
-		
+
+
 		list<SelectOption> listSO = am.listSOAuctions;
 		System.Assert(listSO.size() > 1);
 		
@@ -319,5 +362,76 @@ public with sharing class AUC_AuctionMaintenance {
 		insert con;
 		system.assertNotEquals(null, con.Id);
 		system.assertEquals(AUC_AuctionConstants.IsNPSPInstalled, didUpdateOppWithNPSPOCRData(opp, con.Id));
-	}	
+	}
+
+	static testmethod void testNewContactRoles() {
+		Account acc = new Account(Name='test account');
+		insert acc;
+		Contact con = new Contact(Lastname='test contact');
+		insert con;
+
+		List<Opportunity> listOpp = new List<Opportunity>();
+		List<OpportunityContactRole> listOCR = new List<OpportunityContactRole>();
+		for (integer i = 0; i < 5; i++) {
+			listOpp.add(new Opportunity(Name='test Opp'+i, StageName='Closed Won', CloseDate=System.today()));
+			listOCR.add(new OpportunityContactRole(ContactId=con.Id, isPrimary=true, Role='test Role'));
+		}
+		insert listOpp;
+		for (Integer i = 0; i < listOpp.size(); i++) {
+			listOCR[i].OpportunityId = listOpp[i].Id;
+		}
+
+		test.startTest();
+		AUC_AuctionMaintenance.saveOppContactRoles(listOCR);
+		test.stopTest();
+
+		List<OpportunityContactRole> listOCRSaved = [SELECT Id, ContactId, OpportunityId, IsPrimary, Role
+			FROM OpportunityContactRole ORDER BY Opportunity.Name];
+		system.assertEquals(listOCR.size(), listOCRSaved.size());
+		for (Integer i = 0; i < listOCR.size(); i++) {
+			system.assertEquals(listOCR[i].OpportunityId, listOCRSaved[i].OpportunityId);
+			system.assertEquals(listOCR[i].ContactId, listOCRSaved[i].ContactId);
+			system.assertEquals(listOCR[i].IsPrimary, listOCRSaved[i].IsPrimary);
+			system.assertEquals(listOCR[i].Role, listOCRSaved[i].Role);
+		}
+	}
+
+	static testmethod void testExistingContactRoles() {
+		Account acc = new Account(Name='test account');
+		insert acc;
+		Contact con = new Contact(Lastname='test contact');
+		insert con;
+
+		List<Opportunity> listOpp = new List<Opportunity>();
+		List<OpportunityContactRole> listOCR = new List<OpportunityContactRole>();
+		for (integer i = 0; i < 5; i++) {
+			listOpp.add(new Opportunity(Name='test Opp'+i, StageName='Closed Won', CloseDate=System.today()));
+			listOCR.add(new OpportunityContactRole(ContactId=con.Id, isPrimary=true, Role='test Role'));
+		}
+		insert listOpp;
+		for (Integer i = 0; i < listOpp.size(); i++) {
+			listOCR[i].OpportunityId = listOpp[i].Id;
+		}
+		insert listOCR;
+
+		// now change our Roles and use our method to update them.
+		for (Integer i = 0; i < listOCR.size(); i++) {
+			listOCR[i].Role = 'new test Role';
+		}
+
+		test.startTest();
+		AUC_AuctionMaintenance.saveOppContactRoles(listOCR);
+		test.stopTest();
+
+		List<OpportunityContactRole> listOCRSaved = [SELECT Id, ContactId, OpportunityId, IsPrimary, Role
+		FROM OpportunityContactRole ORDER BY Opportunity.Name];
+		system.assertEquals(listOCR.size(), listOCRSaved.size());
+		for (Integer i = 0; i < listOCR.size(); i++) {
+			system.assertEquals(listOCR[i].OpportunityId, listOCRSaved[i].OpportunityId);
+			system.assertEquals(listOCR[i].ContactId, listOCRSaved[i].ContactId);
+			system.assertEquals(listOCR[i].IsPrimary, listOCRSaved[i].IsPrimary);
+			system.assertEquals(listOCR[i].Role, listOCRSaved[i].Role);
+			system.assertEquals('new test Role', listOCRSaved[i].Role);
+		}
+	}
 }

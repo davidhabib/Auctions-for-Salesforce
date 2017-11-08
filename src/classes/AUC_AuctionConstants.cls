@@ -411,15 +411,6 @@ public with sharing class AUC_AuctionConstants {
 		set;
 	}
     
-	// in order to avoid duplicate contact roles being created by us and NPSP or other packages,
-	// we have to be smart about when to do it.
-	// so we just check for an OCR after the opp is saved, and if we don't find it, tell Auctions to create one.
-    public static boolean fCreateOppContactRoles(ID oppId, ID contactId) {
-    	if (oppId == null || contactId == null) return false;
-    	OpportunityContactRole[] listOCR = [select Id from OpportunityContactRole where contactId=:contactId and OpportunityId=:oppId and IsPrimary=true]; 
-    	return (listOCR.size() == 0);    	
-    }
-
 	// private property to tell Auctions whether NPSP Householding package is installed and Household Object to be used.
 	private static boolean fCheckedForNPSPHH = false;
 	private static boolean useNPSPHouseholdObject {
@@ -475,7 +466,6 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.isNPSPHouseholdAccountModel == false || AUC_AuctionConstants.isNPSPHouseholdAccountModel == true);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsIntro() != null);
 		System.Assert(AUC_AuctionConstants.StrAuctionReceiptsFooter() != null);
-		System.Assert(AUC_AuctionConstants.fCreateOppContactRoles(null, null) == false);
 		System.Assert(AUC_AuctionConstants.getObjectTypeFromId(null) == null);
 		AUC_AuctionConstants.StrCreditCardValidateURLFormula();
 		AUC_AuctionConstants.StrCreditCardChargeURLFormula();
