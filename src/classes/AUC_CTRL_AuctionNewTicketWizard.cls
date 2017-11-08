@@ -60,8 +60,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		} else {
 			opp = new Opportunity(RecordTypeId=AUC_auctionMaintenance.recordtypeIdAuctionTicket);
 			opp.CloseDate = system.Today();
-			opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;  // assume new tickets are going in as paid.
-			contactRole = new OpportunityContactRole();			
+			AUC_AuctionMaintenance.setOpportunityStageClosed(opp); // assume new tickets are going in as paid.
+			contactRole = new OpportunityContactRole();
 				
 			// use auctionId passed in if there, else use latest auction.
 			if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
@@ -248,7 +248,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	        	if (opp.amount == null) {
 	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
 	        	} else {
-	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;       		
+					AUC_AuctionMaintenance.setOpportunityStageClosed(opp);
 	        	}
 			}
 			
@@ -505,8 +505,11 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		ctrl.Save();
 		System.Assert(ctrl.opp.id != null);
 		System.AssertEquals('The ticket purchase has been saved.  1 contacts have been added to the auction attendee campaign.', ctrl.strSaveResults);
-		list<Opportunity> listOpp = [select Id, Name, Amount from Opportunity];
+		list<Opportunity> listOpp = [select Id, Name, Amount, StageName, Probability, ForecastCategoryName from Opportunity];
 		system.assertEquals(1, listOpp.size());
+		system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, listOpp[0].StageName);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedProbability, listOpp[0].Probability);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName, listOpp[0].ForecastCategoryName);
 		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
 		system.assertEquals(1,listOCR.size());
 		system.assertEquals(contact.Id, listOCR[0].ContactId);

@@ -273,7 +273,15 @@ public with sharing class AUC_AuctionMaintenance {
 		} catch (exception ex) {
 			return false;
 		}		
-	} 
+	}
+
+	// Sets the Opportunity StageName, Probability, and ForecastCategoryName to the Closed Won Not Thanked
+	// stage specified in Settings.
+	public static void setOpportunityStageClosed(Opportunity opp) {
+		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+		opp.Probability = AUC_AuctionConstants.oppStageWonNotThankedProbability;
+		opp.ForecastCategoryName = AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName;
+	}
 		
 	//==================== TEST METHOD(s) ======================================
 	static testmethod void CodeCoverageTests() {

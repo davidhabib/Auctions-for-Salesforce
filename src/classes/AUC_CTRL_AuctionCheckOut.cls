@@ -462,6 +462,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// the paid StageName, and to update Payment Method and potentially Check Number on
 	// either custom fields (specified in AuctionSettigns), or on the Payment Object of the NPSP.
 	public PageReference UpdateCheckedOpps() {
+		SavePoint sp = Database.setSavepoint();
 		try {
 			strSaveResults = null;
 			
@@ -477,7 +478,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			for (Receipt r : listReceipts) {
 				for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
 					if (po.IsPayNow) {
-						po.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+						AUC_AuctionMaintenance.setOpportunityStageClosed(po.opp);
 						listOppToUpdate.add(po.opp);
 						po.IsPayNow = false;
 						if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
@@ -505,7 +506,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			fOppsToUpdate = false;
 			return null;
 	    } catch (Exception e) {
-	        ApexPages.addMessages(e);            
+			Database.rollback(sp);
+			ApexPages.addMessages(e);
 	        return null;
 	    } 
    	}
@@ -808,9 +810,11 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
     	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_PLEDGED, opp.StageName);
 		system.assert(ctrl.UpdateCheckedOpps() == null);
-		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName from Opportunity where Id=:oppPurchase.id];
+		opp = [select Id, Name, Auction_Deductible_Amount__c, StageName, Probability, ForecastCategoryName from Opportunity where Id=:oppPurchase.id];
     	system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, opp.StageName);
-		
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedProbability, opp.Probability);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName, opp.ForecastCategoryName);
+
 		list<Purchaser> listP = getListPurchasers(auction.Id, 'Test');
 		system.assert(listP != null);
 		system.assertEquals(2, listP.size());

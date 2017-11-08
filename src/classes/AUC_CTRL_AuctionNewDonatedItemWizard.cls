@@ -15,8 +15,8 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		auctionItem = new Auction_Item__c();
 		opp = new Opportunity(RecordTypeId=AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem);
 		opp.CloseDate = system.Today();
-		opp.Number_Of_Items__c = 1;	
-		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+		opp.Number_Of_Items__c = 1;
+		AUC_AuctionMaintenance.setOpportunityStageClosed(opp);
 		fCreateAuctionItem = false;	
 		contactRole = new OpportunityContactRole();			
 		
@@ -184,7 +184,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		AUC_CTRL_AuctionNewDonatedItemWizard ctrl = new AUC_CTRL_AuctionNewDonatedItemWizard();
 
 		ctrl.contactRole.ContactId = contact.id;
-		ctrl.opp.StageName = 'Won Not Thanked';
+		ctrl.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
 		ctrl.opp.CloseDate = System.Today();
 		ctrl.opp.Auction_Donated_Item_Name__c = 'my test auction donated item';
 		ctrl.opp.Amount = 150;
@@ -205,8 +205,11 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 		
 		ctrl.Save();
 		
-		list<Opportunity> listOpp = [select Id, Name, Amount from Opportunity];
+		list<Opportunity> listOpp = [select Id, Name, Amount, StageName, Probability, ForecastCategoryName from Opportunity];
 		system.assertEquals(1, listOpp.size());
+		system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, listOpp[0].StageName);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedProbability, listOpp[0].Probability);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName, listOpp[0].ForecastCategoryName);
 		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
 		system.assertEquals(1,listOCR.size());
 		system.assertEquals(contact.Id, listOCR[0].ContactId);

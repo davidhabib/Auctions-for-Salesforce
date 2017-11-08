@@ -231,7 +231,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
                 	} 
 	                apo.opp.Name = apo.strBidderName + ' ' + string.valueof(AUC_AuctionMaintenance.YearOfAuctionId(auctionMaintenance.auctionId)) + ' ' + strOppTypeName;
 	                if (apo.IsPayNow) { 
-	                	apo.opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
+						AUC_AuctionMaintenance.setOpportunityStageClosed(apo.opp);
 	                } else {
 	                	apo.opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
 	                } 
@@ -468,11 +468,15 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		//listAPO[1].strAuctionItemIDAndName = null;
 		controller.CreateAuctionPurchases();
 		System.AssertEquals('Successfully saved 1 auction purchase(s).', controller.strSaveResults);
-		list<Opportunity> auctionpurchases = [select Amount, Auction_Item_Name__c from Opportunity where CloseDate=:date.valueof('2049-12-31')];
+		list<Opportunity> auctionpurchases = [select Amount, Auction_Item_Name__c, StageName, Probability, ForecastCategoryName
+			from Opportunity where CloseDate=:date.valueof('2049-12-31')];
 		system.Assert(auctionpurchases.size() > 0);
 		system.AssertEquals(99, auctionpurchases[0].Amount);
-		system.AssertEquals('Test Auction item', auctionpurchases[0].Auction_Item_Name__c); 
-		
+		system.AssertEquals('Test Auction item', auctionpurchases[0].Auction_Item_Name__c);
+		system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, auctionpurchases[0].StageName);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedProbability, auctionpurchases[0].Probability);
+		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName, auctionpurchases[0].ForecastCategoryName);
+
 		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
 		system.assertEquals(1,listOCR.size());
 		system.assertEquals(contact.Id, listOCR[0].ContactId);

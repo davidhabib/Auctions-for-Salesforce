@@ -67,19 +67,25 @@ public with sharing class AUC_AuctionConstants {
 				list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
 				if (settings.size() > 0 && settings[0].Opportunity_Stage_Won_Not_Thanked__c != null) {
 					strStage = settings[0].Opportunity_Stage_Won_Not_Thanked__c;
-					// verify it is a valid stage					
-					list<OpportunityStage> listSt = [Select MasterLabel, IsWon, IsClosed, IsActive From OpportunityStage 
-						where MasterLabel = :strStage and IsWon = true and isClosed = true and isActive = true];
-					if (listSt.size() == 0) {
-						throw (new MyException('The Auction Setting for Opportunity Stage Won Not Thanked, ' 
-							+ strStage + ', is not a valid Won, Closed, and Active Opportunity Stage.  Please see the Auctions Installation & Configuration Guide.'));						
-					}
 				}
-				OPP_STAGE_WON_NOT_THANKED_STAGE = strStage; 					
+				// verify it is a valid stage and retrieve Probability and ForecastCategory for later use
+				list<OpportunityStage> listSt = [Select MasterLabel, DefaultProbability, ForecastCategoryName, IsWon, IsClosed, IsActive
+					From OpportunityStage
+					where MasterLabel = :strStage and IsWon = true and isClosed = true and isActive = true];
+				if (listSt.size() == 0) {
+					throw (new MyException('The Auction Setting for Opportunity Stage Won Not Thanked, '
+						+ strStage + ', is not a valid Won, Closed, and Active Opportunity Stage.  Please see the Auctions Installation & Configuration Guide.'));
+				}
+				oppStageWonNotThankedProbability = listSt[0].DefaultProbability;
+				oppStageWonNotThankedForecastCategoryName = listSt[0].ForecastCategoryName;
+				OPP_STAGE_WON_NOT_THANKED_STAGE = strStage;
 			}
 			return OPP_STAGE_WON_NOT_THANKED_STAGE;
 		}
 	}
+
+	public static Double oppStageWonNotThankedProbability { get; private set; }
+	public static String oppStageWonNotThankedForecastCategoryName {get; private set; }
 	
 	public static string OPP_STAGE_PLEDGED {
 		get {
@@ -186,17 +192,6 @@ public with sharing class AUC_AuctionConstants {
 		} else {
 			return null;
 		}
-	}
-		
-	// read the custom setting and return the string for the Auction Receipts URL formula for the CheckOut page.
-	// I was unable to get this working with Conga, so it is not used.
-	public static string StrCheckOutReceiptsURLFormula() {	
-		//list<AuctionSettings__c> settings = AuctionSettings__c.getall().values();
-		//if (settings.size() > 0) {
-		//	return settings[0].Check_Out_Receipts_URL__c;
-		//} else {
-			return null;
-		//}
 	}
 		
 	// read the custom setting and return the string for the window.open() parameters
@@ -402,25 +397,6 @@ public with sharing class AUC_AuctionConstants {
     	set;
     } 	
 
-    	/*** Kevin Bromer told me in Julyu 2012 that while this code will work, the 
-    	correct way to detect one-to-one is to look at custom settings (which I now
-    	do below.    	    	
-    	boolean isOneToOneModel;     	
-    	isOneToOneModel = false;   
-    	Map<String, Schema.SObjectField> M = Schema.SObjectType.Contact.fields.getMap();
-    	Schema.SObjectField fld = M.get('npe01__SystemAccountProcessor__c');
-    	if (fld == null) return false;  	
-    	//Schema.DescribeFieldResult F = Schema.sObjectType.Contact.fields.npe01__SystemAccountProcessor__c;
-    	Schema.DescribeFieldResult F = fld.getDescribe();  
-    	List<Schema.PicklistEntry> P = F.getPicklistValues(); 		
-    	for(Schema.PicklistEntry pe : P){ 			
-    		if (pe.isDefaultValue()){ 				
-    			if(pe.getValue()==ONE_TO_ONE_PROCESSOR){ isOneToOneModel = true;} 			
-    		} 		
-    	} 		     	
-    	return isOneToOneModel;  
-    	*****/
-
 	// public property to tell Auctions whether NPSP package is installed.
 	private static boolean fCheckedForNPSP = false;
 	public static boolean IsNPSPInstalled {
@@ -435,27 +411,9 @@ public with sharing class AUC_AuctionConstants {
 		set;
 	}
     
-	// in order to avoid duplicate contact roles being created by us and the NPSP,
+	// in order to avoid duplicate contact roles being created by us and NPSP or other packages,
 	// we have to be smart about when to do it.
-	// In older versions of the NPSP (Households version < 2.0), one could prevent NPSP from 
-	// creating contact roles on specific Opportunity record types.  Thus Auctions' installation guide instructs 
-	// NPSP users to set each auction record type's _SYSTEM: HOUSEHOLD CONTACT ROLEPROCESSOR field to have a default value of "No Opportunities".  
-	// Unfortunately, when NPSP moved to using custom settings to control its behavior, 
-	// they only look at Household Settings - Household Contact Roles On, and they no longer support controlling this 
-	// behavior by Opportunity record type.	
-	//
-	// According to Kevin Bromer on 3/8/2011:
-	// In a 1x1 setup, the NPSP uses a before trigger on opps to populate the Contact_Id_for_Role__c from the associated 1x1 account. 
-	// In a bucket account model, the NPSP relies on the baked in SFDC contact role creation (basically, only supporting URL param passing), 
-	// then rolls through in an after-update to update role types if necessary.
-	// 
-	// Given this description, the fix is if Auctions detects 1:1 model, don't set a contact role, but set the account.  
-	// If not a 1:1 model, go ahead and create the contact role.
-    // public static boolean fCreateOppContactRoles() { 
-	//    	return !isNPSPOneToOneAccountModel();    	
-    // }
-	// At some point, I found this rule not good enough for all environments (Common Ground?  newer NPSP?  other?)
-	// and so we just check for an OCR after the opp is saved, and if we don't find it, tell Auctions to create one.
+	// so we just check for an OCR after the opp is saved, and if we don't find it, tell Auctions to create one.
     public static boolean fCreateOppContactRoles(ID oppId, ID contactId) {
     	if (oppId == null || contactId == null) return false;
     	OpportunityContactRole[] listOCR = [select Id from OpportunityContactRole where contactId=:contactId and OpportunityId=:oppId and IsPrimary=true]; 
@@ -508,6 +466,8 @@ public with sharing class AUC_AuctionConstants {
 		System.Assert(AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE != null);
 		System.Assert(AUC_AuctionConstants.OPP_ORG_GIFT_DONOR_ROLE != null);
 		System.Assert(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE != null);
+		System.Assert(AUC_AuctionConstants.oppStageWonNotThankedProbability != null);
+		System.Assert(AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName != null);
 		System.Assert(AUC_AuctionConstants.OPP_STAGE_PLEDGED != null);
 		System.Assert(AUC_AuctionConstants.CAMPAIGN_Status_Default != null);
 		System.Assert(AUC_AuctionConstants.CROWS_PURCHASE_GRID != null);
