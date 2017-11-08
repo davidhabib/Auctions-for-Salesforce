@@ -33,7 +33,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 			donatedItem = donatedItemT;
 			isChecked = false;
 			quantity = integer.valueOf(donatedItemT.Number_Available__c);
-			if (donatedItemT.Amount == null || donatedItemT.Number_of_Items__c == null) {
+			if (donatedItemT.Amount == null || donatedItemT.Number_of_Items__c == null || donatedItemT.Number_of_Items__c == 0) {
 				FMV = 0;
 			} else { 
 				FMV = (donatedItemT.Amount / donatedItemT.Number_of_Items__c) * quantity;
