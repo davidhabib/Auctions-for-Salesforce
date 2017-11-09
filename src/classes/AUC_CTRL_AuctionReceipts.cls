@@ -331,13 +331,13 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	       	string rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
 	       	string cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
 	       	string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
-	       	map<ID, integer> mapContactIdBidNumber = new map<ID, integer>();
-	       	
-	       	// create the map of bid numbers, so we can include them on the report.
-	       	list<CampaignMember> listCM = [select contactId, Bid_Number__c from CampaignMember where 
+	       	map<ID, CampaignMember> mapContactIdToCampaignMember = new map<ID, CampaignMember>();
+
+	       	// create the maps of bid numbers and table names, so we can include them on the report.
+	       	list<CampaignMember> listCM = [select contactId, Bid_Number__c, Table_Name_Number__c from CampaignMember where
 	       		Bid_Number__c <> null and campaignId = :cmpIdAttendees and contactId in :listContactId];
 	       	for (CampaignMember cm : listCM) {
-	       		mapContactIdBidNumber.put(cm.contactId, integer.valueOf(cm.Bid_Number__c));
+				mapContactIdToCampaignMember.put(cm.contactId, cm);
 	       	}
 
 			string strSoql = 'select contactId, contact.Name, contact.Firstname, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
@@ -438,7 +438,11 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		        		r.strContactAddrLine2 = NullStr(ocr.Contact.MailingCity) + (ocr.Contact.MailingCity <> null ? ', ' : '') + 
 		        			NullStr(ocr.Contact.MailingState) + '  ' + NullStr(ocr.Contact.MailingPostalCode);
 		        		r.dtAuction = dtAuction;
-		        		r.strBidNumber = string.valueOf(mapContactIdBidNumber.get(ocr.contactId));
+						CampaignMember cm = mapContactIdToCampaignMember.get(ocr.contactId);
+						if (cm != null) {
+							r.strBidNumber = string.valueOf(cm.Bid_Number__c);
+							r.strTableNameNumber = cm.Table_Name_Number__c;
+						}
 		        		mapContactIdReceipt.put(r.contactId, r);
 		        		listReceiptsT.add(r);
 		        	}
@@ -486,6 +490,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		public Decimal decTotalFMV { get; set; }
 		public list<Opportunity> listOppAuctionPurchases { get; set; }
 		public string strBidNumber { get; set; }
+		public String strTableNameNumber { get; set; }
 		
 		public String strPageTitle {
 			get { 
