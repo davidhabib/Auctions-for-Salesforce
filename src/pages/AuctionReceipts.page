@@ -367,11 +367,20 @@
 		    			<apex:param value="{!receipt.dtAuction}" />
 		    		</apex:outputText>
 		    	</p>
-		    	<p><apex:outputText value="{!receipt.strContactName}" /><br/>
-				<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
-				<apex:outputText value="{!receipt.strContactAddrLine2}" /><br/>
-				<apex:outputText value="{! 'Bid number: ' + receipt.strBidNumber}" /><br/>
-				</p><p/>
+				<table width="100%">
+					<tr>
+						<td>
+                            <apex:outputText value="{!receipt.strContactName}" /><br/>
+							<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
+							<apex:outputText value="{!receipt.strContactAddrLine2}" />
+						</td>
+						<td style="text-align: right;">
+                            <apex:outputText value="{! 'Bid number: ' + receipt.strBidNumber}" rendered="{!NOT(ISBLANK(receipt.strBidNumber))}" /><br/>
+                            <apex:outputText value="{! 'Table: ' + receipt.strTableNameNumber}" rendered="{!NOT(ISBLANK(receipt.strTableNameNumber))}" />
+						</td>
+					</tr>
+				</table>
+				<p/>
 			
 			 	<p><apex:outputText value="{!'Dear ' + receipt.strContactFirstName}" />,<br/><br/>
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
