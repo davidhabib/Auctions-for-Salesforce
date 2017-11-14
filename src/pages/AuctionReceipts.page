@@ -325,8 +325,7 @@
 							<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
 							<apex:inputCheckbox value="{!fIncludeAllGuests}" id="cbxIncludeAllGuests" immediate="true" >
 						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeAllGuests}" 
-						    	rerender="panelSearch" 
-						    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
+						    		rerender="panelSearch" oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
 							</apex:inputCheckbox>
 						</apex:outputPanel>
 					</apex:pageBlockSectionItem>
@@ -337,13 +336,23 @@
 							<!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
 							<apex:inputCheckbox value="{!fIncludeTicketPurchases}" id="cbxIncludeTicketPurchases" immediate="true" >
 						    	<apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeIncludeTicketPurchases}" 
-						    	rerender="panelSearch" 
-						    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
+						    		rerender="panelSearch" oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
 							</apex:inputCheckbox>
 						</apex:outputPanel>
 					</apex:pageBlockSectionItem>
-				
-		    		<apex:pageBlockSectionItem >
+
+                    <apex:pageBlockSectionItem rendered="{!fHasHouseholds}">
+                        <apex:outputLabel value="Address to Household?" for="cbxAddressToHousehold" />
+                        <apex:outputPanel >
+                            <!-- without the actionSupport, our checkbox state wasn't going to the server before the OpenPDF action call. -->
+                            <apex:inputCheckbox value="{!fAddressToHousehold}" id="cbxAddressToHousehold" immediate="true" >
+                                <apex:actionSupport event="onclick" status="statusLoad" action="{!ChangeAddressToHousehold}"
+									rerender="panelSearch" oncomplete="myInitializeJQueryUI('{!JSENCODE(strNamePurchaser)}');" />
+                            </apex:inputCheckbox>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+
+                    <apex:pageBlockSectionItem >
 						<apex:outputText value="" />
 				    	<apex:commandButton value="Open PDF" onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;"  immediate="false" />
 					</apex:pageBlockSectionItem>
@@ -367,7 +376,7 @@
 		    			<apex:param value="{!receipt.dtAuction}" />
 		    		</apex:outputText>
 		    	</p>
-				<table width="100%">
+				<table width="100%" cellpadding="0">
 					<tr>
 						<td>
                             <apex:outputText value="{!receipt.strContactName}" /><br/>

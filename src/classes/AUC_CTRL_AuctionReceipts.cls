@@ -23,26 +23,35 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		// default state
 		fIncludeTicketPurchases = false;
 		fIncludeAllGuests = false;
+		fAddressToHousehold = true;
 		contactIdPurchaser = null;
+
+		Map<String, String> mapParams = ApexPages.currentPage().getParameters();
 				
 		// also support a specific contact (to allow page to be invoked on a specific receipt)
-		String strcontactId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('contactId'));
+		String strcontactId = AUC_AuctionMaintenance.StrEscape(mapParams.get('contactId'));
 		if (strcontactId != null && strcontactId != '') {
 			contactIdPurchaser = strcontactId;
 		}
 
 		// IncludeAll parameter 
-		String fAll = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('IncludeAll'));
+		String fAll = AUC_AuctionMaintenance.StrEscape(mapParams.get('IncludeAll'));
 		if (fAll != null && fAll == 'true') {
 			fIncludeAllGuests = true;
 		}
 
 		// IncludeTickets parameter 
-		String fTickets = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('IncludeTickets'));
+		String fTickets = AUC_AuctionMaintenance.StrEscape(mapParams.get('IncludeTickets'));
 		if (fTickets != null && fTickets == 'true') {
 			fIncludeTicketPurchases = true;
 		}
-		
+
+		// AddressToHousehold parameter
+		String fHH = AUC_AuctionMaintenance.StrEscape(mapParams.get('AddressToHousehold'));
+		if (fHH != null && fHH == 'false') {
+			fAddressToHousehold = false;
+		}
+
 		getRenderFormat();
 	}
 
@@ -82,6 +91,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			if (fIncludeTicketPurchases == true) {
 				str += '&IncludeTickets=true';
 			}
+			if (fAddressToHousehold == false) {
+				str += '&AddressToHousehold=false';
+			}
 			return str;			
 		}
 		private set;
@@ -95,7 +107,16 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	public boolean fIncludeTicketPurchases { get; set; }
 	
 	public boolean fIncludeAllGuests { get; set; }
-	
+
+	public boolean fAddressToHousehold { get; set; }
+
+	public boolean fHasHouseholds {
+		get {
+			return (AUC_AuctionConstants.strContactHouseholdField != null &&
+				AUC_AuctionConstants.strContactHouseholdNameField != null);
+		}
+	}
+
 	public string strAuctionReceiptsIntro { get {return AUC_AuctionConstants.StrAuctionReceiptsIntro();} }
 	
 	public string strAuctionReceiptsFooter { get {return AUC_AuctionConstants.StrAuctionReceiptsFooter();} }
@@ -201,6 +222,14 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		contactIdPurchaser = null;
 		strNamePurchaser = null;
 		searchPurchaser = null;
+		return null;
+	}
+
+	public PageReference ChangeAddressToHousehold() {
+		listReceipts = null;
+		listReceipts2 = null;
+		listReceipts3 = null;
+		listLR = null;
 		return null;
 	}
 
@@ -344,6 +373,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				' opportunity.RecordType.Name, '; 
 			if (AUC_AuctionConstants.strContactHouseholdField != null) {
 				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdField + ', ';
+				if (AUC_AuctionConstants.IsNPSPInstalled) {
+					strSoql += ' contact.npo02__Formula_HouseholdMailingAddress__c, ';
+				}
 			}
 			if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
 				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdNameField + ', ';		
@@ -366,20 +398,6 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 					' order by contact.LastName, contact.FirstName';
 
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
-/*			
-			for (list<OpportunityContactRole> listOCR : [select contactId, contact.Name, contact.FirstName, opportunityId, opportunity.Id, 
-				opportunity.name, opportunity.Amount, opportunity.Auction_Item_Name__c, opportunity.Auction_Deductible_Amount__c, 
-				opportunity.Auction_Non_Deductible_Amount__c,			
-				opportunity.IsWon, opportunity.RecordTypeId, opportunity.RecordType.Name, opportunity.Description from OpportunityContactRole 
-				where IsPrimary=true and contactId in :listContactId and
-					(((opportunity.RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem or opportunity.RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionGift) 
-						and opportunity.campaignId=:auctionMaintenance.campaignIdAuctionAttendees)
-					or 
-					(opportunity.RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionTicket
-						and opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets
-						and IsPrimary=:fIncludeTicketPurchases)) 
-				order by contact.LastName, contact.FirstName]) {
-*/
 			for (list<OpportunityContactRole> listOCR : database.query(strSoql)) {
 	       
 				// now go through all the opps, and for each contact create the appropriate Receipt objects and their child opportunities.	       
@@ -397,7 +415,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		        		r.strContactFirstName = NullStr(ocr.Contact.FirstName);
 
 		        		// use household fields instead if appropriate
-						if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
+						if (fAddressToHousehold && AUC_AuctionConstants.strContactHouseholdNameField != null) {
 							list<string> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
 							if (listStr.size() > 1) {
 								Contact con = ocr.contact;								
@@ -415,7 +433,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 								if (strHousehold != null) r.strContactName = strHousehold;
 							}
 						}
-						if (AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
+						if (fAddressToHousehold && AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
 							list<string> listStr = AUC_AuctionConstants.strContactHouseholdGreetingField.split('\\.', 0);
 							if (listStr.size() > 1) {
 								Contact con = ocr.contact;
@@ -434,9 +452,15 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 							}
 						}
 
-		        		r.strContactAddrLine1 = NullStr(ocr.Contact.MailingStreet);
-		        		r.strContactAddrLine2 = NullStr(ocr.Contact.MailingCity) + (ocr.Contact.MailingCity <> null ? ', ' : '') + 
-		        			NullStr(ocr.Contact.MailingState) + '  ' + NullStr(ocr.Contact.MailingPostalCode);
+						if (fAddressToHousehold && AUC_AuctionConstants.IsNPSPInstalled) {
+							r.strContactAddrLine1 = string.valueOf(ocr.contact.get('npo02__Formula_HouseholdMailingAddress__c'));
+							r.strContactAddrLine2 = '';
+						}
+						if (r.strContactAddrLine1 == null || r.strContactAddrLine1 == '') {
+							r.strContactAddrLine1 = NullStr(ocr.Contact.MailingStreet);
+							r.strContactAddrLine2 = NullStr(ocr.Contact.MailingCity) + (ocr.Contact.MailingCity <> null ? ', ' : '') +
+								NullStr(ocr.Contact.MailingState) + '  ' + NullStr(ocr.Contact.MailingPostalCode);
+						}
 		        		r.dtAuction = dtAuction;
 						CampaignMember cm = mapContactIdToCampaignMember.get(ocr.contactId);
 						if (cm != null) {
