@@ -13,19 +13,19 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 	private AUC_AuctionMaintenance auctionMaintenance;
 	private ApexPages.StandardController stdController;
 	private string strQueryParams;
-	
+
 	//constructor
 	public AUC_CTRL_AuctionNewItemPieceWizard (ApexPages.StandardController controller) {
 		
 		//get record from standard controller
 		stdController = controller;
         this.aip = (Auction_Item_Piece__c)controller.getRecord();
-        
+
         // Keep track of any inbound query string parameters so they can be passed along when creating a new record  
         List<string> pageUrl = ApexPages.currentPage().getUrl().split('\\?');  
         if (pageUrl.size() > 1)
-        	strQueryParams = pageUrl[1];          
-        
+        	strQueryParams = pageUrl[1];
+
         // we are getting called from either an Auction Item, or a Donated Item.
         // figure out which one, and then derive the auctionId.
         if (aip.Auction_Item__c != null) {
@@ -50,39 +50,53 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 	// the list of opps to put in the Auction Donated Item dropdown
 	public list<SelectOption> listSODonatedItems {
 		get {
-			list<SelectOption> listSO = new list<SelectOption>();
-			listSO.add(new SelectOption('', ''));
-			for (Opportunity opp : [select Auction_Donated_Item_Name__c, id, Number_Available__c, Number_of_Items__c, Amount  from Opportunity 
-				where RecordTypeId=:AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem  
-					and Number_Available__c > 0 
-					and CampaignId=:auctionMaintenance.campaignIdAuctionDonors
-				order by Auction_Donated_Item_Name__c desc]) {
+			if (listSODonatedItems == null) {
+				listSODonatedItems = new list<SelectOption>();
+				listSODonatedItems.add(new SelectOption('', ''));
+				for (Opportunity opp : [
+					select Auction_Donated_Item_Name__c, id, Number_Available__c, Number_of_Items__c, Amount
+					from Opportunity
+					where RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem
+					and Number_Available__c > 0
+					and CampaignId = :auctionMaintenance.campaignIdAuctionDonors
+					order by Auction_Donated_Item_Name__c desc
+				]) {
 					if (opp.Number_of_Items__c > 0) {
 						Decimal cost = ((opp.Amount == null) ? 0 : opp.Amount) / opp.Number_of_Items__c;
-						listSO.add(new SelectOption(opp.id, opp.Auction_Donated_Item_Name__c + ' (' + integer.valueOf(opp.Number_Available__c) + ' available at $' + String.valueOf(cost) + ' each)'  ));
+						listSODonatedItems.add(new SelectOption(opp.id, opp.Auction_Donated_Item_Name__c + ' ('
+							+ integer.valueOf(opp.Number_Available__c) + ' available at $'
+							+ String.valueOf(cost.setScale(2)) + ' each)'));
 					}
-			}		
-			return listSO;
+				}
+			}
+			return listSODonatedItems;
 		}
-	}	
-	
+		private set;
+	}
+
 	// the list of Auction Items to put in the Auction Item dropdown
 	public list<SelectOption> listSOAuctionItems {
 		get {
-			list<SelectOption> listSO = new list<SelectOption>();
-			listSO.add(new SelectOption('', ''));
-			for (Auction_Item__c ai : [select Id, Name, Auction_Item_Name__c from Auction_Item__c where Auction__c=:auctionId order by Name]) {
-				listSO.add(new SelectOption(ai.id, ai.Name + ' - ' + ai.Auction_Item_Name__c));
-			}		
-			return listSO;
+			if (listSOAuctionItems == null) {
+				listSOAuctionItems = new list<SelectOption>();
+				listSOAuctionItems.add(new SelectOption('', ''));
+				for (Auction_Item__c ai : [select Id, Name, Auction_Item_Name__c from Auction_Item__c where Auction__c = :auctionId order by Name]) {
+					listSOAuctionItems.add(new SelectOption(ai.id, ai.Name + ' - ' + ai.Auction_Item_Name__c));
+				}
+			}
+			return listSOAuctionItems;
 		}
-	}	
+		private set;
+	}
 
 	public PageReference Save() {
 		aip.Auction_Item__c = auctionItemId;
 		aip.Opportunity__c = oppDonatedItemId;
-		return stdController.Save();
-	}		
+		if (stdController.Save() != null) {
+			return new PageReference('/' + aip.Auction_Item__c);
+		}
+		return null;
+	}
 	
 	public PageReference SaveAndNew() {
 		if (Save() != null) {
@@ -92,8 +106,18 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 		}
 		return null;
 	}
-	
-	//==================== TEST METHOD(s) ======================================	
+
+	// under LEX, stdController.cancel didn't go back to the auction item
+	// so we force it when we can.
+	public PageReference Cancel() {
+		Apexpages.currentPage().setRedirect(true);
+		if (aip.Auction_Item__c != null) {
+			return new PageReference('/' + aip.Auction_Item__c);
+		}
+		return stdController.cancel();
+	}
+
+	//==================== TEST METHOD(s) ======================================
 	static testmethod void TestCodeCoverage() {
 	
 	   	// create needed data
