@@ -255,6 +255,7 @@
         <members>Auction_Management/Auction_Sponsorships</members>
         <members>Auction_Management/Auction_Table_List_By_Captain</members>
         <members>Auction_Management/Auction_Table_List_by_Table_Name_Number</members>
+        <members>Auction_Management/Auction_Tickets_Purchased_vs_Filled</members>
         <members>Auction_Management/Auction_Ticket_Sales</members>
         <members>Auction_Management/Available_Donated_Items</members>
         <members>Auction_Management/Conga_Auction_Receipts</members>
@@ -262,6 +263,7 @@
         <name>Report</name>
     </types>
     <types>
+        <members>Auction_Campaigns_Campaign_Members_and_Tickets</members>
         <members>Auction_Donated_Items_and_their_Auction_Items</members>
         <members>Auction_Items_and_their_Donated_Items</members>
         <members>Auction_Items_and_their_Purchases</members>

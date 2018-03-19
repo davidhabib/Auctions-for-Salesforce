@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>Campaign.CampaignMembers$Name</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Maximum</aggregateTypes>
+        <field>Campaign.CampaignMembers*CampaignMember$Auction_Ticket_OppId__c.Number_of_Tickets__c</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers$Status</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers*CampaignMember$Paid__c</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers*CampaignMember$Table_Captain__c</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers*CampaignMember$Table_Name_Number__c</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers*CampaignMember$Meal_Preference__c</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers*CampaignMember$Bid_Number__c</field>
+    </columns>
+    <columns>
+        <field>Campaign.CampaignMembers*CampaignMember$Note__c</field>
+    </columns>
+    <description>Auction Tickets, showing Number of Tickets specified on the Ticket Opportunity, and the people assigned to that Ticket (click Show Details). Compare max Number of Tickets with the Number of Records for the Ticket Opportunity to see if they are all filled.</description>
+    <filter>
+        <criteriaItems>
+            <column>Campaign$Auction_Campaign_Type__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Auction Attendees</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Campaign$Name</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Campaign.CampaignMembers*CampaignMember$Auction_Ticket_OppId__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Auction Tickets Purchased vs Filled</name>
+    <params>
+        <name>scopeid</name>
+        <value></value>
+    </params>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>Auction_Campaigns_Campaign_Members_and_Tickets__c</reportType>
+    <scope>orgActive</scope>
+    <showDetails>false</showDetails>
+    <timeFrameFilter>
+        <dateColumn>Campaign$CreatedDate</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+</Report>
