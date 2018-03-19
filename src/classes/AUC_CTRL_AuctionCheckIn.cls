@@ -1,7 +1,9 @@
 // Written by David Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
-global with sharing class AUC_CTRL_AuctionCheckIn { 
+global with sharing class AUC_CTRL_AuctionCheckIn {
+
+	public class CheckInException extends Exception {}
 
 	// constructor for the class 
 	public AUC_CTRL_AuctionCheckIn() {
@@ -551,6 +553,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public PageReference SaveAttendeeInfo() {
 		         
         strSaveResults = 'Starting Save...';
+
         try {
 			// bail out if we aren't set up.
 			if (attendeeEdit == null || attendeeEdit.con == null) {
@@ -574,7 +577,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
       		
       		
       		// 2. create/update optional Ticket
-      		if (fAddTicketPurchase) {        	
+      		if (fAddTicketPurchase) {
+
+				// add validation for required fields, since we couldn't do it on the page
+				validateTicketOpp(oppTicketAttendee);
 
 	        	if (oppTicketAttendee.Id == null) {
 
@@ -651,9 +657,22 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			        
         } catch (Exception e) {
            	strSaveResults = 'Error encountered while trying to save.  ';
-            ApexPages.addMessages(e);            
+            ApexPages.addMessages(e);
             return null;
         }               
+	}
+
+	// validate that required fields on the ticket are specified,
+	// since we can't use the visualforce required tag, since the
+	// section is not always visible.
+	private void validateTicketOpp(Opportunity opp) {
+
+		Schema.FieldSet fs = Schema.SObjectType.Opportunity.FieldSets.AuctionCheckInFS;
+		for (Schema.FieldSetMember f : fs.getFields()) {
+			if (opp.get(f.fieldPath) == null && (f.dbRequired || f.required)) {
+				throw new CheckInException(f.label + ' must be specified on the new ticket purchase.');
+			}
+		}
 	}
 
 	// public method for the Next Guest button.  
