@@ -437,8 +437,8 @@
 </script>
  	
 
-   	<apex:sectionHeader title="Auction Check In" />
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
+		<apex:sectionHeader title="Auction Check In" />
         <apex:pageBlock mode="edit" title="Search by Guest or Captain" >
 	       		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
 				<div class="cssLoading" id="divLoading" >
@@ -517,7 +517,7 @@
 		            	<apex:pageBlockSectionItem >
 		            		<apex:outputLabel value="Add Ticket Purchase" />
 		            		<apex:inputCheckbox value="{!fAddTicketPurchase}" > 
-					    		<apex:actionSupport event="onchange" status="statusLoad" 
+					    		<apex:actionSupport event="onchange" status="statusLoad"
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelTicketPurchase,panelStatus,panelCreditCard" 
 					    			oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />
 					    	</apex:inputCheckbox>			    			

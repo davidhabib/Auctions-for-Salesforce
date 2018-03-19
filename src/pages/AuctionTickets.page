@@ -4,7 +4,9 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionTickets" title="Auction Tickets" tabStyle="Auction_Tickets__tab" lightningStylesheets="true">
-	<apex:form >
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+
+	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 	   	<apex:sectionHeader title="Auction Tickets" />      
 		<div style="text-align:center;">
 			<apex:commandButton action="{!AuctionCheckIn}" value="Auction Check In" immediate="true" />&nbsp;&nbsp;&nbsp;&nbsp;

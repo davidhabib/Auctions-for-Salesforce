@@ -115,6 +115,18 @@
 		white-space: nowrap;
 		margin-left: auto;
 		margin-right: auto;	
-	} 
-    
-</style>
+	}
+
+	/* to get gray section headers in LEX */
+	.slds-scope .bPageTitle {
+		background: rgb(243, 242, 242);
+	}
+
+	@media screen {
+		body, .slds-scope form {
+			background: rgb(243, 242, 242);
+		}
+	}
+
+
+  </style>

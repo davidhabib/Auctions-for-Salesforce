@@ -37,9 +37,9 @@
 			 		
 </style>
  
-   	<apex:sectionHeader title="Auction Tickets" />      
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
-        <apex:pageBlock title="{!IF(opp.Id!=null,'Edit','New') + ' Auction Ticket'}" mode="edit" id="pbMain" >
+		<apex:sectionHeader title="Auction Tickets" />
+		<apex:pageBlock title="{!IF(opp.Id!=null,'Edit','New') + ' Auction Ticket'}" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>
                 <apex:commandButton action="{!SaveAndClose}" value="Save & Close"/>
@@ -79,6 +79,8 @@
                         
             <apex:pageBlockSection title="Ticketing Information" columns="2">
                 <apex:inputField value="{!opp.Name}" id="txtName" required="true" rendered="{!opp.Id != null}" />
+				<apex:pageBlockSectionItem rendered="{!opp.Id != null}" />
+
                 <apex:inputField value="{!contactRole.ContactId}" required="false" />                	       			
             
             	<!-- additional Opportunity fields use a fieldset -->

@@ -257,8 +257,8 @@
  
 	</script>
 
-   	<apex:sectionHeader title="Auction Purchases" />
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
+		<apex:sectionHeader title="Auction Purchases" />
 
 		<apex:outputPanel id="panelPurchases"  >
             <apex:pageMessage summary="{!strSaveResults}" severity="error" strength="2" rendered="{!auctionId==null}" />

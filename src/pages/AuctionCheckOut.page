@@ -330,8 +330,8 @@
 	}
 </script>
  	
-   	<apex:sectionHeader title="Auction Check Out" />
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
+		<apex:sectionHeader title="Auction Check Out" />
         <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
 	       		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
 				<div class="cssLoading" id="divLoading" >

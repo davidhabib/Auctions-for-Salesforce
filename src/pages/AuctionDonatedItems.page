@@ -4,8 +4,10 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionDonatedItems" title="Auction Donated Items" tabStyle="Auction_Donated_Items__tab" lightningStylesheets="true">
-	<apex:form >
-	   	<apex:sectionHeader title="Auction Donated Items" />      
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+
+	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
+	   	<apex:sectionHeader title="Auction Donated Items" />
 		<div style="text-align:center;">
 			<apex:commandButton action="{!DonatedItemConverter}" value="Donated Item Converter" immediate="true" />
 		</div>

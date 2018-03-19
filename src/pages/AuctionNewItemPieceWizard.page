@@ -3,10 +3,11 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
  -->
 
-<apex:page standardController="Auction_Item_Piece__c" extensions="AUC_CTRL_AuctionNewItemPieceWizard" title="New Auction Item Piece" tabStyle="Auction_Item_Piece__c" lightningStylesheets="true">
-	<apex:sectionHeader title="Item Piece Edit" subtitle="New Item Piece" />	
-	<apex:form >	 
-    	<apex:outputPanel id="panelDebugging" rendered="false">
+<apex:page standardController="Auction_Item_Piece__c" extensions="AUC_CTRL_AuctionNewItemPieceWizard" title="New Auction Item Piece" tabStyle="Auction_Item__c" lightningStylesheets="true">
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
+		<apex:sectionHeader title="Item Piece Edit" subtitle="New Item Piece" />
+		<apex:outputPanel id="panelDebugging" rendered="false">
     		<hr/> 
     		<apex:outputText value="{!'AuctionId: '  + auctionId}" Style="color:red;" /><br/>
     		<apex:outputText value="{!'aip.Auction_Item__c: '  + aip.Auction_Item__c}" Style="color:red;" /><br/>    		
@@ -18,7 +19,7 @@
 		<apex:pageBlock title="New Item Piece" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>
-                <apex:commandButton action="{!SaveAndNew}" value="Save & New"/>
+                <apex:commandButton action="{!SaveAndNew}" value="Save & New" rendered="{!IF($User.UITheme == 'Theme3', 'true', 'false')}"/>
                 <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true"/>
             </apex:pageBlockButtons> 
             <apex:pageBlockSection title="Item Piece Information" columns="1" >
@@ -26,7 +27,7 @@
                     <apex:outputLabel value="Auction Item" for="lbxAuctionItems"/>
                     <apex:outputPanel >
                     	<div class="requiredInput"><div class="requiredBlock"></div>
-				    	<apex:selectList value="{!auctionItemId}" size="1" id="lbxAuctionItems" required="true">
+				    	<apex:selectList value="{!auctionItemId}" size="1" id="lbxAuctionItems" required="true" label="Auction Item">
 				    		<apex:selectOptions value="{!listSOAuctionItems}" />
 				    	</apex:selectList>						
 	                    </div>
@@ -37,7 +38,7 @@
                     <apex:outputLabel value="Donated Item" for="lbxDonatedItems"/>
                     <apex:outputPanel >
                     	<div class="requiredInput"><div class="requiredBlock"></div>
-				    	<apex:selectList value="{!oppDonatedItemId}" size="1" id="lbxDonatedItems" required="true">
+				    	<apex:selectList value="{!oppDonatedItemId}" size="1" id="lbxDonatedItems" required="true" label="Donated Item">
 				    		<apex:selectOptions value="{!listSODonatedItems}" />
 				    	</apex:selectList>
 	                    </div>

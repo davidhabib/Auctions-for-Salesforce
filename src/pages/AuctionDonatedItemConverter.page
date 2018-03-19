@@ -40,8 +40,8 @@
  		}
     </script>
 	
-	<apex:sectionHeader title="Donated Item Converter" />  
 	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
+		<apex:sectionHeader title="Donated Item Converter" />
 		<apex:pageBlock title="Create Auction Items from Available Donated Items" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Convert}" value="Create" rerender="pbMain" status="statusLoading" />
