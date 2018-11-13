@@ -43,7 +43,7 @@ public abstract with sharing class PageControllerBase {
 	}
 	
 	public virtual PageReference EditItem(ID idItem) {
-		return new PageReference('/' + idItem + '/e?retURL=' + ApexPages.currentPage().getURL());
-	}	
+		return new PageReference('/' + idItem + '/e?retURL=' + EncodingUtil.urlEncode(ApexPages.currentPage().getURL(),'UTF-8'));
+	}
 
 }
