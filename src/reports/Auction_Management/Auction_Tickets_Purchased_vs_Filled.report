@@ -60,6 +60,8 @@
     <reportType>Auction_Campaigns_Campaign_Members_and_Tickets__c</reportType>
     <scope>orgActive</scope>
     <showDetails>false</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>Campaign$CreatedDate</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>

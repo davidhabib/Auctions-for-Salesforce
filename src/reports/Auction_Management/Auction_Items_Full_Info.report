@@ -48,6 +48,8 @@
     <reportType>CustomEntity$Auction_Item__c@Auction_Item__c.Auction__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>FK_$Auction__c.Auction_Date__c</dateColumn>
         <interval>INTERVAL_PREVCURY</interval>

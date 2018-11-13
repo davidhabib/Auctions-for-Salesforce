@@ -39,6 +39,8 @@
     <reportType>Auction_Items_and_their_Purchases__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>Auction_Item__c$Auction__c.Auction_Date__c</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>

@@ -3,17 +3,19 @@
     <defaultLandingTab>Auction__c</defaultLandingTab>
     <description>Auction Management application by DJH Consulting</description>
     <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <label>Auctions</label>
     <logo>Auction_Management/Auctions_Logo.gif</logo>
-    <tab>standard-Contact</tab>
-    <tab>About_Auctions</tab>
-    <tab>Auction__c</tab>
-    <tab>Auction_Donated_Items</tab>
-    <tab>Auction_Items</tab>
-    <tab>Auction_Tickets</tab>
-    <tab>Auction_Purchases</tab>
-    <tab>Check_In</tab>
-    <tab>Check_Out</tab>
-    <tab>Auction_Receipts</tab>
-    <tab>standard-report</tab>
+    <tabs>standard-Contact</tabs>
+    <tabs>About_Auctions</tabs>
+    <tabs>Auction__c</tabs>
+    <tabs>Auction_Donated_Items</tabs>
+    <tabs>Auction_Items</tabs>
+    <tabs>Auction_Tickets</tabs>
+    <tabs>Auction_Purchases</tabs>
+    <tabs>Check_In</tabs>
+    <tabs>Check_Out</tabs>
+    <tabs>Auction_Receipts</tabs>
+    <tabs>standard-report</tabs>
 </CustomApplication>

@@ -49,6 +49,8 @@
     <reportType>Campaigns_Opps_and_Contact_Roles__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>Opportunity$CloseDate</dateColumn>
         <interval>INTERVAL_PREVCURY</interval>

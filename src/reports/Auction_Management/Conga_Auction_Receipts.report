@@ -69,6 +69,8 @@
     <reportType>Auctions_Opportunties__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <sortColumn>Opportunity.OpportunityContactRoles$LastName</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>

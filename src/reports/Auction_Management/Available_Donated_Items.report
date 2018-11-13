@@ -71,6 +71,8 @@
     <reportType>OpportunityCampaign</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>CAMPAIGN_STARTDATE</dateColumn>
         <interval>INTERVAL_CUSTOM</interval>

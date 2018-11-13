@@ -74,6 +74,8 @@
     <reportType>CampaignWithCampaignMembers</reportType>
     <scope>orgActive</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <sortColumn>LAST_NAME</sortColumn>
     <sortOrder>Asc</sortOrder>
 </Report>

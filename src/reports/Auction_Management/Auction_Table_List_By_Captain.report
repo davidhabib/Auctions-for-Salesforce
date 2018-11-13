@@ -54,4 +54,6 @@
     <reportType>CampaignWithCampaignMembers</reportType>
     <scope>orgActive</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
 </Report>

@@ -53,6 +53,8 @@
     <reportType>Auction_Donated_Items_and_their_Auction_Items__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <sortColumn>Opportunity$Auction_Donated_Item_Name__c</sortColumn>
     <sortOrder>Asc</sortOrder>
     <timeFrameFilter>

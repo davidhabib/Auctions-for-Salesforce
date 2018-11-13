@@ -62,6 +62,8 @@
     <reportType>Auctions_Opportunties__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <timeFrameFilter>
         <dateColumn>Opportunity$Campaign.Auction__c.Auction_Date__c</dateColumn>
         <interval>INTERVAL_PREVCURY</interval>
