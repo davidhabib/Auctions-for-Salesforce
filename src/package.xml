@@ -6,6 +6,7 @@
     <namespacePrefix>GW_Auctions</namespacePrefix>
     <types>
         <members>AUC_AuctionConstants</members>
+        <members>AUC_AuctionConstants_TEST</members>
         <members>AUC_AuctionMaintenance</members>
         <members>AUC_CTRL_AuctionAutoBidNumbers</members>
         <members>AUC_CTRL_AuctionCheckIn</members>
