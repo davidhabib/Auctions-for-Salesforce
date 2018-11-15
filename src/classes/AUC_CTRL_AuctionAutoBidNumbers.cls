@@ -4,7 +4,7 @@
 public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	
 	// our batch size
-	static integer cAttendeesInBatch = 1000;
+	static Integer cAttendeesInBatch = 1000;
 
 	// constructor
 	public AUC_CTRL_AuctionAutoBidNumbers() {
@@ -13,7 +13,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
 			auctionMaintenance.auctionId = strAuctionId;
 			
-			integer countCM = [select count() from CampaignMember where campaignId=:auctionMaintenance.campaignIdAuctionAttendees and Status<>'RSVP No'];
+			Integer countCM = [SELECT COUNT() FROM CampaignMember WHERE CampaignId=:auctionMaintenance.campaignIdAuctionAttendees AND Status<>'RSVP No'];
 			if (countCM > cAttendeesInBatch) {
 				strAutoBidNumberResult = 'Only displaying the first ' + cAttendeesInBatch + ' attendees, but Assign will update all ' + countCM + ' attendees.';
 			}			
@@ -26,24 +26,24 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
-	public boolean fOneBidNumberPerHousehold { get; set; }
+	public Boolean fOneBidNumberPerHousehold { get; set; }
 	
-	public string strAutoBidNumberResult { get; set; }
+	public String strAutoBidNumberResult { get; set; }
 	
-	public integer iStartingBidNumber { get; set; }
+	public Integer iStartingBidNumber { get; set; }
 	
-	public boolean fHasHouseholds {
+	public Boolean fHasHouseholds {
 		get {
 			return (AUC_AuctionConstants.strContactHouseholdField != null && 
 				AUC_AuctionConstants.strContactHouseholdNameField != null);
 		}
 	}
 	
-	public list<CMBidNumber> listCMBidNumbers {
+	public List<CMBidNumber> listCMBidNumbers {
 		get {
 			if (listCMBidNumbers == null) {
-				listCMBidNumbers = new list<CMBidNumber>();
-				list<CampaignMember> listCM = database.query(strSoqlCMBatch(cAttendeesInBatch, 0));
+				listCMBidNumbers = new List<CMBidNumber>();
+				List<CampaignMember> listCM = Database.query(strSoqlCMBatch(cAttendeesInBatch, 0));
 				for (CampaignMember cm : listCM) {
 					listCMBidNumbers.add(new CMBidNumber(cm));
 				}
@@ -54,16 +54,16 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 		set; 		
 	}
 	
-	// returns the soql string to load up the next batch of CampaignMembers
-	private string strSoqlCMBatch(integer cLimit, integer iOffset) {
-		ID campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-		string strSoql = 'select Id, Bid_Number__c, contact.LastName, contact.firstname';
+	// returns the soql String to load up the next batch of CampaignMembers
+	private String strSoqlCMBatch(Integer cLimit, Integer iOffset) {
+		Id campaignId = auctionMaintenance.campaignIdAuctionAttendees;
+		String strSoql = 'SELECT Id, Bid_Number__c, contact.LastName, contact.firstname';
 		if (fHasHouseholds) {
 			strSoql += ', contact.' + AUC_AuctionConstants.strContactHouseholdField;
 			strSoql += ', contact.' + AUC_AuctionConstants.strContactHouseholdNameField;
 		}
-		strSoql += ' from CampaignMember ';
-		strSoql += ' where campaignId=\'' + campaignId + '\' and contactId<>null and Status<>\'RSVP No\' ';
+		strSoql += ' FROM CampaignMember ';
+		strSoql += ' WHERE campaignId=\'' + campaignId + '\' AND contactId<>null AND Status<>\'RSVP No\' ';
 		strSoql += ' order by contact.LastName, contact.FirstName ';
 		if (cLimit > 0) strSoql += ' limit ' + cLimit;
 		if (iOffset > 0) strSoql += ' offset ' + iOffset;
@@ -73,12 +73,12 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	public PageReference RecalcBidNumbers() {
 		strAutoBidNumberResult = null;
 		
-		integer iBid = iStartingBidNumber;
-		set<ID> setHousehold = new set<ID>();
+		Integer iBid = iStartingBidNumber;
+		Set<Id> setHousehold = new Set<Id>();
 		for (CMBidNumber cmbn : listCMBidNumbers) {
 			if (fOneBidNumberPerHousehold && fHasHouseholds) {
-				Contact con = cmbn.cm.contact;
-				ID idHH = (ID)con.get(AUC_AuctionConstants.strContactHouseholdField);
+				Contact con = cmbn.cm.Contact;
+				Id idHH = (Id)con.get(AUC_AuctionConstants.strContactHouseholdField);
 				if (idHH != null && !setHousehold.add(idHH)) {
 					// household already seen, so don't give them a bid number.
 					cmbn.iNewBidNumber = null;
@@ -93,12 +93,12 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	public PageReference AutoBidNumbersSet() {
 		Savepoint sp = Database.setSavepoint();
 		try {
-			ID campaignId = auctionMaintenance.campaignIdAuctionAttendees;
+			Id campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 			if (campaignId != null) {				
 				
 				// first we have to clear all numbers, so we can safely assign numbers in batches.
-				list<CampaignMember> listCMtoUpdate = new list<CampaignMember>();					
-				for (list<CampaignMember> listCM : [select Id, Bid_Number__c from CampaignMember where campaignId=:campaignId]) {
+				List<CampaignMember> listCMtoUpdate = new List<CampaignMember>();					
+				for (List<CampaignMember> listCM : [SELECT Id, Bid_Number__c FROM CampaignMember WHERE CampaignId=:campaignId]) {
 						
 					for (CampaignMember cm : listCM) {
 						if (cm.Bid_Number__c != null) {
@@ -111,9 +111,9 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				}
 				
 				// copy over new bid numbers
-				integer iBidNumberLast;
+				Integer iBidNumberLast;
 				for (CMBidNumber cmbn : listCMBidNumbers) {
-					cmbn.iOldBidNumber = integer.valueOf(cmbn.cm.Bid_Number__c);
+					cmbn.iOldBidNumber = Integer.valueOf(cmbn.cm.Bid_Number__c);
 					cmbn.cm.Bid_Number__c = (cmbn.iNewBidNumber == 0 ? null : cmbn.iNewBidNumber);
 					listCMtoUpdate.add(cmbn.cm);
 					if (cmbn.iNewBidNumber != null && cmbn.iNewBidNumber <> 0) iBidNumberLast = cmbn.iNewBidNumber;
@@ -121,7 +121,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				update listCMtoUpdate;
 				
 				// now deal with remaining batches
-				integer cUpdated = AutoBidNumbersSetRemainingBatches(iBidNumberLast);
+				Integer cUpdated = AutoBidNumbersSetRemainingBatches(iBidNumberLast);
 
 		        // force refresh of listCMBidNumbers
 		        listCMBidNumbers = null;
@@ -147,16 +147,14 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	}
 
 
-	public integer AutoBidNumbersSetRemainingBatches(integer iBidNumberLast) {
-		list<CampaignMember> listCMtoUpdate = new list<CampaignMember>();	
-		set<ID> setHousehold = new set<ID>();		
-		ID campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-		integer iOffset = cAttendeesInBatch;	
-		integer cUpdated = 0;	
+	public Integer AutoBidNumbersSetRemainingBatches(Integer iBidNumberLast) {
+		List<CampaignMember> listCMtoUpdate = new List<CampaignMember>();	
+		Set<Id> setHousehold = new Set<Id>();
+		Integer cUpdated = 0;
 		
 		// in batches assign the new numbers.	
-		integer cCM = 0;							
-		for (list<CampaignMember> listCM : database.query(strSoqlCMBatch(0, 0))) {
+		Integer cCM = 0;							
+		for (List<CampaignMember> listCM : Database.query(strSoqlCMBatch(0, 0))) {
 			
 			for (CampaignMember cm : listCM) {
 				
@@ -164,8 +162,8 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				// cache their hhID's if needed.
 				if (++cCM < cAttendeesInBatch) {
 					if (fOneBidNumberPerHousehold && fHasHouseholds)  {
-						Contact con = cm.contact;
-						ID idHH = (ID)con.get(AUC_AuctionConstants.strContactHouseholdField);
+						Contact con = cm.Contact;
+						Id idHH = (Id)con.get(AUC_AuctionConstants.strContactHouseholdField);
 						if (idHH != null) {
 							setHousehold.add(idHH);
 						}					
@@ -175,16 +173,16 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 				
 				// remaining batches we always update
 				if (fOneBidNumberPerHousehold && fHasHouseholds)  {
-					Contact con = cm.contact;
-					ID idHH = (ID)con.get(AUC_AuctionConstants.strContactHouseholdField);
+					Contact con = cm.Contact;
+					Id idHH = (Id)con.get(AUC_AuctionConstants.strContactHouseholdField);
 					if (idHH != null && !setHousehold.add(idHH)) {
 						// household already seen, so don't give them a bid number.
 						cm.Bid_Number__c = null;
 					} else {
-						cm.Bid_Number__c = ++ibidNumberLast;					
+						cm.Bid_Number__c = ++iBidNumberLast;
 					}													
 				} else {
-					cm.Bid_Number__c = ++ibidNumberLast;
+					cm.Bid_Number__c = ++iBidNumberLast;
 				}
 				listCMtoUpdate.add(cm);
 			}
@@ -205,92 +203,22 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	public class CMBidNumber {
 		
 		public CampaignMember cm { get; set; }
-		public integer iNewBidNumber { get; set; }
-		public integer iOldBidNumber { get; set; }
-		public string strHousehold { get; set; }
+		public Integer iNewBidNumber { get; set; }
+		public Integer iOldBidNumber { get; set; }
+		public String strHousehold { get; set; }
 		
 		public CMBidNumber(CampaignMember cmT) {
 			cm = cmT;
 			
 			if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
-				list<string> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
+				List<String> listStr = AUC_AuctionConstants.strContactHouseholdNameField.split('\\.', 0);
 				if (listStr.size() > 1) {
-					Contact con = cm.contact;
-					Sobject hh = con.getSobject(listStr[0]);
-					if (hh != null) strHousehold = (string)hh.get(listStr[1]);
+					Contact con = cm.Contact;
+					SObject hh = con.getSObject(listStr[0]);
+					if (hh != null) strHousehold = (String)hh.get(listStr[1]);
 				}
 			}
 			
 		}
-	}
-	
-	//==================== TEST METHOD(s) ======================================
-	@isTest(SeeAllData=true)		
-	static  void CodeCoverageTests() {
-		
-		// temporarily set household custom setting to hit more code coverage
-        delete [select id from AuctionSettings__c];		
-		AuctionSettings__c settings = new AuctionSettings__c();
-		settings.Contact_Household_Field__c = 'AccountId';
-		settings.Contact_Household_Name_Field__c = 'Account.Name';
-		settings.Allow_Duplicate_Bid_Numbers__c = false;
-		settings.Name = 'test settings';
-		insert settings;
-		system.AssertEquals('AccountId', AUC_AuctionConstants.strContactHouseholdField);
-
-    	// create needed data
-    	Account acc = new Account(Name='My Test Account for Contacts');
-    	insert acc;
-    	
-    	Integer cContact = 10;
-    	list<Contact> listContact = new list<Contact>();
-    	for (Integer i = 0; i < cContact; i++) {
-    		listContact.add(new Contact(Firstname='Person:' + i, Lastname='Test', AccountId=acc.Id));
-    	}
-		insert listContact;
-		    	
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today()
-		);  
-		insert auction;  	
-    	
-    	AUC_AuctionMaintenance am = new AUC_AuctionMaintenance();
-    	am.auctionId = auction.Id;
-    	ID campaignId = am.campaignIdAuctionAttendees;
-    	
-    	list<CampaignMember> listCM = new list<CampaignMember>();
-    	for (Integer i = 0; i < cContact; i++) {
-    		listCM.add(new CampaignMember(campaignId = campaignId, contactId = listContact[i].Id));
-    	}
-		insert listCM;
-		
-		// now test our  page
-		PageReference p = new PageReference('Page.AuctionAutoBidNumbers');
-		p.getParameters().put('auctionId', auction.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		AUC_CTRL_AuctionAutoBidNumbers ctrl = new AUC_CTRL_AuctionAutoBidNumbers();
-		System.Assert(ctrl.listCMBidNumbers != null);
-		ctrl.fOneBidNumberPerHousehold = true;
-		ctrl.AutoBidNumbersSet();		
-		System.AssertEquals('Successfully set the Bid Number for ' + cContact + ' auction attendees.', ctrl.strAutoBidNumberResult);
-		
-		// test duplicate detection failure handling
-		ctrl.listCMBidNumbers[0].iNewBidNumber = 123;
-		ctrl.listCMBidNumbers[2].iNewBidNumber = 123;
-		ctrl.AutoBidNumbersSet();	
-		System.Assert(ctrl.strAutoBidNumberResult.contains('Errors occurred'));
-				
-		// also test no param scenario.
-		p = new PageReference('Page.AuctionAutoBidNumbers');
-		Test.setCurrentPageReference(p);
-		ctrl = new AUC_CTRL_AuctionAutoBidNumbers();
-		System.AssertEquals('There was no AuctionId passed as a parameter to the page.', ctrl.strAutoBidNumberResult);		
-		ctrl.AutoBidNumbersSet();		
-		System.AssertEquals('The specified Auction was invalid or did not have an Auction Attendees Campaign.  No bid numbers were changed.', ctrl.strAutoBidNumberResult);	
-		
-		System.Assert(ctrl.Cancel() != null);	
 	}
 }

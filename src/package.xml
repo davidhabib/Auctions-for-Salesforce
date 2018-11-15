@@ -10,6 +10,7 @@
         <members>AUC_AuctionMaintenance</members>
         <members>AUC_AuctionMaintenance_TEST</members>
         <members>AUC_CTRL_AuctionAutoBidNumbers</members>
+        <members>AUC_CTRL_AuctionAutoBidNumbers_TEST</members>
         <members>AUC_CTRL_AuctionCheckIn</members>
         <members>AUC_CTRL_AuctionCheckOut</members>
         <members>AUC_CTRL_AuctionDonatedItemConverter</members>
