@@ -30,23 +30,23 @@ public with sharing class AUC_AuctionMaintenance {
 	public static Id recordtypeIdAuctionGift { 
 		get {
 			if (recordtypeIdAuctionGift <> null) return recordtypeIdAuctionGift;
-			list<RecordType> listRT = [SELECT Id FROM RecordType WHERE DeveloperName=:AUC_AuctionConstants.RECORDTYPE_OPP_AuctionGift];
-			if (listRT.size() == 0) return recordtypeIdAuctionPurchasedItem;
-			recordtypeIdAuctionGift = listRT[0].Id;
+			List<RecordType> ListRT = [SELECT Id FROM RecordType WHERE DeveloperName=:AUC_AuctionConstants.RECORDTYPE_OPP_AuctionGift];
+			if (ListRT.size() == 0) return recordtypeIdAuctionPurchasedItem;
+			recordtypeIdAuctionGift = ListRT[0].Id;
 			return recordtypeIdAuctionGift;
 		}		
 		set;
 	}	
 	
-	// the list of Auctions to put in the Auction dropdown
-	public list<SelectOption> listSOAuctions {
+	// the List of Auctions to put in the Auction dropdown
+	public List<SelectOption> ListSOAuctions {
 		get {
-			list<SelectOption> listSO = new list<SelectOption>();
-			listSO.add(new SelectOption('', ''));
-			for (Auction__c a : [select name, id from Auction__c order by Auction_Date__c desc limit 500]) {
-				listSO.add(new SelectOption(a.id, a.name));
+			List<SelectOption> ListSO = new List<SelectOption>();
+			ListSO.add(new SelectOption('', ''));
+			for (Auction__c a : [SELECT Name, Id FROM Auction__c ORDER BY Auction_Date__c DESC LIMIT 500]) {
+				ListSO.add(new SelectOption(a.Id, a.Name));
 			}		
-			return listSO;
+			return ListSO;
 		}
 	}
 	
@@ -54,13 +54,13 @@ public with sharing class AUC_AuctionMaintenance {
 	public Id campaignIdAuctionAttendees {
 		get {
 			if (campaignIdAuctionAttendees == null && auctionId != null) {
-				list<Campaign> listCampaign= [select Id from Campaign 
-					where (Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionAttendees or 
+				List<Campaign> ListCampaign= [SELECT Id FROM Campaign 
+					WHERE (Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionAttendees OR 
 							Type=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionAttendees) 
-						and Auction__c != null 
-						and Auction__c= :auctionId limit 1];
-				if (listCampaign.size() > 0) {
-					campaignIdAuctionAttendees = listCampaign[0].Id;
+						AND Auction__c != NULL 
+						AND Auction__c= :auctionId LIMIT 1];
+				if (ListCampaign.size() > 0) {
+					campaignIdAuctionAttendees = ListCampaign[0].Id;
 				} else {
 					throw (new MyException('The auction is missing its required Auction Attendees campaign.'));
 				}
@@ -75,13 +75,13 @@ public with sharing class AUC_AuctionMaintenance {
 	public Id campaignIdAuctionDonors {
 		get {
 			if (campaignIdAuctionDonors == null && auctionId != null) {
-				list<Campaign> listCampaign= [select Id from Campaign 
-					where (Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionItemDonors or
+				List<Campaign> ListCampaign= [SELECT Id FROM Campaign 
+					WHERE (Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionItemDonors OR
 							Type=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionItemDonors)
-						and Auction__c != null 
-						and Auction__c= :auctionId limit 1];
-				if (listCampaign.size() > 0) {
-					campaignIdAuctionDonors = listCampaign[0].Id;
+						AND Auction__c != NULL 
+						AND Auction__c= :auctionId LIMIT 1];
+				if (ListCampaign.size() > 0) {
+					campaignIdAuctionDonors = ListCampaign[0].Id;
 				} else {
 					throw (new MyException('The auction is missing its required Auction Item Donors campaign.'));
 				}
@@ -96,13 +96,13 @@ public with sharing class AUC_AuctionMaintenance {
 	public Id campaignIdAuctionTickets {
 		get {
 			if (campaignIdAuctionTickets == null && auctionId != null) {
-				list<Campaign> listCampaign= [select Id from Campaign 
-					where (Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets or
+				List<Campaign> ListCampaign= [SELECT Id FROM Campaign 
+					WHERE (Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets OR
 							Type=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets)
-						and Auction__c != null 
-						and Auction__c= :auctionId limit 1];
-				if (listCampaign.size() > 0) {
-					campaignIdAuctionTickets = listCampaign[0].Id;
+						AND Auction__c != NULL 
+						AND Auction__c= :auctionId LIMIT 1];
+				if (ListCampaign.size() > 0) {
+					campaignIdAuctionTickets = ListCampaign[0].Id;
 				} else {
 					throw (new MyException('The auction is missing its required Auction Tickets campaign.'));
 				}
@@ -115,16 +115,16 @@ public with sharing class AUC_AuctionMaintenance {
 	
 	// helper function to return a name for Ticket opps.
 	// used by both teh NewTicketWizard, and CheckIn.
-	public string StrOppTicketName(Id accountId, Id contactId) {
-		string strTicketOwner;
+	public String StrOppTicketName(Id accountId, Id contactId) {
+		String strTicketOwner;
 	    if (contactId != null) {
-			Contact contact = [select Name, AccountId from Contact where Id=:contactId];
+			Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:contactId];
 			strTicketOwner = contact.Name;
 	   	} else if (accountId != null) {
-	        Account acc = [select Id, Name from Account where Id = :accountId];
+	        Account acc = [SELECT Id, Name FROM Account WHERE Id = :accountId];
 			strTicketOwner = acc.Name; 
 	    }
-		string strAuction = AUC_AuctionMaintenance.NameOfAuctionId(auctionId);
+		String strAuction = AUC_AuctionMaintenance.NameOfAuctionId(auctionId);
 		// remove trailing word Auction if it's there, so we don't get "auction" auction ticket.
 		if (strAuction != null && strAuction.endsWith(' Auction')) {
 			strAuction = strAuction.substring(0, strAuction.length() - 8);
@@ -136,37 +136,37 @@ public with sharing class AUC_AuctionMaintenance {
 	
 	public static Integer YearOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
-		Auction__c auc = [select Auction_Date__c from Auction__c where Id=:auctionId];		
-		return (auc.Auction_Date__c == null ? system.today().year() : auc.Auction_Date__c.year());
+		Auction__c auc = [SELECT Auction_Date__c FROM Auction__c WHERE Id=:auctionId];		
+		return (auc.Auction_Date__c == null ? System.today().year() : auc.Auction_Date__c.year());
 	}
 	
 	public static Date DateOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
-		Auction__c auc = [select Auction_Date__c from Auction__c where Id=:auctionId];
-		return (auc.Auction_Date__c == null ? system.today() : auc.Auction_Date__c);
+		Auction__c auc = [SELECT Auction_Date__c FROM Auction__c WHERE Id=:auctionId];
+		return (auc.Auction_Date__c == null ? System.today() : auc.Auction_Date__c);
 	}
 		
 	public static String NameOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
-		Auction__c auc = [select Name from Auction__c where Id=:auctionId];
+		Auction__c auc = [SELECT Name FROM Auction__c WHERE Id=:auctionId];
 		return auc.Name;
 	}
 	
 	public static Decimal TicketNonDeductibleAmountOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
-		Auction__c auc = [select Ticket_Non_Deductible_Amount__c from Auction__c where Id=:auctionId];
+		Auction__c auc = [SELECT Ticket_Non_Deductible_Amount__c FROM Auction__c WHERE Id=:auctionId];
 		return (auc.Ticket_Non_Deductible_Amount__c == null) ? 0 : 	auc.Ticket_Non_Deductible_Amount__c;	
 	}
 		
-	// public utility to escape a string.
-	public static string StrEscape(string str) {
+	// public utility to escape a String.
+	public static String StrEscape(String str) {
 		if (str == null) return null;
-		return string.escapeSingleQuotes(str);
+		return String.escapeSingleQuotes(str);
 	}
 	
-	// utility to return a list of strings from a field set.
-	public static list<string> listStrFromFieldSet(string strObject, string strFS) {
-		list<string> listStrFields = new list<string>();
+	// utility to return a List of Strings from a field set.
+	public static List<String> ListStrFromFieldSet(String strObject, String strFS) {
+		List<String> ListStrFields = new List<String>();
 		Schema.SObjectType targetType = Schema.getGlobalDescribe().get(strObject);
 		Schema.DescribeSObjectResult d = targetType.getDescribe(); 
 		Schema.FieldSet fs = d.fieldSets.getMap().get(strFS);
@@ -174,35 +174,39 @@ public with sharing class AUC_AuctionMaintenance {
 		// to protect against the fieldset not existing.
 		// found a case of this where the user had their own object called Auction_Item__c
 		// which didn't have our field set and we would dereference fs and hit an error.
-		if (fs == null)
-			return listStrFields;		
+		if (fs == null) {
+			return ListStrFields;
+		}
 
 		for(Schema.FieldSetMember f : fs.getFields()) {
 			if (f.getFieldPath().contains('.')) {
 				throw (new MyException('Auctions does not support related field \'' + f.getFieldPath() + 
 					'\' in field set \'' + strFS + '\'.  You can only include fields directly on object \'' + strObject + '\'.'));
 			}
-            listStrFields.add(f.getFieldPath());
+            ListStrFields.add(f.getFieldPath());
         }
-		return listStrFields;
+		return ListStrFields;
 	}
 	
-	// utility to return a comma separated string of field names from a field set
-	public static string strFieldNamesFromFieldSet(string strObject, string strFS) {
-		string strFields = '';
-		for (string str : listStrFromFieldSet(strObject, strFS)) {
+	// utility to return a comma separated String of field names from a field set
+	public static String strFieldNamesFromFieldSet(String strObject, String strFS) {
+		String strFields = '';
+		for (String str : ListStrFromFieldSet(strObject, strFS)) {
 			strFields += str + ',';
-		}  		
+		}
+		if (strFields == '') {
+			return '';
+		}
 		return strFields.substring(0, strFields.length()-1);		
 	}
 		
 	// utility to copy all the field values from one SObject to another
-	public static void CloneObject (SObject sobjSrc, SObject sobjDst, list<string> listStrFields) {
-        for (string strF : listStrFields) {
+	public static void CloneObject (SObject sobjSrc, SObject sobjDst, List<String> ListStrFields) {
+        for (String strF : ListStrFields) {
          	if (sobjSrc.get(strF) != null) { 
           		try {
            			sobjDst.put(strF, sobjSrc.get(strF));
-           		} catch(exception ex) { 
+           		} catch(Exception ex) { 
 					// exceptions will be thrown on readonly fields
 					// so we want to continue, not fail.            			
            		}
@@ -210,22 +214,22 @@ public with sharing class AUC_AuctionMaintenance {
         }
 	}
 	
-	// utility to check if using NPSP Payments, and update payment info for the list of Opps.
-	public static void UpdateNPSPPayments(list<Opportunity> listOppToUpdate, string strPaymentMethod, string strCheckNumber) {
+	// utility to check if using NPSP Payments, and update payment info for the List of Opps.
+	public static void UpdateNPSPPayments(List<Opportunity> ListOppToUpdate, String strPaymentMethod, String strCheckNumber) {
 		if (AUC_AuctionConstants.IsNPSPInstalled) {
 			try {
-				list<SObject> listPayments = new list<SObject>();
-				string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
-					' from npe01__OppPayment__c where npe01__Opportunity__c in :listOppToUpdate ';
-				listPayments = database.query(strSoql);
-				if (listPayments.size() > 0) {
-					for (SObject payment : listPayments) {
+				List<SObject> ListPayments = new List<SObject>();
+				String strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+					' from npe01__OppPayment__c where npe01__Opportunity__c in :ListOppToUpdate ';
+				ListPayments = Database.query(strSoql);
+				if (ListPayments.size() > 0) {
+					for (SObject payment : ListPayments) {
 						payment.put('npe01__Payment_Method__c', strPaymentMethod);
 						if (strPaymentMethod == 'Check') {
 							payment.put('npe01__Check_Reference_Number__c', strCheckNumber);
 						}
 					}
-					update listPayments;
+					update ListPayments;
 				}
 			} catch (Exception e) {
 				// no cleanup needed.
@@ -234,19 +238,20 @@ public with sharing class AUC_AuctionMaintenance {
 	}
 	
 	// returns the Payment Method or Check Number for the specified OppId, if that Opp has NPSP Payments.
-	private static list<SObject> listPayments;
-	public static string strPaymentMethodOrCheckFromNPSPPayments(ID oppId, boolean isCheck) {
+	private static List<SObject> ListPayments;
+	public static String strPaymentMethodOrCheckFromNPSPPayments(Id oppId, Boolean isCheck) {
 		if (AUC_AuctionConstants.IsNPSPInstalled) {
-			if (listPayments == null || listPayments.size() == 0 || listPayments[0].get('npe01__Opportunity__c') != oppId) {
-				string strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c, npe01__Opportunity__c  ' +
+			if (ListPayments == null || ListPayments.size() == 0 || ListPayments[0].get('npe01__Opportunity__c') != oppId) {
+				String strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c, npe01__Opportunity__c  ' +
 					' from npe01__OppPayment__c where npe01__Opportunity__c = :oppId ';
-				listPayments = database.query(strSoql);
+				ListPayments = Database.query(strSoql);
 			}
-			if (listPayments.size() > 0) {
-				for (SObject payment : listPayments) {
-					string strVal = string.valueOf(payment.get(isCheck ? 'npe01__Check_Reference_Number__c' : 'npe01__Payment_Method__c'));
-					if (strVal != null)
+			if (ListPayments.size() > 0) {
+				for (SObject payment : ListPayments) {
+					String strVal = String.valueOf(payment.get(isCheck ? 'npe01__Check_Reference_Number__c' : 'npe01__Payment_Method__c'));
+					if (strVal != null) {
 						return strVal;
+					}
 				}
 			}
 		}
@@ -260,17 +265,18 @@ public with sharing class AUC_AuctionMaintenance {
 	// note that even though this returns true if it set the field, i found that this
 	// wasn't enough in NPSP 2.0, and so recommend the Auctions' code still look for
 	// the OCR's after the opp insert.
-	public static boolean didUpdateOppWithNPSPOCRData(Opportunity opp, Id contactId) {
+	public static Boolean didUpdateOppWithNPSPOCRData(Opportunity opp, Id contactId) {
 		try {
-			if (!AUC_AuctionConstants.IsNPSPInstalled)
+			if (!AUC_AuctionConstants.IsNPSPInstalled) {
 				return false;
+			}
 			if (AUC_AuctionConstants.isNPSPHouseholdAccountModel) {	// cheap way to detect 3.0
 				opp.put('npsp__Primary_Contact__c', contactId);
 			} else {
 				opp.put('npe01__Contact_Id_for_Role__c', contactId); // assume npsp 2.0 field (though didn't seem to work!)
 			}
 			return true;
-		} catch (exception ex) {
+		} catch (Exception ex) {
 			return false;
 		}		
 	}
@@ -283,37 +289,37 @@ public with sharing class AUC_AuctionMaintenance {
 	}
 
 	public static void saveOppContactRoles(List<OpportunityContactRole> ListOCR) {
-		if (listOCR.size() > 0) {
-			List<OpportunityContactRole> listOCRUpsert = new List<OpportunityContactRole>();
+		if (ListOCR.size() > 0) {
+			List<OpportunityContactRole> ListOCRUpsert = new List<OpportunityContactRole>();
 
 			Set<Id> setOppId = new Set<Id>();
-			for (OpportunityContactRole ocr : listOCR) {
+			for (OpportunityContactRole ocr : ListOCR) {
 				setOppId.add(ocr.OpportunityId);
 			}
-			List<OpportunityContactRole> listOCRExisting = [SELECT Id, Role, ContactId, OpportunityId
-				FROM OpportunityContactRole WHERE IsPrimary = true AND OpportunityId in :setOppId];
+			List<OpportunityContactRole> ListOCRExisting = [SELECT Id, Role, ContactId, OpportunityId
+				FROM OpportunityContactRole WHERE IsPrimary = TRUE AND OpportunityId IN :setOppId];
 
 			// put all our OCR's on a map key'ed by OppId|ContactId
 			Map<String, OpportunityContactRole> mapKeyToOCR = new Map<String, OpportunityContactRole>();
-			for (OpportunityContactRole ocr : listOCRExisting) {
+			for (OpportunityContactRole ocr : ListOCRExisting) {
 				mapKeyToOCR.put(ocr.OpportunityId + '|' + ocr.ContactId, ocr);
 			}
 
 			// now fixup the Roles in the ocr's
-			for (integer i = 0; i < listOCR.size(); i++) {
-				OpportunityContactRole ocr = listOCR[i];
+			for (Integer i = 0; i < ListOCR.size(); i++) {
+				OpportunityContactRole ocr = ListOCR[i];
 				OpportunityContactRole ocrExisting = mapKeyToOCR.get(ocr.OpportunityId + '|' + ocr.ContactId);
 				if (ocrExisting != null) {
 					if (ocrExisting.Role != ocr.Role) {
 						ocrExisting.Role = ocr.Role;
-						listOCRUpsert.add(ocrExisting);
+						ListOCRUpsert.add(ocrExisting);
 					}
 				} else {
-					listOCRUpsert.add(ocr);
+					ListOCRUpsert.add(ocr);
 				}
 			}
 
-			upsert listOCRUpsert;
+			upsert ListOCRUpsert;
 		}
 	}
 
@@ -325,113 +331,4 @@ public with sharing class AUC_AuctionMaintenance {
 		opp.ForecastCategoryName = AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName;
 	}
 		
-	//==================== TEST METHOD(s) ======================================
-	static testmethod void CodeCoverageTests() {
-    	// create needed data
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today(),
-			Ticket_Non_Deductible_Amount__c = 25
-		);  
-		insert auction;  	
-    	   	
-		AUC_AuctionMaintenance am = new AUC_AuctionMaintenance();
-		am.AuctionId = auction.Id;
-		
-		System.Assert(AUC_AuctionMaintenance.recordtypeIdAuctionCampaign != null);
-		System.Assert(AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem != null);
-		System.Assert(AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem != null);
-		System.Assert(AUC_AuctionMaintenance.recordtypeIdAuctionTicket != null);
-		System.Assert(AUC_AuctionMaintenance.recordtypeIdAuctionGift != null);
-		System.AssertEquals(system.today().year(), AUC_AuctionMaintenance.YearOfAuctionId(auction.Id));
-		System.AssertEquals(system.today(), AUC_AuctionMaintenance.DateOfAuctionId(auction.Id));
-		System.AssertEquals('Test Auction', AUC_AuctionMaintenance.NameOfAuctionId(auction.Id));
-
-
-		list<SelectOption> listSO = am.listSOAuctions;
-		System.Assert(listSO.size() > 1);
-		
-		System.Assert(am.campaignIdAuctionAttendees != null);
-		System.Assert(am.campaignIdAuctionDonors != null);
-		System.Assert(am.campaignIdAuctionTickets != null);	
-		System.AssertEquals(25, AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auction.Id));
-		
-		// test out that if NPSP is installed, we can update the special fields for the Opp's OCR.
-		Opportunity opp = new Opportunity();
-		Contact con = new Contact(lastname='test');
-		insert con;
-		system.assertNotEquals(null, con.Id);
-		system.assertEquals(AUC_AuctionConstants.IsNPSPInstalled, didUpdateOppWithNPSPOCRData(opp, con.Id));
-	}
-
-	static testmethod void testNewContactRoles() {
-		Account acc = new Account(Name='test account');
-		insert acc;
-		Contact con = new Contact(Lastname='test contact');
-		insert con;
-
-		List<Opportunity> listOpp = new List<Opportunity>();
-		List<OpportunityContactRole> listOCR = new List<OpportunityContactRole>();
-		for (integer i = 0; i < 5; i++) {
-			listOpp.add(new Opportunity(Name='test Opp'+i, StageName='Closed Won', CloseDate=System.today()));
-			listOCR.add(new OpportunityContactRole(ContactId=con.Id, isPrimary=true, Role='test Role'));
-		}
-		insert listOpp;
-		for (Integer i = 0; i < listOpp.size(); i++) {
-			listOCR[i].OpportunityId = listOpp[i].Id;
-		}
-
-		test.startTest();
-		AUC_AuctionMaintenance.saveOppContactRoles(listOCR);
-		test.stopTest();
-
-		List<OpportunityContactRole> listOCRSaved = [SELECT Id, ContactId, OpportunityId, IsPrimary, Role
-			FROM OpportunityContactRole ORDER BY Opportunity.Name];
-		system.assertEquals(listOCR.size(), listOCRSaved.size());
-		for (Integer i = 0; i < listOCR.size(); i++) {
-			system.assertEquals(listOCR[i].OpportunityId, listOCRSaved[i].OpportunityId);
-			system.assertEquals(listOCR[i].ContactId, listOCRSaved[i].ContactId);
-			system.assertEquals(listOCR[i].IsPrimary, listOCRSaved[i].IsPrimary);
-			system.assertEquals(listOCR[i].Role, listOCRSaved[i].Role);
-		}
-	}
-
-	static testmethod void testExistingContactRoles() {
-		Account acc = new Account(Name='test account');
-		insert acc;
-		Contact con = new Contact(Lastname='test contact');
-		insert con;
-
-		List<Opportunity> listOpp = new List<Opportunity>();
-		List<OpportunityContactRole> listOCR = new List<OpportunityContactRole>();
-		for (integer i = 0; i < 5; i++) {
-			listOpp.add(new Opportunity(Name='test Opp'+i, StageName='Closed Won', CloseDate=System.today()));
-			listOCR.add(new OpportunityContactRole(ContactId=con.Id, isPrimary=true, Role='test Role'));
-		}
-		insert listOpp;
-		for (Integer i = 0; i < listOpp.size(); i++) {
-			listOCR[i].OpportunityId = listOpp[i].Id;
-		}
-		insert listOCR;
-
-		// now change our Roles and use our method to update them.
-		for (Integer i = 0; i < listOCR.size(); i++) {
-			listOCR[i].Role = 'new test Role';
-		}
-
-		test.startTest();
-		AUC_AuctionMaintenance.saveOppContactRoles(listOCR);
-		test.stopTest();
-
-		List<OpportunityContactRole> listOCRSaved = [SELECT Id, ContactId, OpportunityId, IsPrimary, Role
-		FROM OpportunityContactRole ORDER BY Opportunity.Name];
-		system.assertEquals(listOCR.size(), listOCRSaved.size());
-		for (Integer i = 0; i < listOCR.size(); i++) {
-			system.assertEquals(listOCR[i].OpportunityId, listOCRSaved[i].OpportunityId);
-			system.assertEquals(listOCR[i].ContactId, listOCRSaved[i].ContactId);
-			system.assertEquals(listOCR[i].IsPrimary, listOCRSaved[i].IsPrimary);
-			system.assertEquals(listOCR[i].Role, listOCRSaved[i].Role);
-			system.assertEquals('new test Role', listOCRSaved[i].Role);
-		}
-	}
 }
