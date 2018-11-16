@@ -1,4 +1,4 @@
-// Written by David Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
+// Written by DavId Habib, copyright (c) 2009-2013 DJH Consulting, djhconsulting.com 
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
 global with sharing class AUC_CTRL_AuctionCheckIn {
@@ -9,10 +9,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public AUC_CTRL_AuctionCheckIn() {
 
 		// force IE into Standards Mode
-		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
+		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 		 		
-		// get the current auction we were invoked from, and find & set the appropriate campaign.
-		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
+		// get the current auction we were invoked FROM, and find & set the appropriate campaign.
+		// NOTE: we declared auctionId as a String to avoId getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		
@@ -34,16 +34,16 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		}
 	}
 
-	// private status string for reporting the results of saving.
-    private String strSaveResults { get; set; } 
+	// private status String for reporting the results of saving.
+    @TestVisible private String strSaveResults { get; set; }
 
-	// status string for reporting helpful instructions and the results of saving.
-	public string strStatus {
+	// status String for reporting helpful instructions and the results of saving.
+	public String strStatus {
 		
 		get {
-			boolean fAttendee = contactIdAttendee != null && contactIdAttendee != '';
-			boolean fCaptain = idCaptain != null && idCaptain != '';
-			boolean fSearchAttendee = searchAttendee != null && searchAttendee != '';
+			Boolean fAttendee = contactIdAttendee != null && contactIdAttendee != '';
+			Boolean fCaptain = IdCaptain != null && IdCaptain != '';
+			Boolean fSearchAttendee = searchAttendee != null && searchAttendee != '';
 			
 			if (strSaveResults != null) {
 				strStatus = strSaveResults;
@@ -52,28 +52,26 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			} else if (!fAttendee && fSearchAttendee) {
 				strStatus = 'There is no contact in the database with that name.  Enter a new contact in the New Contact section.';
 			} else if (fAttendee && !fCaptain) {
-				strStatus = null;
 				strStatus = 'Please enter a table captain.  Tables hosted by organizations are at the end of the list.';
 			} else if (!fAttendee && fCaptain) {
-				strStatus = 'Select one of the guests from the Guest list below or enter a new contact to add to this Table Captain.';
+				strStatus = 'Select one of the guests FROM the Guest list below or enter a new contact to add to this Table Captain.';
 			} else if (fAttendee && fCaptain) {
-				strStatus = null;
-				strStatus = 'Update the guest\'s information and click <b>Save & Check In Contact</b>.<br/>Save their credit card by clicking <b>Save Credit Card</b>.' + 
+				strStatus = 'Update the guest\'s information and click <b>Save & Check In Contact</b>.<br/>Save their credit card by clicking <b>Save Credit Card</b>.' +
 					'<br/>If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.' + 
-					'<br/><br/>It is <b>recommended</b> that only one person per household provide credit card information and have a bid number.';
+					'<br/><br/>It is <b>recommended</b> that only one person per household provIde credit card information and have a bId number.';
 			}
 			return strStatus;
 		}
 		private set;
 	}
-	
-	private AUC_AuctionMaintenance auctionMaintenance;
+
+	@TestVisible private AUC_AuctionMaintenance auctionMaintenance;
 		
 	// the currently selected Auction
 	public Id auctionId { get; set; } 
 		
 	// the list of Auctions to put in the Auction dropdown
-	public list<SelectOption> listSOAuctions { get; set; }
+	public List<SelectOption> listSOAuctions { get; set; }
 
 	// callback when the user changes the current auction in the dropdown.
 	public PageReference ChangeAuction() {
@@ -85,13 +83,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 		// setting contactId's to null will null out their dependencies.
 		contactIdAttendee = null;
-		idCaptain = null;
+		IdCaptain = null;
 		return null;
 	}  
 
 	// holds the currently selected Attendee contact
-	// has to be a string to allow a null Id ('') to get returned from the page.
-	public string contactIdAttendee { 
+	// has to be a String to allow a null Id ('') to get returned FROM the page.
+	public String contactIdAttendee { 
 		get; 
 		set {
 			// first invalidate anything dependent on a change
@@ -103,15 +101,17 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				fShowPanelCreditCard = false;
 			}
 			contactIdAttendee = value;
-			if (contactIdAttendee == '') contactIdAttendee = null; 
+			if (contactIdAttendee == '') {
+				contactIdAttendee = null;
+			}
 		}		
 	}
 	
 	// holds the currently selected Attendee's name	
-	public string strNameAttendee { 
+	public String strNameAttendee { 
 		get {
 			if (strNameAttendee == null && contactIdAttendee != null) {
-				Contact con = [select Name from Contact where Id = :contactIdAttendee];
+				Contact con = [SELECT Name FROM Contact WHERE Id = :contactIdAttendee];
 				strNameAttendee = con.Name;
 			}
 			return strNameAttendee;
@@ -129,20 +129,20 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 		// see if they already have a captain, and only update the current
 		// captain if we've found a new one.
-		ID id = idCaptainForcontactIdAttendee(contactIdAttendee);
-		if (id != null) idCaptain = id;
+		Id Id = IdCaptainForContactIdAttendee(contactIdAttendee);
+		if (Id != null) IdCaptain = Id;
 		return null;
 	}  
 	
-	// this parameter is used in scenarios where the page
+	// this parameter is used in scenarios WHERE the page
 	// needs us to search for an attendee before it could wait
-	// for the return from its javascript remoting call to get data
-	public string searchAttendee { get; set; }
+	// for the return FROM its javascript remoting call to get data
+	public String searchAttendee { get; set; }
 
 	// callback when the user changes the Attendee contact lookup and submits too quick.
 	public PageReference SearchAttendeeLookup() {
 		if (searchAttendee != null && searchAttendee != '') {
-			list<Contact> listCon = [select Id from Contact where Name = :searchAttendee];
+			List<Contact> listCon = [SELECT Id FROM Contact WHERE Name = :searchAttendee];
 			if (listCon.size() > 0) {
 				contactIdAttendee = listCon[0].Id;
 			} else {
@@ -159,26 +159,26 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 
 	// utility to find the Captain for an Attendee
-	private ID idCaptainForcontactIdAttendee(ID idAttendee) {		
+	@TestVisible private Id IdCaptainForContactIdAttendee(Id IdAttendee) {
 
 		// get the CampaignMember for the attendee
-		list<CampaignMember> listCM = [select contactId, Auction_Ticket_OppId__c, Table_Captain__c from CampaignMember 
-			where contactId = :idAttendee and campaignId = :auctionMaintenance.campaignIdAuctionAttendees ];
+		List<CampaignMember> listCM = [SELECT ContactId, Auction_Ticket_OppId__c, Table_Captain__c FROM CampaignMember 
+			WHERE ContactId = :IdAttendee AND CampaignId = :auctionMaintenance.campaignIdAuctionAttendees ];
 		if (listCM.size() > 0) {
 			if (listCM[0].Table_Captain__c != null) {
 				// if they have a table captain, use it
 				return listCM[0].Table_Captain__c;
 			} else {
 				// otherwise return the ticket purchaser
-				list<OpportunityContactRole> listOCR = [select contactId from OpportunityContactRole 
-						where IsPrimary=true and opportunityId = :listCM[0].Auction_Ticket_OppId__c];
+				List<OpportunityContactRole> listOCR = [SELECT ContactId FROM OpportunityContactRole 
+						WHERE IsPrimary=TRUE AND OpportunityId = :listCM[0].Auction_Ticket_OppId__c];
 				if (listOCR.size() > 0) {
-					return listOCR[0].contactId;
+					return listOCR[0].ContactId;
 				} else {
-					// if we didn't find a OCR, it might be just an ticket bought by an Account.
-					list<Opportunity> listOpp = [select accountId from Opportunity where Id = :listCM[0].Auction_Ticket_OppId__c];
+					// if we dIdn't find a OCR, it might be just an ticket bought by an Account.
+					List<Opportunity> listOpp = [SELECT AccountId FROM Opportunity WHERE Id = :listCM[0].Auction_Ticket_OppId__c];
 					if (listOpp.size() > 0) {
-						return listOpp[0].accountId;
+						return listOpp[0].AccountId;
 					}
 				}
 			}
@@ -187,40 +187,40 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 	
 	// holds the currently selected Captain.  
-	// Note that this can be either a Contact ID or an Account ID
-	// has to be a string to allow a null Id ('') to get returned from the page.
-	public string idCaptain { 
+	// Note that this can be either a Contact Id or an Account Id
+	// has to be a String to allow a null Id ('') to get returned FROM the page.
+	public String IdCaptain { 
 		get; 
 		set {
 			// invalidate anything dependent on a change
-			if (idCaptain != value) {
+			if (IdCaptain != value) {
 				strNameCaptain = null;
 				listAttendees = null;
 				listOppCaptain = null;
 				cmCaptain = null;
 				mapTicketOppIdAttendeesLeft = null;
 			}
-			idCaptain = value;			
-			if (idCaptain == '') idCaptain = null;
+			IdCaptain = value;			
+			if (IdCaptain == '') IdCaptain = null;
 				
 			// set the current attendee's captain and table if their CM has is new.  
 			if (attendeeEdit != null && attendeeEdit.cm != null && attendeeEdit.cm.Id == null) { 
-            	attendeeEdit.cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);	            	
+            	attendeeEdit.cm.Table_Captain__c = (IsCaptainContact ? IdCaptain : null);	            	
 	            if (cmCaptain != null) {
 	            	attendeeEdit.cm.Table_Name_Number__c = cmCaptain.Table_Name_Number__c;
 	            }
 	            // see if there is an available ticket for this guest
-	            // and use its Paid status.
-	            attendeeEdit.cm.Paid__c = PaidTicketAvailable();
+	            // and use its PaId status.
+	            attendeeEdit.cm.Paid__c = PaIdTicketAvailable();
 			}										 
 		}
 	}
 	
 	// private utility to check if the current Captain has a free ticket available
-	// and whether it has been paid for.
-	private boolean PaidTicketAvailable() {	
-        integer iLast = listAttendees.size() - 1;
-        if (iLast >= 0 && listAttendees[iLast].cm.contactId == null) {
+	// and whether it has been paId for.
+	@TestVisible private Boolean PaidTicketAvailable() {
+        Integer iLast = listAttendees.size() - 1;
+        if (iLast >= 0 && listAttendees[iLast].cm.ContactId == null) {
         	return listAttendees[iLast].cm.Paid__c;
         } else {
         	return false;
@@ -228,25 +228,26 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 	
 	// differentiates whether our table captain is a Contact or an Account
-	public boolean IsCaptainContact {
+	public Boolean IsCaptainContact {
 		get {
-			if (idCaptain == null || 
-				AUC_AuctionConstants.getObjectTypeFromId(idCaptain) == Contact.sObjectType) {
+			if (IdCaptain == null || 
+				AUC_AuctionConstants.getObjectTypeFromId(IdCaptain) == Contact.SObjectType) {
 				return true;
-			} else
+			} else {
 				return false;
+			}
 		}
 	}
 	
 	// holds the currently selected Captain's name	
-	public string strNameCaptain { 
+	public String strNameCaptain { 
 		get {
-			if (strNameCaptain == null && idCaptain != null) {
+			if (strNameCaptain == null && IdCaptain != null) {
 				if (IsCaptainContact) {				
-					Contact con = [select Name from Contact where Id = :idCaptain];
+					Contact con = [SELECT Name FROM Contact WHERE Id = :IdCaptain];
 					strNameCaptain = con.Name;
 				} else {
-					Account acc = [select Name from Account where Id = :idCaptain];
+					Account acc = [SELECT Name FROM Account WHERE Id = :IdCaptain];
 					strNameCaptain = acc.Name;	
 				}
 			}
@@ -259,33 +260,33 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public PageReference ChangeCaptainLookup() {
 		// clear any previous save message
 		strSaveResults = null;
-		// the setter for idCaptain will
+		// the setter for IdCaptain will
 		// invalidate anything dependent.
 		return null;
 	}  
 	
 	// the ticket opportunity(ies) for the currently selected Captain
-	private list<Opportunity> listOppCaptain { 
+	@TestVisible private List<Opportunity> listOppCaptain {
 		get {
 			if (listOppCaptain == null) {
-				listOppCaptain = new list<Opportunity>();
+				listOppCaptain = new List<Opportunity>();
 				
 				if (auctionId == null) return listOppCaptain;
 					
 				// if we have a table captain, look for their ticket first.
-				if (idCaptain != null) {
+				if (IdCaptain != null) {
 					if (IsCaptainContact) {
-					 	listOppCaptain = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName, IsWon 
-							from Opportunity 
-							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
-								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
-								and Id in (select OpportunityId from OpportunityContactRole where contactId = :idCaptain)];
+					 	listOppCaptain = [SELECT Id, AccountId, CampaignId, Number_of_Tickets__c, Amount, StageName, IsWon
+							FROM Opportunity 
+							WHERE RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionTicket
+								AND CampaignId = :auctionMaintenance.campaignIdAuctionTickets
+								AND Id IN (SELECT OpportunityId FROM OpportunityContactRole WHERE ContactId = :IdCaptain)];
 					} else {
-						listOppCaptain = [select Id, AccountId, CampaignId, Number_Of_Tickets__c, Amount, StageName
-							from Opportunity
-							where RecordTypeId = :AUC_auctionMaintenance.recordtypeIdAuctionTicket
-								and CampaignId = :auctionMaintenance.campaignIdAuctionTickets
-								and AccountId  = :idCaptain];
+						listOppCaptain = [SELECT Id, AccountId, CampaignId, Number_of_Tickets__c, Amount, StageName
+							FROM Opportunity
+							WHERE RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionTicket
+								AND CampaignId = :auctionMaintenance.campaignIdAuctionTickets
+								AND AccountId  = :IdCaptain];
 					}
 					if (listOppCaptain.size() > 0) {
 						return listOppCaptain;
@@ -293,7 +294,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				}
 				// if there is no ticket holder, create a new ticket opp.
 				listOppCaptain.add(new Opportunity(
-					RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
+					RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionTicket,
 					CampaignId = auctionMaintenance.campaignIdAuctionTickets));
 			} 
 			return listOppCaptain;
@@ -302,12 +303,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}  
 	
 	// the campaign member for the currently selected Captain
-	private CampaignMember cmCaptain { 
+	@TestVisible private CampaignMember cmCaptain {
 		get {
-			if (cmCaptain == null && idCaptain != null) {
+			if (cmCaptain == null && IdCaptain != null) {
 				// look for it in the attendees list.
 				for (Attendee att : listAttendees) {
-					if (att.cm != null && att.cm.contactId == idCaptain) {
+					if (att.cm != null && att.cm.ContactId == IdCaptain) {
 						cmCaptain = att.cm;
 						return cmCaptain;
 					}
@@ -319,7 +320,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 	
 	// flag to track whether to add a ticket purchase for the Attendee
-	public boolean fAddTicketPurchase { get; set; }
+	public Boolean fAddTicketPurchase { get; set; }
 	
 	// the optional ticket opportunity for the current Attendee
 	public Opportunity oppTicketAttendee {
@@ -328,18 +329,18 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				
 				// see if they already have a ticket opp.
 				if (contactIdAttendee != null) {
-					string rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
-					string cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
+					String rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
+					String cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 					
-					string strSoql = 'select Id';
-					for (string str : AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionCheckInFS')) {
+					String strSoql = 'SELECT Id';
+					for (String str : AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionCheckInFS')) {
 						strSoql += ', Opportunity.' + str;
 					}
-					strSoql += ' from OpportunityContactRole ' +
-					' where IsPrimary=true and contactId = :contactIdAttendee and ' +
-						' opportunity.RecordTypeId = :rtTicket and opportunity.campaignId = :cmpIdTickets';			
+					strSoql += ' FROM OpportunityContactRole ' +
+					' WHERE IsPrimary=true AND contactId = :contactIdAttendee AND ' +
+						' opportunity.RecordTypeId = :rtTicket AND opportunity.campaignId = :cmpIdTickets';			
 				
-					list<OpportunityContactRole> listOCR = database.query(strSoql);
+					List<OpportunityContactRole> listOCR = Database.query(strSoql);
 					if (listOCR.size() > 0) {
 						oppTicketAttendee = listOCR[0].Opportunity;
 					}
@@ -348,9 +349,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				// if lookup failed, create a new opp.
 				if (oppTicketAttendee == null) {
 					oppTicketAttendee = new Opportunity(
-						RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
+						RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionTicket,
 						CampaignId = auctionMaintenance.campaignIdAuctionTickets,
-						CloseDate = system.Today()
+						CloseDate = System.today()
 					);
 				}
 			}
@@ -360,50 +361,50 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 
 	// a map to track number of slots left for each ticket
-	private map<ID, double> mapTicketOppIdAttendeesLeft { get; set; } 
+	@TestVisible private Map<Id, Double> mapTicketOppIdAttendeesLeft { get; set; }
 		
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
-    public list<Attendee> listAttendees {
+    public List<Attendee> listAttendees {
     	get {
     		if (listAttendees == null) {
-    			listAttendees = new list<Attendee>(); 
-    			mapTicketOppIdAttendeesLeft = new map<ID, double>();			
+    			listAttendees = new List<Attendee>(); 
+    			mapTicketOppIdAttendeesLeft = new Map<Id, Double>();			
     			
     			// find any existing attendees on the captain's ticket(s)
     			if (listOppCaptain.size() > 0) { 
-    				set<ID> setTicketOppId = new set<ID>();
-					double numTickets = 0;
+    				Set<Id> setTicketOppId = new Set<Id>();
+					Double numTickets = 0;
     				for (Opportunity opp : listOppCaptain) {
     					if (opp.Id != null) {
 	    					setTicketOppId.add(opp.Id);
-				    		numTickets += opp.Number_Of_Tickets__c == null ? 0 : opp.Number_Of_Tickets__c;	
-				    		mapTicketOppIdAttendeesLeft.put(opp.Id, opp.Number_Of_Tickets__c);
+				    		numTickets += opp.Number_of_Tickets__c == null ? 0 : opp.Number_of_Tickets__c;
+				    		mapTicketOppIdAttendeesLeft.put(opp.Id, opp.Number_of_Tickets__c);
     					}			    				    		
     				}
     				
 	    			// load up their CM info.
-	    			string strSoql = 'select ' + strCMFields +
-    					' from CampaignMember' + 
-    					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
-    						' (GW_Auctions__Auction_Ticket_OppId__c in :setTicketOppId ';
-    				if (IsCaptainContact && idCaptain != null) {
-    					strSoql += ' or GW_Auctions__Table_Captain__c = :idCaptain ';
+	    			String strSoql = 'SELECT ' + strCMFields +
+    					' FROM CampaignMember' + 
+    					' WHERE campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' AND ' +
+    						' (GW_Auctions__Auction_Ticket_OppId__c IN :setTicketOppId ';
+    				if (IsCaptainContact && IdCaptain != null) {
+    					strSoql += ' OR GW_Auctions__Table_Captain__c = :IdCaptain ';
     				}
     				strSoql += ')';
     				
-    				list<CampaignMember> listCM = Database.query(strSoql);
+    				List<CampaignMember> listCM = Database.query(strSoql);
     					
     				// create a map so we can match CM's with Contacts
-    				map<ID, CampaignMember> mapContactIdCM = new map<ID, CampaignMember>();
+    				Map<Id, CampaignMember> mapContactIdCM = new Map<Id, CampaignMember>();
     				for (CampaignMember cm : listCM) {
-    					mapContactIdCM.put(cm.contactId, cm);
+    					mapContactIdCM.put(cm.ContactId, cm);
     				}    			
 
 	    			// load up their contact info.
-	    			set<ID> setKeys = mapContactIdCM.keySet();
-	    			list<Contact> listCon = Database.query('select ' + strContactFields + 
-	    				' from Contact where Id in :setKeys' + 
-	    				' order by Name');    			
+	    			Set<Id> setKeys = mapContactIdCM.keySet();
+	    			List<Contact> listCon = Database.query('SELECT ' + strContactFields + 
+	    				' FROM Contact WHERE Id IN :setKeys' + 
+	    				' ORDER BY Name');    			
     			
 	    			for (Contact con : listCon) {
 	    				listAttendees.add(new Attendee(mapContactIdCM.get(con.Id), con));
@@ -414,19 +415,19 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 						if (!setTicketOppId.contains(cm.GW_Auctions__Auction_Ticket_OppId__c)) {
 							numTickets++;
 						} else {
-							double cLeft = mapTicketOppIdAttendeesLeft.get(cm.GW_Auctions__Auction_Ticket_OppId__c);
+							Double cLeft = mapTicketOppIdAttendeesLeft.get(cm.GW_Auctions__Auction_Ticket_OppId__c);
 							mapTicketOppIdAttendeesLeft.put(cm.GW_Auctions__Auction_Ticket_OppId__c, cLeft - 1);
 						}
 					}
 					
 					// create new CampaignMembers for any additional attendees on this ticket  					
-		    		CampaignMember cmCaptain = mapContactIdCM.get(idCaptain);
-		            for (integer i = listCon.size()+1; i <= numTickets; i++) {
+		    		CampaignMember cmCaptain = mapContactIdCM.get(IdCaptain);
+		            for (Integer i = listCon.size()+1; i <= numTickets; i++) {
 		                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);		                
-	                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
-	                	cm.Paid__c = (listOppCaptain[0].amount != null);
+	                	cm.Table_Captain__c = (IsCaptainContact ? IdCaptain : null);
+	                	cm.Paid__c = (listOppCaptain[0].Amount != null);
 	                	if (cmCaptain != null) {
-	                		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
+	                		cm.Table_Name_Number__c = cmCaptain.Table_Name_Number__c;
 	                	}	                	
 	                	Contact con = new Contact();
 	    				listAttendees.add(new Attendee(cm, con));
@@ -439,8 +440,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     	private set;    	
     } 	
 
-	// helper routine to return all Contact field names from the Field Set
-	private string strContactFields {
+	// helper routine to return all Contact field names FROM the Field Set
+	@TestVisible private String strContactFields {
 		get {
 			if (strContactFields == null) {
 				strContactFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS');
@@ -453,17 +454,17 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		set;
 	}
 	
-	// helper routine to return all CampaignMember field names from the Field Set
+	// helper routine to return all CampaignMember field names FROM the Field Set
 	// we could optimize this to use fieldset api, but the CM fields are used
 	// in two places that may require different fields.  so its easiest to just load them all.
-	private string strCMFields {
+	@TestVisible private String strCMFields {
 		get {
 			if (strCMFields == null) {
 				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.CampaignMember.fields.getMap();
-				list<string> listStrFields = new list<string>();
+				List<String> listStrFields = new List<String>();
 				listStrFields.addAll(mapS.keySet());  
 				strCMFields = '';
-				for (string str : listStrFields) {
+				for (String str : listStrFields) {
 					strCMFields += str + ',';
 				}  		
 				strCMFields = strCMFields.substring(0, strCMFields.length()-1);
@@ -478,34 +479,34 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		get {
 			if (attendeeEdit == null) {
 				// see if we already have their info loaded
-				attendeeEdit = attendeeFromId(contactIdAttendee);				
+				attendeeEdit = attendeeFromId(contactIdAttendee);
 				// if not loaded (not a current Attendee), then look it up
 				if (attendeeEdit == null) {	
 					Contact con = new Contact();				
 	                CampaignMember cm = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
-                	cm.contactId = contactIdAttendee;
+                	cm.Table_Captain__c = (IsCaptainContact ? IdCaptain : null);
+                	cm.ContactId = contactIdAttendee;
                 	cm.Paid__c = PaidTicketAvailable();
                 	if (cmCaptain != null) {
-                		cm.table_name_number__c = cmCaptain.Table_Name_Number__c;
+                		cm.Table_Name_Number__c = cmCaptain.Table_Name_Number__c;
                 	}
                 	
 
 					if (contactIdAttendee != null) {
-						con = Database.Query('select ' + strContactFields + ' from Contact where Id = :contactIdAttendee');
+						con = Database.query('SELECT ' + strContactFields + ' FROM Contact WHERE Id = :contactIdAttendee');
 
-		                // we still need to make sure they don't already have a CM.  only happens in a case where the CM
+		                // we still need to make sure they don't already have a CM.  only happens in a case WHERE the CM
 		                // is no longer attached to either a Ticket Opp or a Table Captain.
-		    			string strSoql = 'select ' + strCMFields +
-	    					' from CampaignMember' + 
-	    					' where campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' and ' +
+		    			String strSoql = 'SELECT ' + strCMFields +
+	    					' FROM CampaignMember' + 
+	    					' WHERE campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' AND ' +
 	    						' contactId = :contactIdAttendee';
-	    				list<CampaignMember> listCM = Database.query(strSoql);
+	    				List<CampaignMember> listCM = Database.query(strSoql);
 	    				if (listCM.size() > 0) {
 	    					cm = listCM[0];
 	    					if (cm.Table_Captain__c == null) {
 	    						// go ahead and prefill the current table captain.
-			                	cm.Table_Captain__c = (IsCaptainContact ? idCaptain : null);
+			                	cm.Table_Captain__c = (IsCaptainContact ? IdCaptain : null);
 	    					}
 	    				}
 					}
@@ -518,8 +519,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}
 
 	// find the Attendee for the given contactId.
-	private Attendee attendeeFromId(ID cId) {
-		if (cId == null) return null;
+	@TestVisible private Attendee attendeeFromId(Id cId) {
+		if (cId == null) {
+			return null;
+		}
 		for (Attendee att : listAttendees) {
 			if (att.con.Id == cId) {
 				return att;
@@ -530,10 +533,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	// utility to ensure the attendee campaign has a status of 'Checked In'
 	// needed to support pre 3.15 Auctions.
-	private	void AllowCheckedInStatus() {
-		ID cmpId = auctionMaintenance.campaignIdAuctionAttendees;
+	@TestVisible private void AllowCheckedInStatus() {
+		Id cmpId = auctionMaintenance.campaignIdAuctionAttendees;
 		if (cmpId != null) {
-			list<CampaignMemberStatus> listCMS = [Select Id From CampaignMemberStatus WHERE Label = 'Checked In' and CampaignId = :cmpId];
+			List<CampaignMemberStatus> listCMS = [SELECT Id FROM CampaignMemberStatus WHERE Label = 'Checked In' AND CampaignId = :cmpId];
 			// if not found, let's add it.
 			CampaignMemberStatus cms;
 			if (listCMS.size() == 0) {
@@ -586,23 +589,23 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 		        	// create the opp for the ticket purchase        	
 					oppTicketAttendee.Name = auctionMaintenance.StrOppTicketName(null, attendeeEdit.con.Id);					   
-					oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(AuctionId) * 
-						oppTicketAttendee.Number_Of_Tickets__c;      	
+					oppTicketAttendee.Auction_Non_Deductible_Amount__c = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId) *
+						oppTicketAttendee.Number_of_Tickets__c;
 		        	
 		            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 					// if so, we need to set the Opp's Account to make the rollups work.
 					if (AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
-						Contact contact = [select Name, AccountId from Contact where Id=:attendeeEdit.con.Id];	
+						Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:attendeeEdit.con.Id];	
 						oppTicketAttendee.AccountId = contact.AccountId;
 					}
 					        	
 					AUC_AuctionMaintenance.didUpdateOppWithNPSPOCRData(oppTicketAttendee, attendeeEdit.con.Id);
 	        		insert oppTicketAttendee;
 					
-					// only create contact role if client's code didn't do it!
+					// only create contact role if client's code dIdn't do it!
 					OpportunityContactRole ocr = new OpportunityContactRole();
 					ocr.OpportunityId = oppTicketAttendee.Id;
-					ocr.contactId = attendeeEdit.con.Id;
+					ocr.ContactId = attendeeEdit.con.Id;
 					ocr.Role = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
 					ocr.IsPrimary = true;
 					AUC_AuctionMaintenance.saveOppContactRole(ocr);
@@ -613,8 +616,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
       		
 			// 3. create or update CampaignMember
 			if (attendeeEdit.cm.Id == null) {
-				attendeeEdit.cm.campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-				attendeeEdit.cm.contactId = attendeeEdit.con.Id;
+				attendeeEdit.cm.CampaignId = auctionMaintenance.campaignIdAuctionAttendees;
+				attendeeEdit.cm.ContactId = attendeeEdit.con.Id;
 			}
 			AllowCheckedInStatus();
 			attendeeEdit.cm.Status = 'Checked In';
@@ -632,7 +635,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					}
 				}								
 			}
-			if (attendeeEdit.cm.id == null) {
+			if (attendeeEdit.cm.Id == null) {
 				insert attendeeEdit.cm;				
 			} else {
 				update attendeeEdit.cm;
@@ -651,12 +654,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			// when the page reloads, let's make sure we show the current attendee and (possibly new) captain.
 			contactIdAttendee = attendeeEdit.con.Id;
 			if (attendeeEdit.cm.Table_Captain__c != null) {
-				idCaptain = attendeeEdit.cm.Table_Captain__c;
+				IdCaptain = attendeeEdit.cm.Table_Captain__c;
 			}
 			return null;	
 			        
         } catch (Exception e) {
-           	strSaveResults = 'Error encountered while trying to save.  ';
+           	strSaveResults = 'Error encountered while trying to save.';
             ApexPages.addMessages(e);
             return null;
         }               
@@ -665,9 +668,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	// validate that required fields on the ticket are specified,
 	// since we can't use the visualforce required tag, since the
 	// section is not always visible.
-	private void validateTicketOpp(Opportunity opp) {
+	@TestVisible private void validateTicketOpp(Opportunity opp) {
 
-		Schema.FieldSet fs = Schema.SObjectType.Opportunity.FieldSets.AuctionCheckInFS;
+		Schema.FieldSet fs = Schema.SObjectType.Opportunity.fieldSets.AuctionCheckInFS;
 		for (Schema.FieldSetMember f : fs.getFields()) {
 			if (opp.get(f.fieldPath) == null && (f.dbRequired || f.required)) {
 				throw new CheckInException(f.label + ' must be specified on the new ticket purchase.');
@@ -680,14 +683,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	public PageReference NextGuest() {
 		contactIdAttendee = null;
 		// force IE into Standards Mode
-		Apexpages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
+		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 		return null;
 	}
 
 	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.
 	public PageReference Close() {
-		string retURL = ApexPages.currentPage().getParameters().get('retURL');
+		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
 			retURL = '/apex/GW_Auctions__AuctionTickets';
 		}
@@ -698,10 +701,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	// public property to get the commandButton URL
 	// for the Authorize Credit Card button.	
-	public string strCreditCardValidateURL {
+	public String strCreditCardValidateURL {
 		get {
 			if (strCreditCardValidateURL == null) {
-				string str = AUC_AuctionConstants.StrCreditCardValidateURLFormula();
+				String str = AUC_AuctionConstants.StrCreditCardValidateURLFormula();
 				if (str != null) {
 					// {0} = contactId
 					// {1} = auctionId
@@ -709,15 +712,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					// {3} = sessionId
 					// {4} = partner server url
 					// {5} = organizationId
-					list<string> listFormat = new list<string>();
+					List<String> listFormat = new List<String>();
 					listFormat.add(contactIdAttendee);
 					listFormat.add(auctionId);
 					listFormat.add('0');
 					listFormat.add(UserInfo.getSessionId());
-					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+					String strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
 					listFormat.add(strServerURL);					
 					listFormat.add(UserInfo.getOrganizationId());					
-					str = string.format(str, listFormat);			
+					str = String.format(str, listFormat);			
 				}
 				strCreditCardValidateURL = str;
 			}
@@ -728,7 +731,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// public property for the Window.Open() parameters
 	// for the virtual terminal window.
-	public string strPaymentProcessorWindowParameters {
+	public String strPaymentProcessorWindowParameters {
 		get {
 			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
 		}
@@ -736,7 +739,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// public property for whether to display the payment
 	// processor's virtual terminal on our page, or in a new browser window.
-	public boolean fShowPaymentProcessorOnPage {
+	public Boolean fShowPaymentProcessorOnPage {
 		get {
 			return AUC_AuctionConstants.fShowPaymentProcessorOnPage;
 		}
@@ -744,14 +747,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	// public property for the IFRAME Height parameter
 	// for the virtual terminal window if displaying on our page.
-	public string strPaymentProcessorPageHeight {
+	public String strPaymentProcessorPageHeight {
 		get {
 			return AUC_AuctionConstants.StrPaymentProcessorPageHeight();
 		}
 	}
 
 	// public property on whether to display the credit card panel
-	public boolean fShowPanelCreditCard { get; set; }
+	public Boolean fShowPanelCreditCard { get; set; }
 	
 	// public method to show the credit card panel
 	public PageReference ShowPanelCreditCard() {
@@ -779,45 +782,45 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	/*******************************************************************************************************
 	* @description Javascript Remoting method to return a list of Contacts, optionally filtered by strFilter.
 	* Note that we've changed AuctionCheckIn to now use the version of this that looks at the Auction.
-	* @param strFilter the substring to filter by 
-	* @return list<Contact>, which will be turned into a Javascript collection.
+	* @param strFilter the subString to filter by 
+	* @return List<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
-    @RemoteAction global static list<Contact> getListContacts(string strFilter) {
+    @RemoteAction global static List<Contact> getListContacts(String strFilter) {
     	strFilter = '%' + strFilter + '%';  
-		list<Contact> listContacts = [select Id, Name, MailingStreet, MailingCity 
-        		from Contact where 
-				Name like :strFilter 
-				order by Name asc];							
+		List<Contact> listContacts = [SELECT Id, Name, MailingStreet, MailingCity 
+        		FROM Contact WHERE 
+				Name LIKE :strFilter
+				ORDER BY Name ASC];
 		return listContacts;
     } 		
 	
 	/*******************************************************************************************************
 	* @description Javascript Remoting method to return a list of Contacts, optionally filtered by strFilter.
-	* To try to avoid loading too many contacts, first search those on the Attendees list.  If none found,
+	* To try to avoId loading too many contacts, first search those on the Attendees list.  If none found,
 	* then search all contacts.
 	* @param auctionId the Auction to filter by 
-	* @param strFilter the substring to filter by 
-	* @return list<Contact>, which will be turned into a Javascript collection.
+	* @param strFilter the subString to filter by 
+	* @return List<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
-    @RemoteAction global static list<Contact> getListAttendees(string auctionId, string strFilter) {
+    @RemoteAction global static List<Contact> getListAttendees(String auctionId, String strFilter) {
     	strFilter = '%' + strFilter + '%';  
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
 
-		// first look for contacts where are on the Attendees campaign    	
-        list<Contact> listContacts = [select Id, Name, MailingStreet, MailingCity 
-        		from Contact where 
-				Name like :strFilter 
-					and Id in (select contactId from CampaignMember where campaignId = :auctionMaintenance.campaignIdAuctionAttendees)
-				order by Name asc];
+		// first look for contacts WHERE are on the Attendees campaign    	
+        List<Contact> listContacts = [SELECT Id, Name, MailingStreet, MailingCity 
+        		FROM Contact WHERE 
+				Name LIKE :strFilter
+					AND Id IN (SELECT ContactId FROM CampaignMember WHERE CampaignId = :auctionMaintenance.campaignIdAuctionAttendees)
+				ORDER BY Name ASC];
 
 		// if none found, then search all contacts
 		if (listContacts.size() == 0) {
-			listContacts = [select Id, Name, MailingStreet, MailingCity 
-        		from Contact where 
-				Name like :strFilter 
-				order by Name asc];	
+			listContacts = [SELECT Id, Name, MailingStreet, MailingCity 
+        		FROM Contact WHERE 
+				Name LIKE :strFilter
+				ORDER BY Name ASC];
 		}				
 			
 		return listContacts;
@@ -827,243 +830,65 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @description Javascript Remoting method to return a list of Contacts and Accounts, who are ticket 
 	* holders or table captains on the specified auction, optionally filtered by strFilter.
 	* @param auctionId the Auction to filter by 
-	* @param strFilter the substring to filter by 
-	* @return list<SObject>, (Contacts and Accounts) which will be turned into a Javascript collection.
+	* @param strFilter the subString to filter by 
+	* @return List<SObject>, (Contacts and Accounts) which will be turned into a Javascript collection.
 	********************************************************************************************************/
-    @RemoteAction global static list<SObject> getListCaptains(string auctionId, string strFilter) {
+    @RemoteAction global static List<SObject> getListCaptains(String auctionId, String strFilter) {
     	strFilter = '%' + strFilter + '%';   	
 
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
 		
-		set<ID> setContactId = new set<ID>();
-		set<ID> setOppId = new set<ID>();
+		Set<Id> setContactId = new Set<Id>();
+		Set<Id> setOppId = new Set<Id>();
 		
 		// get all the primary contacts for auction tickets
-		for (list<OpportunityContactRole> listOCR : [select contactId, opportunityId from OpportunityContactRole 
-			where IsPrimary=true and 
-			(opportunity.campaignId=:auctionMaintenance.campaignIdAuctionTickets) and
-			contact.Name like :strFilter]) {
+		for (List<OpportunityContactRole> listOCR : [SELECT ContactId, OpportunityId FROM OpportunityContactRole
+			WHERE IsPrimary=TRUE AND
+			(Opportunity.CampaignId=:auctionMaintenance.campaignIdAuctionTickets) AND
+			Contact.Name LIKE :strFilter]) {
 			
-			// use set to avoid dups
+			// use set to avoId dups
 			for (OpportunityContactRole ocr : listOCR) {
-				setContactId.add(ocr.contactId);
-				setOppId.add(ocr.opportunityId);
+				setContactId.add(ocr.ContactId);
+				setOppId.add(ocr.OpportunityId);
 			}
 		}
 		
 		// get all the table captains
-		for (list<CampaignMember> listCM : [select contactId, Table_Captain__c from CampaignMember 
-			where campaignId = :auctionMaintenance.campaignIdAuctionAttendees and
-			Table_Captain__r.Name like :strFilter]) {
+		for (List<CampaignMember> listCM : [SELECT ContactId, Table_Captain__c FROM CampaignMember
+			WHERE CampaignId = :auctionMaintenance.campaignIdAuctionAttendees AND
+			Table_Captain__r.Name LIKE :strFilter]) {
 			
-			// use set to avoid dups
+			// use set to avoId dups
 			for (CampaignMember cm : listCM) {
 				setContactId.add(cm.Table_Captain__c);
 			}
 		}
-		list<SObject> listContactCaptains = [select Id, Name from Contact where Id in :setContactId order by Name];	
+		List<SObject> listContactCaptains = [SELECT Id, Name FROM Contact WHERE Id IN :setContactId ORDER BY Name];
 		
 		// now add any Accounts that own tickets.
 		// since we don't really want to include 1:1 accounts when dealing with NPSP,
-		// nor do we want accounts that were listed on the opp if there still was an individual ticket purchaser,
+		// nor do we want accounts that were listed on the opp if there still was an indivIdual ticket purchaser,
 		// we filter out opps that have primary contacts.
-		set<ID> setAccId = new set<ID>();
-		for (list<Opportunity> listOpp : [select accountId from Opportunity
-			where campaignId=:auctionMaintenance.campaignIdAuctionTickets and
-			account.Name like :strFilter and
-			Id not in :setOppId]) {
+		Set<Id> setAccId = new Set<Id>();
+		for (List<Opportunity> listOpp : [SELECT AccountId FROM Opportunity
+			WHERE CampaignId=:auctionMaintenance.campaignIdAuctionTickets AND
+			Account.Name LIKE :strFilter AND
+			Id NOT IN :setOppId]) {
 			
-			// use set to avoid dups
+			// use set to avoId dups
 			for (Opportunity opp : listOpp) {
-				setAccId.add(opp.accountId);
+				setAccId.add(opp.AccountId);
 			}
 		}
-		list<SObject> listAccountCaptains = [select Id, Name from Account where Id in :setAccId order by Name];
+		List<SObject> listAccountCaptains = [SELECT Id, Name FROM Account WHERE Id IN :setAccId ORDER BY Name];
 
 		// add our list of contacts and accounts together
-		list<SObject> listSobj = new list<SObject>();
+		List<SObject> listSobj = new List<SObject>();
 		listSobj.addAll(listContactCaptains);
 		listSobj.addAll(listAccountCaptains);	
 		return listSobj; 
-    } 	
-    	
-	//==================== TEST METHOD(s) ======================================
-	public static testmethod void CodeCoverageTests() {
-    	
-    	// create needed data
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today()
-		);  
-		insert auction; 
-		System.Assert(auction.id != null); 	
-    	
-    	Campaign campaign = [select Id, Auction__c from Campaign 
-    		where Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets and Auction__c = :auction.id];
-    	System.assertEquals(auction.id, campaign.Auction__c);
-    	
-    	Account acc = new Account(Name='My Test Account');
-    	insert acc;
-    	
-    	Contact contact = new Contact(
-    		Firstname = 'Johnny',
-    		Lastname = 'Test',
-    		AccountId = acc.Id
-    	);
-    	insert contact;    	
-
-		//instantiate the controller with no page parameters.
-		AUC_CTRL_AuctionCheckIn ctrl = new AUC_CTRL_AuctionCheckIn();
-		system.assert(ctrl != null);
-		ctrl.SaveAttendeeInfo();
-		system.assert(ctrl.strSaveResults != null);
-
-		//point to our VF page
-		PageReference p = new PageReference('Page.AuctionCheckIn');
-		p.getParameters().put('auctionId', auction.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		ctrl = new AUC_CTRL_AuctionCheckIn();
-		system.assertEquals(auction.Id, ctrl.auctionId);
-		ctrl.ChangeAuction();
-		system.assertEquals(auction.Id, ctrl.auctionId);
-		system.assertEquals(auction.Id, ctrl.auctionMaintenance.auctionId);
-		
-		// test the initial state
-		system.assertEquals(null, ctrl.contactIdAttendee);
-		system.assertEquals(null, ctrl.idCaptain);
-		system.assertEquals(null, ctrl.strNameAttendee);
-		system.assertEquals(null, ctrl.strNameCaptain);
-		system.assertEquals(null, ctrl.searchAttendee);
-		system.assertEquals(null, ctrl.strSaveResults);
-		system.assert(ctrl.attendeeEdit != null);
-		system.assert(ctrl.attendeeEdit.con != null);
-		system.assert(ctrl.attendeeEdit.cm != null);
-		system.assert(ctrl.oppTicketAttendee != null);
-		system.assert(ctrl.listSOAuctions.size() > 0);
-		system.assert(ctrl.listSOAuctions.size() > 0);
-		system.assertEquals(0, ctrl.listAttendees.size());
-		system.assertEquals(null, ctrl.attendeeFromId(null));
-		system.assertEquals(null, ctrl.idCaptainForcontactIdAttendee(null));
-		system.assertEquals(null, ctrl.fAddTicketPurchase);
-		system.assertEquals(true, ctrl.IsCaptainContact);
-		ctrl.ChangeAttendeeLookup(); 
-		ctrl.ChangeCaptainLookup();
-		ctrl.Close();
-		ctrl.SaveAttendeeInfo();
-		ctrl.SearchAttendeeLookup();
-		
-		// set a contact
-		ctrl.contactIdAttendee = contact.Id;
-		ctrl.ChangeAttendeeLookup();
-		system.assertEquals('Johnny Test', ctrl.strNameAttendee);
-		system.assert(ctrl.attendeeEdit != null);
-		system.assert(ctrl.attendeeEdit.con.Id == contact.Id);
-		system.assert(ctrl.attendeeEdit.cm != null);
-		
-		// save a Contact's ticket purchase
-		ctrl.fAddTicketPurchase = true;
-		ctrl.oppTicketAttendee.amount = 100;
-		ctrl.oppTicketAttendee.number_of_Tickets__c = 4;
-		ctrl.oppTicketAttendee.StageName = 'Won Closed';
-		ctrl.SaveAttendeeInfo();
-		system.assert(ctrl.strSaveResults != null);
-		
-		// verify the ticket opp and ocr
-		list<Opportunity> listOpp = [select Id, Name, Amount from Opportunity];
-		system.assertEquals(1, listOpp.size());
-		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
-		system.assertEquals(1,listOCR.size());
-		system.assertEquals(contact.Id, listOCR[0].ContactId);
-		
-		// verify the campaignmember
-		list<CampaignMember> listCM = [select contactId, campaignId, Auction_Ticket_OppId__c, Table_Captain__c from CampaignMember 
-			where contactId = :contact.Id and campaignId = :ctrl.auctionMaintenance.campaignIdAuctionAttendees];
-		system.assertEquals(1, listCM.size());	
-		system.assertEquals(null, ctrl.idCaptain);
-		ctrl.contactIdAttendee = contact.Id;
-		ctrl.ChangeAttendeeLookup();
-		system.assertEquals(contact.Id, ctrl.idCaptainForcontactIdAttendee(contact.Id));
-		system.assertEquals(contact.Id, ctrl.idCaptain);
-		system.assertEquals('Johnny Test', ctrl.strNameCaptain);
-		system.assertEquals(4, ctrl.listAttendees.size());
-		ctrl.contactIdAttendee = null;
-		ctrl.ChangeAttendeeLookup();
-		ctrl.idCaptain = null;
-		ctrl.ChangeCaptainLookup();
-		system.assertEquals(0, ctrl.listAttendees.size());
-		
-		// test search functionality
-		ctrl.searchAttendee = 'A bogus name you will not find!';
-		ctrl.SearchAttendeeLookup();
-		system.assertEquals(null, ctrl.contactIdAttendee);
-		ctrl.searchAttendee = 'Johnny Test';
-		ctrl.SearchAttendeeLookup();
-		system.assertEquals(contact.Id, ctrl.contactIdAttendee);
-		system.assertEquals(contact.Id, ctrl.idCaptain);
-		system.assertEquals(4, ctrl.listAttendees.size());
-		
-		// save a new contact as an attendee
-		ctrl.contactIdAttendee = null;
-		ctrl.ChangeAttendeeLookup();
-		ctrl.attendeeEdit.con.FirstName = 'Janey';
-		ctrl.attendeeEdit.con.LastName = 'Test';
-		system.assertEquals(contact.Id, ctrl.attendeeEdit.cm.Table_Captain__c);
-		system.assertEquals(null, ctrl.strSaveResults);
-		ctrl.SaveAttendeeInfo();
-		system.assert(ctrl.strSaveResults != null);
-		system.assert(ctrl.contactIdAttendee != null);
-		system.assert(ctrl.contactIdAttendee != contact.Id);
-		system.assertEquals(true, ctrl.IsCaptainContact);
-		system.assertEquals(contact.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
-				
-		// test out an account table captain
-    	Account acc2 = new Account(Name='Another Test Account');
-    	insert acc2;    	
-		Opportunity opp = new Opportunity(				
-			RecordTypeId = AUC_auctionMaintenance.recordtypeIdAuctionTicket,
-			CampaignId = ctrl.auctionMaintenance.campaignIdAuctionTickets
-		);				
-		opp.AccountId = acc2.Id;
-		opp.Amount = 1000;
-		opp.StageName = 'Won Closed';
-		opp.Number_Of_Tickets__c = 10;
-		opp.Name = 'my test account ticket purchase';
-		opp.CloseDate = system.today();
-		insert opp;
-		ctrl.idCaptain = acc2.Id;
-		ctrl.ChangeCaptainLookup();
-		system.assertEquals('Another Test Account', ctrl.strNameCaptain);
-		system.assertEquals(false, ctrl.IsCaptainContact);
-		system.assertEquals(acc2.Id, ctrl.idCaptain);
-		system.assert(ctrl.listOppCaptain != null);
-		system.assertEquals(ctrl.listOppCaptain[0].Id, opp.Id);
-		system.debug(ctrl.listAttendees);
-		system.assertEquals(10, ctrl.listAttendees.size());
-		
-		// save another contact to the account table
-		ctrl.contactIdAttendee = null;
-		ctrl.ChangeAttendeeLookup();
-		ctrl.idCaptain = acc2.Id;
-		ctrl.ChangeCaptainLookup();
-		ctrl.attendeeEdit.con.FirstName = 'Joey';
-		ctrl.attendeeEdit.con.LastName = 'Test';
-		system.assertEquals(null, ctrl.strSaveResults);
-		ctrl.SaveAttendeeInfo();
-		system.assert(ctrl.strSaveResults != null);
-		system.assertEquals(opp.Id, ctrl.attendeeEdit.cm.Auction_Ticket_OppId__c);
-		system.assert(ctrl.contactIdAttendee != null);	
-		system.assertEquals(acc2.Id, ctrl.idCaptainForcontactIdAttendee(ctrl.contactIdAttendee));
-
-		// test remoting functions
-		system.assert(AUC_CTRL_AuctionCheckIn.getListContacts('Test').size() >= 3);		
-		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'Johnny Test').size() >= 1);
-		system.assert(AUC_CTRL_AuctionCheckIn.getListCaptains(ctrl.auctionId, 'Another Test Account').size() >= 1);
-					
-				
-	}		
-
+    }
 }
