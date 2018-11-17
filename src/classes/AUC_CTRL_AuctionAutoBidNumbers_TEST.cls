@@ -2,7 +2,7 @@
 // This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
 
 @IsTest
-public with sharing class AUC_CTRL_AuctionAutoBidNumber_TEST {
+public with sharing class AUC_CTRL_AuctionAutoBidNumbers_TEST {
 
 	static testMethod void CodeCoverageTests() {
 
