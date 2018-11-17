@@ -14,6 +14,7 @@
         <members>AUC_CTRL_AuctionCheckIn</members>
         <members>AUC_CTRL_AuctionCheckIn_TEST</members>
         <members>AUC_CTRL_AuctionCheckOut</members>
+        <members>AUC_CTRL_AuctionCheckOut_TEST</members>
         <members>AUC_CTRL_AuctionDonatedItemConverter</members>
         <members>AUC_CTRL_AuctionDonatedItems</members>
         <members>AUC_CTRL_AuctionEditOpportunity</members>
