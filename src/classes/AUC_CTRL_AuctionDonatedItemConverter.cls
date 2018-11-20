@@ -17,22 +17,22 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
-	public string strConvertResult { get; set; }
+	public String strConvertResult { get; set; }
 	
 	// wrapper class to hold an AuctionItem, Donated Item Opportunity, and a checkbox
 	public class NewAuctionItem {	
 
 		public Auction_Item__c ai { get; set; }
 		public Opportunity donatedItem { get; set; }
-		public boolean isChecked { get; set; }
-		public integer quantity { get; set; }
-		public decimal FMV { get; set; }
+		public Boolean isChecked { get; set; }
+		public Integer quantity { get; set; }
+		public Decimal FMV { get; set; }
 		
 		public NewAuctionItem(Auction_Item__c aiT, Opportunity donatedItemT) {
 			ai = aiT;
 			donatedItem = donatedItemT;
 			isChecked = false;
-			quantity = integer.valueOf(donatedItemT.Number_Available__c);
+			quantity = Integer.valueOf(donatedItemT.Number_Available__c);
 			if (donatedItemT.Amount == null || donatedItemT.Number_of_Items__c == null || donatedItemT.Number_of_Items__c == 0) {
 				FMV = 0;
 			} else { 
@@ -42,26 +42,26 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	}
 	
 	// the list of new auction items that the visualforce page displays for editing
-	public list<NewAuctionItem> listNewAuctionItem { 
+	public List<NewAuctionItem> listNewAuctionItem { 
 		get {
 			if (listNewAuctionItem == null) {
-				listNewAuctionItem = new list<NewAuctionItem>();
+				listNewAuctionItem = new List<NewAuctionItem>();
 				
-				list<Opportunity> listOpp = [select Id, Name, Amount, Number_of_Items__c, Number_Available__c, 
-					Auction_Donated_Item_Name__c, Description, Auction_Donated_Item_Restrictions__c from Opportunity
-					where CampaignId = :auctionMaintenance.campaignIdAuctionDonors and 
-						RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem and
+				List<Opportunity> listOpp = [SELECT Id, Name, Amount, Number_of_Items__c, Number_Available__c, 
+					Auction_Donated_Item_Name__c, Description, Auction_Donated_Item_Restrictions__c FROM Opportunity
+					WHERE CampaignId = :auctionMaintenance.campaignIdAuctionDonors AND
+						RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem AND
 						Number_Available__c > 0 
-					order by Auction_Donated_Item_Name__c
-					limit :AUC_AuctionConstants.cDonatedItemConverterBatchSize];
+					ORDER BY Auction_Donated_Item_Name__c
+					LIMIT :AUC_AuctionConstants.cDonatedItemConverterBatchSize];
 					
 				// cache set of already used auction item id's
-				list<Auction_Item__c> listAI = [select Name from Auction_Item__c where Auction__c = :auctionMaintenance.auctionId];
-				set<string> setItemId = new set<string>();
+				List<Auction_Item__c> listAI = [SELECT Name FROM Auction_Item__c WHERE Auction__c = :auctionMaintenance.auctionId];
+				Set<String> setItemId = new Set<String>();
 				for (Auction_Item__c ai : listAI) {
 					setItemId.add(ai.Name);
 				}				
-				integer itemId = 100;
+				Integer itemId = 100;
 				
 				for (Opportunity opp : listOpp) {
 					Auction_Item__c ai = new Auction_Item__c();
@@ -71,8 +71,8 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 					ai.Restrictions__c = opp.Auction_Donated_Item_Restrictions__c;
 					
 					// generate a free auction item id
-					while (setItemId.contains(string.valueOf(itemId))) itemId++; 
-					ai.Name = string.valueOf(itemId++);					
+					while (setItemId.contains(String.valueOf(itemId))) itemId++; 
+					ai.Name = String.valueOf(itemId++);					
 					
 					listNewAuctionItem.add(new NewAuctionItem(ai, opp));				
 				}
@@ -83,11 +83,11 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	}				
 	
 	// list of all fieldnames for Auction Items.
-	private list<string> listStrAIFields {
+	private List<String> listStrAIFields {
 		get {
 			if (listStrAIFields == null) {
 				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Auction_Item__c.fields.getMap();
-				listStrAIFields = new list<string>();
+				listStrAIFields = new List<String>();
 				listStrAIFields.addAll(mapS.keySet());  
 			}
 			return listStrAIFields;
@@ -100,8 +100,8 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	
 	// action method to create the auction items			
 	public PageReference Convert() {
-		list<Auction_Item__c> listAI = new list<Auction_Item__c>();
-		list<Auction_Item_Piece__c> listAIP = new list<Auction_Item_Piece__c>();
+		List<Auction_Item__c> listAI = new List<Auction_Item__c>();
+		List<Auction_Item_Piece__c> listAIP = new List<Auction_Item_Piece__c>();
 
 		Savepoint sp = Database.setSavepoint();
 		try {		
@@ -120,7 +120,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 			insert listAI;
 			
 			// now create the Auction Item Pieces
-			integer iAI = 0;
+			Integer iAI = 0;
 			for (NewAuctionItem nai : listNewAuctionItem) {
 				if (nai.isChecked) {
 					Auction_Item_Piece__c aip = new Auction_Item_Piece__c();
@@ -134,10 +134,11 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
                 			': Quantity cannot be more than the number available (' + nai.donatedItem.Number_Available__c + ').'));						
 					}
 					aip.Quantity__c = nai.quantity;
-					if (nai.donatedItem.Amount == null || nai.donatedItem.Number_Of_Items__c == null)
+					if (nai.donatedItem.Amount == null || nai.donatedItem.Number_of_Items__c == null) {
 						aip.Actual_FMV__c = 0;
-					else
-						aip.Actual_FMV__c = (nai.donatedItem.Amount / nai.donatedItem.Number_Of_Items__c) * aip.Quantity__c;
+					} else {
+						aip.Actual_FMV__c = (nai.donatedItem.Amount / nai.donatedItem.Number_of_Items__c) * aip.Quantity__c;
+					}
 					listAIP.add(aip);
 				}
 			}
@@ -157,7 +158,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 
 	// cancel the page and return to our caller. 
 	public PageReference Cancel() {
-		string retURL = ApexPages.currentPage().getParameters().get('retURL');
+		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
 			retURL = '/apex/GW_Auctions__AuctionItems';
 		}
@@ -165,76 +166,5 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
         p.setRedirect(true);
         return p;
         
-	}
-	
-
-	//==================== TEST METHOD(s) ======================================
-	static testmethod void CodeCoverageTests() {
-    	// create needed data
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today()
-		);  
-		insert auction;  	
-    	
-    	Campaign campaign = [select Id, Auction__c from Campaign 
-    		where Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionItemDonors 
-    		and Auction__c = :auction.id];
-    	System.assertEquals(auction.id, campaign.Auction__c);
-    	   	    	
-    	Account acc = new Account(name='My Test Account');
-    	insert acc;
-    	
-    	Contact contact = new Contact(
-    		Firstname = 'Johnny',
-    		Lastname = 'Test',
-    		AccountId = acc.Id
-    	);
-    	insert contact;
-    	
-    	CampaignMember campaignmember = new CampaignMember(
-    		CampaignId = campaign.id,
-    		ContactId = contact.id,
-    		Bid_Number__c = 123
-    	);
-    	insert campaignmember;
-  			 
-  		Opportunity opp = new Opportunity(
-  			RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem,
-  			Name = 'my donated item opp',
-  			CampaignId = campaign.Id,
-			StageName = 'Won Not Thanked',
-			CloseDate = System.Today(),
-			Auction_Donated_Item_Name__c = 'my test auction donated item',
-			Amount = 150,
-			Number_of_Items__c = 1,
-			Description = 'my description of the donated item'
-		);
-		insert opp;
-		system.assert(opp.Id != null);
-
-		//point to our VF page
-		PageReference p = new PageReference('Page.AuctionDonatedItemConverter');
-		p.getParameters().put('auctionId', auction.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		AUC_CTRL_AuctionDonatedItemConverter ctrl = new AUC_CTRL_AuctionDonatedItemConverter();
-
-		system.assertEquals(null, ctrl.strConvertResult);
-		system.assert(ctrl.listNewAuctionItem != null);
-		system.assertEquals(1, ctrl.listNewAuctionItem.size());
-		ctrl.listNewAuctionItem[0].isChecked = true;
-		system.assertEquals(null, ctrl.Convert());
-		system.assert(ctrl.strConvertResult.contains('1 Auction Items were created.'));
-				
-		// verify the auctionItem got correctly created!
-		list<Auction_Item__c> listAI = [select Id, Auction_Item_Name__c from Auction_Item__c where Auction__c = :auction.Id];
-		system.assertEquals(1, listAI.size());
-		System.AssertEquals('my test auction donated item', listAI[0].Auction_Item_Name__c);
-		
-		// other methods
-		system.assertNotEquals(null, ctrl.Cancel());
-		
 	}
 }
