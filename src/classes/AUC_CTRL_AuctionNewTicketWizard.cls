@@ -5,8 +5,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	// constructor for the class
 	public AUC_CTRL_AuctionNewTicketWizard() {
-		// get the current auction we were invoked from, and find & set the appropriate campaign.
-		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
+		// get the current auction we were invoked FROM, and find & set the appropriate campaign.
+		// NOTE: we declared auctionId as a String to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		
@@ -17,24 +17,24 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		// create a new opp, or load existing opp if passed in
 		String strOppId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('oppId'));	
 		if (strOppId != null && strOppId != '') {
-			opp = Database.Query('select ' + strOppFields +	' from Opportunity where Id = :strOppId');
+			opp = Database.query('SELECT ' + strOppFields +	' FROM Opportunity WHERE Id = :strOppId');
 			
 			// put payment info in our temp fields
 			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
-				strPaymentMethod = string.valueOf(opp.get(AUC_AuctionConstants.strOppPaymentMethodField));
+				strPaymentMethod = String.valueOf(opp.get(AUC_AuctionConstants.strOppPaymentMethodField));
 			} else {
 				strPaymentMethod = AUC_AuctionMaintenance.strPaymentMethodOrCheckFromNPSPPayments(opp.Id, false);
 			}
 			if (AUC_AuctionConstants.strOppCheckNumberField != null) {
-				strCheckNumber = string.valueOf(opp.get(AUC_AuctionConstants.strOppCheckNumberField));
+				strCheckNumber = String.valueOf(opp.get(AUC_AuctionConstants.strOppCheckNumberField));
 			} else {
 				strCheckNumber = AUC_AuctionMaintenance.strPaymentMethodOrCheckFromNPSPPayments(opp.Id, true);
 			}
 			
 			// handle a non-existant contact role.
-			list<OpportunityContactRole> listCR = new list<OpportunityContactRole>();
-			listCR = [select contactId, OpportunityId, Role, IsPrimary from OpportunityContactRole
-					where OpportunityId=:opp.Id and IsPrimary=true];
+			List<OpportunityContactRole> listCR = new List<OpportunityContactRole>();
+			listCR = [SELECT ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole
+					WHERE OpportunityId=:opp.Id AND IsPrimary=TRUE];
 			if (listCR.size() > 0) {		
 				contactRole = listCR[0];
 			} else {
@@ -45,21 +45,22 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			} 	
 							
 			// always use the correct auctionId.  Don't rely on what's passed in.
-			if (opp.campaignId != null) {
-				Campaign cmp = [select Auction__c from Campaign where Id=:opp.CampaignId];
+			if (opp.CampaignId != null) {
+				Campaign cmp = [SELECT Auction__c FROM Campaign WHERE Id=:opp.CampaignId];
 				auctionId = cmp.Auction__c;
 				auctionMaintenance.auctionId = auctionId;				
 			}
 			
 			// set the per ticket deductible FMV
-			if (opp.Number_Of_Tickets__c != null && opp.Number_Of_Tickets__c > 0 && opp.Auction_Non_Deductible_Amount__c != null)
-				decTicketFMV = opp.Auction_Non_Deductible_Amount__c / opp.Number_Of_Tickets__c;
-			else
+			if (opp.Number_of_Tickets__c != null && opp.Number_of_Tickets__c > 0 && opp.Auction_Non_Deductible_Amount__c != null) {
+				decTicketFMV = opp.Auction_Non_Deductible_Amount__c / opp.Number_of_Tickets__c;
+			} else {
 				decTicketFMV = AUC_AuctionMaintenance.TicketNonDeductibleAmountOfAuctionId(auctionId);
+			}
 
 		} else {
-			opp = new Opportunity(RecordTypeId=AUC_auctionMaintenance.recordtypeIdAuctionTicket);
-			opp.CloseDate = system.Today();
+			opp = new Opportunity(RecordTypeId=AUC_AuctionMaintenance.recordtypeIdAuctionTicket);
+			opp.CloseDate = System.today();
 			AUC_AuctionMaintenance.setOpportunityStageClosed(opp); // assume new tickets are going in as paid.
 			contactRole = new OpportunityContactRole();
 				
@@ -78,11 +79,11 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 		
-	// the currently selected Auction
+	// the currently SELECTed Auction
 	public Id auctionId { get; set; }
 		
 	// the list of Auctions to put in the Auction dropdown
-	public list<SelectOption> listSOAuctions { get; set; }
+	public List<SelectOption> listSOAuctions { get; set; }
 		
 	// object to hold opportunity
 	public Opportunity opp { get; set; } 
@@ -91,10 +92,10 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	public OpportunityContactRole contactRole { get; set; }
 	
 	// the per ticket FMV to use
-	public decimal decTicketFMV { get; set; }
+	public Decimal decTicketFMV { get; set; }
 	
-	// helper routine to return all Opportunity field names from the Field Set
-	private string strOppFields {
+	// helper routine to return all Opportunity field names FROM the Field Set
+	private String strOppFields {
 		get {
 			if (strOppFields == null) {
 				strOppFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Opportunity', 'GW_Auctions__AuctionNewTicketWizardFS');
@@ -120,8 +121,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		set;
 	}
 		
-	// helper routine to return all CampaignMember field names from the Field Set
-	private string strCMFields {
+	// helper routine to return all CampaignMember field names FROM the Field Set
+	private String strCMFields {
 		get {
 			if (strCMFields == null) {
 				strCMFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('CampaignMember', 'GW_Auctions__AuctionNewTicketWizardFS');
@@ -132,17 +133,17 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 		
 	// list for Status picklist, filtered correctly for statuses for Attendees.
-	public list<SelectOption> listSOStatuses {
+	public List<SelectOption> listSOStatuses {
 		get {
 			if (listSOStatuses == null) {
-				listSOStatuses = new list<SelectOption>();
+				listSOStatuses = new List<SelectOption>();
 				
 				// since we can't seem to get the styling for a required field for Stage,
 				// we won't provide a blank option!
 				//listSOStatuses.add(new SelectOption('', ''));
 
-				for (CampaignMemberStatus status : [select Label from CampaignMemberStatus 
-					where IsDeleted=false and CampaignId=:auctionMaintenance.campaignIdAuctionAttendees order by SortOrder]) {
+				for (CampaignMemberStatus status : [SELECT Label FROM CampaignMemberStatus 
+					WHERE IsDeleted=FALSE AND CampaignId=:auctionMaintenance.campaignIdAuctionAttendees ORDER BY SortOrder]) {
 					listSOStatuses.add(new SelectOption(status.Label, status.Label));
 				}
 			}
@@ -152,33 +153,33 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 	
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
-    public list<CampaignMember> listCmpMbrAttendees {
+    public List<CampaignMember> listCmpMbrAttendees {
     	set;
     	
     	get {
-    		double numTickets = opp.Number_Of_Tickets__c;
+    		Double numTickets = opp.Number_of_Tickets__c;
     		if (listCmpMbrAttendees == null) {
-    			listCmpMbrAttendees = new list<CampaignMember>(); 			
+    			listCmpMbrAttendees = new List<CampaignMember>(); 			
     			
     			// find any existing attendees on this ticket
     			if (opp.Id != null) {
-    				listCmpMbrAttendees = Database.Query('select ' + strCMFields +	
-    					' from CampaignMember where Auction_Ticket_OppId__c=\'' + opp.Id + '\''); 
+    				listCmpMbrAttendees = Database.query('SELECT ' + strCMFields +	
+    					' FROM CampaignMember WHERE Auction_Ticket_OppId__c=\'' + opp.Id + '\''); 
     			}
     			    					
 				// create new CampaignMembers for any additional attendees on this ticket    					
-	            for (integer i = listCmpMbrAttendees.size()+1; i <= numTickets; i++) {
+	            for (Integer i = listCmpMbrAttendees.size()+1; i <= numTickets; i++) {
 	                CampaignMember cmpmbr = new CampaignMember(CampaignId=auctionMaintenance.campaignIdAuctionAttendees);
-                	cmpmbr.Table_Captain__c = contactRole.contactId;
+                	cmpmbr.Table_Captain__c = contactRole.ContactId;
                 	cmpmbr.Status = 'RSVP Yes';
-                	cmpmbr.Paid__c = (opp.amount != null);
+                	cmpmbr.Paid__c = (opp.Amount != null);
 	                // add the ticket purchaser as the first attendee
 	                if (i == 1) {
 	                	// but make sure they aren't already an attendee
-	                	list<CampaignMember> listCmpMbr = [select Id from CampaignMember
-	                		where CampaignId = :cmpmbr.CampaignId and ContactId = :contactRole.contactId];
+	                	List<CampaignMember> listCmpMbr = [SELECT Id FROM CampaignMember
+	                		WHERE CampaignId = :cmpmbr.CampaignId AND ContactId = :contactRole.ContactId];
 	                	if (listCmpMbr.size() == 0) {	                	
-		                	cmpmbr.contactId = contactRole.contactId;
+		                	cmpmbr.ContactId = contactRole.ContactId;
 		                	cmpmbr.Is_Table_Captain__c = true;
 	                	}
 	                } 
@@ -189,7 +190,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
     	}
     } 	
 
-	// status string for reporting the results of saving.
+	// status String for reporting the results of saving.
     public String strSaveResults { get; set; }    
 	
 	// event handler for NumberOfTickets field being changed.
@@ -201,12 +202,12 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 	
 	// will hold the ID of the CM to be deleted
-	public ID idDeleteCM { get; set; }
+	public Id idDeleteCM { get; set; }
 	
-	// action method to delete a CM from the database.
+	// action method to delete a CM FROM the database.
 	public PageReference DeleteCM() {
 		if (idDeleteCM != null) {
-			database.delete(idDeleteCM);
+			Database.delete(idDeleteCM);
 			idDeleteCM = null;
 			listCmpMbrAttendees = null;
 		}
@@ -220,7 +221,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         strSaveResults = 'Starting Save...';
 	        
         try {
-        	// deal with scenario where user clicks directly on save without
+        	// deal with scenario WHERE user clicks directly on save without
         	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.
         	if (listCmpMbrAttendees.size() == 0) {
         		OnChange_NumberOfTickets();
@@ -229,7 +230,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	// create or update the opp for the ticket purchase
         	// verify that either contact or account is specified, but don't require both.
         	if (contactRole.ContactId == null && opp.AccountId == null) {
-        		throw(new MySaveException('Please specify a Contact or ' + SObjectType.Account.Label));
+        		throw(new MySaveException('Please specify a Contact or ' + SObjectType.Account.label));
         	}
         	
         	// name the opp if empty (new scenario)
@@ -237,15 +238,15 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	            // see if we are dealing with the NonProfit Starter Pack and it is using the 1-to-1 Account model.
 				// if so, we need to set the Opp's Account to make the rollups work.
 	        	if (opp.AccountId == null && contactRole.ContactId != null && AUC_AuctionConstants.fSetAccountOnNewAuctionOpps) {
-					Contact contact = [select AccountId from Contact where Id=:contactRole.ContactId];
+					Contact contact = [SELECT AccountId FROM Contact WHERE Id=:contactRole.ContactId];
 					opp.AccountId = contact.AccountId;
 				}
-	        	opp.Name = auctionMaintenance.StrOppTicketName(opp.accountId, contactRole.contactId);
+	        	opp.Name = auctionMaintenance.StrOppTicketName(opp.AccountId, contactRole.ContactId);
         	}        	
  
-			opp.Auction_Non_Deductible_Amount__c = decTicketFMV * opp.Number_Of_Tickets__c;
+			opp.Auction_Non_Deductible_Amount__c = decTicketFMV * opp.Number_of_Tickets__c;
 			if (opp.StageName == null) { 	
-	        	if (opp.amount == null) {
+	        	if (opp.Amount == null) {
 	        		opp.StageName = AUC_AuctionConstants.OPP_STAGE_PLEDGED;
 	        	} else {
 					AUC_AuctionMaintenance.setOpportunityStageClosed(opp);
@@ -271,7 +272,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	}
         	
 			// if using NPSP Payments, update payment info.
-			AUC_AuctionMaintenance.UpdateNPSPPayments(new list<Opportunity> { opp }, strPaymentMethod, strCheckNumber);        	
+			AUC_AuctionMaintenance.UpdateNPSPPayments(new List<Opportunity> { opp }, strPaymentMethod, strCheckNumber);        	
 			
 			// if creating a new contact role, then also put the contact on the Tickets campaign.
 			if (contactRole.Id == null) {
@@ -296,9 +297,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         	strSaveResults = 'The ticket purchase has been saved.';
         	
 			// now create the Attendee CampaignMembers
-			list<CampaignMember> listCmpMbrCreate = new list<CampaignMember>();
-			list<CampaignMember> listCmpMbrUpdate = new list<CampaignMember>();
-			set<ID> setContactIdCreate = new set<ID>();
+			List<CampaignMember> listCmpMbrCreate = new List<CampaignMember>();
+			List<CampaignMember> listCmpMbrUpdate = new List<CampaignMember>();
+			Set<Id> setContactIdCreate = new Set<Id>();
 			
 			for (CampaignMember cmpmbr : listCmpMbrAttendees) {
 				if (cmpmbr.Id != null) {
@@ -306,7 +307,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 				} else if (cmpmbr.ContactId != null) {
 					cmpmbr.CampaignId = auctionMaintenance.campaignIdAuctionAttendees;
 					if (cmpmbr.Bid_Number__c == null) cmpmbr.Bid_Number__c = null;	// force it so updates won't use previous value.
-					cmpmbr.Auction_Ticket_OppId__c = opp.id;
+					cmpmbr.Auction_Ticket_OppId__c = opp.Id;
 					listCmpMbrCreate.add(cmpmbr);
 					setContactIdCreate.add(cmpmbr.ContactId);
 				}
@@ -316,9 +317,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 			// before inserting new CM's, make sure the contacts weren't already on the Attendees campaign.
 			// if they were, go ahead and delete their previous CM, and save their new CM.
-			list<CampaignMember> listCmpMbrDelete = new list<CampaignMember>();
-			listCmpMbrDelete = [select Id from CampaignMember where CampaignId = :auctionMaintenance.campaignIdAuctionAttendees
-				and ContactId in :setContactIdCreate];
+			List<CampaignMember> listCmpMbrDelete = new List<CampaignMember>();
+			listCmpMbrDelete = [SELECT Id FROM CampaignMember WHERE CampaignId = :auctionMaintenance.campaignIdAuctionAttendees
+				AND ContactId IN :setContactIdCreate];
 			delete listCmpMbrDelete;
 			// now it is safe to add them			 
 			insert listCmpMbrCreate;
@@ -333,10 +334,11 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			return null;	
 			        
         } catch (Exception e) {
-        	if (opp.Id == null)
-            	strSaveResults = 'Error encountered while trying to save auction ticket purchase and attendees.  ';
-            else
-            	strSaveResults = 'The ticket purchase has been saved, but errors were encountered trying to save the attendees.  ';
+	        if (opp.Id == null) {
+		        strSaveResults = 'Error encountered while trying to save auction ticket purchase and attendees.  ';
+	        } else {
+		        strSaveResults = 'The ticket purchase has been saved, but errors were encountered trying to save the attendees.  ';
+	        }
             ApexPages.addMessages(e);            
 
 			// assume they already charged the card, and we don't want the page refresh to reload the payment terminal.
@@ -346,7 +348,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 
 	public PageReference Cancel() {
-		string retURL = ApexPages.currentPage().getParameters().get('retURL');
+		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
 			retURL = '/apex/GW_Auctions__AuctionTickets';
 		}
@@ -368,7 +370,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	//==================== Support for Payment Processing ======================================
 	
 	// public property on whether to display the credit card panel
-	public boolean fShowPanelCreditCard { get; set; }
+	public Boolean fShowPanelCreditCard { get; set; }
 	
 	// public method to show the credit card panel
 	public PageReference ShowPanelCreditCard() {
@@ -377,8 +379,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		return null;
 	}
 
-	public string strPaymentMethod { get; set; }
-	public string strCheckNumber { get; set; }
+	public String strPaymentMethod { get; set; }
+	public String strCheckNumber { get; set; }
 	
 	// public method called by the page when the Payment Method changes
 	public PageReference ChangePaymentMethod() {
@@ -389,12 +391,12 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	// public property to get the commandButton URL
 	// for the Charge Credit Card button.	
-	public string strCreditCardChargeURL {
+	public String strCreditCardChargeURL {
 		get {
 			//if (strCreditCardChargeURL == null && contactRole.contactId != null) {
 			// always recompute, because we don't have callback when contactRole.contactId or opp.Amount changes.
 			{ 
-				string str = AUC_AuctionConstants.StrCreditCardChargeURLFormula();
+				String str = AUC_AuctionConstants.StrCreditCardChargeURLFormula();
 				if (str != null) {
 					// {0} = contactId
 					// {1} = auctionId
@@ -403,16 +405,16 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 					// {4} = partner server url
 					// {5} = organizationId
 					// {6} = comma separated list of OppId's
-					list<string> listFormat = new list<string>();
-					listFormat.add(contactRole.contactId);
+					List<String> listFormat = new List<String>();
+					listFormat.add(contactRole.ContactId);
 					listFormat.add(auctionId);
-					listFormat.add(string.valueOf(opp.Amount));
+					listFormat.add(String.valueOf(opp.Amount));
 					listFormat.add(UserInfo.getSessionId());
-					string strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
+					String strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
 					listFormat.add(strServerURL);					
 					listFormat.add(UserInfo.getOrganizationId());
 					listFormat.add(opp.Id);
-					str = string.format(str, listFormat);			
+					str = String.format(str, listFormat);			
 				}
 				strCreditCardChargeURL = str;
 			}
@@ -423,7 +425,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	// public property for the Window.Open() parameters
 	// for the virtual terminal window.
-	public string strPaymentProcessorWindowParameters {
+	public String strPaymentProcessorWindowParameters {
 		get {
 			return AUC_AuctionConstants.StrPaymentProcessorWindowParameters();
 		}
@@ -431,7 +433,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	
 	// public property for whether to display the payment
 	// processor's virtual terminal on our page, or in a new browser window.
-	public boolean fShowPaymentProcessorOnPage {
+	public Boolean fShowPaymentProcessorOnPage {
 		get {
 			return AUC_AuctionConstants.fShowPaymentProcessorOnPage;
 		}
@@ -439,115 +441,16 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	// public property for the IFRAME Height parameter
 	// for the virtual terminal window if displaying on our page.
-	public string strPaymentProcessorPageHeight {
+	public String strPaymentProcessorPageHeight {
 		get {
 			return AUC_AuctionConstants.StrPaymentProcessorPageHeight();
 		}
 	}	
 	
 	// property to tell whether there is no place to store the Payment Method 
-	public boolean isPaymentSettingsMissing {
+	public Boolean isPaymentSettingsMissing {
 		get {
 			return AUC_AuctionConstants.isPaymentSettingsMissing;
 		}
 	}
-
-	//==================== TEST METHOD(s) ======================================
-	public static testmethod void CodeCoverageTests() {
-    	// create needed data
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today()
-		);  
-		insert auction; 
-		System.Assert(auction.id != null); 	
-    	
-    	Campaign campaign = [select Id, Auction__c from Campaign where Auction_Campaign_Type__c=:AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets and Auction__c = :auction.id];
-    	System.assertEquals(auction.id, campaign.Auction__c);
-    	
-    	Account acc = new Account(Name='My Test Account');
-    	insert acc;
-    	
-    	Contact contact = new Contact(
-    		Firstname = 'Johnny',
-    		Lastname = 'Test',
-    		AccountId = acc.Id
-    	);
-    	insert contact;    	
-
-		//point to our VF page
-		PageReference p = new PageReference('Page.AuctionNewTicketWizard');
-		p.getParameters().put('auctionId', auction.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		AUC_CTRL_AuctionNewTicketWizard ctrl = new AUC_CTRL_AuctionNewTicketWizard();
-		ctrl.contactRole.ContactId = contact.id;
-		System.AssertEquals(campaign.Id, ctrl.opp.CampaignId);
-		System.AssertEquals(System.Today(), ctrl.opp.CloseDate);
-		ctrl.opp.Amount = 15;
-		ctrl.opp.Number_Of_Tickets__c = 4;
-		ctrl.OnChange_NumberOfTickets();
-		System.AssertEquals(4, ctrl.listCmpMbrAttendees.size());
-		System.AssertEquals(contact.Id, ctrl.listCmpMbrAttendees[0].ContactId);
-		ctrl.ChangePaymentMethod();
-		ctrl.ShowPanelCreditCard();
-		system.assertEquals(true, ctrl.fShowPanelCreditCard);
-		system.assertEquals('Credit Card', ctrl.strPaymentMethod);
-		system.assertEquals(null, ctrl.strCheckNumber);
-		system.assertEquals(null, ctrl.strCreditCardChargeURL);
-		system.assertNotEquals(null, ctrl.strPaymentProcessorWindowParameters);
-		system.assertEquals(false, ctrl.fShowPaymentProcessorOnPage);
-		system.assertNotEquals(null, ctrl.strPaymentProcessorPageHeight);
-		
-		ctrl.Save();
-		System.Assert(ctrl.opp.id != null);
-		System.AssertEquals('The ticket purchase has been saved.  1 contacts have been added to the auction attendee campaign.', ctrl.strSaveResults);
-		list<Opportunity> listOpp = [select Id, Name, Amount, StageName, Probability, ForecastCategoryName from Opportunity];
-		system.assertEquals(1, listOpp.size());
-		system.AssertEquals(AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE, listOpp[0].StageName);
-		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedProbability, listOpp[0].Probability);
-		system.AssertEquals(AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName, listOpp[0].ForecastCategoryName);
-		list<OpportunityContactRole> listOCR = [select Id, ContactId from OpportunityContactRole where isPrimary=true];
-		system.assertEquals(1,listOCR.size());
-		system.assertEquals(contact.Id, listOCR[0].ContactId);
-
-		// now test editing an existing ticket opp
-		//point to our VF page
-		p = new PageReference('Page.AuctionNewTicketWizard');
-		p.getParameters().put('auctionId', auction.id); 
-		p.getParameters().put('oppId', ctrl.opp.id); 
-		Test.setCurrentPageReference(p);
-		
-		//instantiate the controller for this opp
-		ctrl = new AUC_CTRL_AuctionNewTicketWizard();
-		System.AssertEquals(contact.Id, ctrl.contactRole.ContactId);
-		System.AssertEquals(campaign.Id, ctrl.opp.CampaignId);
-		System.AssertEquals(System.Today(), ctrl.opp.CloseDate);
-		ctrl.opp.Amount = 25;
-		ctrl.opp.Number_Of_Tickets__c = 6;
-		ctrl.OnChange_NumberOfTickets();
-		System.AssertEquals(6, ctrl.listCmpMbrAttendees.size());
-		System.AssertEquals(contact.Id, ctrl.listCmpMbrAttendees[0].ContactId);
-		ctrl.Save();
-		System.AssertEquals('The ticket purchase has been saved.  0 contacts have been added to the auction attendee campaign.  1 contacts have been updated in the auction attendee campaign.', ctrl.strSaveResults);
-		ctrl.Cancel();
-	}
-	
-    static testMethod void UnitTestNullAuction() {
-    	// delete all auctions first
-    	delete [select Id from Auction__c];
-    
-    	//point to our VF page
-    	PageReference page = new PageReference('Page.AuctionNewTicketWizard');
-    	page.getParameters().put('auctionId', 'null');
-		Test.setCurrentPageReference(page);
-		
-		//instantiate the controller for this opp
-		AUC_CTRL_AuctionNewTicketWizard ctrl = new AUC_CTRL_AuctionNewTicketWizard();
-		System.AssertEquals(null, ctrl.auctionId);
-		System.AssertEquals(1, ctrl.listSOAuctions.size());
-		System.AssertEquals(0, ctrl.listCmpMbrAttendees.size());
-		ctrl.Cancel();  
-    }	
 }
