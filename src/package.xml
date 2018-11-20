@@ -26,6 +26,7 @@
         <members>AUC_CTRL_AuctionNewDonatedItemWizard</members>
         <members>AUC_CTRL_AuctionNewDonatedItemWizard_TST</members>
         <members>AUC_CTRL_AuctionNewItemPieceWizard</members>
+        <members>AUC_CTRL_AuctionNewItemPieceWizard_TEST</members>
         <members>AUC_CTRL_AuctionNewPurchaseWizard</members>
         <members>AUC_CTRL_AuctionNewTicketWizard</members>
         <members>AUC_CTRL_AuctionPurchases</members>
