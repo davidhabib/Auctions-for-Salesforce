@@ -16,7 +16,7 @@ public with sharing class AUC_CTRL_AuctionDonatedItems extends PageControllerBas
 	
 	public override String getStrSoql() {
 		String strSoql = 'SELECT Id, ' + String.join(listStrFields, ',') +
-				' FROM opportunity ' +
+				' FROM Opportunity ' +
         		' WHERE RecordTypeId=\'' + AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem  +
         		'\' AND CampaignId=\'' + ctrlSoqlListView.auctionMaintenance.campaignIdAuctionDonors + '\'';
         		

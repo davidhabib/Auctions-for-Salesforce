@@ -22,6 +22,7 @@
         <members>AUC_CTRL_AuctionEditOpportunity</members>
         <members>AUC_CTRL_AuctionEditOpportunity_TEST</members>
         <members>AUC_CTRL_AuctionItems</members>
+        <members>AUC_CTRL_AuctionItems_TEST</members>
         <members>AUC_CTRL_AuctionNewDonatedItemWizard</members>
         <members>AUC_CTRL_AuctionNewItemPieceWizard</members>
         <members>AUC_CTRL_AuctionNewPurchaseWizard</members>
