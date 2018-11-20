@@ -18,6 +18,7 @@
         <members>AUC_CTRL_AuctionDonatedItemConverter</members>
         <members>AUC_CTRL_AuctionDonatedItemConverter_TST</members>
         <members>AUC_CTRL_AuctionDonatedItems</members>
+        <members>AUC_CTRL_AuctionDonatedItems_TEST</members>
         <members>AUC_CTRL_AuctionEditOpportunity</members>
         <members>AUC_CTRL_AuctionItems</members>
         <members>AUC_CTRL_AuctionNewDonatedItemWizard</members>
