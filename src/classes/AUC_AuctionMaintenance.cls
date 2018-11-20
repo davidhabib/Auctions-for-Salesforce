@@ -68,7 +68,7 @@ public with sharing class AUC_AuctionMaintenance {
 			return campaignIdAuctionAttendees;
 		}
 		
-		set;
+		private set;
 	}	
 
 	// the Auction Donor Campaign for the selected Auction
@@ -89,7 +89,7 @@ public with sharing class AUC_AuctionMaintenance {
 			return campaignIdAuctionDonors;
 		}
 		
-		set;
+		private set;
 	}
 
 	// the Auction Ticket Campaign for the selected Auction
@@ -110,7 +110,7 @@ public with sharing class AUC_AuctionMaintenance {
 			return campaignIdAuctionTickets;
 		}
 		
-		set;
+		private set;
 	}
 	
 	// helper function to return a name for Ticket opps.

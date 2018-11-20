@@ -28,6 +28,7 @@
         <members>AUC_CTRL_AuctionNewItemPieceWizard</members>
         <members>AUC_CTRL_AuctionNewItemPieceWizard_TEST</members>
         <members>AUC_CTRL_AuctionNewPurchaseWizard</members>
+        <members>AUC_CTRL_AuctionNewPurchaseWizard_TEST</members>
         <members>AUC_CTRL_AuctionNewTicketWizard</members>
         <members>AUC_CTRL_AuctionPurchases</members>
         <members>AUC_CTRL_AuctionReceipts</members>

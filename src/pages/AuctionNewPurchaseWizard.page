@@ -311,7 +311,7 @@
 		    		<apex:selectOptions value="{!listSOLookupAuctionItems2}" />
 		    	</apex:selectList>
 
-				<apex:dataTable value="{!AuctionPurchasedItems}" var="apo" rules="rows">
+				<apex:dataTable value="{!listAuctionPurchasedItems}" var="apo" rules="rows">
 					<apex:column >
 						<apex:facet name="header">Bid Number</apex:facet>
 						<apex:inputHidden value="{!apo.contactId}" id="txtHiddenContactId" required="false" />
