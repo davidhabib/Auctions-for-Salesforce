@@ -8,7 +8,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     	get {
             if(setCon == null) {
 
-            	string strSoql = pageController.getStrSoql();
+            	String strSoql = pageController.getStrSoql();
             	
 				// start out sorting on the main name field.
             	if (SortItemField == null || SortItemField == '') {
@@ -26,7 +26,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
             	}
             	setCon = new ApexPages.StandardSetController(Database.getQueryLocator(strSoql));
             	setCon.setPageSize(cRecordsPerPage);
-            	setCon.setpageNumber(iPageNumber); 
+            	setCon.setPageNumber(iPageNumber); 
             }
             return setCon;
         } 
@@ -39,17 +39,17 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     }
        
 	// whether to include checkboxes in the list view       
-  	public boolean fShowCheckboxes { get; set; }
+  	public Boolean fShowCheckboxes { get; set; }
         
 	// how many records per page to display
-	public integer cRecordsPerPage {
+	public Integer cRecordsPerPage {
 		get {
 			return AUC_AuctionConstants.cRecordsPerPage;
 		}
 	}
 	
     // how many pages in our current result set
-    public integer NumberOfPages {
+    public Integer NumberOfPages {
     	get {
     		if (setCon != null) {
     			NumberOfPages = (setCon.getResultSize() / setCon.getPageSize()) + 1;
@@ -60,7 +60,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     }
     
     // how many records in our current result set
-    public integer NumberOfItems {
+    public Integer NumberOfItems {
     	get {
     		if (setCon != null) {
     			NumberOfItems = setCon.getResultSize();
@@ -95,33 +95,33 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public Id auctionId { get; set; }
 	
 	// the list of Auctions to put in the Auction dropdown
-	public list<SelectOption> listSOAuctions { get; set; }
+	public List<SelectOption> listSOAuctions { get; set; }
 
 	// action method called when the selected Auction changes.	 
 	public PageReference ChangeAuction() {
 		// clear out all state that is specific to the auction
 		setCon = null;
 		auctionMaintenance.auctionId = auctionId;
-		// update the shared cookie
+		// update the shared Cookie
 		strCookieAuctionId = auctionId;
 		
-		// reset all set controller cookies for all pages
+		// reset all set controller Cookies for all pages
 		ResetSetControllerCookies();
 		
 		return null;
 	}
 	
-	// helper to reset all of the set controller cookies for all pages 
+	// helper to reset all of the set controller Cookies for all pages 
 	// useful when changing the shared auction.
 	private void ResetSetControllerCookies() {
-		list<Cookie> listCk = new list<Cookie>();
+		List<Cookie> listCk = new List<Cookie>();
 		for (Cookie ck : ApexPages.currentPage().getCookies().values()) {
 			if (ck.getName().endsWith('SortItemField')) {
-				listCk.add(new cookie(ck.getName(), null, null, -1, false));
+				listCk.add(new Cookie(ck.getName(), null, null, -1, false));
 			} else if (ck.getName().endsWith('SortItemAsc')) {
-				listCk.add(new cookie(ck.getName(), 'true', null, -1, false));
+				listCk.add(new Cookie(ck.getName(), 'true', null, -1, false));
 			} else if (ck.getName().endsWith('strAlphaFilter')) {
-				listCk.add(new cookie(ck.getName(), '%', null, -1, false));
+				listCk.add(new Cookie(ck.getName(), '%', null, -1, false));
 			}
 		}
 		
@@ -130,14 +130,14 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}
 		
 		// we also need to force the current page's properties over 
-		// these cookies to be reset.
+		// these Cookies to be reset.
 		SortItemField = null;
 		SortItemAsc = true;
 		strAlphaFilter = '%';
 	}
 
-	// we have a seperate cookie for AuctionId, to avoid setting it inadvertantly.
-	private string strCookieAuctionId { 
+	// we have a seperate Cookie for AuctionId, to avoid setting it inadvertantly.
+	@TestVisible private String strCookieAuctionId {
 		get {
 			if (strCookieAuctionId == null) {
 		        Cookie cId = ApexPages.currentPage().getCookies().get('strCookieAuctionId');
@@ -147,7 +147,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}		
 		set {
 			if (strCookieAuctionId != value) {
-				Cookie	cId = new cookie('strCookieAuctionId', value, null, -1, false); 
+				Cookie	cId = new Cookie('strCookieAuctionId', value, null, -1, false); 
 	        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 	        	strCookieAuctionId = value;
 			}			
@@ -155,7 +155,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 	
 	// make sure it looks like a Salesforce ID
-	private String validateId(String Idparam) {
+	@TestVisible private String validateId(String Idparam) {
 		if (Idparam == null) return null;
         String id = String.escapeSingleQuotes(Idparam);
     	if((id.length() == 15 || id.length() == 18) && Pattern.matches('^[a-zA-Z0-9]*$', id)) {
@@ -165,10 +165,10 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 		
 	// make sure the Auction still exists
-	private boolean isValidAuctionId(String auctionId) {
+	@TestVisible private Boolean isValidAuctionId(String auctionId) {
 		if (auctionId == null) return null;
-		list<Auction__c> listAuc = new list<Auction__c>();
-		listAuc = [select Id from Auction__c where Id = :auctionId];
+		List<Auction__c> listAuc = new List<Auction__c>();
+		listAuc = [SELECT Id FROM Auction__c WHERE Id = :auctionId];
 		return listAuc.size() > 0;
 	}
 		
@@ -176,20 +176,20 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public class PagedItem {
 		
 		public SObject sobj { get; set; }
-		public boolean isChecked { get; set; }
+		public Boolean isChecked { get; set; }
 				
-		public PagedItem(Sobject sobjT) {
+		public PagedItem(SObject sobjT) {
 			sobj = sobjT;
 			isChecked = false;
 		}
 	}
 		
 	// returns a list of sObject's for the current page view.
-	public list<PagedItem> listPagedItem {
+	public List<PagedItem> listPagedItem {
 		get {
 			if (listPagedItem == null) {
-				listPagedItem = new list<PagedItem>();
-				for (Sobject sobj : setCon.getRecords()) {
+				listPagedItem = new List<PagedItem>();
+				for (SObject sobj : setCon.getRecords()) {
 					listPagedItem.add(new PagedItem(sobj));
 				}				
 			}
@@ -199,11 +199,11 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
    	} 
    	
    	// holds the global checkbox for the header (if fShowCheckboxes is on.)
-   	public boolean isCheckedAll { get; set; }
+   	public Boolean isCheckedAll { get; set; }
 	
 	// holds the current letter we are filtering on 
-	// we save this in a cookie for the page, so we remember our place when coming back to this tab.
-	public string strAlphaFilter { 
+	// we save this in a Cookie for the page, so we remember our place when coming back to this tab.
+	public String strAlphaFilter { 
 		get {
 			if (strAlphaFilter == null) {
 				if (pageController != null) {
@@ -216,7 +216,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		set {
 			if (strAlphaFilter != value) {
 				if (pageController != null) {
-					Cookie	cId = new cookie(pageController.getStrPageUniqueName() + 'strAlphaFilter', value, null, -1, false);
+					Cookie	cId = new Cookie(pageController.getStrPageUniqueName() + 'strAlphaFilter', value, null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	strAlphaFilter = value;
@@ -233,10 +233,10 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	// a hack to provide a list of the alphabet so the component
 	// can iterate over the list to create links, rather than
 	// explictly listing each link in the component.
-	public list<string> listAlphaFilters {
+	public List<String> listAlphaFilters {
 		get {
 			if (listAlphaFilters == null) {
-				listAlphaFilters = new list<string>{'A','B','C','D','E','F','G','H',
+				listAlphaFilters = new List<String>{'A','B','C','D','E','F','G','H',
 						'I','J','K','L','M','N','O','P','Q','R',
 						'S','T','U','V','W','X','Y','Z'};
 			}
@@ -246,13 +246,13 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 	
 	// will hold the ID of the item to be deleted
-	public ID idDeleteItem { get; set; }
+	public Id idDeleteItem { get; set; }
 	
 	// action method to delete an item from the database.
 	public PageReference DeleteItem() {
 		try {
 			if (idDeleteItem != null) {
-				database.delete(idDeleteItem);
+				Database.delete(idDeleteItem);
 				idDeleteItem = null;
 				setCon = null;
 			}
@@ -263,7 +263,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 
 	// will hold the ID of the item to be edit
-	public ID idEditItem { get; set; }
+	public Id idEditItem { get; set; }
 	
 	// action method to edit an item.  defer to the page controller.
 	public PageReference EditItem() {
@@ -276,8 +276,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 	
 	// will hold the developer name of the field to be sorted
-	// we save this in a cookie for the page, so we remember our place when coming back to this tab.
-	public string SortItemField { 
+	// we save this in a Cookie for the page, so we remember our place when coming back to this tab.
+	public String SortItemField { 
 		get {
 			if (SortItemField == null) {
 				if (pageController != null) {
@@ -290,7 +290,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		set {
 			if (SortItemField != value) {
 				if (pageController != null) {
-					Cookie	cId = new cookie(pageController.getStrPageUniqueName() + 'SortItemField', value, null, -1, false);
+					Cookie	cId = new Cookie(pageController.getStrPageUniqueName() + 'SortItemField', value, null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	SortItemField = value;
@@ -299,8 +299,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 	
 	// whether current sorted ascending or descending.
-	// we save this in a cookie for the page, so we remember our place when coming back to this tab.
-	public boolean SortItemAsc { 
+	// we save this in a Cookie for the page, so we remember our place when coming back to this tab.
+	public Boolean SortItemAsc { 
 		get {
 			if (SortItemAsc == null && pageController != null) {
 		        Cookie cId = ApexPages.currentPage().getCookies().get(pageController.getStrPageUniqueName() + 'SortItemAsc');
@@ -311,7 +311,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		set {
 			if (SortItemAsc != value) {
 				if (pageController != null) {
-					Cookie	cId = new cookie(pageController.getStrPageUniqueName() + 'SortItemAsc', value ? 'true' : 'false', null, -1, false);
+					Cookie	cId = new Cookie(pageController.getStrPageUniqueName() + 'SortItemAsc', value ? 'true' : 'false', null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	SortItemAsc = value;
@@ -328,16 +328,16 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	}
 
 	// will hold the index of the current page
-	// we save this in a cookie for the page, so we remember our place when coming back to this tab.
-	public integer iPageNumber { 
+	// we save this in a Cookie for the page, so we remember our place when coming back to this tab.
+	public Integer iPageNumber { 
 		get {
 			if (iPageNumber == null || iPageNumber == 0) {
 				if (pageController != null) {
 			        Cookie cId = ApexPages.currentPage().getCookies().get(pageController.getStrPageUniqueName() + 'iPageNumber');
 			        if (cId != null) {
-			        	string str = cId.getValue();
+			        	String str = cId.getValue();
 			        	if (str != null) {
-			        		iPageNumber = integer.valueOf(str);
+			        		iPageNumber = Integer.valueOf(str);
 			        	}
 			        }
 				}
@@ -348,7 +348,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		set {
 			if (iPageNumber != value) {
 				if (pageController != null) {
-					Cookie	cId = new cookie(pageController.getStrPageUniqueName() + 'iPageNumber', string.valueOf(value), null, -1, false);
+					Cookie cId = new Cookie(pageController.getStrPageUniqueName() + 'iPageNumber', String.valueOf(value), null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	iPageNumber = value;
@@ -356,7 +356,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}
 	}
 	
-	// actionMethod cover so we can update our PageNumber cookie.
+	// actionMethod cover so we can update our PageNumber Cookie.
 	public PageReference PagingFirst() {
 		setCon.first();
 		iPageNumber = setCon.getPageNumber();
@@ -364,7 +364,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		return null;
 	}
 
-	// actionMethod cover so we can update our PageNumber cookie.
+	// actionMethod cover so we can update our PageNumber Cookie.
 	public PageReference PagingPrevious() {
 		setCon.previous();
 		iPageNumber = setCon.getPageNumber();
@@ -372,7 +372,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		return null;
 	}
 
-	// actionMethod cover so we can update our PageNumber cookie.
+	// actionMethod cover so we can update our PageNumber Cookie.
 	public PageReference PagingNext() {
 		setCon.next();
 		iPageNumber = setCon.getPageNumber();
@@ -380,60 +380,11 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		return null;
 	}
 
-	// actionMethod cover so we can update our PageNumber cookie.
+	// actionMethod cover so we can update our PageNumber Cookie.
 	public PageReference PagingLast() {
 		setCon.last();
 		iPageNumber = setCon.getPageNumber();
 		listPagedItem = null;
 		return null;
 	}
-
-	//==================== TEST METHOD(s) ======================================
-	static testmethod void CodeCoverageTests() {
-    	// create needed data
-    	Auction__c auction = new Auction__c (
-			Name = 'Test Auction',
-			Auction_Date__c = System.Today()
-		);  
-		insert auction;  	
-
-		Auction_Item__c ai = new Auction_Item__c(
-			Auction__c = auction.Id,
-			Auction_Item_Name__c = 'Test Auction Item'
-		);  
-		insert ai;
-
-		
-		//point to our VF page with the auctionId as a parameter
-		PageReference p = new PageReference('Page.AuctionItems');
-		p.getParameters().put('auctionId', auction.id); 
-		Test.setCurrentPageReference(p);
-		
-		
-		//instantiate the controller
-		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
-		PageControllerBase pageCtrl = new AUC_CTRL_AuctionItems();
-		compCtrl.pageController = pageCtrl;
-		system.assertNotEquals(null, compCtrl.setCon); 
-		system.assert(compCtrl.NumberOfPages >= 1);
-		system.assert(compCtrl.NumberOfItems >= 1);
-		system.assertEquals(auction.Id, compCtrl.listSOAuctions[1].getValue());
-		system.assertEquals(null, compCtrl.ChangeAuction());
-		system.assertNotEquals(null, compCtrl.listPagedItem);
-		system.assertEquals('%', compCtrl.strAlphaFilter);
-		system.assertNotEquals(null, compCtrl.listAlphaFilters);
-		compCtrl.strAlphaFilter = 'A';
-		compCtrl.AlphaFilter();
-		system.assertEquals(0, compCtrl.NumberOfItems);
-		system.assertEquals(null, compCtrl.SortItem());
-		compCtrl.strAlphaFilter = 'T';
-		compCtrl.AlphaFilter();
-		system.assertEquals(1, compCtrl.NumberOfItems);
-		compCtrl.idEditItem = ai.Id;
-		system.assertNotEquals(null, compCtrl.EditItem());
-		compCtrl.idDeleteItem = ai.Id;
-		system.assertEquals(null, compCtrl.DeleteItem());
-		list<Auction_Item__c> listAI = [select Id from Auction_Item__c where Id = :ai.Id];
-		system.assertEquals(0, listAI.size());
-	}	
 }
