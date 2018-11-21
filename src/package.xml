@@ -34,6 +34,7 @@
         <members>AUC_CTRL_AuctionPurchases</members>
         <members>AUC_CTRL_AuctionPurchases_TEST</members>
         <members>AUC_CTRL_AuctionReceipts</members>
+        <members>AUC_CTRL_AuctionReceipts_TEST</members>
         <members>AUC_CTRL_AuctionTickets</members>
         <members>AUC_CTRL_SoqlListView</members>
         <members>AUC_PurchaseOpportunity</members>
