@@ -36,6 +36,7 @@
         <members>AUC_CTRL_AuctionReceipts</members>
         <members>AUC_CTRL_AuctionReceipts_TEST</members>
         <members>AUC_CTRL_AuctionTickets</members>
+        <members>AUC_CTRL_AuctionTickets_TEST</members>
         <members>AUC_CTRL_SoqlListView</members>
         <members>AUC_PurchaseOpportunity</members>
         <members>AUC_TEST_AuctionDonatedItemOpp_RecalcFMV</members>
