@@ -4,10 +4,10 @@
 trigger AUC_AuctionDonatedItemOpp_RecalcFMV on Opportunity (after update) {
 	
 	// first find all the Donated Item Opps whose FMV has changed
-	set<ID> setIdOpp = new set<ID>();
-	for (Opportunity opp : trigger.new) {
+	Set<Id> setIdOpp = new Set<Id>();
+	for (Opportunity opp : Trigger.new) {
 		if (opp.RecordTypeId == AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem) {
-			Opportunity oppOld = trigger.oldMap.get(opp.Id);
+			Opportunity oppOld = Trigger.oldMap.get(opp.Id);
 			if ((opp.Amount != oppOld.Amount) || (opp.Number_of_Items__c != oppOld.Number_of_Items__c)) {
 				setIdOpp.add(opp.Id);
 			}
@@ -15,7 +15,7 @@ trigger AUC_AuctionDonatedItemOpp_RecalcFMV on Opportunity (after update) {
 	}
 
 	// now find their related AIP's and update them
-	list<Auction_Item_Piece__c> listAIP = [select Actual_FMV__c from Auction_Item_Piece__c where Opportunity__c in :setIdOpp];
+	List<Auction_Item_Piece__c> listAIP = [SELECT Actual_FMV__c FROM Auction_Item_Piece__c WHERE Opportunity__c IN :setIdOpp];
 	for (Auction_Item_Piece__c aip : listAIP) {
 		aip.Actual_FMV__c = null;	// force it to get recalced.
 	}

@@ -4,8 +4,9 @@
 trigger AUC_CampaignMember_AuctionBidNumber on CampaignMember (before insert, before update) {
 	
 	// allow user to disable this trigger
-	if (AUC_AuctionConstants.fAllowDuplicateBidNumbers) 
+	if (AUC_AuctionConstants.fAllowDuplicateBidNumbers) {
 		return;
+	}
 
 	// While this version was efficient in using only 1 soql, it could run into 
 	// governor limits if the total number of Bid Numbers in the database was over 1000.
@@ -17,7 +18,7 @@ trigger AUC_CampaignMember_AuctionBidNumber on CampaignMember (before insert, be
 	// NOTE: Bid_Number is a Double, but we always cast it to an Integer, to avoid issues when comparing, eg., 1000 vs 1000.0
 	Set<Id> setCampaignId = new Set<Id>();
 	Set<Integer> setBidNumber = new Set<Integer>();
-	for (CampaignMember cm : trigger.new) {
+	for (CampaignMember cm : Trigger.new) {
 		//system.debug('Trying to insert/update BidNumber: ' + string.valueof(cm.Bid_Number__c) + ' CampaignId: ' + cm.CampaignId + ' ContactId: ' + cm.ContactId);
 		if (cm.Bid_Number__c != null) {
 			setCampaignId.add(cm.CampaignId);
@@ -28,8 +29,8 @@ trigger AUC_CampaignMember_AuctionBidNumber on CampaignMember (before insert, be
 	// if no one is setting bid numbers, let's get out of here and be fast!
 	if (setBidNumber.size() == 0) return;
 
-	list<CampaignMember> listCm = [select Id, CampaignId, Bid_Number__c, ContactId  from CampaignMember 
-		where CampaignId in :setCampaignId and Bid_Number__c in :setBidNumber];
+	List<CampaignMember> listCm = [SELECT Id, CampaignId, Bid_Number__c, ContactId  FROM CampaignMember
+		WHERE CampaignId IN :setCampaignId AND Bid_Number__c IN :setBidNumber];
 			
 	// create a map of their <CampaignId+BidNumbers,ContactId> for checking against. 
 	Map<String, Set<Id>> mapCampaignIdBidNumberToId = new Map<String, Set<Id>>();
@@ -48,11 +49,11 @@ trigger AUC_CampaignMember_AuctionBidNumber on CampaignMember (before insert, be
 	
 	// now make sure none of the new CM's use any of the existing bid numbers.	
 	// note that we add the new bid numbers, to detect duplicates in the new set.	 
-	for (CampaignMember cm : trigger.new) {
+	for (CampaignMember cm : Trigger.new) {
 		if (cm.Bid_Number__c != null) {
 			String strKey = cm.CampaignId + String.valueOf(cm.Bid_Number__c.intValue());
 			Set<Id> setId = mapCampaignIdBidNumberToId.get(strKey);
-			System.Assert(setId == null || setId.size() > 0);
+			System.assert(setId == null || setId.size() > 0);
 			if (setId == null) {  // bid number not used, so now lets add it.
 				setId = new Set<Id>();
 				setId.add(cm.ContactId);

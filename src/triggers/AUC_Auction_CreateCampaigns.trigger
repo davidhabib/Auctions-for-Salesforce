@@ -5,58 +5,58 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
 
     // we are creating a new Auction, so create its three subcampaigns
     
-    list<Campaign> listCmpAttendees = new list<Campaign>();
-    list<Campaign> listCmpTickets = new list<Campaign>();
-    list<Campaign> listCmpSponsors = new list<Campaign>();
-    list<Campaign> listCmpDonors = new list<Campaign>();
-    list<Campaign> listCmpAll = new list<Campaign>();
+    List<Campaign> listCmpAttendees = new List<Campaign>();
+    List<Campaign> listCmpTickets = new List<Campaign>();
+    List<Campaign> listCmpSponsors = new List<Campaign>();
+    List<Campaign> listCmpDonors = new List<Campaign>();
+    List<Campaign> listCmpAll = new List<Campaign>();
     
-    for (Auction__c auc : trigger.new) {
+    for (Auction__c auc : Trigger.new) {
         Campaign cmp;
         AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
                 
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
             Status = AUC_AuctionConstants.CAMPAIGN_Status_Default,
-            IsActive = True,
-            StartDate = Date.Today(),
+            IsActive = true,
+            StartDate = Date.today(),
             Name = auc.Name + AUC_AuctionConstants.CAMPAIGN_NAME_SUFFIX_AuctionAttendees,
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionAttendees,
 			CampaignMemberRecordTypeId = AUC_AuctionMaintenance.recordtypeIdCampaignMemberAuctionAttendee,
-            Auction__c = auc.id
+            Auction__c = auc.Id
             );  
         listCmpAttendees.add(cmp);
         
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
             Status = AUC_AuctionConstants.CAMPAIGN_Status_Default,
-            IsActive = True,
-            StartDate = Date.Today(),
+            IsActive = true,
+            StartDate = Date.today(),
             Name = auc.Name + AUC_AuctionConstants.CAMPAIGN_NAME_SUFFIX_AuctionTickets,
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionTickets,
-            Auction__c = auc.id
+            Auction__c = auc.Id
             );  
         listCmpTickets.add(cmp);
 
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
             Status = AUC_AuctionConstants.CAMPAIGN_Status_Default,
-            IsActive = True,
-            StartDate = Date.Today(),
+            IsActive = true,
+            StartDate = Date.today(),
             Name = auc.Name + AUC_AuctionConstants.CAMPAIGN_NAME_SUFFIX_AuctionSponsors,
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionSponsors,
-            Auction__c = auc.id
+            Auction__c = auc.Id
             );  
         listCmpSponsors.add(cmp);
 
         cmp = new Campaign (
             RecordTypeId = AUC_AuctionMaintenance.recordtypeIdAuctionCampaign,
             Status = AUC_AuctionConstants.CAMPAIGN_Status_Default,
-            IsActive = True,
-            StartDate = Date.Today(),
+            IsActive = true,
+            StartDate = Date.today(),
             Name = auc.Name + AUC_AuctionConstants.CAMPAIGN_NAME_SUFFIX_AuctionItemDonors,
             Auction_Campaign_Type__c = AUC_AuctionConstants.CAMPAIGN_TYPE_AuctionItemDonors,
-            Auction__c = auc.id
+            Auction__c = auc.Id
             );  
         listCmpDonors.add(cmp);
     }
@@ -70,8 +70,8 @@ trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
     
 
 	// now go through each campaign and set up the correct CampaignMember statuses
-	list<CampaignMemberStatus> listCMSToDel = [Select Id From CampaignMemberStatus WHERE CampaignId in :listCmpAttendees]; 
-    list<CampaignMemberStatus> listCMS = new list<CampaignMemberStatus>();
+	List<CampaignMemberStatus> listCMSToDel = [SELECT Id FROM CampaignMemberStatus WHERE CampaignId IN :listCmpAttendees];
+    List<CampaignMemberStatus> listCMS = new List<CampaignMemberStatus>();
 	
     for (Campaign cmp : listCmpAttendees) {
  	    CampaignMemberStatus cms1 = new CampaignMemberStatus(

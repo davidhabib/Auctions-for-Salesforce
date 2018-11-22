@@ -3,7 +3,7 @@
 
 trigger AUC_Auction_ProtectCampaigns on Campaign (before delete) {
 
-	for (Campaign cmp : trigger.old) {
+	for (Campaign cmp : Trigger.old) {
 		if (cmp.Auction__c != null) {
 			cmp.addError ('Campaign ' + cmp.Name + ' is used by Auction: ' + cmp.Auction__c + '.  You must delete the Auction first.');			
 		}
