@@ -183,7 +183,8 @@
 			</apex:outputPanel>						
 		</apex:outputPanel>						
             
-            <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees" rendered="{!false || opp.Number_of_Tickets__c > 0}" >
+            <apex:pageBlockSection title="Add Auction Attendees" columns="1" id="pbsAttendees"
+								   rendered="{!opp.Number_of_Tickets__c != null && opp.Number_of_Tickets__c > 0}" >
             	<p style="font-weight:bold">Please list each individual that is attending with the purchase of these tickets.</p>
             	<br/>
         
