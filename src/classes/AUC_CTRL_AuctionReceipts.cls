@@ -267,7 +267,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	public String strErrorMessage { get; set; }
 	
 	// list of Receipt objects to display
-	public List<Receipt> listReceipts {
+	@TestVisible private List<Receipt> listReceipts {
 		get { 
 			if (listReceipts != null) return listReceipts;
 			
@@ -318,7 +318,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	}
 			
 	// to handle large auctions, the second list of Receipt objects to display
-	public List<Receipt> listReceipts2 {
+	@TestVisible private List<Receipt> listReceipts2 {
 		get {
 			// we fill listReceipts2 at the same time we fill listReceipts1.
 			return listReceipts2;
@@ -327,7 +327,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	}
 	
 	// to handle large auctions, the third list of Receipt objects to display
-	public List<Receipt> listReceipts3 {
+	@TestVisible private List<Receipt> listReceipts3 {
 		get {
 			// we fill listReceipts3 at the same time we fill listReceipts1.
 			return listReceipts3;
@@ -340,10 +340,10 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			if (listLR == null) {
 				listLR = new List<List<Receipt>>();
 				listLR.add(listReceipts);
-				if (listReceipts2.size() > 0) {
+				if (listReceipts2 != null && listReceipts2.size() > 0) {
 					listLR.add(listReceipts2);
 				}
-				if (listReceipts3.size() > 0) {
+				if (listReceipts3 != null && listReceipts3.size() > 0) {
 					listLR.add(listReceipts3);
 				}
 			}
