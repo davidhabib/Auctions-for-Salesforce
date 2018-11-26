@@ -61,6 +61,7 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 					AND Number_Available__c > 0
 					AND CampaignId = :auctionMaintenance.campaignIdAuctionDonors
 					ORDER BY Auction_Donated_Item_Name__c DESC
+					LIMIT 999
 				]) {
 					if (opp.Number_of_Items__c > 0) {
 						Decimal cost = ((opp.Amount == null) ? 0 : opp.Amount) / opp.Number_of_Items__c;
@@ -81,7 +82,8 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 			if (listSOAuctionItems == null) {
 				listSOAuctionItems = new List<SelectOption>();
 				listSOAuctionItems.add(new SelectOption('', ''));
-				for (Auction_Item__c ai : [SELECT Id, Name, Auction_Item_Name__c FROM Auction_Item__c WHERE Auction__c = :auctionId ORDER BY Name]) {
+				for (Auction_Item__c ai : [SELECT Id, Name, Auction_Item_Name__c FROM Auction_Item__c
+					WHERE Auction__c = :auctionId ORDER BY Name LIMIT 999]) {
 					listSOAuctionItems.add(new SelectOption(ai.Id, ai.Name + ' - ' + ai.Auction_Item_Name__c));
 				}
 			}
