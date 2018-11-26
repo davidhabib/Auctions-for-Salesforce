@@ -54,7 +54,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			} else if (fAttendee && !fCaptain) {
 				strStatus = 'Please enter a table captain.  Tables hosted by organizations are at the end of the list.';
 			} else if (!fAttendee && fCaptain) {
-				strStatus = 'Select one of the guests FROM the Guest list below or enter a new contact to add to this Table Captain.';
+				strStatus = 'Select one of the guests from the Guest list below or enter a new contact to add to this Table Captain.';
 			} else if (fAttendee && fCaptain) {
 				strStatus = 'Update the guest\'s information and click <b>Save & Check In Contact</b>.<br/>Save their credit card by clicking <b>Save Credit Card</b>.' +
 					'<br/>If the guest needs to buy tickets, click on the <b>Add Ticket Purchase</b> checkbox.' + 
@@ -88,7 +88,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	}  
 
 	// holds the currently selected Attendee contact
-	// has to be a String to allow a null Id ('') to get returned FROM the page.
+	// has to be a String to allow a null Id ('') to get returned from the page.
 	public String contactIdAttendee { 
 		get; 
 		set {
@@ -136,7 +136,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// this parameter is used in scenarios WHERE the page
 	// needs us to search for an attendee before it could wait
-	// for the return FROM its javascript remoting call to get data
+	// for the return from its javascript remoting call to get data
 	public String searchAttendee { get; set; }
 
 	// callback when the user changes the Attendee contact lookup and submits too quick.
@@ -188,7 +188,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// holds the currently selected Captain.  
 	// Note that this can be either a Contact Id or an Account Id
-	// has to be a String to allow a null Id ('') to get returned FROM the page.
+	// has to be a String to allow a null Id ('') to get returned from the page.
 	public String IdCaptain { 
 		get; 
 		set {
@@ -440,7 +440,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     	private set;    	
     } 	
 
-	// helper routine to return all Contact field names FROM the Field Set
+	// helper routine to return all Contact field names from the Field Set
 	@TestVisible private String strContactFields {
 		get {
 			if (strContactFields == null) {
@@ -454,7 +454,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		set;
 	}
 	
-	// helper routine to return all CampaignMember field names FROM the Field Set
+	// helper routine to return all CampaignMember field names from the Field Set
 	// we could optimize this to use fieldset api, but the CM fields are used
 	// in two places that may require different fields.  so its easiest to just load them all.
 	@TestVisible private String strCMFields {
