@@ -93,7 +93,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	public PageReference AutoBidNumbersSet() {
 		Savepoint sp = Database.setSavepoint();
 		try {
-			UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
+			UTIL_Describe.checkFieldUpdateAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
 
 			Id campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 			if (campaignId != null) {				

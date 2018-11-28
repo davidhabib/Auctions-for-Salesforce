@@ -215,8 +215,9 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	* @return List<Purchaser>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<Purchaser> getListPurchasers(String auctionId, String strFilter) {
-	    UTIL_Describe.checkObjectReadAccess('Contact');
-	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
+	    UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
+	    UTIL_Describe.checkFieldReadAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
+
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
@@ -300,8 +301,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// CheckOut doesn't need to handle multiple contacts, but we copied this from AuctionsReceipts which does.
 	private List<Receipt> listReceiptsForlistContactId(List<Id> listContactId) {
 		try {
-			UTIL_Describe.checkObjectReadAccess('Contact');
-			UTIL_Describe.checkObjectReadAccess('Opportunity');
+			UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
+			UTIL_Describe.checkFieldReadAccess('Opportunity', 'Amount');
 
 			List<Receipt> listReceiptsT = new List<Receipt>();
 			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
@@ -463,7 +464,19 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	public PageReference UpdateCheckedOpps() {
 		Savepoint sp = Database.setSavepoint();
 		try {
-			UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+			Set<String> fieldsToUpdate = new Set<String> {
+				'StageName',
+				'Probability',
+				'ForecastCategoryName'
+			};
+			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+				fieldsToUpdate.add(AUC_AuctionConstants.strOppPaymentMethodField);
+			}
+			if (AUC_AuctionConstants.strOppCheckNumberField != null) {
+				fieldsToUpdate.add(AUC_AuctionConstants.strOppCheckNumberField);
+			}
+			UTIL_Describe.checkUpdateAccess('Opportunity', fieldsToUpdate);
+
 			strSaveResults = null;
 			
 			if (CountCheckOpps(listReceipts) == 0) {

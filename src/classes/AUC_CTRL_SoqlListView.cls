@@ -6,31 +6,40 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	// the set controller allows us to do paging in our pageTable
     public ApexPages.StandardSetController setCon {
     	get {
-		    UTIL_Describe.checkObjectReadAccess(pageController.strObjectType);
+		    try {
+			    // only needed to check object read permissions.
+			    // FLS handled by using apex:inputField's
+			    UTIL_Describe.checkObjectReadAccess(pageController.strObjectType);
 
-            if(setCon == null) {
-                String strSoql = pageController.getStrSoql();
+			    if(setCon == null) {
+	                String strSoql = pageController.getStrSoql();
 
-				// start out sorting on the main name field.
-                if (SortItemField == null || SortItemField == '') {
-					SortItemField = pageController.strNameField;
-					SortItemAsc = true;
-					strAlphaFilter = '%';
-                }
+					// start out sorting on the main name field.
+	                if (SortItemField == null || SortItemField == '') {
+						SortItemField = pageController.strNameField;
+						SortItemAsc = true;
+						strAlphaFilter = '%';
+	                }
 
-                if (SortItemField != null) {
-                    strSoql += ' ORDER BY ' + SortItemField + (SortItemAsc ? ' ASC' : ' DESC');
-                }
-                // if there is no auction selected, return an empty result set.
-                if (auctionId == null) {
-                    strSoql = 'select Id from opportunity where Id=null';
-                }
-                setCon = new ApexPages.StandardSetController(Database.getQueryLocator(strSoql));
-                setCon.setPageSize(cRecordsPerPage);
-                setCon.setPageNumber(iPageNumber);
-            }
-            return setCon;
-        } 
+	                if (SortItemField != null) {
+	                    strSoql += ' ORDER BY ' + SortItemField + (SortItemAsc ? ' ASC' : ' DESC');
+	                }
+
+		            // if there is no auction selected, return an empty result set.
+	                if (auctionId == null) {
+	                    strSoql = 'select Id from opportunity where Id=null';
+	                }
+	                setCon = new ApexPages.StandardSetController(Database.getQueryLocator(strSoql));
+	                setCon.setPageSize(cRecordsPerPage);
+	                setCon.setPageNumber(iPageNumber);
+	            }
+	            return setCon;
+		    } catch (Exception ex) {
+			    ApexPages.addMessages(ex);
+			    setCon = null;
+			    return setCon;
+		    }
+        }
         set {
         	if (setCon != value) {
         		setCon = value;
@@ -73,7 +82,6 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	
 	// constructor
 	public AUC_CTRL_SoqlListView() {
-		
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
 		String strAuctionId = ApexPages.currentPage().getParameters().get('auctionId');
@@ -190,9 +198,11 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		get {
 			if (listPagedItem == null) {
 				listPagedItem = new List<PagedItem>();
-				for (SObject sobj : setCon.getRecords()) {
-					listPagedItem.add(new PagedItem(sobj));
-				}				
+				if (setCon != null) {
+					for (SObject sobj : setCon.getRecords()) {
+						listPagedItem.add(new PagedItem(sobj));
+					}
+				}
 			}
 			return listPagedItem;
 		}

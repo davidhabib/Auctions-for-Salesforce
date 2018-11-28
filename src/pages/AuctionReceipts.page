@@ -4,7 +4,7 @@
  -->
 
 <apex:page docType="html-5.0" controller="AUC_CTRL_AuctionReceipts" title="Auction Receipts" tabStyle="Auction_Receipts__tab"
-		   renderAs="{!RenderFormat}" showHeader="true" lightningStylesheets="{!IF(RenderFormat=='pdf','false','true')}">
+			renderAs="{!RenderFormat}" showHeader="true" lightningStylesheets="{!IF(RenderFormat=='pdf','false','true')}" >
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/redmond/jquery-ui.css" type="text/css" />
@@ -262,6 +262,7 @@
 	<apex:outputPanel id="panelReportParameters" rendered="{!RenderFormat==null}" >
 	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 		<apex:sectionHeader title="Auction Receipts" />
+		<apex:pageMessages />
         <apex:pageBlock mode="edit" title="Search by Name or Bidder Number" >
        		<apex:actionStatus id="statusLoad" onstart="j$('#divLoading').fadeIn();" onstop="j$('#divLoading').fadeOut();" />
 			<div class="cssLoading" id="divLoading" >
@@ -357,7 +358,8 @@
 
                     <apex:pageBlockSectionItem >
 						<apex:outputText value="" />
-				    	<apex:commandButton value="Open PDF" onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;"  immediate="false" />
+				    	<apex:commandButton value="Open PDF" onclick="window.open('{!JSENCODE(strOpenReceiptURL)}'); return false;" immediate="false"
+							disabled="{!NOT(enableOpenPDF)}" />
 					</apex:pageBlockSectionItem>
 				</apex:pageBlockSection>
 				<p/><p/>

@@ -66,11 +66,21 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	    strSaveResults = 'Starting Save...';
 		
 		try {
+			// since we are using apex:inputField for all Opp fields, we don't need to test each field's permissions
 			UTIL_Describe.checkObjectCreateAccess('Opportunity');
 			UTIL_Describe.checkObjectUpdateAccess('Opportunity');
-			UTIL_Describe.checkObjectCreateAccess('CampaignMember');
+			UTIL_Describe.checkCreateAccess('CampaignMember', new Set<String> {
+				'ContactId',
+				'CampaignId',
+				'Status'
+			});
+			// since we are using apex:inputField for all Auction Item fields, we don't need to test each field's permissions
 			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
-			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'));
+			UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
+				UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+				UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
+				UTIL_Describe.StrTokenNSPrefix('Quantity__c')
+			});
 
 			Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:contactRole.ContactId];
 			String strDonor = contact.Name;

@@ -63,29 +63,40 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 				return listSOLookupBidNumbers;
 			}
 			listSOLookupBidNumbers = new List<SelectOption>();
-			listSOLookupBidNumbers.add(new SelectOption('', ''));
-			Integer cCM = 0;
-			for (List<CampaignMember> listCM : [SELECT Bid_Number__c, Contact.Name, Contact.Id, Id FROM CampaignMember 
-					WHERE CampaignId=:campaignIdAuctionAttendees AND ContactId<>NULL AND Status<>'RSVP No' 
-					ORDER BY Contact.LastName, Contact.FirstName]) {
-				for (CampaignMember cm : listCM) {
-					String strBidNumber = (cm.Bid_Number__c == null ? '' : String.valueOf(Integer.valueOf(cm.Bid_Number__c)));
-					cCM++;
-					if (cCM < 1000) {
-						listSOLookupBidNumbers.add(new SelectOption(cm.Contact.Id, strBidNumber + ': ' + cm.Contact.Name));
-					} else if (cCM < 2000) {
-						if (listSOLookupBidNumbers2 == null) {
-							listSOLookupBidNumbers2 = new List<SelectOption>();
+			try {
+				UTIL_Describe.checkFieldReadAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
+				UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
+
+				listSOLookupBidNumbers.add(new SelectOption('', ''));
+				Integer cCM = 0;
+				for (List<CampaignMember> listCM : [
+					SELECT Bid_Number__c, Contact.Name, Contact.Id, Id
+					FROM CampaignMember
+					WHERE CampaignId = :campaignIdAuctionAttendees AND ContactId <> NULL AND Status <> 'RSVP No'
+					ORDER BY Contact.LastName, Contact.FirstName
+				]) {
+					for (CampaignMember cm : listCM) {
+						String strBidNumber = (cm.Bid_Number__c == null ? '' : String.valueOf(Integer.valueOf(cm.Bid_Number__c)));
+						cCM++;
+						if (cCM < 1000) {
+							listSOLookupBidNumbers.add(new SelectOption(cm.Contact.Id, strBidNumber + ': ' + cm.Contact.Name));
+						} else if (cCM < 2000) {
+							if (listSOLookupBidNumbers2 == null) {
+								listSOLookupBidNumbers2 = new List<SelectOption>();
+							}
+							listSOLookupBidNumbers2.add(new SelectOption(cm.Contact.Id, strBidNumber + ': ' + cm.Contact.Name));
+						} else {
+							strSaveResults = 'This page can only display the first 2000 contacts from the Attendees campaign whose status is different than "RSVP No". ' +
+								' You should change the status of non-attendees to "RSVP No" in order to have this page list all the contacts who actually attended.';
+							return listSOLookupBidNumbers;
 						}
-						listSOLookupBidNumbers2.add(new SelectOption(cm.Contact.Id, strBidNumber + ': ' + cm.Contact.Name));						
-					} else {
-						strSaveResults = 'This page can only display the first 2000 contacts from the Attendees campaign whose status is different than "RSVP No". ' +
-							' You should change the status of non-attendees to "RSVP No" in order to have this page list all the contacts who actually attended.';
-						return listSOLookupBidNumbers;					
 					}
 				}
-			}		
-			return listSOLookupBidNumbers;
+				return listSOLookupBidNumbers;
+			} catch (Exception ex) {
+				ApexPages.addMessages(ex);
+				return listSOLookupBidNumbers;
+			}
 		}
 		private set;
 	}		
@@ -100,28 +111,41 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 				return listSOLookupAuctionItems;
 			}
 			listSOLookupAuctionItems = new List<SelectOption>();
-			listSOLookupAuctionItems.add(new SelectOption('', ''));
-			Integer cCM = 0;
-					
-			for (List<Auction_Item__c> listAI : [SELECT Id, Name, Auction_Item_Name__c FROM Auction_Item__c 
-				WHERE (Auction__c = :auctionId AND (Id NOT IN :setAuctionItemIdPurchased OR Allow_Multiple_Purchases__c = TRUE))
-					ORDER BY Name, Auction_Item_Name__c]) {
-				for (Auction_Item__c ai : listAI) {
-					cCM++;
-					if (cCM < 1000) {
-						listSOLookupAuctionItems.add(new SelectOption(ai.Id, ai.Name + ': ' + ai.Auction_Item_Name__c));
-					} else if (cCM < 2000) {
-						if (listSOLookupAuctionItems2 == null) {
-							listSOLookupAuctionItems2 = new List<SelectOption>();
+			try {
+				UTIL_Describe.checkReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), new Set<String>{
+					'Name',
+					UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c')
+				});
+
+				listSOLookupAuctionItems.add(new SelectOption('', ''));
+				Integer cCM = 0;
+
+				for (List<Auction_Item__c> listAI : [
+					SELECT Id, Name, Auction_Item_Name__c
+					FROM Auction_Item__c
+					WHERE (Auction__c = :auctionId AND (Id NOT IN :setAuctionItemIdPurchased OR Allow_Multiple_Purchases__c = TRUE))
+					ORDER BY Name, Auction_Item_Name__c
+				]) {
+					for (Auction_Item__c ai : listAI) {
+						cCM++;
+						if (cCM < 1000) {
+							listSOLookupAuctionItems.add(new SelectOption(ai.Id, ai.Name + ': ' + ai.Auction_Item_Name__c));
+						} else if (cCM < 2000) {
+							if (listSOLookupAuctionItems2 == null) {
+								listSOLookupAuctionItems2 = new List<SelectOption>();
+							}
+							listSOLookupAuctionItems2.add(new SelectOption(ai.Id, ai.Name + ': ' + ai.Auction_Item_Name__c));
+						} else {
+							strSaveResults = 'This page can only display the first 2000 Auction Items. ';
+							return listSOLookupAuctionItems;
 						}
-						listSOLookupAuctionItems2.add(new SelectOption(ai.Id, ai.Name + ': ' + ai.Auction_Item_Name__c));
-					} else {
-						strSaveResults = 'This page can only display the first 2000 Auction Items. ';
-						return listSOLookupAuctionItems;											
 					}
 				}
-			}		
-			return listSOLookupAuctionItems;
+				return listSOLookupAuctionItems;
+			} catch (Exception ex) {
+				ApexPages.addMessages(ex);
+				return listSOLookupBidNumbers;
+			}
 		}
 		private set;
 	}		
@@ -172,7 +196,18 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
     //create the new Auction Purchases
     public PageReference CreateAuctionPurchases() {
         try {
-	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
+	        UTIL_Describe.checkCreateAccess('Opportunity', new Set<String>{
+		        'Name',
+		        'StageName',
+		        'Amount',
+		        'CampaignId',
+		        'RecordTypeId',
+		        'AccountId',
+		        'Description',
+		        UTIL_Describe.StrTokenNSPrefix('Auction_Item_Purchased__c'),
+		        UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'),
+		        UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c')
+	        });
 
 	        strSaveResults = 'Starting Save...';
 	        Integer cOpps = 0;

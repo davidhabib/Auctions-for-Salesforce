@@ -7,15 +7,8 @@
 	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 	<apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 		<apex:sectionHeader title="Item Piece Edit" subtitle="New Item Piece" />
-		<apex:outputPanel id="panelDebugging" rendered="false">
-    		<hr/> 
-    		<apex:outputText value="{!'AuctionId: '  + auctionId}" Style="color:red;" /><br/>
-    		<apex:outputText value="{!'aip.Auction_Item__c: '  + aip.Auction_Item__c}" Style="color:red;" /><br/>    		
-    		<apex:outputText value="{!'aip.Opportunity: '  + aip.Opportunity__c}" Style="color:red;" /><br/>    		
-    		<apex:outputText value="{!'oppDonatedItemId '  + oppDonatedItemId}" Style="color:red;" /><br/>    		
-    		<hr/>
-		</apex:outputPanel>
-			  
+		<apex:pageMessages />
+
 		<apex:pageBlock title="New Item Piece" mode="edit" id="pbMain" >
             <apex:pageBlockButtons >
                 <apex:commandButton action="{!Save}" value="Save"/>

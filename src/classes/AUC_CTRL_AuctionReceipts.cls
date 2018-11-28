@@ -5,22 +5,19 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 
 	// constructor
 	public AUC_CTRL_AuctionReceipts() {
-		UTIL_Describe.checkObjectReadAccess('Opportunity');
-		UTIL_Describe.checkObjectReadAccess('CampaignMember');
-
 		// force IE into Standards Mode
 		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
-		 		
+
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		listSOAuctions = auctionMaintenance.listSOAuctions;
-		
+
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
-			auctionId = strAuctionId;	
+			auctionId = strAuctionId;
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
 			auctionId = listSOAuctions[1].getValue();
 		}
-		auctionMaintenance.auctionId = auctionId;	
+		auctionMaintenance.auctionId = auctionId;
 
 		// default state
 		fIncludeTicketPurchases = false;
@@ -29,7 +26,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		contactIdPurchaser = null;
 
 		Map<String, String> mapParams = ApexPages.currentPage().getParameters();
-				
+
 		// also support a specific contact (to allow page to be invoked on a specific receipt)
 		String strcontactId = AUC_AuctionMaintenance.StrEscape(mapParams.get('contactId'));
 		if (strcontactId != null && strcontactId != '') {
@@ -55,7 +52,30 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 
 		getRenderFormat();
+
+		doFLSChecks();
 	}
+
+	public void doFLSChecks() {
+		try {
+			UTIL_Describe.checkReadAccess('Opportunity', setOppFields);
+			UTIL_Describe.checkReadAccess('CampaignMember', new Set<String>{
+				'ContactId',
+				UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'),
+				UTIL_Describe.StrTokenNSPrefix('Table_Name_Number__c')
+			});
+			UTIL_Describe.checkReadAccess('Contact', new Set<String>{
+				'Name',
+				'MailingAddress'
+			});
+			enableOpenPDF = true;
+		} catch (Exception ex) {
+			ApexPages.addMessages(ex);
+			enableOpenPDF = false;
+		}
+	}
+
+	public Boolean enableOpenPDF { get; set; }
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
@@ -69,13 +89,6 @@ global with sharing class AUC_CTRL_AuctionReceipts {
     	}
     } 
      
-    public PageReference OpenPDF() {
-		PageReference pdf =  ApexPages.currentPage();
-        pdf.getParameters().put('RenderFormat','pdf');
-        fOpenPDF = true;
-        return pdf;
-    }  
-    
 	// public property to get the commandButton URL
 	// for the Open button, to open the receipts pdf  
 	public String strOpenReceiptURL {
@@ -101,7 +114,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		private set;
 	}
 	    		
-	private Boolean fOpenPDF { get; set; }
+	@TestVisible private Boolean fOpenPDF { get; set; }
 	
  	// the currently selected Auction
 	public Id auctionId { get; set; }
@@ -242,18 +255,33 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 			return true;
 		}
 	}
+
+	// the set of Opportunity fields referenced in the field set, and directly in the visualforce page
+	private Set<String> setOppFields {
+		get {
+			if (setOppFields == null) {
+				setOppFields = new Set<String>();
+				setOppFields.addAll(AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity',
+					UTIL_Describe.StrTokenNSPrefix('AuctionReceiptsFS')));
+				setOppFields.add('Id');
+				setOppFields.add('Name');
+				setOppFields.add('StageName');
+				setOppFields.add('Amount');
+				setOppFields.add('Description');
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c'));
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Deductible_Amount__c'));
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c'));
+			}
+			return setOppFields;
+		}
+		set;
+	}
 	
-	// helper routine to return all Opportunity field names from the Field Set
+	// helper routine to return all Opportunity field names from the Field Set and page for the soql
 	private String strOppFields {
 		get {
 			if (strOppFields == null) {
-				
-				// initialize the list of all fields on Opportunity.
-				// ideally, we'd only include the fields in the Field Set,
-				// but our page needs multiple opp fields, so it is easier to get them all.
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
-				List<String> listStrFields = new List<String>();
-				listStrFields.addAll(mapS.keySet());  
+				List<String> listStrFields = new List<String>(setOppFields);
 				strOppFields = '';
 				for (String str : listStrFields) {
 					strOppFields += 'opportunity.' + str + ',';
@@ -264,8 +292,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 		set;
 	}
-	
-	
+
 	public String strErrorMessage { get; set; }
 	
 	// list of Receipt objects to display

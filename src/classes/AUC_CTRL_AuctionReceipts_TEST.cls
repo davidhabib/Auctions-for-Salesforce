@@ -94,8 +94,7 @@ public with sharing class AUC_CTRL_AuctionReceipts_TEST {
 		System.assertEquals(ctrl.strAuctionReceiptsFooter, ctrl.strAuctionReceiptsFooter);
 		System.assertEquals(null, ctrl.getRenderFormat());
 		System.assert(ctrl.listReceipts == null);
-		System.assert(ctrl.OpenPDF() != null);
-		System.assertEquals('pdf', ctrl.getRenderFormat());
+		ctrl.fOpenPDF = true;
 		System.assert(ctrl.listReceipts != null);
 		System.assertEquals(1, ctrl.listReceipts.size());
 		System.assertEquals(1, ctrl.listLR.size());

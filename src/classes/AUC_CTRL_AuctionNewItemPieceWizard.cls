@@ -51,27 +51,41 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 	// the list of opps to put in the Auction Donated Item dropdown
 	public List<SelectOption> listSODonatedItems {
 		get {
-			if (listSODonatedItems == null) {
-				listSODonatedItems = new List<SelectOption>();
-				listSODonatedItems.add(new SelectOption('', ''));
-				for (Opportunity opp : [
-					SELECT Auction_Donated_Item_Name__c, Id, Number_Available__c, Number_of_Items__c, Amount
-					FROM Opportunity
-					WHERE RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem
-					AND Number_Available__c > 0
-					AND CampaignId = :auctionMaintenance.campaignIdAuctionDonors
-					ORDER BY Auction_Donated_Item_Name__c DESC
-					LIMIT 999
-				]) {
-					if (opp.Number_of_Items__c > 0) {
-						Decimal cost = ((opp.Amount == null) ? 0 : opp.Amount) / opp.Number_of_Items__c;
-						listSODonatedItems.add(new SelectOption(opp.Id, opp.Auction_Donated_Item_Name__c + ' ('
-							+ Integer.valueOf(opp.Number_Available__c) + ' available at $'
-							+ String.valueOf(cost.setScale(2)) + ' each)'));
+			try {
+				if (listSODonatedItems == null) {
+					listSODonatedItems = new List<SelectOption>();
+					UTIL_Describe.checkReadAccess('Opportunity', new Set<String>{
+						'Amount',
+						UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Name__c'),
+						UTIL_Describe.StrTokenNSPrefix('Number_Available__c'),
+						UTIL_Describe.StrTokenNSPrefix('Number_of_Items__c')
+					});
+					listSODonatedItems.add(new SelectOption('', ''));
+					for (Opportunity opp : [
+						SELECT Auction_Donated_Item_Name__c, Id, Number_Available__c, Number_of_Items__c, Amount
+						FROM Opportunity
+						WHERE RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem
+						AND Number_Available__c > 0
+						AND CampaignId = :auctionMaintenance.campaignIdAuctionDonors
+						ORDER BY Auction_Donated_Item_Name__c DESC
+						LIMIT 999
+					]) {
+						if (opp.Number_of_Items__c > 0) {
+							Decimal cost = ((opp.Amount == null) ? 0 : opp.Amount) / opp.Number_of_Items__c;
+							listSODonatedItems.add(new SelectOption(opp.Id, opp.Auction_Donated_Item_Name__c + ' ('
+								+ Integer.valueOf(opp.Number_Available__c) + ' available at $'
+								+ String.valueOf(cost.setScale(2)) + ' each)'));
+						}
 					}
 				}
+				return listSODonatedItems;
+			} catch (Exception ex) {
+				ApexPages.addMessages(ex);
+				// for some reason, the addMessage doesn't work in this scenario (maybe due to it being a getter?)
+				// so let's also put the error in the select list!
+				listSODonatedItems.add(new SelectOption('', ex.getMessage()));
+				return listSODonatedItems;
 			}
-			return listSODonatedItems;
 		}
 		private set;
 	}
@@ -79,15 +93,32 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 	// the list of Auction Items to put in the Auction Item dropdown
 	public List<SelectOption> listSOAuctionItems {
 		get {
-			if (listSOAuctionItems == null) {
-				listSOAuctionItems = new List<SelectOption>();
-				listSOAuctionItems.add(new SelectOption('', ''));
-				for (Auction_Item__c ai : [SELECT Id, Name, Auction_Item_Name__c FROM Auction_Item__c
-					WHERE Auction__c = :auctionId ORDER BY Name LIMIT 999]) {
-					listSOAuctionItems.add(new SelectOption(ai.Id, ai.Name + ' - ' + ai.Auction_Item_Name__c));
+			try {
+				if (listSOAuctionItems == null) {
+					listSOAuctionItems = new List<SelectOption>();
+					UTIL_Describe.checkReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), new Set<String>{
+						'Name',
+						UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c')
+					});
+					listSOAuctionItems.add(new SelectOption('', ''));
+					for (Auction_Item__c ai : [
+						SELECT Id, Name, Auction_Item_Name__c
+						FROM Auction_Item__c
+						WHERE Auction__c = :auctionId
+						ORDER BY Name
+						LIMIT 999
+					]) {
+						listSOAuctionItems.add(new SelectOption(ai.Id, ai.Name + ' - ' + ai.Auction_Item_Name__c));
+					}
 				}
+				return listSOAuctionItems;
+			} catch (Exception ex) {
+				ApexPages.addMessages(ex);
+				// for some reason, the addMessage doesn't work in this scenario (maybe due to it being a getter?)
+				// so let's also put the error in the select list!
+				listSOAuctionItems.add(new SelectOption('', ex.getMessage()));
+				return listSOAuctionItems;
 			}
-			return listSOAuctionItems;
 		}
 		private set;
 	}

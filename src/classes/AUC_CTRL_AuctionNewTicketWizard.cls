@@ -153,9 +153,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 	
 	// the list of attendees.  Note that this list has to hold existing (previously saved), as well as new Campaign Members.
+	// since displayed with apex:inputFields, no need to check FLS here
     public List<CampaignMember> listCmpMbrAttendees {
-    	set;
-    	
     	get {
     		Double numTickets = opp.Number_of_Tickets__c;
     		if (listCmpMbrAttendees == null) {
@@ -188,7 +187,8 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	        }
 	        return listCmpMbrAttendees;
     	}
-    } 	
+	    private set;
+    }
 
 	// status String for reporting the results of saving.
     public String strSaveResults { get; set; }    
@@ -206,12 +206,19 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	
 	// action method to delete a CM FROM the database.
 	public PageReference DeleteCM() {
-		if (idDeleteCM != null) {
-			Database.delete(idDeleteCM);
-			idDeleteCM = null;
-			listCmpMbrAttendees = null;
+		try {
+			UTIL_Describe.checkObjectDeleteAccess('CampaignMember');
+
+			if (idDeleteCM != null) {
+				Database.delete(idDeleteCM);
+				idDeleteCM = null;
+				listCmpMbrAttendees = null;
+			}
+			return null;
+		} catch (Exception ex) {
+			ApexPages.addMessages(ex);
+			return null;
 		}
-		return null;	
 	}
 	
 	
@@ -221,13 +228,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         strSaveResults = 'Starting Save...';
 	        
         try {
+	        // since we are using apex:inputField, no need to check individual field FLS
 	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
 	        UTIL_Describe.checkObjectUpdateAccess('Opportunity');
 	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
 	        UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
 
-
-	        // deal with scenario WHERE user clicks directly on save without
+	        // deal with scenario where user clicks directly on save without
         	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.
         	if (listCmpMbrAttendees.size() == 0) {
         		OnChange_NumberOfTickets();

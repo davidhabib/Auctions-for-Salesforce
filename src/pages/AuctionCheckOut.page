@@ -397,12 +397,14 @@
 		
 								<apex:column > 
 							        <apex:facet name="header">{!$ObjectType.Opportunity.Label}</apex:facet>
-									<apex:outputLink value="/{!oppAP.opp.Id}" >{!oppAP.opp.Name}</apex:outputLink>
+									<apex:outputLink value="/{!oppAP.opp.Id}"
+										 rendered="{!$ObjectType.Opportunity.fields.Name.Accessible}">{!oppAP.opp.Name}</apex:outputLink>
 								</apex:column>
 								
 								<apex:column > 
 							        <apex:facet name="header">{!$ObjectType.Auction_Item__c.Label}</apex:facet>
-									<apex:outputText value="{!IF(oppAP.opp.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.opp.Auction_Item_Name__c, oppAP.opp.Description))}"/>
+									<apex:outputText value="{!IF(oppAP.opp.RecordType.Name=='GW Auction Ticket', 'Auction Tickets', NULLVALUE(oppAP.opp.Auction_Item_Name__c, oppAP.opp.Description))}"
+										 rendered="{!$ObjectType.Opportunity.fields.Auction_Item_Name__c.Accessible}"/>
 								</apex:column>
 		
 								<apex:column >
@@ -411,7 +413,8 @@
 										<apex:param value="{!oppAP.opp.Amount}" />
 									</apex:outputText>
 									<apex:facet name="footer">				
-										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="font-weight:bold;">
+										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="font-weight:bold;"
+											 rendered="{!$ObjectType.Opportunity.fields.Amount.Accessible}" >
 											<apex:param value="{!receipt.decTotalAmountPaid}"/> 
 										</apex:outputText>								
 									</apex:facet>
@@ -422,7 +425,8 @@
 									<apex:inputCheckbox value="{!oppAP.IsPayNow}" rendered="{!oppAP.opp.IsClosed == false}" required="false" immediate="false" onchange="ChangePayNow('{!oppAP.opp.Id}');" />
 									<apex:outputText value="paid" rendered="{!oppAP.opp.IsClosed}" style="font-style:italic;" />
 									<Apex:facet name="footer">				
-										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="text-align:center; font-weight:bold;">
+										<apex:outputText value="{0,Number,$#,###.##}" escape="false" style="text-align:center; font-weight:bold;"
+										 	rendered="{!$ObjectType.Opportunity.fields.Amount.Accessible}" >
 											<apex:param value="{!receipt.decTotalAmountToPay}"/> 
 										</apex:outputText>								
 									</apex:facet>

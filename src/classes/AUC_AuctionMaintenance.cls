@@ -229,10 +229,15 @@ public with sharing class AUC_AuctionMaintenance {
 							payment.put('npe01__Check_Reference_Number__c', strCheckNumber);
 						}
 					}
+					UTIL_Describe.checkUpdateAccess('npe01__OppPayment__c', new Set<String> {
+						'npe01__Payment_Method__c',
+						'npe01__Check_Reference_Number__c'
+					});
 					update listPayments;
 				}
 			} catch (Exception e) {
 				// no cleanup needed.
+				ApexPages.addMessages(e);
 			}
 		}
 	}

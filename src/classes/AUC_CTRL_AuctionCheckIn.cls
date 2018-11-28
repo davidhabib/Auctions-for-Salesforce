@@ -793,8 +793,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @return List<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<Contact> getListContacts(String strFilter) {
-	    UTIL_Describe.checkObjectReadAccess('Contact');
-    	strFilter = '%' + strFilter + '%';
+	    UTIL_Describe.checkReadAccess('Contact', new Set<String>{
+		    'Name',
+		    'MailingStreet',
+		    'MailingCity'
+	    });
+
+	    strFilter = '%' + strFilter + '%';
 		List<Contact> listContacts = [SELECT Id, Name, MailingStreet, MailingCity 
         		FROM Contact WHERE 
 				Name LIKE :strFilter
@@ -811,8 +816,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @return List<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<Contact> getListAttendees(String auctionId, String strFilter) {
-	    UTIL_Describe.checkObjectReadAccess('Contact');
+	    UTIL_Describe.checkReadAccess('Contact', new Set<String>{
+		    'Name',
+		    'MailingStreet',
+		    'MailingCity'
+	    });
 	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
+
     	strFilter = '%' + strFilter + '%';
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
@@ -844,7 +854,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @return List<SObject>, (Contacts and Accounts) which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<SObject> getListCaptains(String auctionId, String strFilter) {
-	    UTIL_Describe.checkObjectReadAccess('Contact');
+	    UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
+	    UTIL_Describe.checkFieldReadAccess('Account', 'Name');
+	    UTIL_Describe.checkObjectReadAccess('Opportunity');
+	    UTIL_Describe.checkObjectReadAccess('OpportunityContactRole');
 	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
 
     	strFilter = '%' + strFilter + '%';
@@ -861,7 +874,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			(Opportunity.CampaignId=:auctionMaintenance.campaignIdAuctionTickets) AND
 			Contact.Name LIKE :strFilter]) {
 			
-			// use set to avoId dups
+			// use set to avoid dups
 			for (OpportunityContactRole ocr : listOCR) {
 				setContactId.add(ocr.ContactId);
 				setOppId.add(ocr.OpportunityId);
@@ -873,7 +886,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			WHERE CampaignId = :auctionMaintenance.campaignIdAuctionAttendees AND
 			Table_Captain__r.Name LIKE :strFilter]) {
 			
-			// use set to avoId dups
+			// use set to avoid dups
 			for (CampaignMember cm : listCM) {
 				setContactId.add(cm.Table_Captain__c);
 			}

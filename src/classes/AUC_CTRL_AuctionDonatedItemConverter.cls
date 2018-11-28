@@ -45,7 +45,17 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	public List<NewAuctionItem> listNewAuctionItem { 
 		get {
 			try {
-				UTIL_Describe.checkObjectReadAccess('Opportunity');
+				UTIL_Describe.checkReadAccess('Opportunity', new Set<String>{
+					'Name',
+					'Amount',
+					'Description',
+					UTIL_Describe.StrTokenNSPrefix('Number_of_Items__c'),
+					UTIL_Describe.StrTokenNSPrefix('Number_Available__c'),
+					UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Name__c'),
+					UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Restrictions__c')
+				});
+				UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), 'Name');
+
 				if (listNewAuctionItem == null) {
 					listNewAuctionItem = new List<NewAuctionItem>();
 
@@ -111,8 +121,15 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 
 		Savepoint sp = Database.setSavepoint();
 		try {
+			// for AuctionItem, the fields that can be updated by the user are using apex:InputField, so
+			// we don't need to check them specifically.  we'll just check the object's perms.
 			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
-			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'));
+			UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
+				UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+				UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
+				UTIL_Describe.StrTokenNSPrefix('Quantity__c'),
+				UTIL_Describe.StrTokenNSPrefix('Actual_FMV__c')
+			});
 
 			// first create the Auction Item's
 			for (NewAuctionItem nai : listNewAuctionItem) {
