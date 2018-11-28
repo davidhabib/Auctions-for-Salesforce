@@ -211,7 +211,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	            }
 	            // see if there is an available ticket for this guest
 	            // and use its PaId status.
-	            attendeeEdit.cm.Paid__c = PaIdTicketAvailable();
+	            attendeeEdit.cm.Paid__c = PaidTicketAvailable();
 			}										 
 		}
 	}
@@ -558,6 +558,13 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
         strSaveResults = 'Starting Save...';
 
         try {
+	        UTIL_Describe.checkObjectCreateAccess('Contact');
+	        UTIL_Describe.checkObjectUpdateAccess('Contact');
+	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
+	        UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
+	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
+	        UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+
 			// bail out if we aren't set up.
 			if (attendeeEdit == null || attendeeEdit.con == null) {
 				strSaveResults = 'There is no guest selected to save.';
@@ -786,7 +793,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @return List<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<Contact> getListContacts(String strFilter) {
-    	strFilter = '%' + strFilter + '%';  
+	    UTIL_Describe.checkObjectReadAccess('Contact');
+    	strFilter = '%' + strFilter + '%';
 		List<Contact> listContacts = [SELECT Id, Name, MailingStreet, MailingCity 
         		FROM Contact WHERE 
 				Name LIKE :strFilter
@@ -803,7 +811,9 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @return List<Contact>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<Contact> getListAttendees(String auctionId, String strFilter) {
-    	strFilter = '%' + strFilter + '%';  
+	    UTIL_Describe.checkObjectReadAccess('Contact');
+	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
+    	strFilter = '%' + strFilter + '%';
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
@@ -834,8 +844,10 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	* @return List<SObject>, (Contacts and Accounts) which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<SObject> getListCaptains(String auctionId, String strFilter) {
-    	strFilter = '%' + strFilter + '%';   	
+	    UTIL_Describe.checkObjectReadAccess('Contact');
+	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
 
+    	strFilter = '%' + strFilter + '%';
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;

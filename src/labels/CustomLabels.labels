@@ -14,4 +14,36 @@
         <shortDescription>(not used)</shortDescription>
         <value>This label was replaced by the Custom Setting Auction Receipt Intro 1 &amp; 2.</value>
     </labels>
+    <labels>
+        <fullName>PermissionCreateException</fullName>
+        <categories>Permissions</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>PermissionCreateException</shortDescription>
+        <value>You don&apos;&apos;t have the permissions required to create {0}. Please contact the system administrator.</value>
+    </labels>
+    <labels>
+        <fullName>PermissionDeleteException</fullName>
+        <categories>Permissions</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>PermissionDeleteException</shortDescription>
+        <value>You don&apos;&apos;t have the permissions required to delete {0}. Please contact the system administrator.</value>
+    </labels>
+    <labels>
+        <fullName>PermissionReadException</fullName>
+        <categories>Permissions</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>PermissionReadException</shortDescription>
+        <value>You don&apos;&apos;t have the permissions required to view {0}. Please contact the system administrator.</value>
+    </labels>
+    <labels>
+        <fullName>PermissionUpdateException</fullName>
+        <categories>Permissions</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>PermissionUpdateException</shortDescription>
+        <value>You don&apos;&apos;t have the permissions required to update {0}. Please contact the system administrator.</value>
+    </labels>
 </CustomLabels>

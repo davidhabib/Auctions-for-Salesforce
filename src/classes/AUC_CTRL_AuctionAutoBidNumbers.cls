@@ -57,16 +57,16 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	// returns the soql String to load up the next batch of CampaignMembers
 	private String strSoqlCMBatch(Integer cLimit, Integer iOffset) {
 		Id campaignId = auctionMaintenance.campaignIdAuctionAttendees;
-		String strSoql = 'SELECT Id, Bid_Number__c, contact.LastName, contact.firstname';
+		String strSoql = 'SELECT Id, Bid_Number__c, Contact.LastName, Contact.firstname';
 		if (fHasHouseholds) {
-			strSoql += ', contact.' + AUC_AuctionConstants.strContactHouseholdField;
-			strSoql += ', contact.' + AUC_AuctionConstants.strContactHouseholdNameField;
+			strSoql += ', Contact.' + AUC_AuctionConstants.strContactHouseholdField;
+			strSoql += ', Contact.' + AUC_AuctionConstants.strContactHouseholdNameField;
 		}
 		strSoql += ' FROM CampaignMember ';
-		strSoql += ' WHERE campaignId=\'' + campaignId + '\' AND contactId<>null AND Status<>\'RSVP No\' ';
-		strSoql += ' order by contact.LastName, contact.FirstName ';
-		if (cLimit > 0) strSoql += ' limit ' + cLimit;
-		if (iOffset > 0) strSoql += ' offset ' + iOffset;
+		strSoql += ' WHERE CampaignId=\'' + campaignId + '\' AND ContactId<>NULL AND Status<>\'RSVP No\' ';
+		strSoql += ' ORDER BY Contact.LastName, Contact.FirstName ';
+		if (cLimit > 0) strSoql += ' LIMIT ' + cLimit;
+		if (iOffset > 0) strSoql += ' OFFSET ' + iOffset;
 		return strSoql;		
 	}
 	
@@ -93,6 +93,8 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	public PageReference AutoBidNumbersSet() {
 		Savepoint sp = Database.setSavepoint();
 		try {
+			UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
+
 			Id campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 			if (campaignId != null) {				
 				

@@ -330,5 +330,4 @@ public with sharing class AUC_AuctionMaintenance {
 		opp.Probability = AUC_AuctionConstants.oppStageWonNotThankedProbability;
 		opp.ForecastCategoryName = AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName;
 	}
-		
 }

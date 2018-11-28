@@ -6,27 +6,28 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	// the set controller allows us to do paging in our pageTable
     public ApexPages.StandardSetController setCon {
     	get {
+		    UTIL_Describe.checkObjectReadAccess(pageController.strObjectType);
+
             if(setCon == null) {
+                String strSoql = pageController.getStrSoql();
 
-            	String strSoql = pageController.getStrSoql();
-            	
 				// start out sorting on the main name field.
-            	if (SortItemField == null || SortItemField == '') {
+                if (SortItemField == null || SortItemField == '') {
 					SortItemField = pageController.strNameField;
-					SortItemAsc = true;  
-					strAlphaFilter = '%';          		 
-            	}
+					SortItemAsc = true;
+					strAlphaFilter = '%';
+                }
 
-            	if (SortItemField != null) {
-            		strSoql += ' ORDER BY ' + SortItemField + (SortItemAsc ? ' ASC' : ' DESC');
-            	}
-            	// if there is no auction selected, return an empty result set.
-            	if (auctionId == null) {
-            		strSoql = 'select Id from opportunity where Id=null';
-            	}
-            	setCon = new ApexPages.StandardSetController(Database.getQueryLocator(strSoql));
-            	setCon.setPageSize(cRecordsPerPage);
-            	setCon.setPageNumber(iPageNumber); 
+                if (SortItemField != null) {
+                    strSoql += ' ORDER BY ' + SortItemField + (SortItemAsc ? ' ASC' : ' DESC');
+                }
+                // if there is no auction selected, return an empty result set.
+                if (auctionId == null) {
+                    strSoql = 'select Id from opportunity where Id=null';
+                }
+                setCon = new ApexPages.StandardSetController(Database.getQueryLocator(strSoql));
+                setCon.setPageSize(cRecordsPerPage);
+                setCon.setPageNumber(iPageNumber);
             }
             return setCon;
         } 

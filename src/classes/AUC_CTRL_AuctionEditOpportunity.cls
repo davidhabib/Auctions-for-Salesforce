@@ -13,6 +13,8 @@ public with sharing class AUC_CTRL_AuctionEditOpportunity {
     }	
 
 	public PageReference doEdit() {
+		UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+
 		PageReference pr = null;
         Id oppRecordTypeIdNew = ApexPages.currentPage().getParameters().get('RecordType');
 

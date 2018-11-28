@@ -215,6 +215,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	* @return List<Purchaser>, which will be turned into a Javascript collection.
 	********************************************************************************************************/
     @RemoteAction global static List<Purchaser> getListPurchasers(String auctionId, String strFilter) {
+	    UTIL_Describe.checkObjectReadAccess('Contact');
+	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
 		if (auctionId == null || auctionId == '') return null;
 		AUC_AuctionMaintenance auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
@@ -297,27 +299,30 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// this allows us to use two apex:repeat constructs to loop through the contacts, and all of their opps.
 	// CheckOut doesn't need to handle multiple contacts, but we copied this from AuctionsReceipts which does.
 	private List<Receipt> listReceiptsForlistContactId(List<Id> listContactId) {
-			
+		try {
+			UTIL_Describe.checkObjectReadAccess('Contact');
+			UTIL_Describe.checkObjectReadAccess('Opportunity');
+
 			List<Receipt> listReceiptsT = new List<Receipt>();
 			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
-	       	Map<Id, Receipt> mapContactIdReceipt = new Map<Id, Receipt>();
-	       	String rtPurchase = AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem;
-	       	String rtGift = AUC_AuctionMaintenance.recordtypeIdAuctionGift;
-	       	String rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
-	       	String cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
-	       	String cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
+			Map<Id, Receipt> mapContactIdReceipt = new Map<Id, Receipt>();
+			String rtPurchase = AUC_AuctionMaintenance.recordtypeIdAuctionPurchasedItem;
+			String rtGift = AUC_AuctionMaintenance.recordtypeIdAuctionGift;
+			String rtTicket = AUC_AuctionMaintenance.recordtypeIdAuctionTicket;
+			String cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
+			String cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 
 			String strSoql = 'SELECT contactId, contact.Name, contact.FirstName, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
 				' opportunity.RecordType.Name, ' + AUC_AuctionMaintenance.StrEscape(strOppFields) +
 				' FROM OpportunityContactRole ' +
 				' WHERE IsPrimary=true AND contactId in :listContactId AND ' +
-					' (((opportunity.RecordTypeId = :rtPurchase OR opportunity.RecordTypeId = :rtGift) ' + 
-						' AND opportunity.campaignId = :cmpIdAttendees) ' +
-					' OR ' +  
-					' (opportunity.RecordTypeId = :rtTicket ' +
-						' AND opportunity.campaignId = :cmpIdTickets ' +
-						' AND IsPrimary=true)) ' +
-					' order by contact.LastName, contact.FirstName';
+				' (((opportunity.RecordTypeId = :rtPurchase OR opportunity.RecordTypeId = :rtGift) ' +
+				' AND opportunity.campaignId = :cmpIdAttendees) ' +
+				' OR ' +
+				' (opportunity.RecordTypeId = :rtTicket ' +
+				' AND opportunity.campaignId = :cmpIdTickets ' +
+				' AND IsPrimary=true)) ' +
+				' order by contact.LastName, contact.FirstName';
 
 /*			
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
@@ -335,48 +340,52 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				order by contact.Name]) {
 */
 			for (List<OpportunityContactRole> listOCR : Database.query(strSoql)) {
-					
-	       
+
+
 				// now go through all the opps, and for each contact create the appropriate Receipt objects and their child opportunities.	       
-		        for (OpportunityContactRole ocr : listOCR){
-		        	Opportunity opp = ocr.Opportunity;
-	
-		        	//System.debug('DUMPING OCR Info ------------------------------------------------------');	        	
-		        	//System.debug(ocr.ContactId);
-		        	//System.debug(ocr.opportunity.name);
-		        	//System.debug(ocr.opportunity.amount);
-		        	//System.debug(ocr.opportunity.Auction_Item_Name__c);
-		        	//System.debug(opp.name);
-		        	
-		        	// this map keeps track of whether we've already created a receipt for this contact or not.
-		        	Receipt r = mapContactIdReceipt.get(ocr.ContactId);
-		        	if (r == null) {
-		        		r = new Receipt();
-		        		r.contactId = ocr.ContactId;
-		        		r.auctionId = auctionId;
-		        		r.listOppAuctionPurchases = new List<AUC_PurchaseOpportunity>();
-		        		r.strContactName = ocr.Contact.Name;
-		        		r.strContactFirstName = ocr.Contact.FirstName;
-		        		r.dtAuction = dtAuction;
-		        		mapContactIdReceipt.put(r.contactId, r);
-		        		listReceiptsT.add(r);
-		        	}
-		        	AUC_PurchaseOpportunity po = new AUC_PurchaseOpportunity(ocr.Opportunity);
-	        		r.listOppAuctionPurchases.add(po);
-	        		if (opp.Amount <> null) {
-	        			r.decTotalAmountPaid += opp.Amount;
-	        			if (po.IsPayNow) {
-	        				r.decTotalAmountToPay += opp.Amount;
-	        				fOppsToUpdate = true;
-	        			}
-	        		}
+				for (OpportunityContactRole ocr : listOCR) {
+					Opportunity opp = ocr.Opportunity;
+
+					//System.debug('DUMPING OCR Info ------------------------------------------------------');
+					//System.debug(ocr.ContactId);
+					//System.debug(ocr.opportunity.name);
+					//System.debug(ocr.opportunity.amount);
+					//System.debug(ocr.opportunity.Auction_Item_Name__c);
+					//System.debug(opp.name);
+
+					// this map keeps track of whether we've already created a receipt for this contact or not.
+					Receipt r = mapContactIdReceipt.get(ocr.ContactId);
+					if (r == null) {
+						r = new Receipt();
+						r.contactId = ocr.ContactId;
+						r.auctionId = auctionId;
+						r.listOppAuctionPurchases = new List<AUC_PurchaseOpportunity>();
+						r.strContactName = ocr.Contact.Name;
+						r.strContactFirstName = ocr.Contact.FirstName;
+						r.dtAuction = dtAuction;
+						mapContactIdReceipt.put(r.contactId, r);
+						listReceiptsT.add(r);
+					}
+					AUC_PurchaseOpportunity po = new AUC_PurchaseOpportunity(ocr.Opportunity);
+					r.listOppAuctionPurchases.add(po);
+					if (opp.Amount <> null) {
+						r.decTotalAmountPaid += opp.Amount;
+						if (po.IsPayNow) {
+							r.decTotalAmountToPay += opp.Amount;
+							fOppsToUpdate = true;
+						}
+					}
 					//r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
 					//if (opp.IsWon) r.decTotalAmountReceived += opp.Amount;
-		        }
-	        }
-	        
-	        //System.debug('**** Leaving listReceipts');
-	        return listReceiptsT;
+				}
+			}
+
+			//System.debug('**** Leaving listReceipts');
+			return listReceiptsT;
+		} catch (Exception ex) {
+			ApexPages.addMessages(ex);
+			return new List<Receipt>();
+		}
 	}
 	
 	// utility to go through all receipts, and retotal how much they plan to pay.
@@ -454,6 +463,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	public PageReference UpdateCheckedOpps() {
 		Savepoint sp = Database.setSavepoint();
 		try {
+			UTIL_Describe.checkObjectUpdateAccess('Opportunity');
 			strSaveResults = null;
 			
 			if (CountCheckOpps(listReceipts) == 0) {

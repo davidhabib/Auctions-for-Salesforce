@@ -44,40 +44,46 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	// the list of new auction items that the visualforce page displays for editing
 	public List<NewAuctionItem> listNewAuctionItem { 
 		get {
-			if (listNewAuctionItem == null) {
-				listNewAuctionItem = new List<NewAuctionItem>();
-				
-				List<Opportunity> listOpp = [SELECT Id, Name, Amount, Number_of_Items__c, Number_Available__c, 
-					Auction_Donated_Item_Name__c, Description, Auction_Donated_Item_Restrictions__c FROM Opportunity
-					WHERE CampaignId = :auctionMaintenance.campaignIdAuctionDonors AND
-						RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem AND
-						Number_Available__c > 0 
-					ORDER BY Auction_Donated_Item_Name__c
-					LIMIT :AUC_AuctionConstants.cDonatedItemConverterBatchSize];
-					
-				// cache set of already used auction item id's
-				List<Auction_Item__c> listAI = [SELECT Name FROM Auction_Item__c WHERE Auction__c = :auctionMaintenance.auctionId];
-				Set<String> setItemId = new Set<String>();
-				for (Auction_Item__c ai : listAI) {
-					setItemId.add(ai.Name);
-				}				
-				Integer itemId = 100;
-				
-				for (Opportunity opp : listOpp) {
-					Auction_Item__c ai = new Auction_Item__c();
-					ai.Auction__c = auctionMaintenance.auctionId;
-					ai.Auction_Item_Name__c = opp.Auction_Donated_Item_Name__c;  
-					ai.Description__c = opp.Description;
-					ai.Restrictions__c = opp.Auction_Donated_Item_Restrictions__c;
-					
-					// generate a free auction item id
-					while (setItemId.contains(String.valueOf(itemId))) itemId++; 
-					ai.Name = String.valueOf(itemId++);					
-					
-					listNewAuctionItem.add(new NewAuctionItem(ai, opp));				
+			try {
+				UTIL_Describe.checkObjectReadAccess('Opportunity');
+				if (listNewAuctionItem == null) {
+					listNewAuctionItem = new List<NewAuctionItem>();
+
+					List<Opportunity> listOpp = [SELECT Id, Name, Amount, Number_of_Items__c, Number_Available__c,
+						Auction_Donated_Item_Name__c, Description, Auction_Donated_Item_Restrictions__c FROM Opportunity
+						WHERE CampaignId = :auctionMaintenance.campaignIdAuctionDonors AND
+							RecordTypeId = :AUC_AuctionMaintenance.recordtypeIdAuctionDonatedItem AND
+							Number_Available__c > 0
+						ORDER BY Auction_Donated_Item_Name__c
+						LIMIT :AUC_AuctionConstants.cDonatedItemConverterBatchSize];
+
+					// cache set of already used auction item id's
+					List<Auction_Item__c> listAI = [SELECT Name FROM Auction_Item__c WHERE Auction__c = :auctionMaintenance.auctionId];
+					Set<String> setItemId = new Set<String>();
+					for (Auction_Item__c ai : listAI) {
+						setItemId.add(ai.Name);
+					}
+					Integer itemId = 100;
+
+					for (Opportunity opp : listOpp) {
+						Auction_Item__c ai = new Auction_Item__c();
+						ai.Auction__c = auctionMaintenance.auctionId;
+						ai.Auction_Item_Name__c = opp.Auction_Donated_Item_Name__c;
+						ai.Description__c = opp.Description;
+						ai.Restrictions__c = opp.Auction_Donated_Item_Restrictions__c;
+
+						// generate a free auction item id
+						while (setItemId.contains(String.valueOf(itemId))) itemId++;
+						ai.Name = String.valueOf(itemId++);
+
+						listNewAuctionItem.add(new NewAuctionItem(ai, opp));
+					}
 				}
+				return listNewAuctionItem;
+			} catch (Exception e) {
+				ApexPages.addMessages(e);
+				return new List<NewAuctionItem>();
 			}
-			return listNewAuctionItem;
 		}
 		set;
 	}				
@@ -104,7 +110,10 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 		List<Auction_Item_Piece__c> listAIP = new List<Auction_Item_Piece__c>();
 
 		Savepoint sp = Database.setSavepoint();
-		try {		
+		try {
+			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
+			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'));
+
 			// first create the Auction Item's
 			for (NewAuctionItem nai : listNewAuctionItem) {
 				if (nai.isChecked) {

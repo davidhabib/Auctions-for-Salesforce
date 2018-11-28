@@ -5,7 +5,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 
 	// constructor
 	public AUC_CTRL_AuctionReceipts() {
-		
+		UTIL_Describe.checkObjectReadAccess('Opportunity');
+		UTIL_Describe.checkObjectReadAccess('CampaignMember');
+
 		// force IE into Standards Mode
 		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 		 		

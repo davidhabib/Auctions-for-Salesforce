@@ -131,7 +131,7 @@
 						// assume they are charging the card outside of Salesforce.
 						ChangePaymentMethod();
 						return;
-					} else if ('{!opp.Amount}' == '') {
+					} else if ('{!JSENCODE(TEXT(opp.Amount))}' == '') {
 						alert('Please fill in the Ticket Amount, before opening the credit card processor.');
 						return;
 					} else if ({!fShowPaymentProcessorOnPage}) { 
@@ -143,7 +143,7 @@
 						return;
 					}	
 				}		
-			</script>		    		
+			</script>
 
 	    	<apex:actionFunction action="{!ShowPanelCreditCard}" name="ShowPanelCreditCard" status="statusLoad" 
 	    		rerender="panelPayment" />			    		

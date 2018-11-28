@@ -171,12 +171,14 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
  
     //create the new Auction Purchases
     public PageReference CreateAuctionPurchases() {
-        strSaveResults = 'Starting Save...';
-        Integer cOpps = 0;
-		List<Opportunity> listOppsToCreate = new List<Opportunity>();
-		List<OpportunityContactRole> listCRToCreate = new List<OpportunityContactRole>();
-	        
-        try {   
+        try {
+	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
+
+	        strSaveResults = 'Starting Save...';
+	        Integer cOpps = 0;
+	        List<Opportunity> listOppsToCreate = new List<Opportunity>();
+	        List<OpportunityContactRole> listCRToCreate = new List<OpportunityContactRole>();
+
         	// do any bulk soqls we can up front to avoid too many calls.
         	Set<Id> setAuctionItemId = new Set<Id>();        	
         	Set<Id> setContactId = new Set<Id>();

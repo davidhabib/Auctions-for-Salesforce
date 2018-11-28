@@ -16,7 +16,7 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 
 	//constructor
 	public AUC_CTRL_AuctionNewItemPieceWizard (ApexPages.StandardController controller) {
-		
+
 		//get record from standard controller
 		stdController = controller;
         this.aip = (Auction_Item_Piece__c)controller.getRecord();

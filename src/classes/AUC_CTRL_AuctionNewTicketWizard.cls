@@ -5,7 +5,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	// constructor for the class
 	public AUC_CTRL_AuctionNewTicketWizard() {
-		// get the current auction we were invoked FROM, and find & set the appropriate campaign.
+		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a String to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
@@ -79,7 +79,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 		
-	// the currently SELECTed Auction
+	// the currently selected Auction
 	public Id auctionId { get; set; }
 		
 	// the list of Auctions to put in the Auction dropdown
@@ -94,7 +94,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	// the per ticket FMV to use
 	public Decimal decTicketFMV { get; set; }
 	
-	// helper routine to return all Opportunity field names FROM the Field Set
+	// helper routine to return all Opportunity field names from the Field Set
 	private String strOppFields {
 		get {
 			if (strOppFields == null) {
@@ -121,7 +121,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		set;
 	}
 		
-	// helper routine to return all CampaignMember field names FROM the Field Set
+	// helper routine to return all CampaignMember field names from the Field Set
 	private String strCMFields {
 		get {
 			if (strCMFields == null) {
@@ -221,7 +221,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         strSaveResults = 'Starting Save...';
 	        
         try {
-        	// deal with scenario WHERE user clicks directly on save without
+	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
+	        UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
+	        UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
+
+
+	        // deal with scenario WHERE user clicks directly on save without
         	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.
         	if (listCmpMbrAttendees.size() == 0) {
         		OnChange_NumberOfTickets();

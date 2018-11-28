@@ -66,6 +66,12 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	    strSaveResults = 'Starting Save...';
 		
 		try {
+			UTIL_Describe.checkObjectCreateAccess('Opportunity');
+			UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+			UTIL_Describe.checkObjectCreateAccess('CampaignMember');
+			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
+			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'));
+
 			Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:contactRole.ContactId];
 			String strDonor = contact.Name;
 			String strDonorRole = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
