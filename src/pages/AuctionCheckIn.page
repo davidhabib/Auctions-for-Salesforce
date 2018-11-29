@@ -445,7 +445,7 @@
 					    	<apex:selectList value="{!auctionId}" size="1" id="lbxAuctions" >
 					    		<apex:actionSupport event="onchange" status="statusLoad" action="{!ChangeAuction}" 
 					    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 
-					    			oncomplete="auctionId='{!auctionId}'; listCaptains=null; myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />			    			
+					    			oncomplete="auctionId='{!JSENCODE(auctionId)}'; listCaptains=null; myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />
 					    		<apex:selectOptions value="{!listSOAuctions}" />
 					    	</apex:selectList>	
 						</apex:pageBlockSectionItem>
@@ -527,7 +527,7 @@
 		    			rerender="panelSearch,panelEdit,panelAttendees,panelStatus,panelCreditCard" 						
 				    	oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />&nbsp;&nbsp;
 					<apex:commandButton value="Save Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage==false}" 
-						onclick="if ('{!strCreditCardValidateURL}' == '') {
+						onclick="if ('{!JSENCODE(strCreditCardValidateURL)}' == '') {
 											alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 										} else { 
 											window.open('{!JSENCODE(strCreditCardValidateURL)}','','{!JSENCODE(strPaymentProcessorWindowParameters)}');
@@ -536,7 +536,7 @@
 					/>
 					<apex:commandButton value="Save Credit Card" rendered="{!contactIdAttendee!=null && fShowPaymentProcessorOnPage}" 
 						action="{!ShowPanelCreditCard}" status="statusLoad" rerender="panelCreditCard" 
-						onclick="if ('{!strCreditCardValidateURL}' == '') {
+						onclick="if ('{!JSENCODE(strCreditCardValidateURL)}' == '') {
 								alert('Please refer to the Auctions Installation and Configuration Guide to set up a payment processor.');
 								return false;}"
 						oncomplete="myInitializeJQueryUI('{!JSENCODE(strNameAttendee)}','{!JSENCODE(strNameCaptain)}');" />&nbsp;&nbsp;						
@@ -555,7 +555,7 @@
 							<apex:column headerValue=" " >
 								<apex:outputPanel rendered="{!attendee.cm.contactId!=contactIdAttendee}" >	
 									<input type="radio" name="radioGrpContact" id="radio{!attendee.cm.contactId}" value="{!attendee.cm.contactId}" 
-										onclick="selectContactIdAttendee('{!attendee.cm.contactId}', true);" />
+										onclick="selectContactIdAttendee('{!JSENCODE(attendee.cm.contactId)}', true);" />
 								</apex:outputPanel>
 								<apex:outputPanel rendered="{!attendee.cm.contactId==contactIdAttendee}" >	
 									<input type="radio" name="radioGrpContact" id="radio{!attendee.cm.contactId}" value="{!attendee.cm.contactId}" checked="checked" />
@@ -587,7 +587,7 @@
 								<span style="vertical-align: middle;" >Loading Payment Processor...</span>
 							  </p>
 							</div>	       				
-		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!strPaymentProcessorPageHeight}" src="{!strCreditCardValidateURL}" />
+		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardValidateURL)}" />
 		       				<script>
 		       					j$('.cssLoadingPP').fadeIn();
 		       					j$('#iframePP').load(function(){  

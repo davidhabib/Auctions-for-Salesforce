@@ -136,19 +136,7 @@
 		    	event.stopPropagation();
 		    	return false; // does preventDefault and stopPropagation
 		  	}  
-		});	
-		
-		/****
-		// wanted to prevent window from closing, but had trouble getting fOppsToUpdate
-		// correctly loaded in a consistent fashion.  so I am punting on this.
-		j$(window).bind('beforeunload', function() {
-			if ({!fOppsToUpdate}) {
-				return 'The Purchase Opportunities should be updated first.';
-			} else {
-				return;
-			}
 		});
-		****/
 		
 		/*******************************************************************************************************
    	 	* setup the Purchasers autocomplete textbox
@@ -465,7 +453,7 @@
 							} else if ({!decTotalAmountToPay} == 0) {
 								alert('Please check which items you want to pay for, before opening the payment processor.');
 								return;
-							} else if ({!fShowPaymentProcessorOnPage}) { 
+							} else if ({!fShowPaymentProcessorOnPage}) {
 								ShowPanelCreditCard();
 								return; 
 							} else { 
@@ -525,8 +513,8 @@
 					<apex:pageBlockSection title="4.  Continue" collapsible="false" rendered="{!fHasReceipts}" >
 						<apex:pageBlockSectionItem >
 						<apex:outputPanel >
-							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;	
-							<apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;																								
+							<apex:commandButton value="View Receipt" onclick="if (areOppsUpdated({!fOppsToUpdate})) { window.open('{!JSENCODE(strOpenReceiptURL)}'); } return false;" />&nbsp;&nbsp;
+							<apex:commandButton value="Next Guest" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!NextGuest}" immediate="true" />&nbsp;&nbsp;
 							<apex:commandButton value="Close" onclick="return areOppsUpdated({!fOppsToUpdate});" action="{!Close}" immediate="true" />
 						</apex:outputPanel>							
 						</apex:pageBlockSectionItem>							

@@ -379,8 +379,8 @@
 					<tr>
 						<td>
                             <apex:outputText value="{!receipt.strContactName}" /><br/>
-							<apex:outputText value="{!receipt.strContactAddrLine1}" escape="false" /><br/>
-							<apex:outputText value="{!receipt.strContactAddrLine2}" escape="false" />
+							<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
+							<apex:outputText value="{!receipt.strContactAddrLine2}" />
 						</td>
 						<td style="text-align: right;">
                             <apex:outputText value="{! 'Bid number: ' + receipt.strBidNumber}" rendered="{!NOT(ISBLANK(receipt.strBidNumber))}" /><br/>
@@ -391,6 +391,7 @@
 				<p/>
 			
 			 	<p><apex:outputText value="{!'Dear ' + receipt.strContactFirstName}" />,<br/><br/>
+				<!-- we turn escape off, so intro text can contain html formatting in the pdf -->
 		    	<apex:outputText value="{!strAuctionReceiptsIntro}" escape="false" /></p>
 				<table> <!-- this table was put in to get the text after the purchases datatable to display below it! -->
 					<tr><td>
@@ -477,6 +478,7 @@
 					</table>
 
 					</td></tr>
+					<!-- we turn escape off, so footer text can contain html formatting (like images) in the pdf -->
 					<tr><td><p><apex:outputText value="{!strAuctionReceiptsFooter}" escape="false" /></p></td></tr>
 				</table>									   	
 	    	</apex:outputPanel>
