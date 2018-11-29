@@ -3,12 +3,12 @@
 
 public with sharing class AUC_CTRL_AuctionEditOpportunity { 
 	
-	public Opportunity opp;
+	private Opportunity opp;
 	
     public AUC_CTRL_AuctionEditOpportunity(ApexPages.StandardController stdController) {
         opp = (Opportunity)stdController.getRecord(); 
         if (opp != null) {
-        	opp = [SELECT Id, Name, RecordTypeId FROM Opportunity WHERE Id = :opp.Id];
+        	opp = [SELECT Id, RecordTypeId FROM Opportunity WHERE Id = :opp.Id];
         }        
     }	
 

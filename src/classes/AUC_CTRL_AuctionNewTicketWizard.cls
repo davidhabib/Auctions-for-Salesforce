@@ -233,6 +233,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	        UTIL_Describe.checkObjectUpdateAccess('Opportunity');
 	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
 	        UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
+	        UTIL_Describe.checkObjectDeleteAccess('CampaignMember');
 
 	        // deal with scenario where user clicks directly on save without
         	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.

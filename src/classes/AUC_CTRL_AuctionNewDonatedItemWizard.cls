@@ -81,6 +81,11 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 				UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
 				UTIL_Describe.StrTokenNSPrefix('Quantity__c')
 			});
+			UTIL_Describe.checkReadAccess('Contact', new Set<String>{
+				'Name',
+				'AccountId'
+			});
+			UTIL_Describe.checkFieldReadAccess('Account', 'Name');
 
 			Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:contactRole.ContactId];
 			String strDonor = contact.Name;

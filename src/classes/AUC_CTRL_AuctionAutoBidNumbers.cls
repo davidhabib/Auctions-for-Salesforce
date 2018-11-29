@@ -9,7 +9,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	// constructor
 	public AUC_CTRL_AuctionAutoBidNumbers() {
 		auctionMaintenance = new AUC_AuctionMaintenance();
-		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));		
+		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
 			auctionMaintenance.auctionId = strAuctionId;
 			
@@ -149,7 +149,7 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	}
 
 
-	public Integer AutoBidNumbersSetRemainingBatches(Integer iBidNumberLast) {
+	private Integer AutoBidNumbersSetRemainingBatches(Integer iBidNumberLast) {
 		List<CampaignMember> listCMtoUpdate = new List<CampaignMember>();	
 		Set<Id> setHousehold = new Set<Id>();
 		Integer cUpdated = 0;

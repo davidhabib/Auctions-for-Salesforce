@@ -19,7 +19,6 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers_TEST {
 		// create needed data
 		Account acc = new Account(Name='My Test Account for Contacts');
 		insert acc;
-
 		Integer cContact = 10;
 		List<Contact> listContact = new List<Contact>();
 		for (Integer i = 0; i < cContact; i++) {
