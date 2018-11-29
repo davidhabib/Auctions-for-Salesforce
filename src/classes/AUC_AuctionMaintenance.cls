@@ -43,6 +43,7 @@ public with sharing class AUC_AuctionMaintenance {
 		get {
 			List<SelectOption> listSO = new List<SelectOption>();
 			listSO.add(new SelectOption('', ''));
+			UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction__c'), 'Name');
 			for (Auction__c a : [SELECT Name, Id FROM Auction__c ORDER BY Auction_Date__c DESC LIMIT 500]) {
 				listSO.add(new SelectOption(a.Id, a.Name));
 			}		
@@ -118,9 +119,11 @@ public with sharing class AUC_AuctionMaintenance {
 	public String StrOppTicketName(Id accountId, Id contactId) {
 		String strTicketOwner;
 	    if (contactId != null) {
+		    UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
 			Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:contactId];
 			strTicketOwner = contact.Name;
 	   	} else if (accountId != null) {
+		    UTIL_Describe.checkFieldReadAccess('Account', 'Name');
 	        Account acc = [SELECT Id, Name FROM Account WHERE Id = :accountId];
 			strTicketOwner = acc.Name; 
 	    }
@@ -133,27 +136,30 @@ public with sharing class AUC_AuctionMaintenance {
 	    return (strTicketOwner + ' ' + strAuction + AUC_AuctionConstants.OPP_NAME_SUFFIX_AuctionTicket);	
 	}
 
-	
 	public static Integer YearOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
-		Auction__c auc = [SELECT Auction_Date__c FROM Auction__c WHERE Id=:auctionId];		
+		UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction__c'), UTIL_Describe.StrTokenNSPrefix('Auction_Date__c'));
+		Auction__c auc = [SELECT Auction_Date__c FROM Auction__c WHERE Id=:auctionId];
 		return (auc.Auction_Date__c == null ? System.today().year() : auc.Auction_Date__c.year());
 	}
-	
+
 	public static Date DateOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
+		UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction__c'), UTIL_Describe.StrTokenNSPrefix('Auction_Date__c'));
 		Auction__c auc = [SELECT Auction_Date__c FROM Auction__c WHERE Id=:auctionId];
 		return (auc.Auction_Date__c == null ? System.today() : auc.Auction_Date__c);
 	}
-		
+
 	public static String NameOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
+		UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction__c'), 'Name');
 		Auction__c auc = [SELECT Name FROM Auction__c WHERE Id=:auctionId];
 		return auc.Name;
 	}
-	
+
 	public static Decimal TicketNonDeductibleAmountOfAuctionId(Id auctionId) {
 		if (auctionId == null) return null;
+		UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction__c'), UTIL_Describe.StrTokenNSPrefix('Ticket_Non_Deductible_Amount__c'));
 		Auction__c auc = [SELECT Ticket_Non_Deductible_Amount__c FROM Auction__c WHERE Id=:auctionId];
 		return (auc.Ticket_Non_Deductible_Amount__c == null) ? 0 : 	auc.Ticket_Non_Deductible_Amount__c;	
 	}
@@ -219,8 +225,8 @@ public with sharing class AUC_AuctionMaintenance {
 		if (AUC_AuctionConstants.IsNPSPInstalled) {
 			try {
 				List<SObject> listPayments = new List<SObject>();
-				String strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
-					' from npe01__OppPayment__c where npe01__Opportunity__c in :listOppToUpdate ';
+				String strSoql = 'SELECT Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+					' FROM npe01__OppPayment__c WHERE npe01__Opportunity__c IN :listOppToUpdate ';
 				listPayments = Database.query(strSoql);
 				if (listPayments.size() > 0) {
 					for (SObject payment : listPayments) {
@@ -247,8 +253,11 @@ public with sharing class AUC_AuctionMaintenance {
 	public static String strPaymentMethodOrCheckFromNPSPPayments(Id oppId, Boolean isCheck) {
 		if (AUC_AuctionConstants.IsNPSPInstalled) {
 			if (listPayments == null || listPayments.size() == 0 || listPayments[0].get('npe01__Opportunity__c') != oppId) {
-				String strSoql = 'select Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c, npe01__Opportunity__c  ' +
-					' from npe01__OppPayment__c where npe01__Opportunity__c = :oppId ';
+				UTIL_Describe.checkReadAccess('npe01__OppPayment__c', new Set<String>{
+					'npe01__Payment_Method__c', 'npe01__Check_Reference_Number__c', 'npe01__Opportunity__c'
+				});
+				String strSoql = 'SELECT Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c, npe01__Opportunity__c  ' +
+					' FROM npe01__OppPayment__c WHERE npe01__Opportunity__c = :oppId ';
 				listPayments = Database.query(strSoql);
 			}
 			if (listPayments.size() > 0) {
@@ -276,8 +285,10 @@ public with sharing class AUC_AuctionMaintenance {
 				return false;
 			}
 			if (AUC_AuctionConstants.isNPSPHouseholdAccountModel) {	// cheap way to detect 3.0
+				UTIL_Describe.checkFieldReadAccess('Opportunity', 'npsp__Primary_Contact__c');
 				opp.put('npsp__Primary_Contact__c', contactId);
 			} else {
+				UTIL_Describe.checkFieldReadAccess('Opportunity', 'npe01__Contact_Id_for_Role__c');
 				opp.put('npe01__Contact_Id_for_Role__c', contactId); // assume npsp 2.0 field (though didn't seem to work!)
 			}
 			return true;
@@ -301,6 +312,7 @@ public with sharing class AUC_AuctionMaintenance {
 			for (OpportunityContactRole ocr : listOCR) {
 				setOppId.add(ocr.OpportunityId);
 			}
+			UTIL_Describe.checkObjectReadAccess('OpportunityContactRole');
 			List<OpportunityContactRole> listOCRExisting = [SELECT Id, Role, ContactId, OpportunityId
 				FROM OpportunityContactRole WHERE IsPrimary = TRUE AND OpportunityId IN :setOppId];
 
@@ -323,7 +335,8 @@ public with sharing class AUC_AuctionMaintenance {
 					listOCRUpsert.add(ocr);
 				}
 			}
-
+			UTIL_Describe.checkObjectCreateAccess('OpportunityContactRole');
+			UTIL_Describe.checkObjectUpdateAccess('OpportunityContactRole');
 			upsert listOCRUpsert;
 		}
 	}
