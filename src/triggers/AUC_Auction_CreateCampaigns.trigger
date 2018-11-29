@@ -4,7 +4,28 @@
 trigger AUC_Auction_CreateCampaigns on Auction__c (after insert) {
 
     // we are creating a new Auction, so create its three subcampaigns
-    
+
+	UTIL_Describe.checkCreateAccess('Campaign', new Set<String> {
+		'RecordTypeId',
+		'Status',
+		'IsActive',
+		'StartDate',
+		'Name',
+		UTIL_Describe.StrTokenNSPrefix('Auction_Campaign_Type__c'),
+		'CampaignMemberRecordTypeId',
+		UTIL_Describe.StrTokenNSPrefix('Auction__c')
+	});
+
+	UTIL_Describe.checkCreateAccess('CampaignMemberStatus', new Set<String> {
+		'Label',
+		'CampaignId',
+		'HasResponded',
+		'SortOrder',
+		'IsDefault'
+	});
+
+	UTIL_Describe.checkObjectDeleteAccess('CampaignMemberStatus');
+
     List<Campaign> listCmpAttendees = new List<Campaign>();
     List<Campaign> listCmpTickets = new List<Campaign>();
     List<Campaign> listCmpSponsors = new List<Campaign>();
