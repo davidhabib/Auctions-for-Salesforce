@@ -123,7 +123,7 @@
 									$ObjectType.Opportunity.Fields[f].Label)}" >
 									<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!f}" />
 									<apex:outputText style="font-size:1.0em;font-weight:bold;font-family:symbol"
-										value="{!IF(SortItemField=f, IF(SortItemAsc, ' ↑' , ' ↓'), '')}" escape="false" />
+										value="{!IF(SortItemField=f, IF(SortItemAsc, ' ↑' , ' ↓'), '')}" escape="true" />
 								</apex:commandLink>
 							</apex:facet>
 							<!-- special case Name field to be link to view/edit object -->
