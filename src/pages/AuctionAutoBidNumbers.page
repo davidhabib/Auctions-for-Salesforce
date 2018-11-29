@@ -4,7 +4,7 @@
 -->
 
 <apex:page controller="AUC_CTRL_AuctionAutoBidNumbers" title="Auction Bid Numbers" lightningStylesheets="true" >
-<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
         	
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 		<apex:sectionHeader title="Auction Bid Numbers" />

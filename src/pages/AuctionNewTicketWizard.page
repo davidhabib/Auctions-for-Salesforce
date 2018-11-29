@@ -4,8 +4,8 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionNewTicketWizard" title="New Auction Ticket Wizard" tabStyle="Auction_Tickets__tab" lightningStylesheets="true">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+	<script src="{!URLFOR($Resource.jQueryFiles, 'jquery-3.3.1.min.js')}" />
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
  
 	<script type="text/javascript">
 	    var j$ = jQuery.noConflict();
@@ -24,18 +24,16 @@
  		}
  	</script>
  	
-<style>
+	<style>
+		.cssLoadingPP {
+			top: 60%;
+		}
 
-    .cssLoadingPP {
-		top: 60%;
-	}   
-
-	.cssTextArea {
-		height: 5em;
-		width: 14em;		
-	}
-			 		
-</style>
+		.cssTextArea {
+			height: 5em;
+			width: 14em;
+		}
+	</style>
  
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
 		<apex:sectionHeader title="Auction Tickets" />

@@ -4,7 +4,7 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionNewPurchaseWizard" title="Auction Purchases" tabStyle="Auction_Purchases__tab" lightningStylesheets="true">
-<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
     <style>
 		/* replaces datatable CellPadding which isn't supported in html5 */
@@ -162,7 +162,6 @@
 				ctrlHiddenAuctionItemId.value = lbx.options[i].value;
 			}
 		}
- 	
 
 		// function to check/uncheck paid fields when the first one is filled in.
 		function OnChangeCbxPaid(cbx) {
@@ -177,7 +176,6 @@
 				}
 			}
  		}
-
 
 		/////////////////////////////////////// Helper Functions ///////////////////////////////////////////////
 		
@@ -253,8 +251,7 @@
 				}
 			}
 		}
-		
- 
+
 	</script>
 
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">

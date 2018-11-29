@@ -4,7 +4,7 @@
 -->
 
 <apex:page controller="AUC_CTRL_AuctionDonatedItemConverter" title="Donated Item Converter" lightningStylesheets="true">
-<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
 	<style>
 		.cssTextArea {
@@ -23,11 +23,9 @@
 		.cssLongText {
 			width: 180px;
 		}
-				 	    	    
     </style>
     
     <script>
-    
 		// function to check/uncheck convert fields when the header one is checked/unchecked
 		function OnChangeCbxConvert(cbx) {
 			var rg = document.getElementsByTagName('input');

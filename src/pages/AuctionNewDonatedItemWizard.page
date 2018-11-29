@@ -4,7 +4,7 @@
  -->
 
 <apex:page controller="AUC_CTRL_AuctionNewDonatedItemWizard" title="New Auction Donated Item Wizard" tabStyle="Auction_Donated_Items__tab" lightningStylesheets="true" >
-<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
+	<apex:stylesheet value="{!$Resource.AuctionCommonStylesCSS}" />
 
 	<script>
 	
