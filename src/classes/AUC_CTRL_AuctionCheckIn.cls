@@ -558,6 +558,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
         strSaveResults = 'Starting Save...';
 
         try {
+	        // since using apex:inputField, no need to check specific FLS on each field
 	        UTIL_Describe.checkObjectCreateAccess('Contact');
 	        UTIL_Describe.checkObjectUpdateAccess('Contact');
 	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
