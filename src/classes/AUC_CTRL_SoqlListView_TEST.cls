@@ -28,7 +28,7 @@ public with sharing class AUC_CTRL_SoqlListView_TEST {
 		//instantiate the controller
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
 		PageControllerBase pageCtrl = new AUC_CTRL_AuctionItems();
-		compCtrl.pageController = pageCtrl;
+		compCtrl.pgController = pageCtrl;
 		System.assertNotEquals(null, compCtrl.setCon);
 		System.assert(compCtrl.NumberOfPages >= 1);
 		System.assert(compCtrl.NumberOfItems >= 1);
@@ -50,10 +50,10 @@ public with sharing class AUC_CTRL_SoqlListView_TEST {
 		System.assertEquals(null, compCtrl.DeleteItem());
 		List<Auction_Item__c> listAI = [SELECT Id FROM Auction_Item__c WHERE Id = :ai.Id];
 		System.assertEquals(0, listAI.size());
-		compCtrl.fShowCheckboxes = true;
+		compCtrl.showCheckboxes = true;
 		compCtrl.isCheckedAll = false;
 		System.assertNotEquals(null, compCtrl.strCookieAuctionId);
-		System.assertEquals(null, compCtrl.ValidateId('bogusId'));
+		System.assertEquals(null, compCtrl.validateId('bogusId'));
 		System.assertEquals(true, compCtrl.isValidAuctionId(auction.Id));
 		compCtrl.iPageNumber = 5;
 		System.assertEquals(5, compCtrl.iPageNumber);

@@ -29,7 +29,7 @@ public with sharing class AUC_CTRL_AuctionItems_TEST {
 		//instantiate the controller
 		AUC_CTRL_AuctionItems pageCtrl = new AUC_CTRL_AuctionItems();
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
-		compCtrl.pageController = pageCtrl;
+		compCtrl.pgController = pageCtrl;
 		System.assert(pageCtrl.listStrFields != null);
 		System.assert(pageCtrl.strNameField != null);
 		pageCtrl.ctrlSoqlListView.strAlphaFilter = 'A';

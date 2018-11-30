@@ -3,12 +3,12 @@
 
 public with sharing virtual class ComponentControllerBase { 
 	 
-	public PageControllerBase pageController { 
+	public PageControllerBase pgController { 
   		get; 
     	set {
 	    	if (value != null) {
-				pageController = value;
-				pageController.setComponentController(this);
+				pgController = value;
+				pgController.setComponentController(this);
 	      	}
     	}
   	}

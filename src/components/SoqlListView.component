@@ -38,9 +38,9 @@
     
     </script>
 
-	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pageController}" required="true" 
+	<apex:attribute name="pageController" type="PageControllerBase" assignTo="{!pgController}" required="true"
 		description="the controller of the page" access="global" />
-	<apex:attribute name="fShowCheckboxes" type="boolean" assignTo="{!fShowCheckboxes}" required="false"
+	<apex:attribute name="fShowCheckboxes" type="boolean" assignTo="{!showCheckboxes}" required="false"
 		description="whether to have the list provide a checkbox for each item" access="global" />
 
 
@@ -78,7 +78,7 @@
 								</apex:panelGrid>
 							</td>
 							<td style="vertical-align:middle;">
-								<apex:commandButton action="{!pageController.NewItem}" value="New" immediate="true" />
+								<apex:commandButton action="{!pgController.NewItem}" value="New" immediate="true" />
 							</td>
 							<td style="vertical-align:middle; text-align:right;" >
 								<apex:repeat value="{!listAlphaFilters}" var="a" >
@@ -96,7 +96,7 @@
 
 				<apex:pageBlockTable value="{!listPagedItem}" var="item" rows="{!cRecordsPerPage}" >
 
-					<apex:column rendered="{!fShowCheckboxes}" width="10px" >
+					<apex:column rendered="{!showCheckboxes}" width="10px" >
 						<apex:facet name="header">
 							<apex:inputCheckbox value="{!isCheckedAll}" id="cbxSelectAll" onchange="OnChangeCbxSelectAll(this);" />
 						</apex:facet>
@@ -104,9 +104,9 @@
 					</apex:column>
 
 					<apex:column headerValue="Action" >
-						<apex:outputLink rendered="{!NOT(pageController.fEditNameField)}" value="{!URLFOR($Action[pageController.strObjectType].Edit, item.sobj.id)}">Edit</apex:outputLink>
+						<apex:outputLink rendered="{!NOT(pgController.fEditNameField)}" value="{!URLFOR($Action[pgController.strObjectType].Edit, item.sobj.id)}">Edit</apex:outputLink>
 						<!-- we don't want to assume they set the edit override on Opportunity, so for Tickets tab, use the EditItem action vs. the standard edit Action -->
-                        <apex:commandLink rendered="{!pageController.fEditNameField}" action="{!EditItem}" value="Edit">
+                        <apex:commandLink rendered="{!pgController.fEditNameField}" action="{!EditItem}" value="Edit">
                             <apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.sobj.id}" />
                         </apex:commandLink>
                         <apex:outputText value=" | " />
@@ -115,10 +115,10 @@
 						</apex:commandLink>
 					</apex:column>
 
-					<apex:repeat value="{!pageController.listStrFields}" var="f" >
+					<apex:repeat value="{!pgController.listStrFields}" var="f" >
 						<apex:column >
 							<apex:facet name="header">
-								<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pageController.strObjectType='GW_Auctions__Auction_Item__c',
+								<apex:commandLink action="{!SortItem}" rerender="panelData" value="{!IF(pgController.strObjectType='GW_Auctions__Auction_Item__c',
 									$ObjectType.GW_Auctions__Auction_Item__c.Fields[f].Label,
 									$ObjectType.Opportunity.Fields[f].Label)}" >
 									<apex:param assignTo="{!SortItemField}" name="SortItemField" value="{!f}" />
@@ -127,9 +127,9 @@
 								</apex:commandLink>
 							</apex:facet>
 							<!-- special case Name field to be link to view/edit object -->
-							<apex:outputField value="{!item.sobj[f]}"  rendered="{!(f <> pageController.strNameField)}" />
-							<apex:outputLink value="/{!item.sobj.id}" rendered="{!(f == pageController.strNameField) && NOT(pageController.fEditNameField)}" >{!item.sobj[pageController.strNameField]}</apex:outputLink>
-							<apex:commandLink action="{!EditItem}" value="{!item.sobj[pageController.strNameField]}" rendered="{!(f == pageController.strNameField) && pageController.fEditNameField}">
+							<apex:outputField value="{!item.sobj[f]}"  rendered="{!(f <> pgController.strNameField)}" />
+							<apex:outputLink value="/{!item.sobj.id}" rendered="{!(f == pgController.strNameField) && NOT(pgController.fEditNameField)}" >{!item.sobj[pgController.strNameField]}</apex:outputLink>
+							<apex:commandLink action="{!EditItem}" value="{!item.sobj[pgController.strNameField]}" rendered="{!(f == pgController.strNameField) && pgController.fEditNameField}">
 								<apex:param assignTo="{!idEditItem}" name="idEditItem" value="{!item.sobj.id}" />
 							</apex:commandLink>
 						</apex:column>

@@ -45,7 +45,7 @@ public with sharing class AUC_CTRL_AuctionPurchases_TEST {
 		//instantiate the controller
 		AUC_CTRL_AuctionPurchases pageCtrl = new AUC_CTRL_AuctionPurchases();
 		AUC_CTRL_SoqlListView compCtrl = new AUC_CTRL_SoqlListView();
-		compCtrl.pageController = pageCtrl;
+		compCtrl.pgController = pageCtrl;
 		System.assert(pageCtrl.listStrFields != null);
 		System.assert(pageCtrl.strNameField != null);
 		pageCtrl.ctrlSoqlListView.strAlphaFilter = 'A';

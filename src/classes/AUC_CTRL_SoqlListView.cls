@@ -9,14 +9,14 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		    try {
 			    // only needed to check object read permissions.
 			    // FLS handled by using apex:inputField's
-			    UTIL_Describe.checkObjectReadAccess(pageController.strObjectType);
+			    UTIL_Describe.checkObjectReadAccess(pgController.strObjectType);
 
 			    if(setCon == null) {
-	                String strSoql = pageController.getStrSoql();
+	                String strSoql = pgController.getStrSoql();
 
 					// start out sorting on the main name field.
 	                if (SortItemField == null || SortItemField == '') {
-						SortItemField = pageController.strNameField;
+						SortItemField = pgController.strNameField;
 						SortItemAsc = true;
 						strAlphaFilter = '%';
 	                }
@@ -49,7 +49,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
     }
        
 	// whether to include checkboxes in the list view       
-  	public Boolean fShowCheckboxes { get; set; }
+  	public Boolean showCheckboxes { get; set; }
         
 	// how many records per page to display
 	public Integer cRecordsPerPage {
@@ -209,7 +209,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		set;
    	} 
    	
-   	// holds the global checkbox for the header (if fShowCheckboxes is on.)
+   	// holds the global checkbox for the header (if showCheckboxes is on.)
    	public Boolean isCheckedAll { get; set; }
 	
 	// holds the current letter we are filtering on 
@@ -217,8 +217,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public String strAlphaFilter { 
 		get {
 			if (strAlphaFilter == null) {
-				if (pageController != null) {
-			        Cookie cId = ApexPages.currentPage().getCookies().get(pageController.getStrPageUniqueName() + 'strAlphaFilter');
+				if (pgController != null) {
+			        Cookie cId = ApexPages.currentPage().getCookies().get(pgController.getStrPageUniqueName() + 'strAlphaFilter');
 			        if (cId != null) strAlphaFilter = cId.getValue();
 				}
 			}
@@ -226,8 +226,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}		
 		set {
 			if (strAlphaFilter != value) {
-				if (pageController != null) {
-					Cookie	cId = new Cookie(pageController.getStrPageUniqueName() + 'strAlphaFilter', value, null, -1, false);
+				if (pgController != null) {
+					Cookie	cId = new Cookie(pgController.getStrPageUniqueName() + 'strAlphaFilter', value, null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	strAlphaFilter = value;
@@ -279,7 +279,7 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	// action method to edit an item.  defer to the page controller.
 	public PageReference EditItem() {
 		try {
-			return pageController.EditItem(idEditItem);
+			return pgController.EditItem(idEditItem);
 		} catch (Exception ex) {
 			ApexPages.addMessages(ex);
 		}
@@ -291,8 +291,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public String SortItemField { 
 		get {
 			if (SortItemField == null) {
-				if (pageController != null) {
-			        Cookie cId = ApexPages.currentPage().getCookies().get(pageController.getStrPageUniqueName() + 'SortItemField');
+				if (pgController != null) {
+			        Cookie cId = ApexPages.currentPage().getCookies().get(pgController.getStrPageUniqueName() + 'SortItemField');
 			        if (cId != null) SortItemField = cId.getValue();
 				}
 			}
@@ -300,8 +300,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}		
 		set {
 			if (SortItemField != value) {
-				if (pageController != null) {
-					Cookie	cId = new Cookie(pageController.getStrPageUniqueName() + 'SortItemField', value, null, -1, false);
+				if (pgController != null) {
+					Cookie	cId = new Cookie(pgController.getStrPageUniqueName() + 'SortItemField', value, null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	SortItemField = value;
@@ -313,16 +313,16 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	// we save this in a Cookie for the page, so we remember our place when coming back to this tab.
 	public Boolean SortItemAsc { 
 		get {
-			if (SortItemAsc == null && pageController != null) {
-		        Cookie cId = ApexPages.currentPage().getCookies().get(pageController.getStrPageUniqueName() + 'SortItemAsc');
+			if (SortItemAsc == null && pgController != null) {
+		        Cookie cId = ApexPages.currentPage().getCookies().get(pgController.getStrPageUniqueName() + 'SortItemAsc');
 		        if (cId != null) SortItemAsc = (cId.getValue() == 'true');
 			}
 			return SortItemAsc;
 		}		
 		set {
 			if (SortItemAsc != value) {
-				if (pageController != null) {
-					Cookie	cId = new Cookie(pageController.getStrPageUniqueName() + 'SortItemAsc', value ? 'true' : 'false', null, -1, false);
+				if (pgController != null) {
+					Cookie	cId = new Cookie(pgController.getStrPageUniqueName() + 'SortItemAsc', value ? 'true' : 'false', null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	SortItemAsc = value;
@@ -343,8 +343,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 	public Integer iPageNumber { 
 		get {
 			if (iPageNumber == null || iPageNumber == 0) {
-				if (pageController != null) {
-			        Cookie cId = ApexPages.currentPage().getCookies().get(pageController.getStrPageUniqueName() + 'iPageNumber');
+				if (pgController != null) {
+			        Cookie cId = ApexPages.currentPage().getCookies().get(pgController.getStrPageUniqueName() + 'iPageNumber');
 			        if (cId != null) {
 			        	String str = cId.getValue();
 			        	if (str != null) {
@@ -358,8 +358,8 @@ public with sharing class AUC_CTRL_SoqlListView extends ComponentControllerBase 
 		}		
 		set {
 			if (iPageNumber != value) {
-				if (pageController != null) {
-					Cookie cId = new Cookie(pageController.getStrPageUniqueName() + 'iPageNumber', String.valueOf(value), null, -1, false);
+				if (pgController != null) {
+					Cookie cId = new Cookie(pgController.getStrPageUniqueName() + 'iPageNumber', String.valueOf(value), null, -1, false);
 		        	ApexPages.currentPage().setCookies(new Cookie[] {cId});
 				}
 	        	iPageNumber = value;
