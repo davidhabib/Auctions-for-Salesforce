@@ -11,7 +11,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		// force IE into Standards Mode
 		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 		 		
-		// get the current auction we were invoked FROM, and find & set the appropriate campaign.
+		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a String to avoId getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
@@ -26,7 +26,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		} else if (listSOAuctions != null && listSOAuctions.size() > 1) {
 			auctionId = listSOAuctions[1].getValue();
 		}
-		auctionMaintenance.auctionId = auctionId;		
+		auctionMaintenance.auctionId = auctionId;
 		
 		// handle the no auction case
 		if (auctionId == null) {

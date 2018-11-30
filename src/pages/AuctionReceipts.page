@@ -22,7 +22,7 @@
 			}
 			.ui-autocomplete {
 				max-height: 200px;
-				overflow-y: auto;
+				overflow-y: scroll;
 				/* prevent horizontal scrollbar */
 				overflow-x: hidden;
 			}
@@ -379,8 +379,9 @@
 					<tr>
 						<td>
                             <apex:outputText value="{!receipt.strContactName}" /><br/>
-							<apex:outputText value="{!receipt.strContactAddrLine1}" /><br/>
-							<apex:outputText value="{!receipt.strContactAddrLine2}" />
+							<!-- next two outputTexts need to avoid escaping, because NPSP puts <BR> in formula for MailingAddress -->
+							<apex:outputText value="{!receipt.strContactAddrLine1}" escape="false" /><br/>
+							<apex:outputText value="{!receipt.strContactAddrLine2}" escape="false" />
 						</td>
 						<td style="text-align: right;">
                             <apex:outputText value="{! 'Bid number: ' + receipt.strBidNumber}" rendered="{!NOT(ISBLANK(receipt.strBidNumber))}" /><br/>
