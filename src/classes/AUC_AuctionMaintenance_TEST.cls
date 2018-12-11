@@ -31,6 +31,7 @@ public with sharing class AUC_AuctionMaintenance_TEST {
 		System.assertEquals('\\\'', AUC_AuctionMaintenance.StrEscape('\''));
 
 		System.assertNotEquals(null, AUC_AuctionMaintenance.listStrFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS'));
+		System.assertNotEquals(null, AUC_AuctionMaintenance.setFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS'));
 		System.assertNotEquals(null, AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS'));
 
 		List<SelectOption> ListSO = am.listSOAuctions;
@@ -139,7 +140,17 @@ public with sharing class AUC_AuctionMaintenance_TEST {
 		}
 		insert ListOpp;
 
-		AUC_AuctionMaintenance.UpdateNPSPPayments(ListOpp, 'Cash', null);
+		AUC_AuctionMaintenance.UpdateNPSPPayments(ListOpp, 'Check', '1234');
+		if (AUC_AuctionConstants.IsNPSPInstalled) {
+			List<SObject> listPayments = new List<SObject>();
+			String strSoql = 'SELECT Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
+				' FROM npe01__OppPayment__c WHERE npe01__Opportunity__c IN :listOppToUpdate ';
+			listPayments = Database.query(strSoql);
+			for (SObject pmt : listPayments) {
+				System.assertEquals('Check', String.valueOf(pmt.get('npe01__Payment_Method__c')));
+				System.assertEquals('1234', String.valueOf(pmt.get('npe01__Check_Reference_Number__c')));
+			}
+		}
 	}
 
 	static testMethod void testStrPaymentMethodOrCheckFromNPSPPayments() {
