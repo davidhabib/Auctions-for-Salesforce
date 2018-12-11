@@ -17,11 +17,13 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
 	//constructor
 	public AUC_CTRL_AuctionNewItemPieceWizard (ApexPages.StandardController controller) {
 
+		checkFLS();
+
 		//get record from standard controller
 		stdController = controller;
         this.aip = (Auction_Item_Piece__c)controller.getRecord();
 
-        // Keep track of any inbound query string parameters so they can be passed along when creating a new record  
+        // Keep track of any inbound query string parameters so they can be passed along when creating a new record
         List<String> pageUrl = ApexPages.currentPage().getUrl().split('\\?');
 		if (pageUrl.size() > 1) {
 			strQueryParams = pageUrl[1];
@@ -46,6 +48,20 @@ public with sharing class AUC_CTRL_AuctionNewItemPieceWizard {
         			
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		auctionMaintenance.auctionId = auctionId;
+	}
+
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		UTIL_Describe.checkReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
+			'Name',
+			UTIL_Describe.StrTokenNSPrefix('Actual_FMV__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Name__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+			UTIL_Describe.StrTokenNSPrefix('Description__c'),
+			UTIL_Describe.StrTokenNSPrefix('Estimated_FMV__c'),
+			UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
+			UTIL_Describe.StrTokenNSPrefix('Quantity__c')
+		});
 	}
 	
 	// the list of opps to put in the Auction Donated Item dropdown

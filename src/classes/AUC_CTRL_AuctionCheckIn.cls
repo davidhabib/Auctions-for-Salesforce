@@ -8,6 +8,8 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	// constructor for the class 
 	public AUC_CTRL_AuctionCheckIn() {
 
+		checkFLS();
+
 		// force IE into Standards Mode
 		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 		 		
@@ -32,8 +34,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		if (auctionId == null) {
 			strSaveResults = 'You must first create an Auction before using this page.';
 		}
-
-		checkFLS();
 	}
 
 	// check Field Level Security and object permissions on all objects and fields this page uses
