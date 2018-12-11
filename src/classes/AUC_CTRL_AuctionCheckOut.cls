@@ -751,7 +751,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			} else {	
 		*********/
 			{		
-				return '/apex/GW_Auctions__AuctionReceipts' +
+				return '/apex/' + UTIL_Describe.StrTokenNSPrefix('AuctionReceipts') +
 		        	'?RenderFormat=pdf' +
 		        	'&auctionId=' + auctionId +
 		        	'&contactId=' + contactIdPurchaser +

@@ -30,9 +30,12 @@ public with sharing class AUC_AuctionMaintenance_TEST {
 		System.assertEquals('foo', AUC_AuctionMaintenance.StrEscape('foo'));
 		System.assertEquals('\\\'', AUC_AuctionMaintenance.StrEscape('\''));
 
-		System.assertNotEquals(null, AUC_AuctionMaintenance.listStrFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS'));
-		System.assertNotEquals(null, AUC_AuctionMaintenance.setFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS'));
-		System.assertNotEquals(null, AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS'));
+		System.assertNotEquals(null, AUC_AuctionMaintenance.listStrFromFieldSet('Contact',
+			UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInFS')));
+		System.assertNotEquals(null, AUC_AuctionMaintenance.setFieldNamesFromFieldSet('Contact',
+			UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInFS')));
+		System.assertNotEquals(null, AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Contact',
+			UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInFS')));
 
 		List<SelectOption> ListSO = am.listSOAuctions;
 		System.assert(ListSO.size() > 1);

@@ -437,10 +437,11 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    			// load up their CM info.
 	    			String strSoql = 'SELECT ' + strCMFields +
     					' FROM CampaignMember' + 
-    					' WHERE campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' AND ' +
-    						' (GW_Auctions__Auction_Ticket_OppId__c IN :setTicketOppId ';
+    					' WHERE campaignId = \'' + auctionMaintenance.campaignIdAuctionAttendees + '\' AND (' +
+					        UTIL_Describe.StrTokenNSPrefix('Auction_Ticket_OppId__c') +
+    						' IN :setTicketOppId ';
     				if (IsCaptainContact && IdCaptain != null) {
-    					strSoql += ' OR GW_Auctions__Table_Captain__c = :IdCaptain ';
+    					strSoql += ' OR ' + UTIL_Describe.StrTokenNSPrefix('Table_Captain__c') + ' = :IdCaptain ';
     				}
     				strSoql += ')';
     				
