@@ -30,6 +30,10 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	// check Field Level Security and object permissions on all objects and fields this page uses
 	private void checkFLS() {
 		Set<String> setContactFields = new Set<String>{'FirstName', 'LastName'};
+		if (fHasHouseholds) {
+			setContactFields.add(AUC_AuctionConstants.strContactHouseholdField);
+			setContactFields.add(AUC_AuctionConstants.strContactHouseholdNameField);
+		}
 		UTIL_Describe.checkReadAccess('Contact', setContactFields);
 
 		UTIL_Describe.checkFieldReadAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));

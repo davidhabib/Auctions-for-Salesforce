@@ -5,6 +5,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 
 	// constructor
 	public AUC_CTRL_AuctionReceipts() {
+
+		checkFLS();
+
 		// force IE into Standards Mode
 		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
 
@@ -52,11 +55,9 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 		}
 
 		getRenderFormat();
-
-		doFLSChecks();
 	}
 
-	public void doFLSChecks() {
+	public void checkFLS() {
 		try {
 			UTIL_Describe.checkReadAccess('Opportunity', setOppFields);
 			UTIL_Describe.checkReadAccess('CampaignMember', new Set<String>{
@@ -64,15 +65,62 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'),
 				UTIL_Describe.StrTokenNSPrefix('Table_Name_Number__c')
 			});
-			UTIL_Describe.checkReadAccess('Contact', new Set<String>{
-				'Name',
-				'MailingAddress'
-			});
+			UTIL_Describe.checkReadAccess('Contact', setContactFields);
+
 			enableOpenPDF = true;
 		} catch (Exception ex) {
 			ApexPages.addMessages(ex);
 			enableOpenPDF = false;
 		}
+	}
+
+	private Set<String> setContactFields {
+		get {
+			if (setContactFields == null) {
+				setContactFields = new Set<String>{
+					'Name',
+					'FirstName',
+					'LastName',
+					'MailingStreet',
+					'MailingCity',
+					'MailingState',
+					'MailingPostalCode'
+				};
+				if (AUC_AuctionConstants.strContactHouseholdField != null) {
+					setContactFields.add(AUC_AuctionConstants.strContactHouseholdField);
+					if (AUC_AuctionConstants.IsNPSPInstalled) {
+						setContactFields.add('npo02__Formula_HouseholdMailingAddress__c');
+					}
+				}
+				if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
+					setContactFields.add(AUC_AuctionConstants.strContactHouseholdNameField);
+				}
+				if (AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
+					setContactFields.add(AUC_AuctionConstants.strContactHouseholdGreetingField);
+				}
+				if (AUC_AuctionConstants.isNPSPHouseholdAccountModel) {
+					setContactFields.add('Account.npe01__SYSTEM_AccountType__c');
+				}
+			}
+			return setContactFields;
+		}
+		set;
+	}
+
+	// helper routine to return Contact field names in a single comma separated string
+	// where each field is prefixed with 'Contact.'
+	private String strContactFields {
+		get {
+			if (strContactFields == null) {
+				strContactFields = '';
+				for (String str : setContactFields) {
+					strContactFields += 'Contact.' + str + ',';
+				}
+				strContactFields = strContactFields.substring(0, strContactFields.length()-1);
+			}
+			return strContactFields;
+		}
+		set;
 	}
 
 	public Boolean enableOpenPDF { get; set; }
@@ -93,7 +141,7 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 	// for the Open button, to open the receipts pdf  
 	public String strOpenReceiptURL {
 		get {
-			String str =  '/apex/GW_Auctions__AuctionReceipts' +
+			String str =  '/apex/' + UTIL_Describe.StrTokenNSPrefix('AuctionReceipts') +
 	        	'?RenderFormat=pdf' +
 	        	'&auctionId=' + auctionId;
 	        	
@@ -403,24 +451,8 @@ global with sharing class AUC_CTRL_AuctionReceipts {
 				mapContactIdToCampaignMember.put(cm.ContactId, cm);
 	       	}
 
-			String strSoql = 'SELECT contactId, contact.Name, contact.Firstname, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
-				' opportunity.RecordType.Name, '; 
-			if (AUC_AuctionConstants.strContactHouseholdField != null) {
-				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdField + ', ';
-				if (AUC_AuctionConstants.IsNPSPInstalled) {
-					strSoql += ' contact.npo02__Formula_HouseholdMailingAddress__c, ';
-				}
-			}
-			if (AUC_AuctionConstants.strContactHouseholdNameField != null) {
-				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdNameField + ', ';		
-			}
-			if (AUC_AuctionConstants.strContactHouseholdGreetingField != null) {
-				strSoql += ' contact.' + AUC_AuctionConstants.strContactHouseholdGreetingField + ', ';
-			}
-			if (AUC_AuctionConstants.isNPSPHouseholdAccountModel) {
-				strSoql += ' contact.account.npe01__SYSTEM_AccountType__c, ';
-			}
-			strSoql += AUC_AuctionMaintenance.StrEscape(strOppFields) +
+			String strSoql = 'SELECT contactId, ' + strContactFields +
+				', opportunity.RecordType.Name, ' + strOppFields +
 				' FROM OpportunityContactRole ' +
 				' WHERE IsPrimary=true AND contactId in :listContactId AND ' +
 					' (((opportunity.RecordTypeId = :rtPurchase or opportunity.RecordTypeId = :rtGift) ' + 
