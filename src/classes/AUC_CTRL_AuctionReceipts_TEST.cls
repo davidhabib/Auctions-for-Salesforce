@@ -85,7 +85,8 @@ public with sharing class AUC_CTRL_AuctionReceipts_TEST {
 		ctrl.ChangeAuction();
 		System.assertEquals(auction.Id, ctrl.auctionId);
 
-		System.assertEquals('/apex/GW_Auctions__AuctionReceipts?RenderFormat=pdf&auctionId=' +
+		System.assertEquals('/apex/' + UTIL_Describe.StrTokenNSPrefix('AuctionReceipts') +
+			'?RenderFormat=pdf&auctionId=' +
 			auction.Id + '&IncludeAll=true&IncludeTickets=true',
 			ctrl.strOpenReceiptURL);
 		ctrl.fIncludeAllGuests = true;
