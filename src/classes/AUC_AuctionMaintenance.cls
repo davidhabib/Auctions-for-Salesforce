@@ -193,6 +193,11 @@ public with sharing class AUC_AuctionMaintenance {
         }
 		return listStrFields;
 	}
+
+	// utility to return a Set of field name Strings from a Field Set
+	public static Set<String> setFieldNamesFromFieldSet(String strObject, String strFS) {
+		return new Set<String>(listStrFromFieldSet(strObject, strFS));
+	}
 	
 	// utility to return a comma separated String of field names from a field set
 	public static String strFieldNamesFromFieldSet(String strObject, String strFS) {
@@ -312,7 +317,12 @@ public with sharing class AUC_AuctionMaintenance {
 			for (OpportunityContactRole ocr : listOCR) {
 				setOppId.add(ocr.OpportunityId);
 			}
-			UTIL_Describe.checkObjectReadAccess('OpportunityContactRole');
+			UTIL_Describe.checkReadAccess('OpportunityContactRole', new Set<String>{
+				'Role',
+				'ContactId',
+				'OpportunityId',
+				'IsPrimary'
+			});
 			List<OpportunityContactRole> listOCRExisting = [SELECT Id, Role, ContactId, OpportunityId
 				FROM OpportunityContactRole WHERE IsPrimary = TRUE AND OpportunityId IN :setOppId];
 
@@ -335,8 +345,13 @@ public with sharing class AUC_AuctionMaintenance {
 					listOCRUpsert.add(ocr);
 				}
 			}
-			UTIL_Describe.checkObjectCreateAccess('OpportunityContactRole');
-			UTIL_Describe.checkObjectUpdateAccess('OpportunityContactRole');
+			UTIL_Describe.checkCreateAccess('OpportunityContactRole', new Set<String>{
+				'Role',
+				'ContactId',
+				'OpportunityId',
+				'IsPrimary'
+			});
+			UTIL_Describe.checkFieldUpdateAccess('OpportunityContactRole', 'Role');
 			upsert listOCRUpsert;
 		}
 	}
@@ -344,6 +359,9 @@ public with sharing class AUC_AuctionMaintenance {
 	// Sets the Opportunity StageName, Probability, and ForecastCategoryName to the Closed Won Not Thanked
 	// stage specified in Settings.
 	public static void setOpportunityStageClosed(Opportunity opp) {
+		UTIL_Describe.checkCreateAccess('Opportunity', new Set<String> {
+			'StageName', 'Probability', 'ForecastCategoryName'
+		});
 		opp.StageName = AUC_AuctionConstants.OPP_STAGE_WON_NOT_THANKED_STAGE;
 		opp.Probability = AUC_AuctionConstants.oppStageWonNotThankedProbability;
 		opp.ForecastCategoryName = AUC_AuctionConstants.oppStageWonNotThankedForecastCategoryName;
