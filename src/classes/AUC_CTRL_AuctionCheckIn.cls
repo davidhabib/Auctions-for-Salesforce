@@ -32,6 +32,47 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 		if (auctionId == null) {
 			strSaveResults = 'You must first create an Auction before using this page.';
 		}
+
+		checkFLS();
+	}
+
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		Set<String> setContactFields = new Set<String>(listContactFields);
+		UTIL_Describe.checkReadAccess('Contact', setContactFields);
+		// remove Name field since it is computed and we don't create/update it!
+		setContactFields.remove('Name');
+		UTIL_Describe.checkCreateAccess('Contact', setContactFields);
+		UTIL_Describe.checkUpdateAccess('Contact', setContactFields);
+
+		UTIL_Describe.checkFieldReadAccess('Account', 'Name');
+
+		Set<String> setCMFields = new Set<String>(listCMFields);
+		UTIL_Describe.checkReadAccess('CampaignMember', setCMFields);
+		UTIL_Describe.checkCreateAccess('CampaignMember', setCMFields);
+		// remove fields we don't update
+		setCMFields.remove('ContactId');
+		setCMFields.remove('CampaignId');
+		UTIL_Describe.checkUpdateAccess('CampaignMember', setCMFields);
+
+		Set<String> setOppFields = new Set<String>{
+			'AccountId',
+			'RecordTypeId',
+			'CampaignId',
+			UTIL_Describe.StrTokenNSPrefix('Number_of_Tickets__c'),
+			'Amount',
+			'StageName',
+			'IsWon',
+			'CloseDate'
+		};
+		setOppFields.addAll(listOppFields);
+		UTIL_Describe.checkReadAccess('Opportunity', setOppFields);
+		// remove fields we don't create
+		setOppFields.remove('IsWon');
+		UTIL_Describe.checkObjectCreateAccess('Opportunity');
+		// remove fields we don't update
+		setOppFields.remove('RecordTypeId');
+		UTIL_Describe.checkObjectUpdateAccess('Opportunity');
 	}
 
 	// private status String for reporting the results of saving.
@@ -175,7 +216,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				if (listOCR.size() > 0) {
 					return listOCR[0].ContactId;
 				} else {
-					// if we dIdn't find a OCR, it might be just an ticket bought by an Account.
+					// if we didn't find a OCR, it might be just an ticket bought by an Account.
 					List<Opportunity> listOpp = [SELECT AccountId FROM Opportunity WHERE Id = :listCM[0].Auction_Ticket_OppId__c];
 					if (listOpp.size() > 0) {
 						return listOpp[0].AccountId;
@@ -321,6 +362,17 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	
 	// flag to track whether to add a ticket purchase for the Attendee
 	public Boolean fAddTicketPurchase { get; set; }
+
+	private List<String> listOppFields {
+		get {
+			if (listOppFields == null) {
+				listOppFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity',
+					UTIL_Describe.StrTokenNSPrefix('AuctionCheckInFS'));
+			}
+			return listOppFields;
+		}
+		set;
+	}
 	
 	// the optional ticket opportunity for the current Attendee
 	public Opportunity oppTicketAttendee {
@@ -333,7 +385,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 					String cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 					
 					String strSoql = 'SELECT Id';
-					for (String str : AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionCheckInFS')) {
+					for (String str : listOppFields) {
 						strSoql += ', Opportunity.' + str;
 					}
 					strSoql += ' FROM OpportunityContactRole ' +
@@ -402,7 +454,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 	    			// load up their contact info.
 	    			Set<Id> setKeys = mapContactIdCM.keySet();
-	    			List<Contact> listCon = Database.query('SELECT ' + strContactFields + 
+	    			List<Contact> listCon = Database.query('SELECT ' + String.join(listContactFields, ',') +
 	    				' FROM Contact WHERE Id IN :setKeys' + 
 	    				' ORDER BY Name');    			
     			
@@ -412,11 +464,11 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	    			    					
 					// add slots for people who specified this table captain, but aren't on the captain's ticket opp
 					for (CampaignMember cm : listCM) {
-						if (!setTicketOppId.contains(cm.GW_Auctions__Auction_Ticket_OppId__c)) {
+						if (!setTicketOppId.contains(cm.Auction_Ticket_OppId__c)) {
 							numTickets++;
 						} else {
-							Double cLeft = mapTicketOppIdAttendeesLeft.get(cm.GW_Auctions__Auction_Ticket_OppId__c);
-							mapTicketOppIdAttendeesLeft.put(cm.GW_Auctions__Auction_Ticket_OppId__c, cLeft - 1);
+							Double cLeft = mapTicketOppIdAttendeesLeft.get(cm.Auction_Ticket_OppId__c);
+							mapTicketOppIdAttendeesLeft.put(cm.Auction_Ticket_OppId__c, cLeft - 1);
 						}
 					}
 					
@@ -441,35 +493,48 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     } 	
 
 	// helper routine to return all Contact field names from the Field Set
-	@TestVisible private String strContactFields {
+	@TestVisible private List<String> listContactFields {
 		get {
-			if (strContactFields == null) {
-				strContactFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Contact', 'GW_Auctions__AuctionsCheckInFS');
+			if (listContactFields == null) {
+				listContactFields = AUC_AuctionMaintenance.listStrFromFieldSet('Contact',
+					UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInFS'));
 				
 				// make sure Name field that is used in Guests datatable is included.
-				if (!strContactFields.contains(' Name,')) strContactFields += ', Name';
+				if (!listContactFields.contains('Name')) {
+					listContactFields.add('Name');
+				}
 			}
-			return strContactFields;
+			return listContactFields;
 		}
 		set;
 	}
-	
+
 	// helper routine to return all CampaignMember field names from the Field Set
 	// we could optimize this to use fieldset api, but the CM fields are used
 	// in two places that may require different fields.  so its easiest to just load them all.
 	@TestVisible private String strCMFields {
 		get {
 			if (strCMFields == null) {
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.CampaignMember.fields.getMap();
-				List<String> listStrFields = new List<String>();
-				listStrFields.addAll(mapS.keySet());  
-				strCMFields = '';
-				for (String str : listStrFields) {
-					strCMFields += str + ',';
-				}  		
-				strCMFields = strCMFields.substring(0, strCMFields.length()-1);
+				strCMFields = String.join(listCMFields, ',');
 			}
 			return strCMFields;
+		}
+		set;
+	}
+
+	private List<String> listCMFields {
+		get {
+			if (listCMFields == null) {
+				Set<String> s1 = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
+					UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInCMFS'));
+				Set<String> s2 = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
+					UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInGuestsCMFS'));
+				s1.addAll(s2);
+				s1.add('ContactId');
+				s1.add(UTIL_Describe.StrTokenNSPrefix('Auction_Ticket_OppId__c'));
+				listCMFields = new List<String>(s1);
+			}
+			return listCMFields;
 		}
 		set;
 	}
@@ -493,7 +558,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
                 	
 
 					if (contactIdAttendee != null) {
-						con = Database.query('SELECT ' + strContactFields + ' FROM Contact WHERE Id = :contactIdAttendee');
+						con = Database.query('SELECT ' + String.join(listContactFields, ',') + ' FROM Contact WHERE Id = :contactIdAttendee');
 
 		                // we still need to make sure they don't already have a CM.  only happens in a case WHERE the CM
 		                // is no longer attached to either a Ticket Opp or a Table Captain.
@@ -558,13 +623,6 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
         strSaveResults = 'Starting Save...';
 
         try {
-	        // since using apex:inputField, no need to check specific FLS on each field
-	        UTIL_Describe.checkObjectCreateAccess('Contact');
-	        UTIL_Describe.checkObjectUpdateAccess('Contact');
-	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
-	        UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
-	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
-	        UTIL_Describe.checkObjectUpdateAccess('Opportunity');
 
 			// bail out if we aren't set up.
 			if (attendeeEdit == null || attendeeEdit.con == null) {
@@ -857,9 +915,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
     @RemoteAction global static List<SObject> getListCaptains(String auctionId, String strFilter) {
 	    UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
 	    UTIL_Describe.checkFieldReadAccess('Account', 'Name');
-	    UTIL_Describe.checkObjectReadAccess('Opportunity');
+	    UTIL_Describe.checkFieldReadAccess('Opportunity', 'CampaignId');
 	    UTIL_Describe.checkObjectReadAccess('OpportunityContactRole');
-	    UTIL_Describe.checkObjectReadAccess('CampaignMember');
+	    UTIL_Describe.checkReadAccess('CampaignMember', new Set<String>{
+		    'ContactId',
+		    UTIL_Describe.StrTokenNSPrefix('Table_Captain__c')
+	    });
 
     	strFilter = '%' + strFilter + '%';
 		if (auctionId == null || auctionId == '') return null;
@@ -904,7 +965,7 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			Account.Name LIKE :strFilter AND
 			Id NOT IN :setOppId]) {
 			
-			// use set to avoId dups
+			// use set to avoid dups
 			for (Opportunity opp : listOpp) {
 				setAccId.add(opp.AccountId);
 			}
