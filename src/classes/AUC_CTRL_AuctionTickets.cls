@@ -28,21 +28,27 @@ public with sharing class AUC_CTRL_AuctionTickets extends PageControllerBase {
 	}
 
 	public override PageReference NewItem() { 
-		PageReference p = new PageReference('/apex/GW_Auctions__AuctionNewTicketWizard?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = Page.AuctionNewTicketWizard;
+		p.getParameters().put('auctionId', ctrlSoqlListView.auctionId);
 		return p;		
 	}
 	
 	public PageReference AuctionCheckIn() {
-		PageReference p = new PageReference('/apex/GW_Auctions__AuctionCheckIn?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = Page.AuctionCheckIn;
+		p.getParameters().put('auctionId', ctrlSoqlListView.auctionId);
 		return p;
 	}
 	
 	public PageReference AutoAssignBidNumbers() {
-		PageReference p = new PageReference('/apex/GW_Auctions__AuctionAutoBidNumbers?auctionId=' + ctrlSoqlListView.auctionId);
+		PageReference p = Page.AuctionAutoBidNumbers;
+		p.getParameters().put('auctionId', ctrlSoqlListView.auctionId);
 		return p;
 	}
 	
 	public override PageReference EditItem(Id idItem) {
-		return new PageReference('/apex/GW_Auctions__AuctionNewTicketWizard?oppId=' + idItem + '&retURL=/apex/GW_Auctions__AuctionTickets');
+		PageReference p = Page.AuctionNewTicketWizard;
+		p.getParameters().put('oppId', idItem);
+		p.getParameters().put('retURL', Page.AuctionTickets.getUrl());
+		return p;
 	}
 }
