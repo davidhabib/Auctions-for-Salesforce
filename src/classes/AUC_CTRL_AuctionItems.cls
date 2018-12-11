@@ -5,9 +5,11 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionItems() {
-        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('GW_Auctions__Auction_Item__c', 'GW_Auctions__AuctionItemsTabFS');
+        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet(
+	        UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+	        UTIL_Describe.StrTokenNSPrefix('AuctionItemsTabFS'));
        	strNameField = listStrFields[0]; 
-       	strObjectType = 'GW_Auctions__Auction_Item__c';			
+       	strObjectType = UTIL_Describe.StrTokenNSPrefix('Auction_Item__c');
 	}
 
 	public override String getStrPageUniqueName() {
@@ -16,11 +18,12 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 	
 	public override String getStrSoql() {
 		String strSoql = 'SELECT Id, ' + String.join(listStrFields, ',') +
-				' FROM GW_Auctions__Auction_Item__c ' +
-				' WHERE GW_Auctions__Auction__c=\'' + ctrlSoqlListView.auctionId + '\'';
+				' FROM ' + UTIL_Describe.StrTokenNSPrefix('Auction_Item__c') +
+				' WHERE ' + UTIL_Describe.StrTokenNSPrefix('Auction__c') + ' =\'' + ctrlSoqlListView.auctionId + '\'';
 
 		if (ctrlSoqlListView.strAlphaFilter != null) {
-			strSoql += ' AND GW_Auctions__Auction_Item_Name__c LIKE \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
+			strSoql += ' AND ' + UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c') +
+				' LIKE \'' + ctrlSoqlListView.strAlphaFilter + '%\'';
 		}        						
        	return strSoql;			
 	}
@@ -28,22 +31,21 @@ public with sharing class AUC_CTRL_AuctionItems extends PageControllerBase {
 	public override PageReference NewItem() { 
 		// ideally, we'd pass the AuctionId to the new page, but I haven't 
 		// figured out how to do that in a way that works with a managed package.
-		String strPrefix = Schema.getGlobalDescribe().get('GW_Auctions__Auction_Item__c').getDescribe().getKeyPrefix();
+		String strPrefix = Schema.getGlobalDescribe().get(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c')).getDescribe().getKeyPrefix();
 		//String strAuctionFldId = 'CF00NA0000001MnD3';  NOTE: couldn't find a way to get this at runtime!
 		//list<Auction__c> listAuc = [select Id, Name from Auction__c where Id = :ctrlSoqlListView.auctionId] ;
 
 		PageReference p = new PageReference('/' + strPrefix + '/e?' + 
 			// strAuctionFldId + '=' + (listAuc.size() > 0 ? listAuc[0].Name : '') + '&' + 
 			// strAuctionFldId + '_lkid=' + ctrlSoqlListView.auctionId + 
-			'&retURL=/apex/GW_Auctions__AuctionItems');
+			'&retURL=' + Page.AuctionItems.getUrl());
 		return p;
 	}
 	
 	public PageReference DonatedItemConverter() {
-		PageReference p = new PageReference('/apex/GW_Auctions__AuctionDonatedItemConverter?auctionId=' + 
-			ctrlSoqlListView.auctionId +
-			'&retURL=' +
-			ApexPages.currentPage().getUrl());
+		PageReference p = Page.AuctionDonatedItemConverter;
+		p.getParameters().put('auctionId', ctrlSoqlListView.auctionId);
+		p.getParameters().put('retURL', Page.AuctionItems.getUrl());
 		return p;
 	}
 }
