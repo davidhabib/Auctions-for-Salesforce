@@ -590,7 +590,7 @@
 		       				<iframe id="iframePP" frameborder="0" width="95%" scrolling="auto" height="{!JSENCODE(strPaymentProcessorPageHeight)}" src="{!JSENCODE(strCreditCardValidateURL)}" />
 		       				<script>
 		       					j$('.cssLoadingPP').fadeIn();
-		       					j$('#iframePP').load(function(){  
+		       					j$('#iframePP').on("load", function(){
 		       						j$('.cssLoadingPP').fadeOut();
 		       					});
 		       				</script>
