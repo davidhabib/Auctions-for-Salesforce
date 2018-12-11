@@ -5,6 +5,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 
 	// constructor
 	public AUC_CTRL_AuctionCheckOut() {
+
+		checkFLS();
 		
 		// force IE into Standards Mode
 		ApexPages.currentPage().getHeaders().put('X-UA-Compatible', 'IE=Edge');
@@ -26,23 +28,94 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}		
 	}
 
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		UTIL_Describe.checkReadAccess('Contact', setContactFields);
+
+		UTIL_Describe.checkReadAccess('CampaignMember', new Set<String>{
+			'ContactId',
+			UTIL_Describe.StrTokenNSPrefix('Bid_Number__c')
+		});
+
+		UTIL_Describe.checkObjectReadAccess('OpportunityContactRole');
+
+		UTIL_Describe.checkReadAccess('Opportunity', setOppFields);
+		Set<String> fieldsToUpdate = new Set<String> {
+			'StageName',
+			'Probability',
+			'ForecastCategoryName'
+		};
+		if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
+			fieldsToUpdate.add(AUC_AuctionConstants.strOppPaymentMethodField);
+		}
+		if (AUC_AuctionConstants.strOppCheckNumberField != null) {
+			fieldsToUpdate.add(AUC_AuctionConstants.strOppCheckNumberField);
+		}
+		UTIL_Describe.checkUpdateAccess('Opportunity', fieldsToUpdate);
+	}
+
 	private AUC_AuctionMaintenance auctionMaintenance;
 
 	// private status String for reporting the results of saving.
     @TestVisible private String strSaveResults { get; set; }
+
+	private Set<String> setContactFields {
+		get {
+			if (setContactFields == null) {
+				setContactFields = new Set<String>{
+					'Name',
+					'FirstName',
+					'LastName',
+					'MailingStreet',
+					'MailingCity',
+					'MailingState',
+					'MailingPostalCode'
+				};
+			}
+			return setContactFields;
+		}
+		set;
+	}
+
+	// helper routine to return Contact field names in a single comma separated string
+	// where each field is prefixed with 'Contact.'
+	private String strContactFields {
+		get {
+			if (strContactFields == null) {
+				strContactFields = '';
+				for (String str : setContactFields) {
+					strContactFields += 'Contact.' + str + ',';
+				}
+				strContactFields = strContactFields.substring(0, strContactFields.length()-1);
+			}
+			return strContactFields;
+		}
+		set;
+	}
+
+	private Set<String> setOppFields {
+		get {
+			if (setOppFields == null) {
+				setOppFields = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('Opportunity',
+					UTIL_Describe.StrTokenNSPrefix('AuctionCheckOutFS'));
+				setOppFields.add('Name');
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c'));
+				setOppFields.add('Amount');
+				setOppFields.add('IsClosed');
+				setOppFields.add('Id');
+			}
+			return setOppFields;
+		}
+		set;
+	}
     
-	// helper routine to return all Opportunity field names
+	// helper routine to return Opportunity field names in a single comma separated string
+	// where each field is prefixed with 'Opportunity.'
 	private String strOppFields {
 		get {
-			if (strOppFields == null) {				
-				// initialize the list of all fields on Opportunity.
-				// we could have just queried the field set, but our page also looks at
-				// multiple other Opp fields, so it is easiest to just get them all.
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Opportunity.fields.getMap();
-				List<String> listStrFields = new List<String>();
-				listStrFields.addAll(mapS.keySet());  
+			if (strOppFields == null) {
 				strOppFields = '';
-				for (String str : listStrFields) {
+				for (String str : setOppFields) {
 					strOppFields += 'Opportunity.' + str + ',';
 				}  		
 				strOppFields = strOppFields.substring(0, strOppFields.length()-1);
@@ -301,9 +374,6 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// CheckOut doesn't need to handle multiple contacts, but we copied this from AuctionsReceipts which does.
 	private List<Receipt> listReceiptsForlistContactId(List<Id> listContactId) {
 		try {
-			UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
-			UTIL_Describe.checkFieldReadAccess('Opportunity', 'Amount');
-
 			List<Receipt> listReceiptsT = new List<Receipt>();
 			Date dtAuction = AUC_AuctionMaintenance.DateOfAuctionId(auctionId);
 			Map<Id, Receipt> mapContactIdReceipt = new Map<Id, Receipt>();
@@ -313,17 +383,17 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 			String cmpIdAttendees = auctionMaintenance.campaignIdAuctionAttendees;
 			String cmpIdTickets = auctionMaintenance.campaignIdAuctionTickets;
 
-			String strSoql = 'SELECT contactId, contact.Name, contact.FirstName, contact.MailingStreet, contact.MailingCity, contact.MailingState, contact.MailingPostalCode, ' +
-				' opportunity.RecordType.Name, ' + AUC_AuctionMaintenance.StrEscape(strOppFields) +
+			String strSoql = 'SELECT ContactId, ' + strContactFields + ',' +
+				' Opportunity.RecordType.Name, ' + strOppFields +
 				' FROM OpportunityContactRole ' +
-				' WHERE IsPrimary=true AND contactId in :listContactId AND ' +
-				' (((opportunity.RecordTypeId = :rtPurchase OR opportunity.RecordTypeId = :rtGift) ' +
-				' AND opportunity.campaignId = :cmpIdAttendees) ' +
+				' WHERE IsPrimary=true AND ContactId in :listContactId AND ' +
+				' (((Opportunity.RecordTypeId = :rtPurchase OR Opportunity.RecordTypeId = :rtGift) ' +
+				' AND Opportunity.CampaignId = :cmpIdAttendees) ' +
 				' OR ' +
-				' (opportunity.RecordTypeId = :rtTicket ' +
-				' AND opportunity.campaignId = :cmpIdTickets ' +
+				' (Opportunity.RecordTypeId = :rtTicket ' +
+				' AND Opportunity.CampaignId = :cmpIdTickets ' +
 				' AND IsPrimary=true)) ' +
-				' order by contact.LastName, contact.FirstName';
+				' order by Contact.LastName, Contact.FirstName';
 
 /*			
 			// in one soql call, get all the appropriate opportunities for auction purchases and tickets
@@ -464,19 +534,6 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	public PageReference UpdateCheckedOpps() {
 		Savepoint sp = Database.setSavepoint();
 		try {
-			Set<String> fieldsToUpdate = new Set<String> {
-				'StageName',
-				'Probability',
-				'ForecastCategoryName'
-			};
-			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
-				fieldsToUpdate.add(AUC_AuctionConstants.strOppPaymentMethodField);
-			}
-			if (AUC_AuctionConstants.strOppCheckNumberField != null) {
-				fieldsToUpdate.add(AUC_AuctionConstants.strOppCheckNumberField);
-			}
-			UTIL_Describe.checkUpdateAccess('Opportunity', fieldsToUpdate);
-
 			strSaveResults = null;
 			
 			if (CountCheckOpps(listReceipts) == 0) {
@@ -537,11 +594,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.
 	public PageReference Close() {
+		PageReference p;
 		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
-			retURL = '/apex/GW_Auctions__AuctionPurchases';
+			p = Page.AuctionPurchases;
+		} else {
+			p = new PageReference(retURL);
 		}
-		PageReference p = new PageReference(retURL);
         p.setRedirect(true);
         return p;
 	}
