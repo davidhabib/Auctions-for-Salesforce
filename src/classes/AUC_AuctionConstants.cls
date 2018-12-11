@@ -30,35 +30,48 @@ public with sharing class AUC_AuctionConstants {
 
 	private class MyException extends Exception {}
 
+	private static AuctionSettings__c auctionSettings {
+		get {
+			if (auctionSettings == null) {
+				UTIL_Describe.checkObjectReadAccess(UTIL_Describe.StrTokenNSPrefix('AuctionSettings__c'));
+				List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
+				if (settings.size() > 0) {
+					auctionSettings = settings[0];
+				} else {
+					auctionSettings = new AuctionSettings__c();
+				}
+			}
+			return auctionSettings;
+		}
+		set;
+	}
+
 	// the Opportunity Record Type to use for gifts/donations.
 	public static String RECORDTYPE_OPP_AuctionGift {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Opportunity_Record_Type_Gift__c == null) {
+			if (auctionSettings.Opportunity_Record_Type_Gift__c == null) {
 				return AUC_AuctionConstants.RECORDTYPE_OPP_AuctionPurchasedItem;
 			}
-			return settings[0].Opportunity_Record_Type_Gift__c;
+			return auctionSettings.Opportunity_Record_Type_Gift__c;
 		}
 	}
 
 	// Opportunity Contact Roles that will be used for tickets, donated items, purchases, etc.
 	public static String OPP_GIFT_DONOR_ROLE {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Opportunity_Gift_Donor_Role__c == null) {
+			if (auctionSettings.Opportunity_Gift_Donor_Role__c == null) {
 				return 'Individual Donor';
 			}
-			return settings[0].Opportunity_Gift_Donor_Role__c;
+			return auctionSettings.Opportunity_Gift_Donor_Role__c;
 		}
 	}
 
 	public static String OPP_ORG_GIFT_DONOR_ROLE {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Opportunity_Gift_Org_Donor_Role__c == null) {
+			if (auctionSettings.Opportunity_Gift_Org_Donor_Role__c == null) {
 				return 'Organizational Donor';
 			}
-			return settings[0].Opportunity_Gift_Org_Donor_Role__c;
+			return auctionSettings.Opportunity_Gift_Org_Donor_Role__c;
 		}
 	}
 
@@ -67,9 +80,8 @@ public with sharing class AUC_AuctionConstants {
 		get {
 			if (OPP_STAGE_WON_NOT_THANKED_STAGE == null) {
 				String strStage = 'Closed Won';
-				List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-				if (settings.size() > 0 && settings[0].Opportunity_Stage_Won_Not_Thanked__c != null) {
-					strStage = settings[0].Opportunity_Stage_Won_Not_Thanked__c;
+				if (auctionSettings.Opportunity_Stage_Won_Not_Thanked__c != null) {
+					strStage = auctionSettings.Opportunity_Stage_Won_Not_Thanked__c;
 				}
 				// verify it is a valid stage and retrieve Probability and ForecastCategory for later use
 				List<OpportunityStage> ListSt = [SELECT MasterLabel, DefaultProbability, ForecastCategoryName, IsWon, IsClosed, IsActive
@@ -95,9 +107,8 @@ public with sharing class AUC_AuctionConstants {
 		get {
 			if (OPP_STAGE_PLEDGED == null) {
 				String strStage = 'Pledged';
-				List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-				if (settings.size() > 0 && settings[0].Opportunity_Stage_Pledged__c != null) {
-					strStage = settings[0].Opportunity_Stage_Pledged__c;
+				if (auctionSettings.Opportunity_Stage_Pledged__c != null) {
+					strStage = auctionSettings.Opportunity_Stage_Pledged__c;
 				}
 				// verify it is a valid stage
 				List<OpportunityStage> ListSt = [SELECT MasterLabel, IsWon, IsClosed, IsActive FROM OpportunityStage
@@ -116,22 +127,20 @@ public with sharing class AUC_AuctionConstants {
 	// The default Status to set for the Auction's auto-created Campaigns.
 	public static String CAMPAIGN_Status_Default {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Campaign_Status_Default__c == null) {
+			if (auctionSettings.Campaign_Status_Default__c == null) {
 				return 'In Progress';
 			}
-			return settings[0].Campaign_Status_Default__c;
+			return auctionSettings.Campaign_Status_Default__c;
 		}
 	}
 
 	// how many rows to show in the Auction Ticket Purchases grid
 	public static Integer CROWS_PURCHASE_GRID {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Number_of_Purchase_Grid_Rows__c == null) {
+			if (auctionSettings.Number_of_Purchase_Grid_Rows__c == null) {
 				return 15;
 			}
-			Double db = settings[0].Number_of_Purchase_Grid_Rows__c;
+			Double db = auctionSettings.Number_of_Purchase_Grid_Rows__c;
 			return db.intValue();
 		}
 	}
@@ -139,11 +148,10 @@ public with sharing class AUC_AuctionConstants {
 	// how many records to show per page on Auction Tabs
 	public static Integer cRecordsPerPage {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Number_of_Records_Per_Page__c == null) {
+			if (auctionSettings.Number_of_Records_Per_Page__c == null) {
 				return 25;
 			}
-			Double db = settings[0].Number_of_Records_Per_Page__c;
+			Double db = auctionSettings.Number_of_Records_Per_Page__c;
 			if (db == 0) {
 				return 25;
 			}
@@ -154,64 +162,60 @@ public with sharing class AUC_AuctionConstants {
 	// whether to allow duplicate Bid Numbers per Auction, or not.
 	public static Boolean fAllowDuplicateBidNumbers {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Allow_Duplicate_Bid_Numbers__c == null) {
+			if (auctionSettings.Allow_Duplicate_Bid_Numbers__c == null) {
 				return false;
 			}
-			return settings[0].Allow_Duplicate_Bid_Numbers__c;
+			return auctionSettings.Allow_Duplicate_Bid_Numbers__c;
 		}
 	}
 
 	// Get the user's Auction Receipts Intro text.
 	public static String StrAuctionReceiptsIntro() {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() > 0) {
-				String str;
-				if (settings[0].Auction_Receipts_Intro_1__c != null) str = settings[0].Auction_Receipts_Intro_1__c;
-				if (settings[0].Auction_Receipts_Intro_2__c != null) str = str + ' ' + settings[0].Auction_Receipts_Intro_2__c;
-				if (str != null) return str;
-			}
+		String str;
+		if (auctionSettings.Auction_Receipts_Intro_1__c != null) {
+			str = auctionSettings.Auction_Receipts_Intro_1__c;
+		}
+		if (auctionSettings.Auction_Receipts_Intro_2__c != null) {
+			str = str + ' ' + auctionSettings.Auction_Receipts_Intro_2__c;
+		}
+		if (str != null) {
+			return str;
+		} else {
 			return 'Please see the Auctions for Salesforce User\'s Guide to see how to set the Introductory text for Auction Receipts.';
+		}
 	}
 
 	// Get the user's Auction Receipts Footer text.
 	public static String StrAuctionReceiptsFooter() {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() > 0) {
-				String str;
-				if (settings[0].Auction_Receipts_Footer_1__c != null) str = settings[0].Auction_Receipts_Footer_1__c;
-				if (settings[0].Auction_Receipts_Footer_2__c != null) str = str + ' ' + settings[0].Auction_Receipts_Footer_2__c;
-				if (str != null) return str;
-			}
+		String str;
+		if (auctionSettings.Auction_Receipts_Footer_1__c != null) {
+			str = auctionSettings.Auction_Receipts_Footer_1__c;
+		}
+		if (auctionSettings.Auction_Receipts_Footer_2__c != null) {
+			str = str + ' ' + auctionSettings.Auction_Receipts_Footer_2__c;
+		}
+		if (str != null) {
+			return str;
+		} else {
 			return 'Please see the Auctions for Salesforce User\'s Guide to see how to set the Footer text for Auction Receipts.';
+		}
 	}
 
 	// read the custom setting and return the String for the Credit Card Validate URL formula for the CheckIn page.
 	public static String StrCreditCardValidateURLFormula() {
-		List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-		if (settings.size() > 0) {
-			return settings[0].CreditCardValidateURLFormula__c;
-		} else {
-			return null;
-		}
+		return auctionSettings.CreditCardValidateURLFormula__c;
 	}
 
 	// read the custom setting and return the String for the Credit Card Charge URL formula for the CheckOut page.
 	public static String StrCreditCardChargeURLFormula() {
-		List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-		if (settings.size() > 0) {
-			return settings[0].CreditCardChargeURLFormula__c;
-		} else {
-			return null;
-		}
+		return auctionSettings.CreditCardChargeURLFormula__c;
 	}
 
 	// read the custom setting and return the String for the window.open() parameters
 	// when opening the Payment Processor Virtual Terminal.
 	public static String StrPaymentProcessorWindowParameters() {
-		List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-		if (settings.size() > 0) {
-			return settings[0].Payment_Processor_Window_Parameters__c;
+		if (auctionSettings.Payment_Processor_Window_Parameters__c != null) {
+			return auctionSettings.Payment_Processor_Window_Parameters__c;
 		} else {
 			return 'menubar=0,status=0,toolbar=0,width=700,height=600';
 		}
@@ -220,9 +224,8 @@ public with sharing class AUC_AuctionConstants {
 	// read the custom setting and return the String for the iframe height
 	// when opening the Payment Processor Virtual Terminal on our Auction pages.
 	public static String StrPaymentProcessorPageHeight() {
-		List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-		if (settings.size() > 0) {
-			return settings[0].Payment_Processor_Page_Height__c;
+		if (auctionSettings.Payment_Processor_Page_Height__c != null) {
+			return auctionSettings.Payment_Processor_Page_Height__c;
 		} else {
 			return '300px';
 		}
@@ -231,11 +234,10 @@ public with sharing class AUC_AuctionConstants {
 	// whether to display the payment processor's virtual terminal on our page, or in a new browser window.
 	public static Boolean fShowPaymentProcessorOnPage {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Show_Payment_Processor_On_Page__c == null) {
+			if (auctionSettings.Show_Payment_Processor_On_Page__c == null) {
 				return false;
 			}
-			return settings[0].Show_Payment_Processor_On_Page__c;
+			return auctionSettings.Show_Payment_Processor_On_Page__c;
 		}
 	}
 
@@ -243,11 +245,7 @@ public with sharing class AUC_AuctionConstants {
 	// that Check Out will save into.
 	public static String strOppPaymentMethodField {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0) {
-				return null;
-			}
-			return settings[0].Opportunity_Payment_Method_Field__c;
+			return auctionSettings.Opportunity_Payment_Method_Field__c;
 		}
 	}
 
@@ -255,22 +253,14 @@ public with sharing class AUC_AuctionConstants {
 	// that Check Out will save into.
 	public static String strOppCheckNumberField {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0) {
-				return null;
-			}
-			return settings[0].Opportunity_Check_Number_Field__c;
+			return auctionSettings.Opportunity_Check_Number_Field__c;
 		}
 	}
 
 	// whether to set the Account field on new opportunities
 	public static Boolean fSetAccountOnNewAuctionOpps {
 		get {
-			Boolean fSetAccount = false;
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() > 0) {
-				fSetAccount = settings[0].Set_Account_On_New_Opportunities__c;
-			}
+			Boolean fSetAccount = auctionSettings.Set_Account_On_New_Opportunities__c;
 
 			// even if the setting is off, still do this for NPSP 1:1 and HH Account model
 			return (fSetAccount || isNPSPOneToOneAccountModel || isNPSPHouseholdAccountModel);
@@ -280,10 +270,7 @@ public with sharing class AUC_AuctionConstants {
 	// developer name of a lookup field on Contact that points to Households
 	public static String strContactHouseholdField {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() > 0) {
-				strContactHouseholdField = settings[0].Contact_Household_Field__c;
-			}
+			strContactHouseholdField = auctionSettings.Contact_Household_Field__c;
 			if (strContactHouseholdField == null && useNPSPHouseholdObject) {
 				strContactHouseholdField = 'npo02__Household__c';
 			} else if (strContactHouseholdField == null && isNPSPHouseholdAccountModel) {
@@ -297,10 +284,7 @@ public with sharing class AUC_AuctionConstants {
 	// the developer path to the Name field on Households from Contact
 	public static String strContactHouseholdNameField {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() > 0) {
-				strContactHouseholdNameField = settings[0].Contact_Household_Name_Field__c;
-			}
+			strContactHouseholdNameField = auctionSettings.Contact_Household_Name_Field__c;
 			if (strContactHouseholdNameField == null && useNPSPHouseholdObject) {
 				strContactHouseholdNameField = 'npo02__Household__r.Name';
 			} else if (strContactHouseholdNameField == null && isNPSPHouseholdAccountModel) {
@@ -314,10 +298,7 @@ public with sharing class AUC_AuctionConstants {
 	// the developer path to the Greeting field on Households from Contact
 	public static String strContactHouseholdGreetingField {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() > 0) {
-				strContactHouseholdGreetingField = settings[0].Contact_Household_Greeting_Field__c;
-			}
+			strContactHouseholdGreetingField = auctionSettings.Contact_Household_Greeting_Field__c;
 			if (strContactHouseholdGreetingField == null && useNPSPHouseholdObject) {
 				strContactHouseholdGreetingField = 'npo02__Household__r.npo02__Informal_Greeting__c';
 			} else if (strContactHouseholdGreetingField == null && isNPSPHouseholdAccountModel) {
@@ -331,11 +312,10 @@ public with sharing class AUC_AuctionConstants {
 	// maximum number of new Auction Item rows to show in the Donated Item Converter.
 	public static Integer cDonatedItemConverterBatchSize {
 		get {
-			List<AuctionSettings__c> settings = AuctionSettings__c.getAll().values();
-			if (settings.size() == 0 || settings[0].Donated_Item_Converter_Batch_Size__c == null) {
+			if (auctionSettings.Donated_Item_Converter_Batch_Size__c == null) {
 				return 25;
 			}
-			Double db = settings[0].Donated_Item_Converter_Batch_Size__c;
+			Double db = auctionSettings.Donated_Item_Converter_Batch_Size__c;
 			if (db == 0) {
 				return 25;
 			}
@@ -475,6 +455,4 @@ public with sharing class AUC_AuctionConstants {
 		}
 		return null;
 	}
-
-
 }
