@@ -5,6 +5,9 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	
 	// constructor
 	public AUC_CTRL_AuctionDonatedItemConverter() {
+
+		checkFLS();
+
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));		
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
@@ -13,6 +16,30 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 		} else {
 			strConvertResult = 'There was no AuctionId passed as a parameter to the page.';
 		}
+	}
+
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		UTIL_Describe.checkReadAccess('Opportunity', new Set<String>{
+			'Name',
+			'Amount',
+			'Description',
+			UTIL_Describe.StrTokenNSPrefix('Number_of_Items__c'),
+			UTIL_Describe.StrTokenNSPrefix('Number_Available__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Name__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Restrictions__c')
+		});
+
+		Set<String> setAIFields = new Set<String>(listStrAIFields);
+		UTIL_Describe.checkReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), setAIFields);
+		UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), setAIFields);
+
+		UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
+			UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+			UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
+			UTIL_Describe.StrTokenNSPrefix('Quantity__c'),
+			UTIL_Describe.StrTokenNSPrefix('Actual_FMV__c')
+		});
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -45,17 +72,6 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	public List<NewAuctionItem> listNewAuctionItem { 
 		get {
 			try {
-				UTIL_Describe.checkReadAccess('Opportunity', new Set<String>{
-					'Name',
-					'Amount',
-					'Description',
-					UTIL_Describe.StrTokenNSPrefix('Number_of_Items__c'),
-					UTIL_Describe.StrTokenNSPrefix('Number_Available__c'),
-					UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Name__c'),
-					UTIL_Describe.StrTokenNSPrefix('Auction_Donated_Item_Restrictions__c')
-				});
-				UTIL_Describe.checkFieldReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), 'Name');
-
 				if (listNewAuctionItem == null) {
 					listNewAuctionItem = new List<NewAuctionItem>();
 
@@ -102,9 +118,16 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 	private List<String> listStrAIFields {
 		get {
 			if (listStrAIFields == null) {
-				Map<String, Schema.SObjectField> mapS = Schema.SObjectType.Auction_Item__c.fields.getMap();
-				listStrAIFields = new List<String>();
-				listStrAIFields.addAll(mapS.keySet());  
+				Set<String> setAIFields = AUC_AuctionMaintenance.setFieldNamesFromFieldSet(
+					UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+					UTIL_Describe.StrTokenNSPrefix('AuctionDonatedItemConverterFS')
+				);
+				setAIFields.add(UTIL_Describe.StrTokenNSPrefix('Auction__c'));
+				setAIFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c'));
+				setAIFields.add(UTIL_Describe.StrTokenNSPrefix('Description__c'));
+				setAIFields.add(UTIL_Describe.StrTokenNSPrefix('Restrictions__c'));
+				setAIFields.add('Name');
+				listStrAIFields = new List<String>(setAIFields);
 			}
 			return listStrAIFields;
 		}
@@ -121,16 +144,6 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 
 		Savepoint sp = Database.setSavepoint();
 		try {
-			// for AuctionItem, the fields that can be updated by the user are using apex:InputField, so
-			// we don't need to check them specifically.  we'll just check the object's perms.
-			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
-			UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
-				UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
-				UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
-				UTIL_Describe.StrTokenNSPrefix('Quantity__c'),
-				UTIL_Describe.StrTokenNSPrefix('Actual_FMV__c')
-			});
-
 			// first create the Auction Item's
 			for (NewAuctionItem nai : listNewAuctionItem) {
 				if (nai.isChecked) {
@@ -184,13 +197,14 @@ public with sharing class AUC_CTRL_AuctionDonatedItemConverter {
 
 	// cancel the page and return to our caller. 
 	public PageReference Cancel() {
+		PageReference p;
 		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
-			retURL = '/apex/GW_Auctions__AuctionItems';
+			p = Page.AuctionItems;
+		} else {
+			p = new PageReference(retURL);
 		}
-		PageReference p = new PageReference(retURL);
         p.setRedirect(true);
         return p;
-        
 	}
 }
