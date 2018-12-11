@@ -5,6 +5,9 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 	// constructor for the class
 	public AUC_CTRL_AuctionNewTicketWizard() {
+
+		checkFLS();
+
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a String to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
@@ -17,7 +20,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		// create a new opp, or load existing opp if passed in
 		String strOppId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('oppId'));	
 		if (strOppId != null && strOppId != '') {
-			opp = Database.query('SELECT ' + strOppFields +	' FROM Opportunity WHERE Id = :strOppId');
+			opp = Database.query('SELECT ' + String.join(new List<String>(setOppFields), ',') +	' FROM Opportunity WHERE Id = :strOppId');
 			
 			// put payment info in our temp fields
 			if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
@@ -77,6 +80,18 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 		
 	}
 
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		UTIL_Describe.checkCreateAccess('Opportunity', setOppFields);
+		UTIL_Describe.checkUpdateAccess('Opportunity', setOppFields);
+
+		UTIL_Describe.checkCreateAccess('CampaignMember', setCMFields);
+		setCMFields.remove('ContactId');
+		UTIL_Describe.checkUpdateAccess('CampaignMember', setCMFields);
+		setCMFields.add('ContactId');
+		UTIL_Describe.checkObjectDeleteAccess('CampaignMember');
+	}
+
 	private AUC_AuctionMaintenance auctionMaintenance;
 		
 	// the currently selected Auction
@@ -93,45 +108,38 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	
 	// the per ticket FMV to use
 	public Decimal decTicketFMV { get; set; }
-	
-	// helper routine to return all Opportunity field names from the Field Set
-	private String strOppFields {
+
+	private Set<String> setOppFields {
 		get {
-			if (strOppFields == null) {
-				strOppFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('Opportunity', 'GW_Auctions__AuctionNewTicketWizardFS');
-
-				// make sure Name field is included.
-				if (!strOppFields.contains(' Name,')) strOppFields += ', Name';
-
-				// make sure Number Of Tickets field is included.
-				if (!strOppFields.contains(' Number_of_Tickets__c,')) strOppFields += ', Number_of_Tickets__c';
-
-				// make sure Non Deductible Amount field is included.
-				if (!strOppFields.contains(' Auction_Non_Deductible_Amount__c,')) strOppFields += ', Auction_Non_Deductible_Amount__c';
-
+			if (setOppFields == null) {
+				setOppFields = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('Opportunity',
+					UTIL_Describe.StrTokenNSPrefix('AuctionNewTicketWizardFS'));
+				setOppFields.add('Name');
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Number_of_Tickets__c'));
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c'));
 				if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
-					if (!strOppFields.contains(AUC_AuctionConstants.strOppPaymentMethodField)) strOppFields += ', ' + AUC_AuctionConstants.strOppPaymentMethodField; 
+					setOppFields.add(AUC_AuctionConstants.strOppPaymentMethodField);
 				}
 				if (AUC_AuctionConstants.strOppCheckNumberField != null) {
-					if (!strOppFields.contains(AUC_AuctionConstants.strOppCheckNumberField)) strOppFields += ', ' + AUC_AuctionConstants.strOppCheckNumberField; 
-				}					
+					setOppFields.add(AUC_AuctionConstants.strOppCheckNumberField);
+				}
 			}
-			return strOppFields;
+			return setOppFields;
 		}
 		set;
 	}
-		
-	// helper routine to return all CampaignMember field names from the Field Set
-	private String strCMFields {
+
+	private Set<String> setCMFields {
 		get {
-			if (strCMFields == null) {
-				strCMFields = AUC_AuctionMaintenance.strFieldNamesFromFieldSet('CampaignMember', 'GW_Auctions__AuctionNewTicketWizardFS');
+			if (setCMFields == null) {
+				setCMFields = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
+					UTIL_Describe.StrTokenNSPrefix('AuctionNewTicketWizardFS'));
 			}
-			return strCMFields;
+			return setCMFields;
 		}
 		set;
 	}
-		
+
 	// list for Status picklist, filtered correctly for statuses for Attendees.
 	public List<SelectOption> listSOStatuses {
 		get {
@@ -162,7 +170,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
     			
     			// find any existing attendees on this ticket
     			if (opp.Id != null) {
-    				listCmpMbrAttendees = Database.query('SELECT ' + strCMFields +	
+    				listCmpMbrAttendees = Database.query('SELECT ' + String.join(new List<String>(setCMFields), ',') +
     					' FROM CampaignMember WHERE Auction_Ticket_OppId__c=\'' + opp.Id + '\''); 
     			}
     			    					
@@ -207,8 +215,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	// action method to delete a CM FROM the database.
 	public PageReference DeleteCM() {
 		try {
-			UTIL_Describe.checkObjectDeleteAccess('CampaignMember');
-
 			if (idDeleteCM != null) {
 				Database.delete(idDeleteCM);
 				idDeleteCM = null;
@@ -228,13 +234,6 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
         strSaveResults = 'Starting Save...';
 	        
         try {
-	        // since we are using apex:inputField, no need to check individual field FLS
-	        UTIL_Describe.checkObjectCreateAccess('Opportunity');
-	        UTIL_Describe.checkObjectUpdateAccess('Opportunity');
-	        UTIL_Describe.checkObjectCreateAccess('CampaignMember');
-	        UTIL_Describe.checkObjectUpdateAccess('CampaignMember');
-	        UTIL_Describe.checkObjectDeleteAccess('CampaignMember');
-
 	        // deal with scenario where user clicks directly on save without
         	// having tabbed out of NumberOfTickets, thus never creating the CampaignMembers.
         	if (listCmpMbrAttendees.size() == 0) {
@@ -362,11 +361,13 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 	}
 
 	public PageReference Cancel() {
+		PageReference p;
 		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
-			retURL = '/apex/GW_Auctions__AuctionTickets';
+			p = Page.AuctionTickets;
+		} else {
+			p = new PageReference(retURL);
 		}
-		PageReference p = new PageReference(retURL);
         p.setRedirect(true);
         return p;
 	}
