@@ -201,6 +201,12 @@ public with sharing class UTIL_Describe {
 	* @return void
 	********************************************************************************************************/
 	public static void checkFieldReadAccess(String objectName, String fieldName) {
+		if (fieldName.contains('.')) {
+			List<String> parts = fieldName.split('\\.', 0);
+			checkFieldReadAccess(parts[0], parts[1]);
+			return;
+		}
+
 		if (!getFieldDescribe(objectName, fieldName).isAccessible() || throwException) {
 			throw new PermsException(String.format(
 				Label.PermissionReadException,
