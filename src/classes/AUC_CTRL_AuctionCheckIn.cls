@@ -756,13 +756,15 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 	// public method for the Close button.  
 	// use retURL if we have it, otherwise go to tickets tab.
 	public PageReference Close() {
+		PageReference p;
 		String retURL = ApexPages.currentPage().getParameters().get('retURL');
 		if (retURL == null || retURL == '') {
-			retURL = '/apex/GW_Auctions__AuctionTickets';
+			p = Page.AuctionTickets;
+		} else {
+			p = new PageReference(retURL);
 		}
-		PageReference p = new PageReference(retURL);
-        p.setRedirect(true);
-        return p;
+		p.setRedirect(true);
+		return p;
 	}
 
 	// public property to get the commandButton URL
