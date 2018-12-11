@@ -5,7 +5,8 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 
 	// constructor
 	public AUC_CTRL_AuctionPurchases() {
-        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity', 'GW_Auctions__AuctionPurchasesTabFS');
+        listStrFields = AUC_AuctionMaintenance.listStrFromFieldSet('Opportunity',
+	        UTIL_Describe.StrTokenNSPrefix('AuctionPurchasesTabFS'));
        	strNameField = listStrFields[0]; 
        	strObjectType = 'Opportunity';			
 	}
@@ -28,7 +29,8 @@ public with sharing class AUC_CTRL_AuctionPurchases extends PageControllerBase {
 	}
 
 	public override PageReference NewItem() { 
-		PageReference p = new PageReference('/apex/GW_Auctions__AuctionNewPurchaseWizard?auctionId=' + ctrlSoqlListView.auctionId);
-		return p;		
+		PageReference p = Page.AuctionNewPurchaseWizard;
+		p.getParameters().put('auctionId', ctrlSoqlListView.auctionId);
+		return p;
 	}
 }
