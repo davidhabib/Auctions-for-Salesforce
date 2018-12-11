@@ -5,6 +5,9 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	 
 	// constructor for the class
 	public AUC_CTRL_AuctionNewDonatedItemWizard() {
+
+		checkFLS();
+
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
 		// was set for the parameter, which cannot be assigned to type Id.
@@ -27,6 +30,35 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 			opp.CampaignId = auctionMaintenance.campaignIdAuctionDonors;
 		}
 		
+	}
+
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		// since we are using apex:inputField for all Opp fields, we don't need to test each field's permissions
+		UTIL_Describe.checkObjectCreateAccess('Opportunity');
+		UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+
+		UTIL_Describe.checkCreateAccess('CampaignMember', new Set<String> {
+			'ContactId',
+			'CampaignId',
+			'Status'
+		});
+
+		// since we are using apex:inputField for all Auction Item fields, we don't need to test each field's permissions
+		UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
+
+		UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
+			UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
+			UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
+			UTIL_Describe.StrTokenNSPrefix('Quantity__c')
+		});
+
+		UTIL_Describe.checkReadAccess('Contact', new Set<String>{
+			'Name',
+			'AccountId'
+		});
+
+		UTIL_Describe.checkFieldReadAccess('Account', 'Name');
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;
@@ -57,7 +89,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	}	
 
 	public PageReference Cancel() {
-		PageReference p = new PageReference('/apex/AuctionDonatedItems');
+		PageReference p = Page.AuctionDonatedItems;
         p.setRedirect(true);
         return p;
 	}
@@ -66,27 +98,6 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 	    strSaveResults = 'Starting Save...';
 		
 		try {
-			// since we are using apex:inputField for all Opp fields, we don't need to test each field's permissions
-			UTIL_Describe.checkObjectCreateAccess('Opportunity');
-			UTIL_Describe.checkObjectUpdateAccess('Opportunity');
-			UTIL_Describe.checkCreateAccess('CampaignMember', new Set<String> {
-				'ContactId',
-				'CampaignId',
-				'Status'
-			});
-			// since we are using apex:inputField for all Auction Item fields, we don't need to test each field's permissions
-			UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
-			UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
-				UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),
-				UTIL_Describe.StrTokenNSPrefix('Opportunity__c'),
-				UTIL_Describe.StrTokenNSPrefix('Quantity__c')
-			});
-			UTIL_Describe.checkReadAccess('Contact', new Set<String>{
-				'Name',
-				'AccountId'
-			});
-			UTIL_Describe.checkFieldReadAccess('Account', 'Name');
-
 			Contact contact = [SELECT Name, AccountId FROM Contact WHERE Id=:contactRole.ContactId];
 			String strDonor = contact.Name;
 			String strDonorRole = AUC_AuctionConstants.OPP_GIFT_DONOR_ROLE;
@@ -142,7 +153,7 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 				insert piece; 
 			}
 					 
-			PageReference p = new PageReference('/apex/AuctionDonatedItems');
+			PageReference p = Page.AuctionDonatedItems;
 	        p.setRedirect(true);
 	        return p;
         
