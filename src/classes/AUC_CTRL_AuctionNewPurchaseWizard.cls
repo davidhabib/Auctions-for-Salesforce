@@ -5,6 +5,8 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 	
 	// constructor 
 	public AUC_CTRL_AuctionNewPurchaseWizard() {
+
+		checkFLS();
 		
 		// get the current auction we were invoked from, and find & set the appropriate campaign.
 		// NOTE: we declared auctionId as a string to avoid getting a runtime error if null 
@@ -30,7 +32,31 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 		List<SelectOption> lso = listSOLookupBidNumbers;
 		lso = listSOLookupAuctionItems;
 	}
-		
+
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		UTIL_Describe.checkFieldReadAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
+		UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
+
+		UTIL_Describe.checkReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), new Set<String>{
+			'Name',
+			UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c')
+		});
+
+		UTIL_Describe.checkCreateAccess('Opportunity', new Set<String>{
+			'Name',
+			'StageName',
+			'Amount',
+			'CampaignId',
+			'RecordTypeId',
+			'AccountId',
+			'Description',
+			UTIL_Describe.StrTokenNSPrefix('Auction_Item_Purchased__c'),
+			UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c')
+		});
+	}
+
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
 	public Id campaignIdAuctionAttendees {
@@ -64,9 +90,6 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			}
 			listSOLookupBidNumbers = new List<SelectOption>();
 			try {
-				UTIL_Describe.checkFieldReadAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
-				UTIL_Describe.checkFieldReadAccess('Contact', 'Name');
-
 				listSOLookupBidNumbers.add(new SelectOption('', ''));
 				Integer cCM = 0;
 				for (List<CampaignMember> listCM : [
@@ -112,11 +135,6 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			}
 			listSOLookupAuctionItems = new List<SelectOption>();
 			try {
-				UTIL_Describe.checkReadAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), new Set<String>{
-					'Name',
-					UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c')
-				});
-
 				listSOLookupAuctionItems.add(new SelectOption('', ''));
 				Integer cCM = 0;
 
@@ -196,19 +214,6 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
     //create the new Auction Purchases
     public PageReference CreateAuctionPurchases() {
         try {
-	        UTIL_Describe.checkCreateAccess('Opportunity', new Set<String>{
-		        'Name',
-		        'StageName',
-		        'Amount',
-		        'CampaignId',
-		        'RecordTypeId',
-		        'AccountId',
-		        'Description',
-		        UTIL_Describe.StrTokenNSPrefix('Auction_Item_Purchased__c'),
-		        UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'),
-		        UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c')
-	        });
-
 	        strSaveResults = 'Starting Save...';
 	        Integer cOpps = 0;
 	        List<Opportunity> listOppsToCreate = new List<Opportunity>();
@@ -337,7 +342,7 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 	}
 
 	public PageReference Cancel() {
-		PageReference p = new PageReference('/apex/AuctionPurchases');
+		PageReference p = Page.AuctionPurchases;
         p.setRedirect(true);
         return p;
 	}
