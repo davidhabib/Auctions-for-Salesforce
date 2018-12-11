@@ -8,6 +8,9 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 
 	// constructor
 	public AUC_CTRL_AuctionAutoBidNumbers() {
+
+		checkFLS();
+
 		auctionMaintenance = new AUC_AuctionMaintenance();
 		String strAuctionId = AUC_AuctionMaintenance.StrEscape(ApexPages.currentPage().getParameters().get('auctionId'));
 		if (strAuctionId != null && strAuctionId != '' && strAuctionId != 'null') {
@@ -23,6 +26,16 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 		fOneBidNumberPerHousehold = true;	
 		iStartingBidNumber = 100;	
 	}
+
+	// check Field Level Security and object permissions on all objects and fields this page uses
+	private void checkFLS() {
+		Set<String> setContactFields = new Set<String>{'FirstName', 'LastName'};
+		UTIL_Describe.checkReadAccess('Contact', setContactFields);
+
+		UTIL_Describe.checkFieldReadAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
+		UTIL_Describe.checkFieldUpdateAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
+	}
+
 
 	private AUC_AuctionMaintenance auctionMaintenance;
 	
@@ -93,7 +106,6 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	public PageReference AutoBidNumbersSet() {
 		Savepoint sp = Database.setSavepoint();
 		try {
-			UTIL_Describe.checkFieldUpdateAccess('CampaignMember', UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
 
 			Id campaignId = auctionMaintenance.campaignIdAuctionAttendees;
 			if (campaignId != null) {				
@@ -196,8 +208,9 @@ public with sharing class AUC_CTRL_AuctionAutoBidNumbers {
 	}
 
 	public PageReference Cancel() {
-		PageReference p = new PageReference('/apex/AuctionTickets?auctionId='+auctionMaintenance.auctionId);
-        p.setRedirect(true);
+		PageReference p = Page.AuctionTickets;
+		p.getParameters().put('auctionId', auctionMaintenance.auctionId);
+		p.setRedirect(true);
         return p;
 	}
 	
