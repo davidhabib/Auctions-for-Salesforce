@@ -127,18 +127,23 @@
 				if (listPurchasers != null) {
 					fillAndMatchPurchasersCombo(listPurchasers, request, response);
 				} else {
-	       			j$('#txtPurchasers').addClass('clsWaitRight');	        			
-					GW_Auctions.AUC_CTRL_AuctionReceipts.getListPurchasers(auctionId, '', function(result, event) {
-						j$('#txtPurchasers').removeClass('clsWaitRight');	        								
-		        		if (event.type == 'exception') {
-		        			alert(event.message);
-		        		} else {
-		        			if (result != null) {
-		        				listPurchasers = result;
-								fillAndMatchPurchasersCombo(listPurchasers, request, response);
-			        		}
-		        		}
-			   		}, {escape:true});		   		
+	       			j$('#txtPurchasers').addClass('clsWaitRight');
+					Visualforce.remoting.Manager.invokeAction(
+        				'{!$RemoteAction.AUC_CTRL_AuctionReceipts.getListPurchasers}',
+						auctionId, '',
+						function(result, event) {
+							j$('#txtPurchasers').removeClass('clsWaitRight');
+							if (event.type == 'exception') {
+								alert(event.message);
+							} else {
+								if (result != null) {
+									listPurchasers = result;
+									fillAndMatchPurchasersCombo(listPurchasers, request, response);
+								}
+							}
+						},
+						{escape:true}
+			   		);
 		   		}
 		   	}
 		);	

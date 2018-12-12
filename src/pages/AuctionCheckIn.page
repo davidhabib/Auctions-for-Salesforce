@@ -175,17 +175,22 @@
 		j$("#txtAttendees").autocomplete("option", "source",
 			function(request, response) {
        			j$('#txtAttendees').addClass('clsWaitRight');	        			
-				var strSearch = j$.trim(request.term.toLowerCase());		
-				GW_Auctions.AUC_CTRL_AuctionCheckIn.getListAttendees(auctionId, strSearch, function(result, event) {
-					j$('#txtAttendees').removeClass('clsWaitRight');	        								
-	        		if (event.type == 'exception') {
-	        			alert(event.message);
-	        		} else {
-	        			if (result != null) {
-							fillAndMatchAttendeesCombo(result, request, response);
-		        		}
-	        		}
-		   		}, {escape:true});		   		
+				var strSearch = j$.trim(request.term.toLowerCase());
+				Visualforce.remoting.Manager.invokeAction(
+        			'{!$RemoteAction.AUC_CTRL_AuctionCheckIn.getListAttendees}',
+					auctionId, strSearch,
+					function(result, event) {
+						j$('#txtAttendees').removeClass('clsWaitRight');
+						if (event.type == 'exception') {
+							alert(event.message);
+						} else {
+							if (result != null) {
+								fillAndMatchAttendeesCombo(result, request, response);
+							}
+						}
+					},
+					{escape:true}
+				);
 	   		}
 		);	
 		
@@ -276,17 +281,22 @@
 					fillAndMatchCaptainsCombo(listCaptains, request, response);
 				} else {
 	       			j$('#txtCaptains').addClass('clsWaitRight');	        			
-					GW_Auctions.AUC_CTRL_AuctionCheckIn.getListCaptains(auctionId, '', function(result, event) {
-						j$('#txtCaptains').removeClass('clsWaitRight');	        								
-		        		if (event.type == 'exception') {
-		        			alert(event.message);
-		        		} else {
-		        			if (result != null) {
-		        				listCaptains = result;
-								fillAndMatchCaptainsCombo(listCaptains, request, response);
-			        		}
-		        		}
-			   		}, {escape:false});		   		
+					Visualforce.remoting.Manager.invokeAction(
+        				'{!$RemoteAction.AUC_CTRL_AuctionCheckIn.getListCaptains}',
+        				auctionId, '',
+        				function(result, event) {
+							j$('#txtCaptains').removeClass('clsWaitRight');
+							if (event.type == 'exception') {
+								alert(event.message);
+							} else {
+								if (result != null) {
+									listCaptains = result;
+									fillAndMatchCaptainsCombo(listCaptains, request, response);
+								}
+							}
+			   			},
+			   			{escape:false}
+			   		);
 		   		}
 		   	}
 		);	
