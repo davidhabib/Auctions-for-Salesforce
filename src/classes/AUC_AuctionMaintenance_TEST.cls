@@ -147,7 +147,7 @@ public with sharing class AUC_AuctionMaintenance_TEST {
 		if (AUC_AuctionConstants.IsNPSPInstalled) {
 			List<SObject> listPayments = new List<SObject>();
 			String strSoql = 'SELECT Id, npe01__Payment_Method__c, npe01__Check_Reference_Number__c  ' +
-				' FROM npe01__OppPayment__c WHERE npe01__Opportunity__c IN :listOppToUpdate ';
+				' FROM npe01__OppPayment__c WHERE npe01__Opportunity__c IN :listOpp ';
 			listPayments = Database.query(strSoql);
 			for (SObject pmt : listPayments) {
 				System.assertEquals('Check', String.valueOf(pmt.get('npe01__Payment_Method__c')));
