@@ -55,6 +55,13 @@ public with sharing class AUC_CTRL_AuctionNewPurchaseWizard {
 			UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'),
 			UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c')
 		});
+
+		UTIL_Describe.checkCreateAccess('OpportunityContactRole', new Set<String>{
+			'IsPrimary',
+			'Role',
+			'OpportunityId',
+			'ContactId'
+		});
 	}
 
 	private AUC_AuctionMaintenance auctionMaintenance;

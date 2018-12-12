@@ -34,18 +34,40 @@ public with sharing class AUC_CTRL_AuctionNewDonatedItemWizard {
 
 	// check Field Level Security and object permissions on all objects and fields this page uses
 	private void checkFLS() {
-		// since we are using apex:inputField for all Opp fields, we don't need to test each field's permissions
-		UTIL_Describe.checkObjectCreateAccess('Opportunity');
-		UTIL_Describe.checkObjectUpdateAccess('Opportunity');
+		Set<String> setOppFields = new Set<String>{
+			'RecordTypeId',
+			'Name',
+			'CloseDate',
+			UTIL_Describe.StrTokenNSPrefix('Number_of_Items__c'),
+			'StageName',
+			'Probability',
+			'ForecastCategoryName',
+			'CampaignId',
+			'AccountId'
+		};
+		UTIL_Describe.checkCreateAccess('Opportunity', setOppFields);
+		UTIL_Describe.checkUpdateAccess('Opportunity', setOppFields);
 
-		UTIL_Describe.checkCreateAccess('CampaignMember', new Set<String> {
+		UTIL_Describe.checkCreateAccess('OpportunityContactRole', new Set<String>{
+			'IsPrimary',
+			'Role',
+			'OpportunityId',
+			'ContactId'
+		});
+
+		UTIL_Describe.checkCreateAccess('CampaignMember', new Set<String>{
 			'ContactId',
 			'CampaignId',
 			'Status'
 		});
 
-		// since we are using apex:inputField for all Auction Item fields, we don't need to test each field's permissions
-		UTIL_Describe.checkObjectCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'));
+		UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'), new Set<String>{
+			UTIL_Describe.StrTokenNSPrefix('Donor_Recognition__c'),
+			UTIL_Describe.StrTokenNSPrefix('Restrictions__c'),
+			UTIL_Describe.StrTokenNSPrefix('Description__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c'),
+			UTIL_Describe.StrTokenNSPrefix('Auction__c')
+		});
 
 		UTIL_Describe.checkCreateAccess(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Piece__c'), new Set<String>{
 			UTIL_Describe.StrTokenNSPrefix('Auction_Item__c'),

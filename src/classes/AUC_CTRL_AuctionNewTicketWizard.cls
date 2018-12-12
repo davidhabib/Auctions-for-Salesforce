@@ -87,8 +87,10 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 
 		UTIL_Describe.checkCreateAccess('CampaignMember', setCMFields);
 		setCMFields.remove('ContactId');
+		setCMFields.remove('CampaignId');
 		UTIL_Describe.checkUpdateAccess('CampaignMember', setCMFields);
 		setCMFields.add('ContactId');
+		setCMFields.add('CampaignId');
 		UTIL_Describe.checkObjectDeleteAccess('CampaignMember');
 	}
 
@@ -115,6 +117,7 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 				setOppFields = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('Opportunity',
 					UTIL_Describe.StrTokenNSPrefix('AuctionNewTicketWizardFS'));
 				setOppFields.add('Name');
+				setOppFields.add('RecordTypeId');
 				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Number_of_Tickets__c'));
 				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Non_Deductible_Amount__c'));
 				if (AUC_AuctionConstants.strOppPaymentMethodField != null) {
@@ -134,6 +137,11 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			if (setCMFields == null) {
 				setCMFields = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
 					UTIL_Describe.StrTokenNSPrefix('AuctionNewTicketWizardFS'));
+				setCMFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Ticket_OppId__c'));
+				setCMFields.add(UTIL_Describe.StrTokenNSPrefix('Bid_Number__c'));
+				setCMFields.add('ContactId');
+				setCMFields.add('CampaignId');
+				setCMFields.add('Status');
 			}
 			return setCMFields;
 		}
