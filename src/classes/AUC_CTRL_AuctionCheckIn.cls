@@ -606,7 +606,14 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 			// if not found, let's add it.
 			CampaignMemberStatus cms;
 			if (listCMS.size() == 0) {
-			    cms = new CampaignMemberStatus(
+				UTIL_Describe.checkCreateAccess('CampaignMemberStatus', new Set<String> {
+					'Label',
+					'CampaignId',
+					'HasResponded',
+					'SortOrder'
+				});
+
+				cms = new CampaignMemberStatus(
 			        Label = 'Checked In',
 			        CampaignId = cmpId,
 			        HasResponded = true,
