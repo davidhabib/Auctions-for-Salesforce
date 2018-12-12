@@ -103,6 +103,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				setOppFields.add('Amount');
 				setOppFields.add('IsClosed');
 				setOppFields.add('Id');
+				setOppFields.add('Description');
 			}
 			return setOppFields;
 		}
