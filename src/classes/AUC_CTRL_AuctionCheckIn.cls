@@ -47,13 +47,18 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 
 		UTIL_Describe.checkFieldReadAccess('Account', 'Name');
 
-		Set<String> setCMFields = new Set<String>(listCMFields);
-		UTIL_Describe.checkReadAccess('CampaignMember', setCMFields);
-		UTIL_Describe.checkCreateAccess('CampaignMember', setCMFields);
+		Set<String> s1 = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
+			UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInCMFS'));
+		UTIL_Describe.checkReadAccess('CampaignMember', s1);
+		UTIL_Describe.checkCreateAccess('CampaignMember', s1);
 		// remove fields we don't update
-		setCMFields.remove('ContactId');
-		setCMFields.remove('CampaignId');
-		UTIL_Describe.checkUpdateAccess('CampaignMember', setCMFields);
+		s1.remove('ContactId');
+		s1.remove('CampaignId');
+		UTIL_Describe.checkUpdateAccess('CampaignMember', s1);
+
+		Set<String> s2 = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
+			UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInGuestsCMFS'));
+		UTIL_Describe.checkReadAccess('CampaignMember', s2);
 
 		Set<String> setOppFields = new Set<String>{
 			'AccountId',
@@ -531,8 +536,12 @@ global with sharing class AUC_CTRL_AuctionCheckIn {
 				Set<String> s2 = AUC_AuctionMaintenance.setFieldNamesFromFieldSet('CampaignMember',
 					UTIL_Describe.StrTokenNSPrefix('AuctionsCheckInGuestsCMFS'));
 				s1.addAll(s2);
+				s1.add('Id');
 				s1.add('ContactId');
 				s1.add(UTIL_Describe.StrTokenNSPrefix('Auction_Ticket_OppId__c'));
+				s1.add(UTIL_Describe.StrTokenNSPrefix('Table_Name_Number__c'));
+				s1.add(UTIL_Describe.StrTokenNSPrefix('Table_Captain__c'));
+				s1.add(UTIL_Describe.StrTokenNSPrefix('Paid__c'));
 				listCMFields = new List<String>(s1);
 			}
 			return listCMFields;

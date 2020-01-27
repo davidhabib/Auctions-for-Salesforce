@@ -296,22 +296,20 @@ public with sharing class AUC_CTRL_AuctionNewTicketWizard {
 			AUC_AuctionMaintenance.UpdateNPSPPayments(new List<Opportunity> { opp }, strPaymentMethod, strCheckNumber);        	
 			
 			// if creating a new contact role, then also put the contact on the Tickets campaign.
-			if (contactRole.Id == null) {
+			if (contactRole.Id == null && contactRole.ContactId != null) {
 				AUC_AuctionMaintenance.saveOppContactRole(contactRole);
 				// add them to the Tickets campaign.
-				if (contactRole.ContactId != null) {
-					CampaignMember cm = new CampaignMember();
-					cm.CampaignId = opp.CampaignId;
-					cm.ContactId = contactRole.ContactId;
-					cm.Status = 'Donated';
-					// note that they may already be on the tickets campaign.
-					try {
-						insert cm;
-					} catch (Exception ex) {
-						// silently handle.
-					}
-				}				
-			} else {
+				CampaignMember cm = new CampaignMember();
+				cm.CampaignId = opp.CampaignId;
+				cm.ContactId = contactRole.ContactId;
+				cm.Status = 'Donated';
+				// note that they may already be on the tickets campaign.
+				try {
+					insert cm;
+				} catch (Exception ex) {
+					// silently handle.
+				}
+			} else if (contactRole.ContactId != null) {
         		update contactRole;
 			}
         		       	

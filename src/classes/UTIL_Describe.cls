@@ -203,7 +203,11 @@ public with sharing class UTIL_Describe {
 	public static void checkFieldReadAccess(String objectName, String fieldName) {
 		if (fieldName.contains('.')) {
 			List<String> parts = fieldName.split('\\.', 0);
-			checkFieldReadAccess(parts[0], parts[1]);
+			objectName = parts[0];
+			if (objectName.endsWith('__r')) {
+				objectName = objectName.replace('__r', '__c');
+			}
+			checkFieldReadAccess(objectName, parts[1]);
 			return;
 		}
 
