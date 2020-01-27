@@ -276,10 +276,10 @@
     </fields>
     <fields>
         <fullName>Opportunity_Stage_Won_Not_Thanked__c</fullName>
-        <defaultValue>&quot;Closed Won - Not Thanked&quot;</defaultValue>
+        <defaultValue>&quot;Closed Won&quot;</defaultValue>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <inlineHelpText>How to mark the status of opportunities that are paid, but haven&apos;t yet had a thank you sent.</inlineHelpText>
+        <inlineHelpText>How to mark the status of opportunities that are paid, but haven&apos;t yet had a thank you sent.  If you don&apos;t track thank you&apos;s by Stage, just specify your normal Closed Won stage you use.</inlineHelpText>
         <label>Opportunity Stage Won Not Thanked</label>
         <length>50</length>
         <required>true</required>

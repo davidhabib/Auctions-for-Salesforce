@@ -251,7 +251,7 @@
 				}
 			}
 		}
-
+		
 	</script>
 
     <apex:form styleClass="{!IF($User.UITheme == 'Theme3', '', 'slds-scope')}">
@@ -338,7 +338,7 @@
 					
 	            	<!-- additional Opportunity fields use a fieldset -->
 					<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionNewPurchaseWizardFS}" var="f" >
-						<apex:column>
+						<apex:column >
 							<apex:facet name="header">{!f.Label}</apex:facet>					
 		   					<apex:inputField value="{!apo.opp[f]}" required="false"/>
 		   				</apex:column>
