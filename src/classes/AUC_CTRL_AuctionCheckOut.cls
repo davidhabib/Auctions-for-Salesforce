@@ -101,6 +101,7 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 				setOppFields.add('Name');
 				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Item_Name__c'));
 				setOppFields.add('Amount');
+				setOppFields.add(UTIL_Describe.StrTokenNSPrefix('Auction_Deductible_Amount__c'));
 				setOppFields.add('IsClosed');
 				setOppFields.add('Id');
 				setOppFields.add('Description');
@@ -447,7 +448,9 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 							fOppsToUpdate = true;
 						}
 					}
-					//r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
+					if (opp.Auction_Deductible_Amount__c <> null) {
+						r.decTotalAmountDeductible += opp.Auction_Deductible_Amount__c;
+					}
 					//if (opp.IsWon) r.decTotalAmountReceived += opp.Amount;
 				}
 			}
@@ -466,9 +469,13 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		
 		for (Receipt r : listR) {
 			r.decTotalAmountToPay = 0;
+			r.decTotalAmountDeductibleToPay = 0;
 			for (AUC_PurchaseOpportunity po : r.listOppAuctionPurchases) {
 				if (po.IsPayNow && po.opp.Amount != null) {
 					r.decTotalAmountToPay += po.opp.Amount;
+				}
+				if (po.IsPayNow && po.opp.Auction_Deductible_Amount__c != null) {
+					r.decTotalAmountDeductibleToPay += po.opp.Auction_Deductible_Amount__c;
 				}
 			}
 		}
@@ -499,9 +506,9 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		public Receipt() {
 			//System.debug('**** Creating Receipt');
 			decTotalAmountPaid = 0;
-			//decTotalAmountDeductible = 0;	
-			//decTotalAmountReceived = 0;
+			decTotalAmountDeductible = 0;
 			decTotalAmountToPay = 0;
+			decTotalAmountDeductibleToPay = 0;
 		}
 		
 		public Id contactId { get; set; }
@@ -511,8 +518,8 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		public Date dtAuction { get; set; }
 		public Decimal decTotalAmountPaid { get; set; }
 		public Decimal decTotalAmountToPay { get; set; }
-		//public Decimal decTotalAmountDeductible { get; set; }
-		//public Decimal decTotalAmountReceived { get; set; }
+		public Decimal decTotalAmountDeductible { get; set; }
+		public Decimal decTotalAmountDeductibleToPay { get; set; }
 		public List<AUC_PurchaseOpportunity> listOppAuctionPurchases { get; set; }
 		
 	}
@@ -617,7 +624,19 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 		}
 		private set;
 	}
-	
+
+	// public property of the total amount deductible checked off to pay.
+	public Decimal decTotalAmountDeductibleToPay {
+		get {
+			if (listReceipts != null && listReceipts.size() > 0) {
+				return listReceipts[0].decTotalAmountDeductibleToPay;
+			} else {
+				return 0;
+			}
+		}
+		private set;
+	}
+
 	public String strPaymentMethod { get; set; }
 	public String strCheckNumber { get; set; }
 	
@@ -642,19 +661,17 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 					// {4} = partner server url
 					// {5} = organizationId
 					// {6} = comma separated list of OppId's
+					// {7} = amount deductible
 					List<String> listFormat = new List<String>();
 					listFormat.add(contactIdPurchaser);
 					listFormat.add(auctionId);
-					if (listReceipts.size() > 0) {
-						listFormat.add(String.valueOf(listReceipts[0].decTotalAmountToPay));
-					} else {
-						listFormat.add('0');
-					}
+					listFormat.add(String.valueOf(decTotalAmountToPay));
 					listFormat.add(UserInfo.getSessionId());
 					String strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
 					listFormat.add(strServerURL);					
 					listFormat.add(UserInfo.getOrganizationId());
                     listFormat.add(String.join(getOppIdsToPay(), ','));
+					listFormat.add(String.valueOf(decTotalAmountDeductibleToPay));
 					str = String.format(str, listFormat);
 				}
 				strCreditCardChargeURL = str;
@@ -714,50 +731,11 @@ global with sharing class AUC_CTRL_AuctionCheckOut {
 	// for the View button, to invoke the receipts page  
 	public String strOpenReceiptURL {
 		get {
-		
-		/*******
-			String str = AUC_AuctionConstants.StrCheckOutReceiptsURLFormula();
-			if (str != null) {
-				// {0} = contactId
-				// {1} = auctionId
-				// {2} = amount		
-				// {3} = sessionId
-				// {4} = partner server url
-				// {5} = organizationId
-				
-				// NOTE that Conga wants 15 character ID's not 18.
-				
-				List<String> listFormat = new List<String>();
-				String strID = contactIdPurchaser;
-				listFormat.add(strID.left(15));
-				strID = auctionId;
-				listFormat.add(strID.left(15));
-				if (listReceipts.size() > 0) {
-					listFormat.add(string.valueOf(listReceipts[0].decTotalAmountToPay));
-				} else {
-					listFormat.add('0');
-				}
-				// get the correct session Id that works with Conga.
-				//listFormat.add(EncodingUtil.urlEncode(UserInfo.getSessionId(),'UTF-8'));
-				listFormat.add(EncodingUtil.urlEncode(strApiSessionId,'UTF-8'));
-
-				// use the partner server URL that works with Conga.				
-				//String strServerURL = 'https://' + ApexPages.currentPage().getHeaders().get('Host') + '/services/Soap/u/23.0/'+ UserInfo.getOrganizationId();
-				listFormat.add(EncodingUtil.urlEncode(strApiPartnerServerURL,'UTF-8'));					
-				
-				// Conga won't use this, but in case a future use case comes up.
-				listFormat.add(UserInfo.getOrganizationId());					
-				str = string.format(str, listFormat);	
-				return str;		
-			} else {	
-		*********/
-			{		
-				return '/apex/' + UTIL_Describe.StrTokenNSPrefix('AuctionReceipts') +
-		        	'?RenderFormat=pdf' +
-		        	'&auctionId=' + auctionId +
-		        	'&contactId=' + contactIdPurchaser +
-		        	'&IncludeTickets=true';
-			}
+			return '/apex/' + UTIL_Describe.StrTokenNSPrefix('AuctionReceipts') +
+	            '?RenderFormat=pdf' +
+	            '&auctionId=' + auctionId +
+	            '&contactId=' + contactIdPurchaser +
+	            '&IncludeTickets=true';
 		}
 		private set;
 	}

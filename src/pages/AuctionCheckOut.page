@@ -400,24 +400,30 @@
 									<apex:facet name="footer">				
 										<apex:outputText value="{0,Number,$#,###.##}" style="font-weight:bold;"
 											 rendered="{!$ObjectType.Opportunity.fields.Amount.Accessible}" >
-											<apex:param value="{!receipt.decTotalAmountPaid}"/> 
+											<apex:param value="{!receipt.decTotalAmountPaid}"/>
 										</apex:outputText>								
 									</apex:facet>
 								</apex:column>
-		
+
 								<apex:column >
 									<apex:facet name="header" >1. Pay Now</apex:facet>
 									<apex:inputCheckbox value="{!oppAP.IsPayNow}" rendered="{!oppAP.opp.IsClosed == false}" required="false" immediate="false" onchange="ChangePayNow('{!oppAP.opp.Id}');" />
 									<apex:outputText value="paid" rendered="{!oppAP.opp.IsClosed}" style="font-style:italic;" />
-									<Apex:facet name="footer">				
-										<apex:outputText value="{0,Number,$#,###.##}" style="text-align:center; font-weight:bold;"
-										 	rendered="{!$ObjectType.Opportunity.fields.Amount.Accessible}" >
-											<apex:param value="{!receipt.decTotalAmountToPay}"/> 
-										</apex:outputText>								
+									<Apex:facet name="footer">
+										<apex:pageBlockSectionItem>
+											<apex:outputText value="{0,Number,$#,###.##}" style="text-align:center; font-weight:bold;"
+												rendered="{!$ObjectType.Opportunity.fields.Amount.Accessible}" >
+												<apex:param value="{!receipt.decTotalAmountToPay}"/>
+											</apex:outputText>
+											<apex:outputText value="<BR/>{0,Number,$#,###.##} deductible" style="font-weight:bold;" escape="false"
+												 rendered="{!$ObjectType.Opportunity.fields.Auction_Deductible_Amount__c.Accessible}" >
+												<apex:param value="{!receipt.decTotalAmountDeductibleToPay}"/>
+											</apex:outputText>
+										</apex:pageBlockSectionItem>
 									</apex:facet>
-								</apex:column>	
-								 
-				            	<!-- additional Opportunity fields use a fieldset -->
+								</apex:column>
+
+								<!-- additional Opportunity fields use a fieldset -->
 								<apex:repeat value="{!$ObjectType.Opportunity.FieldSets.AuctionCheckOutFS}" var="f" >
 									<apex:column >
 										<apex:facet name="header">{!$ObjectType.Opportunity.Fields[f].Label}</apex:facet>
